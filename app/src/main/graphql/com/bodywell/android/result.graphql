@@ -1,0 +1,42 @@
+mutation CreateUserGoogle($createGoogleInput: CreateGoogleOauthInput!) {
+  createUserGoogle(createGoogleInput: $createGoogleInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation LoginUserGoogle($loginGoogleInput: LoginGoogleOauthInput!) {
+  loginUserGoogle(loginGoogleInput: $loginGoogleInput) {
+    accessToken
+    code
+    message
+    refreshToken
+    success
+  }
+}
+
+query Me {
+  me {
+    code
+    message
+    success
+    user {
+      createdAt
+      email
+      emailVerified
+      role
+      updatedAt
+      userId
+      username
+    }
+  }
+}
+
+mutation CreateUserApple($createAppleLoginInput: CreateAppleOauthInput!) {
+  createUserApple(createAppleLoginInput: $createAppleLoginInput) {
+    code
+    message
+    success
+  }
+}

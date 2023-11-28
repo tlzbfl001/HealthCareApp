@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "305313594475",
+    "project_id": "bodywell-8607d",
+    "storage_bucket": "bodywell-8607d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305313594475:android:f422c6de764dfb49ee052e",
+        "android_client_info": {
+          "package_name": "com.makebodywell.bodywell"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMsTpSW3bCk3CB3SHYazX362ieVEyqKoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

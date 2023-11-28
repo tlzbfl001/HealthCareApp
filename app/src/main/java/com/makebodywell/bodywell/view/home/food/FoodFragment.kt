@@ -1,0 +1,437 @@
+package com.makebodywell.bodywell.view.home.food
+
+import android.app.Dialog
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.ViewPager2
+import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.adapter.FoodTextAdapter
+import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
+import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.databinding.FragmentFoodBinding
+import com.makebodywell.bodywell.model.DailyData
+import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.FoodText
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.view.home.body.BodyFragment
+import com.makebodywell.bodywell.view.home.drug.DrugFragment
+import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
+import com.makebodywell.bodywell.view.home.sleep.SleepFragment
+import com.makebodywell.bodywell.view.home.water.WaterFragment
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import kotlin.math.abs
+import kotlin.math.round
+
+class FoodFragment : Fragment() {
+   private var _binding: FragmentFoodBinding? = null
+   private val binding get() = _binding!!
+
+   private lateinit var callback: OnBackPressedCallback
+
+   private var bundle = Bundle()
+
+   private var calendarDate = LocalDate.now()
+   private val formatter1 = SimpleDateFormat("yyyy-MM-dd")
+   private val formatter2 = SimpleDateFormat("yyyy년 MM월 dd일")
+
+   private var dataManager: DataManager? = null
+   private var adapter: PhotoSlideAdapter? = null
+   private var imageList: ArrayList<FoodImage> = ArrayList()
+
+   override fun onCreateView(
+      inflater: LayoutInflater, container: ViewGroup?,
+      savedInstanceState: Bundle?
+   ): View {
+      _binding = FragmentFoodBinding.inflate(layoutInflater)
+
+      dataManager = DataManager(activity)
+      dataManager!!.open()
+
+      initView()
+      setupGoal(calendarDate.toString())
+      dailyView(calendarDate.toString())
+
+      return binding.root
+   }
+
+   private fun initView() {
+      binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.tvPrev.setOnClickListener {
+         calendarDate = calendarDate!!.minusDays(1)
+         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         setupGoal(calendarDate.toString())
+         dailyView(calendarDate.toString())
+      }
+
+      binding.tvNext.setOnClickListener {
+         calendarDate = calendarDate!!.plusDays(1)
+         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         setupGoal(calendarDate.toString())
+         dailyView(calendarDate.toString())
+      }
+
+      binding.cvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.cvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.cvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.cvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.cvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
+      }
+
+      binding.clRecord.setOnClickListener {
+         bundle.putString("calendarDate", calendarDate.toString())
+         replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+      }
+   }
+
+   private fun setupGoal(date: String) {
+      // 텍스트 초기화
+      binding.tvGoal.text = "0 kcal"
+      binding.tvRemain.text = "0 kcal"
+
+      // 목표칼로리 초기화
+      val getDailyData = dataManager!!.getDailyData(date)
+      val goal = getDailyData.foodGoal
+      if(goal != 0) {
+         binding.pbFood.max = goal
+         binding.tvGoal.text = "$goal kcal"
+      }
+
+      // 섭취칼로리 초기화
+      val sum = getFoodIntake(requireActivity(), date)
+      binding.pbFood.progress = sum
+      binding.tvIntake.text = "$sum kcal"
+
+      // 남은칼로리 초기화
+      val remain = goal - sum
+      if(remain > 0) {
+         binding.tvRemain.text = "$remain kcal"
+      }else {
+         binding.tvRemain.text = "0 kcal"
+      }
+
+      // 목표 설정
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = date))
+               binding.tvGoal.text = et.text.toString()
+
+               val remain = et.text.toString().toInt() - sum
+               if(remain > 0) {
+                  binding.tvRemain.text = "$remain kcal"
+               }else {
+                  binding.tvRemain.text = "0 kcal"
+               }
+            }else {
+               dataManager!!.updateFoodGoal(DailyData(foodGoal = et.text.toString().toInt(), regDate = date))
+               binding.tvGoal.text = et.text.toString()
+
+               val remain = et.text.toString().toInt() - sum
+               if(remain > 0) {
+                  binding.tvRemain.text = "$remain kcal"
+               }else {
+                  binding.tvRemain.text = "0 kcal"
+               }
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.cvGoal.setOnClickListener {
+         dialog.show()
+      }
+   }
+
+   private fun dailyView(date: String) {
+      val getFood = dataManager!!.getFood("아침", date)
+
+      // 이미지뷰 설정
+      setupPhotoList("아침", date)
+
+      // 텍스트리스트 설정
+      setupTextList(getFood)
+
+      // 영양성분 설정
+      setupNutrients(getFood)
+
+      binding.clBtn1.setOnClickListener {
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+
+         binding.tvBtn1Title.setTextColor(Color.WHITE)
+         binding.tvBtn1Desc.setTextColor(Color.WHITE)
+         binding.tvBtn2Title.setTextColor(Color.BLACK)
+         binding.tvBtn2Desc.setTextColor(Color.BLACK)
+         binding.tvBtn3Title.setTextColor(Color.BLACK)
+         binding.tvBtn3Desc.setTextColor(Color.BLACK)
+         binding.tvBtn4Title.setTextColor(Color.BLACK)
+         binding.tvBtn4Desc.setTextColor(Color.BLACK)
+
+         setupPhotoList("아침", date)
+         setupTextList(getFood)
+         setupNutrients(getFood)
+      }
+
+      binding.clBtn2.setOnClickListener {
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+
+         binding.tvBtn2Title.setTextColor(Color.WHITE)
+         binding.tvBtn2Desc.setTextColor(Color.WHITE)
+         binding.tvBtn1Title.setTextColor(Color.BLACK)
+         binding.tvBtn1Desc.setTextColor(Color.BLACK)
+         binding.tvBtn3Title.setTextColor(Color.BLACK)
+         binding.tvBtn3Desc.setTextColor(Color.BLACK)
+         binding.tvBtn4Title.setTextColor(Color.BLACK)
+         binding.tvBtn4Desc.setTextColor(Color.BLACK)
+
+         setupPhotoList("점심", date)
+         val getFood = dataManager!!.getFood("점심", date)
+         setupTextList(getFood)
+         setupNutrients(getFood)
+      }
+
+      binding.clBtn3.setOnClickListener {
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+
+         binding.tvBtn3Title.setTextColor(Color.WHITE)
+         binding.tvBtn3Desc.setTextColor(Color.WHITE)
+         binding.tvBtn1Title.setTextColor(Color.BLACK)
+         binding.tvBtn1Desc.setTextColor(Color.BLACK)
+         binding.tvBtn2Title.setTextColor(Color.BLACK)
+         binding.tvBtn2Desc.setTextColor(Color.BLACK)
+         binding.tvBtn4Title.setTextColor(Color.BLACK)
+         binding.tvBtn4Desc.setTextColor(Color.BLACK)
+
+         setupPhotoList("저녁", date)
+         val getFood = dataManager!!.getFood("저녁", date)
+         setupTextList(getFood)
+         setupNutrients(getFood)
+      }
+
+      binding.clBtn4.setOnClickListener {
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
+
+         binding.tvBtn4Title.setTextColor(Color.WHITE)
+         binding.tvBtn4Desc.setTextColor(Color.WHITE)
+         binding.tvBtn1Title.setTextColor(Color.BLACK)
+         binding.tvBtn1Desc.setTextColor(Color.BLACK)
+         binding.tvBtn2Title.setTextColor(Color.BLACK)
+         binding.tvBtn2Desc.setTextColor(Color.BLACK)
+         binding.tvBtn3Title.setTextColor(Color.BLACK)
+         binding.tvBtn3Desc.setTextColor(Color.BLACK)
+
+         setupPhotoList("간식", date)
+         val getFood = dataManager!!.getFood("간식", date)
+         setupTextList(getFood)
+         setupNutrients(getFood)
+      }
+   }
+
+   private fun setupPhotoList(timezone: String, date: String) {
+      imageList.clear()
+      adapter?.notifyDataSetChanged()
+
+      imageList = dataManager!!.getFoodImage(timezone, date)
+
+      if(imageList.size > 0) {
+         adapter = PhotoSlideAdapter(imageList)
+
+         binding.viewPager.adapter = adapter
+         binding.viewPager.offscreenPageLimit = 5
+         binding.viewPager.clipToPadding = false
+         binding.viewPager.clipChildren = false
+         binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+         val transformer = CompositePageTransformer()
+         val defaultTranslationX = 0.50f
+         val defaultTranslationFactor = 1.2f
+         val scaleFactor = 0.14f
+         val defaultScale = 1f
+
+         transformer.addTransformer{ view: View, position: Float ->
+            view.apply {
+               ViewCompat.setElevation(view, -abs(position))
+               val scaleFactor1 = scaleFactor * position + defaultScale
+               val scaleFactor2 = -scaleFactor * position + defaultScale
+               when {
+                  position < -2 -> {
+                     translationX = width * position
+                  }
+                  position < 0f -> {
+                     scaleX = scaleFactor1
+                     scaleY = scaleFactor1
+                     translationX = -(width / defaultTranslationFactor) * position
+                  }
+                  position == 0f -> {
+                     translationX = defaultTranslationX
+                     scaleX = defaultScale
+                     scaleY = defaultScale
+                  }
+                  position > 0 && position <= 2 -> {
+                     scaleX = scaleFactor2
+                     scaleY = scaleFactor2
+                     translationX = -(width / defaultTranslationFactor) * position
+                  }
+                  position > 2 -> {
+                     translationX = 0f
+                  }
+               }
+            }
+         }
+         binding.viewPager.setPageTransformer(transformer)
+
+         binding.cvLeft.setOnClickListener {
+            val current = binding.viewPager.currentItem
+            binding.viewPager.setCurrentItem(current-1, true)
+         }
+
+         binding.cvRight.setOnClickListener {
+            val current = binding.viewPager.currentItem
+            binding.viewPager.setCurrentItem(current+1, true)
+         }
+      }
+   }
+
+   private fun setupTextList(dataList: ArrayList<Food>) {
+      val itemList = ArrayList<FoodText>()
+      val divide = dataList.size / 3
+      val minus1 = dataList.size - 1
+      val minus2 = dataList.size - 2
+      var num = 0
+
+      if(dataList.size % 3 == 0) {
+         for(i in 0 until divide) {
+            itemList.add(FoodText(
+               dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
+               dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
+               dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
+            )
+            num += 3
+         }
+      }else if(dataList.size % 3 == 1) {
+         for(i in 0 until divide) {
+            itemList.add(FoodText(
+               dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
+               dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
+               dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
+            )
+            num += 3
+         }
+         itemList.add(FoodText(name1 = dataList[minus1].name, kcal1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit))
+      }else if(dataList.size % 3 == 2) {
+         for(i in 0 until divide) {
+            itemList.add(FoodText(
+               dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
+               dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
+               dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
+            )
+            num += 3
+         }
+         itemList.add(FoodText(
+            name1 = dataList[minus2].name, kcal1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit,
+            name2 = dataList[minus1].name, kcal2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit))
+      }
+
+      binding.viewpager.adapter = FoodTextAdapter(itemList)
+      binding.viewpager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+      binding.indicator.setViewPager(binding.viewpager)
+   }
+
+   private fun setupNutrients(dataList: ArrayList<Food>) {
+      var carbohydrate = 0.0
+      var protein = 0.0
+      var fat = 0.0
+
+      if(dataList.size > 0) {
+         for(i in 0 until dataList.size) {
+            carbohydrate += dataList[i].carbohydrate!!.toDouble()
+            protein += dataList[i].protein!!.toDouble()
+            fat += dataList[i].fat!!.toDouble()
+         }
+      }
+
+      val recommendedCar = "순탄수 " + (round(carbohydrate) * (50/100)) + "%"
+      val recommendedPro = "단백질 " + round(protein) + "%"
+      val recommendedFat = "지방 " + (round(fat) * (150/100)) + "%"
+
+      binding.tvCalPct.text = recommendedCar
+      binding.tvProteinPct.text = recommendedPro
+      binding.tvFatPct.text = recommendedFat
+      binding.tvCar.text = carbohydrate.toString() + "g"
+      binding.tvProtein.text = protein.toString() + "g"
+      binding.tvFat.text = fat.toString() + "g"
+   }
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
+   }
+}

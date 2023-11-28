@@ -1,0 +1,165 @@
+package com.makebodywell.bodywell.view.home.body
+
+import android.content.Context
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
+import com.makebodywell.bodywell.model.Body
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import java.time.LocalDate
+
+class BodyRecordFragment : Fragment() {
+   private var _binding: FragmentBodyRecordBinding? = null
+   private val binding get() = _binding!!
+
+   private lateinit var callback: OnBackPressedCallback
+
+   private var dataManager: DataManager? = null
+
+   private var exerciseLevel = 1
+
+   override fun onCreateView(
+      inflater: LayoutInflater, container: ViewGroup?,
+      savedInstanceState: Bundle?
+   ): View {
+      _binding = FragmentBodyRecordBinding.inflate(layoutInflater)
+
+      dataManager = DataManager(activity)
+      dataManager!!.open()
+
+      initView()
+
+      return binding.root
+   }
+
+   private fun initView() {
+      val bundleData = arguments?.getParcelable<Body>("body")
+
+      // 데이터가 존재하는 경우 데이터 가져와서 수정
+      if (bundleData != null) {
+         binding.etBmi.setText(bundleData.bmi.toString())
+         binding.etFat.setText(bundleData.fat.toString())
+         binding.etMuscle.setText(bundleData.muscle.toString())
+         binding.etHeight.setText(bundleData.height.toString())
+         binding.etWeight.setText(bundleData.weight.toString())
+         binding.etAge.setText(bundleData.age.toString())
+         binding.etGender.setText(bundleData.gender)
+         when(bundleData.exerciseLevel) {
+            1 -> {
+               binding.radioBtn1.isChecked = true
+               exerciseLevel = 1
+            }
+            2 -> {
+               binding.radioBtn2.isChecked = true
+               exerciseLevel = 2
+            }
+            3 -> {
+               binding.radioBtn3.isChecked = true
+               exerciseLevel = 3
+            }
+            4 -> {
+               binding.radioBtn4.isChecked = true
+               exerciseLevel = 4
+            }
+            5 -> {
+               binding.radioBtn5.isChecked = true
+               exerciseLevel = 5
+            }
+         }
+      }
+
+      binding.ivBack.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.radioGroup.setOnCheckedChangeListener{ _, checkedId ->
+         when(checkedId) {
+            R.id.radioBtn1 -> exerciseLevel = 1
+            R.id.radioBtn2 -> exerciseLevel = 2
+            R.id.radioBtn3 -> exerciseLevel = 3
+            R.id.radioBtn4 -> exerciseLevel = 4
+            R.id.radioBtn5 -> exerciseLevel = 5
+         }
+      }
+
+      // BMR 구하기
+      binding.clResult.setOnClickListener {
+         if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "" ||
+            binding.etAge.text.toString().trim() == "" || binding.etGender.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "내 신체 정보를 전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            var step = 0.0
+            when(exerciseLevel) {
+               1 -> step = 1.2
+               2 -> step = 1.375
+               3 -> step = 1.55
+               4 -> step = 1.725
+               5 -> step = 1.9
+            }
+
+            var result = ""
+            result = if(binding.etGender.text.toString().trim() == "남자") {
+               val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*binding.etAge.text.toString().toDouble())+5)*step
+               String.format("%.1f", num)
+            }else {
+               val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*binding.etAge.text.toString().toDouble())-161)*step
+               String.format("%.1f", num)
+            }
+
+            binding.tvBmr.text = result
+         }
+      }
+
+      binding.tvSave.setOnClickListener {
+         var height = binding.etHeight.text.toString()
+         var weight = binding.etWeight.text.toString()
+         var age = binding.etAge.text.toString()
+         var fat = binding.etFat.text.toString()
+         var muscle = binding.etMuscle.text.toString()
+         var bmi = binding.etBmi.text.toString()
+         var bmr = binding.tvBmr.text.toString()
+
+         if(height == "") height = "0.0"
+         if(weight == "") weight = "0.0"
+         if(age == "") age = "0"
+         if(fat == "") fat = "0.0"
+         if(muscle == "") muscle = "0.0"
+         if(bmi == "") bmi = "0.0"
+         if(bmr == "") bmr = "0.0"
+
+         if(bundleData == null) {
+            dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
+            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            dataManager!!.updateBody(Body(id = bundleData.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
+            Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+         }
+
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+   }
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), BodyFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
+   }
+}
