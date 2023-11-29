@@ -22,6 +22,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ReportBodyFragment : Fragment() {
    private var _binding: FragmentReportBodyBinding? = null
@@ -29,7 +30,7 @@ class ReportBodyFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
 
-   private var dateText = LocalDate.now()
+   private var calendarDate = LocalDate.now()
 
    private var itemList = ArrayList<Body>()
    private var entries = ArrayList<Entry>()
@@ -61,10 +62,7 @@ class ReportBodyFragment : Fragment() {
       binding.pbDrug.max = 100
       binding.pbDrug.progress = 50
 
-      val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-      val formatter2 = SimpleDateFormat("yyyy년 MM월 dd일")
-
-      binding.tvCalTitle.text = formatter2.format(formatter1.parse(dateText.toString()))
+      binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
 
       binding.pbFood.setOnClickListener {
          replaceFragment1(requireActivity(), ReportFoodFragment())
@@ -79,13 +77,13 @@ class ReportBodyFragment : Fragment() {
       }
 
       binding.ivPrev.setOnClickListener {
-         dateText = dateText!!.minusDays(1)
-         binding.tvCalTitle.text = formatter2.format(formatter1.parse(dateText.toString()))
+         calendarDate = calendarDate!!.minusDays(1)
+         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
       }
 
       binding.ivNext.setOnClickListener {
-         dateText = dateText!!.plusDays(1)
-         binding.tvCalTitle.text = formatter2.format(formatter1.parse(dateText.toString()))
+         calendarDate = calendarDate!!.plusDays(1)
+         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
       }
    }
 
@@ -105,8 +103,8 @@ class ReportBodyFragment : Fragment() {
       var colors = intArrayOf(R.color.black, R.color.black, R.color.black, R.color.black, R.color.black, R.color.black, R.color.red)
 
       for(i in 0 until itemList.size) {
-         entries.add(Entry(i.toFloat(), itemList[i].weight!!.toFloat()))
-         xValue.add(itemList[i].regDate!!)
+         entries.add(Entry(i.toFloat(), itemList[i].weight.toFloat()))
+         xValue.add(itemList[i].regDate)
       }
 
       val legend = lineChart.legend

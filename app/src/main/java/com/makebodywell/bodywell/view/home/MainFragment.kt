@@ -204,10 +204,10 @@ class MainFragment : Fragment() {
    private fun setupChart(date: String) {
       val getDailyData = dataManager!!.getDailyData(date)
       val sum = getFoodIntake(requireActivity(), date)
-      if (getDailyData.foodGoal != 0 && sum != 0) {
+      if (getDailyData.foodGoal > 0 && sum > 0) {
          binding.pbFood.max = getDailyData.foodGoal
          binding.pbFood.progress = sum
-      }else if(getDailyData.foodGoal == 0 && sum != 0) {
+      }else if(getDailyData.foodGoal == 0 && sum > 0) {
          binding.pbFood.max = sum
          binding.pbFood.progress = sum
       }

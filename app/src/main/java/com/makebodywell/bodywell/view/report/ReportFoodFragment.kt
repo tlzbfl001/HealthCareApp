@@ -18,17 +18,22 @@ import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainFragment
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
+
+   private var calendarDate = LocalDate.now()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +45,7 @@ class ReportFoodFragment : Fragment() {
 
       settingChart1(binding.chart1)
       settingChart2(binding.chart2)
+      settingChart3(binding.chart3)
 
       return binding.root
    }
@@ -54,20 +60,10 @@ class ReportFoodFragment : Fragment() {
       binding.pbDrug.max = 100
       binding.pbDrug.progress = 50
 
+      binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+
       binding.pbBody.setOnClickListener {
          replaceFragment1(requireActivity(), ReportBodyFragment())
-      }
-
-      binding.pbFood.setOnClickListener {
-         binding.tvBody.setTextColor(resources.getColor(R.color.black))
-         binding.tvFood.setTextColor(Color.WHITE)
-         binding.tvExercise.setTextColor(resources.getColor(R.color.black))
-         binding.tvDrug.setTextColor(resources.getColor(R.color.black))
-
-         binding.clBody.setBackgroundResource(R.drawable.oval_border_gray)
-         binding.clFood.setBackgroundResource(R.drawable.oval_report_food)
-         binding.clExercise.setBackgroundResource(R.drawable.oval_border_gray)
-         binding.clDrug.setBackgroundResource(R.drawable.oval_border_gray)
       }
 
       binding.pbExercise.setOnClickListener {
@@ -77,9 +73,181 @@ class ReportFoodFragment : Fragment() {
       binding.pbDrug.setOnClickListener {
          replaceFragment1(requireActivity(), ReportDrugFragment())
       }
+
+      binding.ivPrev.setOnClickListener {
+         calendarDate = calendarDate!!.minusDays(1)
+         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+      }
+
+      binding.ivNext.setOnClickListener {
+         calendarDate = calendarDate!!.plusDays(1)
+         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+      }
    }
 
    private fun settingChart1(chart: CombinedChart) {
+      chartCommon(chart)
+
+      val data = CombinedData()
+
+      // lineChart 설정
+      val lineData = LineData()
+      val entries = ArrayList<Entry>()
+
+      val lineList = floatArrayOf(1350f, 1089f, 870f, 1135f, 1485f, 487f, 1201f)
+      for (index in lineList.indices) {
+         entries.add(Entry(index.toFloat(), lineList[index]))
+      }
+
+      val lineDataSet = LineDataSet(entries, "Line DataSet")
+      lineDataSet.color = Color.parseColor("#BBBBBB")
+      lineDataSet.lineWidth = 0.5f
+      lineDataSet.setDrawCircles(false)
+      lineDataSet.setDrawValues(true)
+      lineDataSet.valueTextSize = 8f
+      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+      lineDataSet.valueFormatter = DefaultValueFormatter(0)
+
+      lineData.addDataSet(lineDataSet)
+      data.setData(lineData)
+
+      // barChart 설정
+      val barEntries = java.util.ArrayList<BarEntry>()
+      barEntries.add(BarEntry(0f, floatArrayOf(350f, 250f, 500f, 250f)))
+      barEntries.add(BarEntry(1f, floatArrayOf(200f, 489f, 100f, 300f)))
+      barEntries.add(BarEntry(2f, floatArrayOf(150f, 450f, 170f, 100f)))
+      barEntries.add(BarEntry(3f, floatArrayOf(400f, 100f, 300f, 335f)))
+      barEntries.add(BarEntry(4f, floatArrayOf(500f, 705f, 140f, 140f)))
+      barEntries.add(BarEntry(5f, floatArrayOf(100f, 100f, 237f, 50f)))
+      barEntries.add(BarEntry(6f, floatArrayOf(450f, 100f, 50f, 601f)))
+
+      val barColor = ArrayList<Int>()
+      barColor.add(Color.parseColor("#FFC6D7"))
+      barColor.add(Color.parseColor("#BFA1AC"))
+      barColor.add(Color.parseColor("#FE9A9A"))
+      barColor.add(Color.parseColor("#FFAD0D"))
+
+      val barDataSet = BarDataSet(barEntries, "")
+      barDataSet.colors = barColor
+      barDataSet.valueTextSize = 0f
+
+      val barData = BarData(barDataSet)
+      barData.barWidth = 0.27f
+
+      data.setData(barData)
+
+      chart.data = data
+      chart.invalidate()
+   }
+
+   private fun settingChart2(chart: CombinedChart) {
+      chartCommon(chart)
+
+      val data = CombinedData()
+
+      // lineChart 설정
+      val lineData = LineData()
+      val entries = ArrayList<Entry>()
+
+      val lineList = floatArrayOf(1350f, 1089f, 870f, 1135f, 1485f, 487f, 1201f)
+      for (index in lineList.indices) {
+         entries.add(Entry(index.toFloat(), lineList[index]))
+      }
+
+      val lineDataSet = LineDataSet(entries, "Line DataSet")
+      lineDataSet.color = Color.parseColor("#BBBBBB")
+      lineDataSet.lineWidth = 0.5f
+      lineDataSet.setDrawCircles(false)
+      lineDataSet.setDrawValues(true)
+      lineDataSet.valueTextSize = 8f
+      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+      lineDataSet.valueFormatter = DefaultValueFormatter(0)
+
+      lineData.addDataSet(lineDataSet)
+      data.setData(lineData)
+
+      // barChart 설정
+      val barEntries = java.util.ArrayList<BarEntry>()
+      barEntries.add(BarEntry(0f, floatArrayOf(350f, 250f, 500f, 250f)))
+      barEntries.add(BarEntry(1f, floatArrayOf(200f, 489f, 100f, 300f)))
+      barEntries.add(BarEntry(2f, floatArrayOf(150f, 450f, 170f, 100f)))
+      barEntries.add(BarEntry(3f, floatArrayOf(400f, 100f, 300f, 335f)))
+      barEntries.add(BarEntry(4f, floatArrayOf(500f, 705f, 140f, 140f)))
+      barEntries.add(BarEntry(5f, floatArrayOf(100f, 100f, 237f, 50f)))
+      barEntries.add(BarEntry(6f, floatArrayOf(450f, 100f, 50f, 601f)))
+
+      val barColor = ArrayList<Int>()
+      barColor.add(Color.parseColor("#FFE380"))
+      barColor.add(Color.parseColor("#FFAD0D"))
+      barColor.add(Color.parseColor("#ECBA59"))
+      barColor.add(Color.parseColor("#DE7453"))
+
+      val barDataSet = BarDataSet(barEntries, "")
+      barDataSet.colors = barColor
+      barDataSet.valueTextSize = 0f
+
+      val barData = BarData(barDataSet)
+      barData.barWidth = 0.27f
+
+      data.setData(barData)
+
+      chart.data = data
+      chart.invalidate()
+   }
+
+   private fun settingChart3(chart: CombinedChart) {
+      chartCommon(chart)
+
+      val data = CombinedData()
+
+      // lineChart 설정
+      val lineData = LineData()
+      val entries = ArrayList<Entry>()
+      val lineList = floatArrayOf(600f, 900f, 800f, 1200f, 1500f, 600f, 1200f)
+      for (index in lineList.indices) {
+         entries.add(Entry(index.toFloat(), lineList[index]))
+      }
+
+      val lineDataSet = LineDataSet(entries, "Line DataSet")
+      lineDataSet.color = Color.parseColor("#BBBBBB")
+      lineDataSet.lineWidth = 0.5f
+      lineDataSet.setCircleColor(Color.parseColor("#4477E6"))
+      lineDataSet.circleRadius = 0.3f
+      lineDataSet.setDrawValues(true)
+      lineDataSet.valueTextSize = 8f
+      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+      lineDataSet.valueFormatter = DefaultValueFormatter(0)
+
+      lineData.addDataSet(lineDataSet)
+      data.setData(lineData)
+
+      // barChart 설정
+      val barEntries = java.util.ArrayList<BarEntry>()
+      barEntries.add(BarEntry(0f, floatArrayOf(600f)))
+      barEntries.add(BarEntry(1f, floatArrayOf(900f)))
+      barEntries.add(BarEntry(2f, floatArrayOf(800f)))
+      barEntries.add(BarEntry(3f, floatArrayOf(1200f)))
+      barEntries.add(BarEntry(4f, floatArrayOf(1500f)))
+      barEntries.add(BarEntry(5f, floatArrayOf(600f)))
+      barEntries.add(BarEntry(6f, floatArrayOf(1200f)))
+
+      val barDataSet = BarDataSet(barEntries, "")
+      barDataSet.color = Color.parseColor("#4477E6")
+      barDataSet.valueTextSize = 0f
+
+      val barData = BarData(barDataSet)
+      barData.barWidth = 0.27f
+
+      data.setData(barData)
+
+      chart.data = data
+      chart.invalidate()
+   }
+
+   private fun chartCommon(chart: CombinedChart) {
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
@@ -107,77 +275,6 @@ class ReportFoodFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
-
-      val data = CombinedData()
-
-      data.setData(generateLineData())
-      data.setData(generateBarData())
-
-      chart.data = data
-      chart.invalidate()
-   }
-
-   private fun settingChart2(chart: CombinedChart) {
-
-   }
-
-   private fun generateLineData(): LineData {
-      val d = LineData()
-      val entries = ArrayList<Entry>()
-
-      val list = arrayListOf<Float>()
-      list.add(7f)
-      list.add(9f)
-      list.add(5f)
-      list.add(7f)
-      list.add(8f)
-      list.add(7f)
-      list.add(6f)
-
-      for (index in list.indices) {
-         entries.add(Entry(index.toFloat(), list[index]))
-      }
-
-      val set = LineDataSet(entries, "Line DataSet")
-      set.color = Color.parseColor("#BBBBBB")
-      set.lineWidth = 0.5f
-      set.setCircleColor(Color.parseColor("#BBBBBB"))
-      set.circleRadius = 0.8f
-      set.fillColor = Color.rgb(22, 145, 196)
-      set.setDrawValues(true)
-      set.valueTextSize = 6f
-      set.valueTextColor = Color.parseColor("#BBBBBB")
-      set.axisDependency = YAxis.AxisDependency.RIGHT
-
-      d.addDataSet(set)
-
-      return d
-   }
-
-   private fun generateBarData(): BarData {
-      val entries = java.util.ArrayList<BarEntry>()
-      entries.add(BarEntry(0f, floatArrayOf(1f, 2f, 1f, 3f)))
-      entries.add(BarEntry(1f, floatArrayOf(1f, 3f, 2f, 3f)))
-      entries.add(BarEntry(2f, floatArrayOf(0.5f, 1f, 0.5f, 3f)))
-      entries.add(BarEntry(3f, floatArrayOf(2f, 1f, 1f, 3f)))
-      entries.add(BarEntry(4f, floatArrayOf(1f, 3f, 1f, 3f)))
-      entries.add(BarEntry(5f, floatArrayOf(1f, 1f, 2f, 3f)))
-      entries.add(BarEntry(6f, floatArrayOf(0.5f, 2f, 0.5f, 3f)))
-
-      val colors = ArrayList<Int>()
-      colors.add(Color.parseColor("#FFC6D7"))
-      colors.add(Color.parseColor("#BFA1AC"))
-      colors.add(Color.parseColor("#FE9A9A"))
-      colors.add(Color.parseColor("#FFAD0D"))
-
-      val set = BarDataSet(entries, "")
-      set.colors = colors
-      set.valueTextSize = 0f
-
-      val d = BarData(set)
-      d.barWidth = 0.27f
-
-      return d
    }
 
    override fun onAttach(context: Context) {

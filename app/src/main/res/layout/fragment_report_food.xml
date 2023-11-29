@@ -330,10 +330,10 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content">
          <TextView
-             android:id="@+id/tvKcal"
+             android:id="@+id/tvTitle1"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:layout_marginTop="15dp"
+             android:layout_marginTop="20dp"
              android:layout_marginLeft="25dp"
              android:text="섭취 칼로리(kcal)"
              android:textSize="14dp"
@@ -347,7 +347,7 @@
              app:cardCornerRadius="6dp"
              app:cardElevation="0dp"
              android:layout_marginRight="25dp"
-             app:layout_constraintBottom_toBottomOf="@id/tvKcal"
+             app:layout_constraintBottom_toBottomOf="@id/tvTitle1"
              app:layout_constraintEnd_toEndOf="parent">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -452,7 +452,7 @@
              android:id="@+id/tvTitle2"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:layout_marginTop="15dp"
+             android:layout_marginTop="20dp"
              android:layout_marginLeft="25dp"
              android:text="영양 성분(g)"
              android:textSize="14dp"
@@ -479,68 +479,68 @@
                    android:id="@+id/tvText5"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="아침"
+                   android:text="탄"
                    android:textSize="8dp"
                    android:textColor="#8F8686"
                    app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintStart_toStartOf="@id/view1"
-                   app:layout_constraintEnd_toEndOf="@id/view1" />
+                   app:layout_constraintStart_toStartOf="@id/view5"
+                   app:layout_constraintEnd_toEndOf="@id/view5" />
                <TextView
                    android:id="@+id/tvText6"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="점심"
+                   android:text="단"
                    android:textSize="8dp"
                    android:textColor="#8F8686"
                    app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintStart_toStartOf="@id/view2"
-                   app:layout_constraintEnd_toEndOf="@id/view2" />
+                   app:layout_constraintStart_toStartOf="@id/view6"
+                   app:layout_constraintEnd_toEndOf="@id/view6" />
                <TextView
                    android:id="@+id/tvText7"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="저녁"
+                   android:text="지"
                    android:textSize="8dp"
                    android:textColor="#8F8686"
                    app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintStart_toStartOf="@id/view3"
-                   app:layout_constraintEnd_toEndOf="@id/view3" />
+                   app:layout_constraintStart_toStartOf="@id/view7"
+                   app:layout_constraintEnd_toEndOf="@id/view7" />
                <TextView
                    android:id="@+id/tvText8"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="간식"
+                   android:text="당"
                    android:textSize="8dp"
                    android:textColor="#8F8686"
                    app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintStart_toStartOf="@id/view4"
-                   app:layout_constraintEnd_toEndOf="@id/view4" />
+                   app:layout_constraintStart_toStartOf="@id/view8"
+                   app:layout_constraintEnd_toEndOf="@id/view8" />
                <View
                    android:id="@+id/view5"
                    android:layout_width="20dp"
                    android:layout_height="4dp"
-                   android:background="#FFA800"
+                   android:background="#FAE498"
                    app:layout_constraintTop_toBottomOf="@id/tvText5"
                    app:layout_constraintStart_toStartOf="parent" />
                <View
                    android:id="@+id/view6"
                    android:layout_width="20dp"
                    android:layout_height="4dp"
-                   android:background="#FE9A9A"
+                   android:background="#FBCE59"
                    app:layout_constraintStart_toEndOf="@id/view5"
                    app:layout_constraintTop_toTopOf="@id/view5"/>
                <View
                    android:id="@+id/view7"
                    android:layout_width="20dp"
                    android:layout_height="4dp"
-                   android:background="#BFA1AC"
+                   android:background="#FFAD0D"
                    app:layout_constraintStart_toEndOf="@id/view6"
                    app:layout_constraintTop_toTopOf="@id/view6"/>
                <View
                    android:id="@+id/view8"
                    android:layout_width="20dp"
                    android:layout_height="4dp"
-                   android:background="#FFC6D7"
+                   android:background="#DE7453"
                    app:layout_constraintStart_toEndOf="@id/view7"
                    app:layout_constraintTop_toTopOf="@id/view7"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -562,10 +562,10 @@
              android:layout_height="match_parent"/>
       </androidx.cardview.widget.CardView>
       <TextView
-          android:id="@+id/tvFat"
+          android:id="@+id/tvTitle3"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginTop="15dp"
+          android:layout_marginTop="20dp"
           android:layout_marginLeft="25dp"
           android:text="물섭취(ml)"
           android:textSize="14dp"
