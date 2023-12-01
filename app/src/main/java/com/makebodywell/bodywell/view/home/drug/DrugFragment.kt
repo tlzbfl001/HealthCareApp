@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Drug
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -28,7 +27,6 @@ import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 class DrugFragment : Fragment() {
@@ -38,8 +36,6 @@ class DrugFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
 
    private var calendarDate = LocalDate.now()
-   private val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-   private val formatter2 = SimpleDateFormat("yyyy년 MM월 dd일")
 
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter1? = null
@@ -65,7 +61,7 @@ class DrugFragment : Fragment() {
    }
 
    private fun initView() {
-      binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+      binding.tvDate.text = dateFormat(calendarDate)
 
       getDrugDaily = dataManager!!.getDrugDaily()
 
@@ -75,14 +71,14 @@ class DrugFragment : Fragment() {
 
       binding.tvPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          setupList(calendarDate.toString())
       }
 
       binding.tvNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          setupList(calendarDate.toString())
       }

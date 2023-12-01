@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.Manifest
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -15,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -24,13 +22,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
-import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
+import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodLunchBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil
+import com.makebodywell.bodywell.view.home.GalleryFragment
 import kotlin.math.abs
 
 class FoodLunchFragment : Fragment() {
@@ -40,11 +39,12 @@ class FoodLunchFragment : Fragment() {
     private lateinit var callback: OnBackPressedCallback
 
     private var bundle = Bundle()
+
     private var calendarDate = ""
 
     private var dataManager: DataManager? = null
 
-    private var photoAdapter: PhotoSlideAdapter? = null
+    private var photoAdapter: PhotoViewAdapter? = null
     private var foodRecordAdapter: FoodIntakeAdapter? = null
     private var foodFrequentlyAdapter: FoodRecord1Adapter? = null
 
@@ -52,27 +52,6 @@ class FoodLunchFragment : Fragment() {
     private var itemList = ArrayList<Food>()
 
     private val permissionRequestCode = 1
-
-    private val permissions1 = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    private val permissions2 = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private val permissions3 = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.READ_MEDIA_IMAGES,
-        Manifest.permission.READ_MEDIA_VIDEO,
-        Manifest.permission.READ_MEDIA_AUDIO
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,7 +72,7 @@ class FoodLunchFragment : Fragment() {
     private fun initView() {
         calendarDate = arguments?.getString("calendarDate").toString()
         bundle.putString("calendarDate", calendarDate)
-        bundle.putString("timezone", "점심")
+        bundle.putString("type", "lunch")
 
         binding.clBack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodFragment())
@@ -114,7 +93,7 @@ class FoodLunchFragment : Fragment() {
         binding.clGallery.setOnClickListener {
             val result = requestPermission()
             if(result) {
-                replaceFragment2(requireActivity(), FoodGalleryFragment(), bundle)
+                replaceFragment2(requireActivity(), GalleryFragment(), bundle)
             }
         }
 
@@ -150,13 +129,13 @@ class FoodLunchFragment : Fragment() {
     private fun setupPhotoView() {
         val imageList: ArrayList<Uri> = ArrayList()
 
-        val getFoodImage = dataManager!!.getFoodImage("점심", calendarDate)
+        val getFoodImage = dataManager!!.getImage("lunch", calendarDate)
         for(i in 0 until getFoodImage.size) {
             imageList.add(Uri.parse(getFoodImage[i].imageUri))
         }
 
         if(getFoodImage.size > 0) {
-            photoAdapter = PhotoSlideAdapter(getFoodImage)
+            photoAdapter = PhotoViewAdapter(getFoodImage)
 
             binding.viewPager.adapter = photoAdapter
             binding.viewPager.offscreenPageLimit = 5
@@ -214,7 +193,7 @@ class FoodLunchFragment : Fragment() {
     }
 
     private fun setupList() {
-        dataList = dataManager!!.getFood("점심", calendarDate)
+        dataList = dataManager!!.getFood("lunch", calendarDate)
 
         if(dataList.size != 0) {
             binding.clList.visibility = View.VISIBLE
@@ -225,7 +204,7 @@ class FoodLunchFragment : Fragment() {
                     kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
             }
 
-            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, "점심")
+            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, "lunch")
             binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView1.adapter = foodRecordAdapter
 

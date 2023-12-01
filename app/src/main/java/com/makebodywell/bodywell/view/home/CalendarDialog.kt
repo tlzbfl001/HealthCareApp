@@ -11,7 +11,6 @@ import androidx.viewpager.widget.ViewPager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.CalendarAdapter2
 import com.makebodywell.bodywell.adapter.CalendarAdapter2.OnItemListener
-import com.makebodywell.bodywell.adapter.CalendarPhotoAdapter
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
@@ -24,7 +23,6 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    private var recyclerView: RecyclerView? = null
 
    private var viewPager: ViewPager? = null
-   private var photoList: ArrayList<Int>? = ArrayList()
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -40,22 +38,22 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
       setMonthView()
 
       btnCalPrev?.setOnClickListener {
-         selectedDate = selectedDate!!.minusMonths(1)
+         selectedDate = selectedDate.minusMonths(1)
          setMonthView()
       }
 
       btnCalNext?.setOnClickListener {
-         selectedDate = selectedDate!!.plusMonths(1)
+         selectedDate = selectedDate.plusMonths(1)
          setMonthView()
       }
 
-      // 캘린더 사진첩
+      // 캘린더 이미지뷰
       setupPhotoList()
    }
 
    private fun setMonthView() {
-      tvCalTitle?.text = CalendarUtil.dateTitle(selectedDate!!)
-      val days = monthArray(selectedDate!!)
+      tvCalTitle?.text = CalendarUtil.calendarTitle(selectedDate)
+      val days = monthArray(selectedDate)
       val adapter = CalendarAdapter2(days, this)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
       recyclerView?.layoutManager = layoutManager
@@ -63,14 +61,21 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    }
 
    private fun setupPhotoList() {
-      var adapter = CalendarPhotoAdapter(photoList, context)
-
-      viewPager?.adapter = adapter
-      viewPager?.setPadding(0, 0, 250, 0)
+//      val photoList: ArrayList<Int> = ArrayList()
+//      photoList.add(R.drawable.ic_launcher_foreground)
+//      photoList.add(R.drawable.ic_launcher_foreground)
+//      photoList.add(R.drawable.ic_launcher_foreground)
+//      photoList.add(R.drawable.ic_launcher_foreground)
+//      photoList.add(R.drawable.ic_launcher_foreground)
+//
+//      val adapter = CalendarPhotoAdapter(photoList, context)
+//
+//      viewPager?.adapter = adapter
+//      viewPager?.setPadding(0, 0, 250, 0)
    }
 
    override fun onItemClick(position: Int, date: LocalDate?) {
-      selectedDate = date
+      selectedDate = date!!
       setMonthView()
    }
 }

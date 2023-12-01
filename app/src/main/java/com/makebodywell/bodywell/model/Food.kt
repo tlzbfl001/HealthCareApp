@@ -12,6 +12,6 @@ data class Food(
     var salt: String? = "0.0",
     var sugar: String? = "0.0",
     val star: Int = 0,
-    var timezone: String? = "0.0",
+    var type: String? = "0.0",
     var regDate: String? = null,
 )

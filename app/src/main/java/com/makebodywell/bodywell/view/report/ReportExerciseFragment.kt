@@ -3,11 +3,11 @@ package com.makebodywell.bodywell.view.report
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -20,12 +20,11 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class ReportExerciseFragment : Fragment() {
    private var _binding: FragmentReportExerciseBinding? = null
@@ -59,7 +58,7 @@ class ReportExerciseFragment : Fragment() {
       binding.pbDrug.max = 100
       binding.pbDrug.progress = 50
 
-      binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+      binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbBody.setOnClickListener {
          replaceFragment1(requireActivity(), ReportBodyFragment())
@@ -75,24 +74,24 @@ class ReportExerciseFragment : Fragment() {
 
       binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+         binding.tvCalTitle.text = dateFormat(calendarDate)
       }
 
       binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+         binding.tvCalTitle.text = dateFormat(calendarDate)
       }
    }
 
    private fun settingChart1(chart: CombinedChart) {
-      chartCommon(chart)
+      chartCommon(chart, "workoutTime")
 
       val data = CombinedData()
 
       // lineChart 설정
       val lineData = LineData()
       val entries = ArrayList<Entry>()
-      val lineList = floatArrayOf(600f, 900f, 800f, 1200f, 1500f, 600f, 1200f)
+      val lineList = floatArrayOf(200f, 320f, 200f, 410f, 450f, 235f, 320f)
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
@@ -101,25 +100,45 @@ class ReportExerciseFragment : Fragment() {
       lineDataSet.color = Color.parseColor("#BBBBBB")
       lineDataSet.lineWidth = 0.5f
       lineDataSet.setCircleColor(Color.parseColor("#D3B479"))
-      lineDataSet.circleRadius = 0.3f
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
       lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = DefaultValueFormatter(0)
+      lineDataSet.setValueFormatter { value, entry, dataSetIndex, viewPortHandler ->
+         var result = ""
+         if (value.toInt() > 0) {
+            when(value.toInt().toString().length) {
+               3 -> {
+                  result = if(value.toInt().toString().substring(1 until 3) == "00") {
+                     value.toInt().toString().substring(0 until 1) + "시간"
+                  }else {
+                     value.toInt().toString().substring(0 until 1) + "시간" + value.toInt().toString().substring(1 until 3) + "분"
+                  }
+               }
+               4 -> {
+                  result = if(value.toInt().toString().substring(2 until 4) == "00") {
+                     value.toInt().toString().substring(0 until 2) + "시간"
+                  }else {
+                     value.toInt().toString().substring(0 until 2) + "시간" + value.toInt().toString().substring(2 until 4) + "분"
+                  }
+               }
+            }
+         }
+         return@setValueFormatter result
+      }
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
 
       // barChart 설정
       val barEntries = ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, 600f))
-      barEntries.add(BarEntry(1f, 900f))
-      barEntries.add(BarEntry(2f, 800f))
-      barEntries.add(BarEntry(3f, 1200f))
-      barEntries.add(BarEntry(4f, 1500f))
-      barEntries.add(BarEntry(5f, 600f))
-      barEntries.add(BarEntry(6f, 1200f))
+      barEntries.add(BarEntry(0f, 200f))
+      barEntries.add(BarEntry(1f, 320f))
+      barEntries.add(BarEntry(2f, 200f))
+      barEntries.add(BarEntry(3f, 410f))
+      barEntries.add(BarEntry(4f, 450f))
+      barEntries.add(BarEntry(5f, 235f))
+      barEntries.add(BarEntry(6f, 320f))
 
       val barDataSet = BarDataSet(barEntries, "")
       barDataSet.color = Color.parseColor("#D3B479")
@@ -135,7 +154,7 @@ class ReportExerciseFragment : Fragment() {
    }
 
    private fun settingChart2(chart: CombinedChart) {
-      chartCommon(chart)
+      chartCommon(chart, "")
 
       val data = CombinedData()
 
@@ -151,7 +170,6 @@ class ReportExerciseFragment : Fragment() {
       lineDataSet.color = Color.parseColor("#BBBBBB")
       lineDataSet.lineWidth = 0.5f
       lineDataSet.setCircleColor(Color.parseColor("#8F8C6E"))
-      lineDataSet.circleRadius = 0.3f
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
@@ -184,7 +202,7 @@ class ReportExerciseFragment : Fragment() {
       chart.invalidate()
    }
 
-   private fun chartCommon(chart: CombinedChart) {
+   private fun chartCommon(chart: CombinedChart, text: String) {
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
@@ -212,6 +230,21 @@ class ReportExerciseFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
+
+      if(text == "workoutTime") {
+         leftAxis.setValueFormatter { value, axis ->
+            var result = ""
+            if (value.toInt() > 0) {
+               when(value.toInt().toString().length) {
+                  3 -> result = value.toInt().toString().substring(0 until 1) + "시간"
+                  4 -> result = value.toInt().toString().substring(0 until 2) + "시간"
+               }
+            }else {
+               result = "0"
+            }
+            return@setValueFormatter result
+         }
+      }
    }
 
    override fun onAttach(context: Context) {

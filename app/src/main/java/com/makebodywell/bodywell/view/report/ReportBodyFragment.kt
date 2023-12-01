@@ -20,9 +20,8 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import java.text.SimpleDateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class ReportBodyFragment : Fragment() {
    private var _binding: FragmentReportBodyBinding? = null
@@ -62,7 +61,7 @@ class ReportBodyFragment : Fragment() {
       binding.pbDrug.max = 100
       binding.pbDrug.progress = 50
 
-      binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+      binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbFood.setOnClickListener {
          replaceFragment1(requireActivity(), ReportFoodFragment())
@@ -78,12 +77,12 @@ class ReportBodyFragment : Fragment() {
 
       binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+         binding.tvCalTitle.text = dateFormat(calendarDate)
       }
 
       binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+         binding.tvCalTitle.text = dateFormat(calendarDate)
       }
    }
 
@@ -147,8 +146,8 @@ class ReportBodyFragment : Fragment() {
       xAxis.axisLineWidth = 1.1f
       xAxis.valueFormatter = IndexAxisValueFormatter(xValue)
       xAxis.granularity = 1f
-      xAxis.spaceMax = 0.6f
-      xAxis.spaceMin = 0.6f
+      xAxis.spaceMax = 0.7f
+      xAxis.spaceMin = 0.7f
       xAxis.gridColor = Color.parseColor("#E8E8E8")
 
       val yAxisLeft = lineChart.axisLeft

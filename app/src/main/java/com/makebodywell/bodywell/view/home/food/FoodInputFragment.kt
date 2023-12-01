@@ -20,8 +20,9 @@ class FoodInputFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
 
    private var bundle = Bundle()
+
    private var calendarDate = ""
-   private var timezone = ""
+   private var type = ""
 
    private var dataManager: DataManager? = null
 
@@ -41,16 +42,16 @@ class FoodInputFragment : Fragment() {
 
    private fun initView() {
       calendarDate = arguments?.getString("calendarDate").toString()
-      timezone = arguments?.getString("timezone").toString()
+      type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
-      bundle.putString("timezone", timezone)
+      bundle.putString("type", type)
 
       binding.clOut.setOnClickListener {
-         when(timezone) {
-            "아침" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-            "점심" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-            "저녁" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-            "간식" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+         when(type) {
+            "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+            "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+            "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+            "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
          }
       }
 
@@ -60,30 +61,30 @@ class FoodInputFragment : Fragment() {
             amount = Integer.parseInt(binding.etAmount.text.toString())
          }
 
-         when(timezone) {
-            "아침" -> {
+         when(type) {
+            "breakfast" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), timezone = "아침", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = "breakfast", regDate = calendarDate))
             }
-            "점심" -> {
+            "lunch" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), timezone = "점심", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = "lunch", regDate = calendarDate))
             }
-            "저녁" -> {
+            "dinner" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), timezone = "저녁", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = "dinner", regDate = calendarDate))
             }
-            "간식" -> {
+            "snack" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), timezone = "간식", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = "snack", regDate = calendarDate))
             }
          }
 
@@ -96,11 +97,11 @@ class FoodInputFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            when(timezone) {
-               "아침" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-               "점심" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-               "저녁" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-               "간식" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            when(type) {
+               "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+               "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+               "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+               "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
             }
          }
       }

@@ -21,13 +21,14 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodTextAdapter
-import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
+import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.FoodImage
-import com.makebodywell.bodywell.model.FoodText
+import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -37,7 +38,6 @@ import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.round
@@ -51,12 +51,10 @@ class FoodFragment : Fragment() {
    private var bundle = Bundle()
 
    private var calendarDate = LocalDate.now()
-   private val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-   private val formatter2 = SimpleDateFormat("yyyy년 MM월 dd일")
 
    private var dataManager: DataManager? = null
-   private var adapter: PhotoSlideAdapter? = null
-   private var imageList: ArrayList<FoodImage> = ArrayList()
+   private var adapter: PhotoViewAdapter? = null
+   private var imageList: ArrayList<Image> = ArrayList()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -75,7 +73,7 @@ class FoodFragment : Fragment() {
    }
 
    private fun initView() {
-      binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+      binding.tvDate.text = dateFormat(calendarDate)
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -83,14 +81,14 @@ class FoodFragment : Fragment() {
 
       binding.tvPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          dailyView(calendarDate.toString())
       }
 
       binding.tvNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          dailyView(calendarDate.toString())
       }
@@ -190,10 +188,10 @@ class FoodFragment : Fragment() {
    }
 
    private fun dailyView(date: String) {
-      val getFood = dataManager!!.getFood("아침", date)
+      val getFood = dataManager!!.getFood("breakfast", date)
 
       // 이미지뷰 설정
-      setupPhotoList("아침", date)
+      setupPhotoList("breakfast", date)
 
       // 텍스트리스트 설정
       setupTextList(getFood)
@@ -216,7 +214,7 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("아침", date)
+         setupPhotoList("breakfast", date)
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -236,8 +234,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("점심", date)
-         val getFood = dataManager!!.getFood("점심", date)
+         setupPhotoList("lunch", date)
+         val getFood = dataManager!!.getFood("lunch", date)
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -257,8 +255,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("저녁", date)
-         val getFood = dataManager!!.getFood("저녁", date)
+         setupPhotoList("dinner", date)
+         val getFood = dataManager!!.getFood("dinner", date)
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -278,21 +276,21 @@ class FoodFragment : Fragment() {
          binding.tvBtn3Title.setTextColor(Color.BLACK)
          binding.tvBtn3Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("간식", date)
-         val getFood = dataManager!!.getFood("간식", date)
+         setupPhotoList("snack", date)
+         val getFood = dataManager!!.getFood("snack", date)
          setupTextList(getFood)
          setupNutrients(getFood)
       }
    }
 
-   private fun setupPhotoList(timezone: String, date: String) {
+   private fun setupPhotoList(type: String, date: String) {
       imageList.clear()
       adapter?.notifyDataSetChanged()
 
-      imageList = dataManager!!.getFoodImage(timezone, date)
+      imageList = dataManager!!.getImage(type, date)
 
       if(imageList.size > 0) {
-         adapter = PhotoSlideAdapter(imageList)
+         adapter = PhotoViewAdapter(imageList)
 
          binding.viewPager.adapter = adapter
          binding.viewPager.offscreenPageLimit = 5
@@ -351,7 +349,7 @@ class FoodFragment : Fragment() {
    }
 
    private fun setupTextList(dataList: ArrayList<Food>) {
-      val itemList = ArrayList<FoodText>()
+      val itemList = ArrayList<Text>()
       val divide = dataList.size / 3
       val minus1 = dataList.size - 1
       val minus2 = dataList.size - 2
@@ -359,7 +357,7 @@ class FoodFragment : Fragment() {
 
       if(dataList.size % 3 == 0) {
          for(i in 0 until divide) {
-            itemList.add(FoodText(
+            itemList.add(Text(
                dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
                dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
                dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
@@ -368,26 +366,26 @@ class FoodFragment : Fragment() {
          }
       }else if(dataList.size % 3 == 1) {
          for(i in 0 until divide) {
-            itemList.add(FoodText(
+            itemList.add(Text(
                dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
                dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
                dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
             )
             num += 3
          }
-         itemList.add(FoodText(name1 = dataList[minus1].name, kcal1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit))
+         itemList.add(Text(name1 = dataList[minus1].name, int1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit))
       }else if(dataList.size % 3 == 2) {
          for(i in 0 until divide) {
-            itemList.add(FoodText(
+            itemList.add(Text(
                dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
                dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
                dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
             )
             num += 3
          }
-         itemList.add(FoodText(
-            name1 = dataList[minus2].name, kcal1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit,
-            name2 = dataList[minus1].name, kcal2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit))
+         itemList.add(Text(
+            name1 = dataList[minus2].name, int1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit,
+            name2 = dataList[minus1].name, int2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit))
       }
 
       binding.viewpager.adapter = FoodTextAdapter(itemList)

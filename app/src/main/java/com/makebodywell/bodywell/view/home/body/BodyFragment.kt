@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,26 +12,21 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
-import androidx.core.util.rangeTo
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
-import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
-import com.makebodywell.bodywell.view.home.exercise.ExerciseDetailFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -43,8 +37,6 @@ class BodyFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
 
    private var calendarDate = LocalDate.now()
-   private val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-   private val formatter2 = SimpleDateFormat("yyyy년 MM월 dd일")
 
    private var dataManager: DataManager? = null
 
@@ -69,7 +61,7 @@ class BodyFragment : Fragment() {
    }
 
    private fun initView() {
-      binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+      binding.tvDate.text = dateFormat(calendarDate)
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -77,13 +69,13 @@ class BodyFragment : Fragment() {
 
       binding.tvPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
       }
 
       binding.tvNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
       }
 

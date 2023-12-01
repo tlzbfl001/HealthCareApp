@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.FoodText
+import com.makebodywell.bodywell.model.Text
 
 class FoodTextAdapter (
-   private var itemList: ArrayList<FoodText> = ArrayList<FoodText>()
+   private var itemList: ArrayList<Text> = ArrayList<Text>()
 ) : RecyclerView.Adapter<FoodTextAdapter.ViewHolder>() {
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,16 +22,16 @@ class FoodTextAdapter (
       holder.tvName2.text = itemList[position].name2
       holder.tvName3.text = itemList[position].name3
 
-      if(itemList[position].kcal1 != 0) {
-         val text = "${itemList[position].kcal1} kcal"
+      if(itemList[position].int1 != 0) {
+         val text = "${itemList[position].int1} kcal"
          holder.tvKcal1.text = text
       }
-      if(itemList[position].kcal2 != 0) {
-         val text = "${itemList[position].kcal2} kcal"
+      if(itemList[position].int2 != 0) {
+         val text = "${itemList[position].int2} kcal"
          holder.tvKcal2.text = text
       }
-      if(itemList[position].kcal3 != 0) {
-         val text = "${itemList[position].kcal3} kcal"
+      if(itemList[position].int3 != 0) {
+         val text = "${itemList[position].int3} kcal"
          holder.tvKcal3.text = text
       }
 

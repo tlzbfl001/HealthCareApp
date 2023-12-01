@@ -21,6 +21,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentWaterBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Water
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -28,7 +29,6 @@ import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 class WaterFragment : Fragment() {
@@ -38,8 +38,6 @@ class WaterFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
 
    private var calendarDate = LocalDate.now()
-   private val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-   private val formatter2 = SimpleDateFormat("yyyy년 MM월 dd일")
 
    private var dataManager: DataManager? = null
    private var getWater: Water? = null
@@ -71,7 +69,7 @@ class WaterFragment : Fragment() {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+      binding.tvDate.text = dateFormat(calendarDate)
 
       binding.tvPrev.setOnClickListener {
          if(getWater!!.regDate != "") {
@@ -79,7 +77,7 @@ class WaterFragment : Fragment() {
          }
 
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          dailyView()
       }
@@ -90,7 +88,7 @@ class WaterFragment : Fragment() {
          }
 
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = formatter2.format(formatter1.parse(calendarDate.toString())!!)
+         binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          dailyView()
       }

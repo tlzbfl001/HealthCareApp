@@ -22,8 +22,9 @@ class FoodRecord2Fragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
 
    private var bundle = Bundle()
+
    private var calendarDate = ""
-   private var timezone = ""
+   private var type = ""
 
    private var dataManager: DataManager? = null
    private var adapter: FoodRecord2Adapter? = null
@@ -47,16 +48,16 @@ class FoodRecord2Fragment : Fragment() {
 
    private fun initView() {
       calendarDate = arguments?.getString("calendarDate").toString()
-      timezone = arguments?.getString("timezone").toString()
+      type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
-      bundle.putString("timezone", timezone)
+      bundle.putString("type", type)
 
       binding.btnOut.setOnClickListener {
-         when(timezone) {
-            "아침" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-            "점심" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-            "저녁" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-            "간식" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+         when(type) {
+            "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+            "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+            "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+            "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
          }
       }
       binding.tvBtn1.setOnClickListener {
@@ -68,11 +69,11 @@ class FoodRecord2Fragment : Fragment() {
    }
 
    private fun setupList() {
-      when(timezone) {
-         "아침" -> dataList = dataManager!!.getFood("아침" ,calendarDate)
-         "점심" -> dataList = dataManager!!.getFood("점심", calendarDate)
-         "저녁" -> dataList = dataManager!!.getFood("저녁", calendarDate)
-         "간식" -> dataList = dataManager!!.getFood("간식" ,calendarDate)
+      when(type) {
+         "breakfast" -> dataList = dataManager!!.getFood("breakfast" ,calendarDate)
+         "lunch" -> dataList = dataManager!!.getFood("lunch", calendarDate)
+         "dinner" -> dataList = dataManager!!.getFood("dinner", calendarDate)
+         "snack" -> dataList = dataManager!!.getFood("snack" ,calendarDate)
       }
 
       if(dataList.size != 0) {
@@ -92,11 +93,11 @@ class FoodRecord2Fragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            when(timezone) {
-               "아침" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-               "점심" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-               "저녁" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-               "간식" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            when(type) {
+               "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+               "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+               "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+               "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
             }
          }
       }

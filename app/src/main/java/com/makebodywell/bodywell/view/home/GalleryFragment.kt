@@ -1,4 +1,4 @@
-package com.makebodywell.bodywell.view.home.food
+package com.makebodywell.bodywell.view.home
 
 import android.app.Activity
 import android.content.ContentValues
@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
@@ -16,17 +15,22 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.makebodywell.bodywell.adapter.FoodGalleryAdapter
+import com.makebodywell.bodywell.adapter.GalleryAdapter
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.databinding.FragmentFoodGalleryBinding
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.databinding.FragmentGalleryBinding
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
+import com.makebodywell.bodywell.view.home.food.FoodDinnerFragment
+import com.makebodywell.bodywell.view.home.food.FoodLunchFragment
+import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
+import com.makebodywell.bodywell.view.note.NoteFragment
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
-class FoodGalleryFragment : Fragment() {
-    private var _binding: FragmentFoodGalleryBinding? = null
+class GalleryFragment : Fragment() {
+    private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var callback: OnBackPressedCallback
@@ -35,9 +39,8 @@ class FoodGalleryFragment : Fragment() {
 
     private var dataManager: DataManager? = null
 
-    private var localDate = LocalDate.now()
     private var calendarDate = ""
-    private var timezone = ""
+    private var type = ""
 
     private val cameraCode = 2
     private val storageCode = 3
@@ -46,7 +49,7 @@ class FoodGalleryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFoodGalleryBinding.inflate(layoutInflater)
+        _binding = FragmentGalleryBinding.inflate(layoutInflater)
 
         dataManager = DataManager(activity)
         dataManager!!.open()
@@ -59,16 +62,20 @@ class FoodGalleryFragment : Fragment() {
 
     private fun initView() {
         calendarDate = arguments?.getString("calendarDate").toString()
-        timezone = arguments?.getString("timezone").toString()
+        type = arguments?.getString("type").toString()
         bundle.putString("calendarDate", calendarDate)
-        bundle.putString("timezone", timezone)
+        bundle.putString("type", type)
 
         binding.clBack.setOnClickListener {
-            when(timezone) {
-                "아침" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-                "점심" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-                "저녁" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-                "간식" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            when(type) {
+                "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+                "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+                "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+                "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+                "note" -> {
+                    bundle.putString("data", "noteData")
+                    replaceFragment2(requireActivity(), NoteFragment(), bundle)
+                }
             }
         }
 
@@ -85,9 +92,9 @@ class FoodGalleryFragment : Fragment() {
         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
         binding.recyclerView.layoutManager = layoutManager
 
-        val getFoodImage = dataManager!!.getFoodImage(timezone, calendarDate)
+        val getFoodImage = dataManager!!.getImage(type, calendarDate)
         if(getFoodImage.size > 0) {
-            val adapter = FoodGalleryAdapter(requireActivity(), getFoodImage)
+            val adapter = GalleryAdapter(requireActivity(), getFoodImage)
             binding.recyclerView.adapter = adapter
         }
     }
@@ -112,8 +119,8 @@ class FoodGalleryFragment : Fragment() {
                     if(data?.extras?.get("data") != null){
                         val img = data.extras?.get("data") as Bitmap
                         val uri = saveFile(randomFileName(), "image/jpeg", img)
-                        val foodImage = FoodImage(imageUri = uri.toString(), timezone = timezone, regDate = localDate.toString())
-                        dataManager?.insertFoodImage(foodImage)
+                        val foodImage = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+                        dataManager?.insertImage(foodImage)
                         setupList()
                     }else {
                         setupList()
@@ -121,13 +128,15 @@ class FoodGalleryFragment : Fragment() {
                 }
                 storageCode -> {
                     val uri = data?.data
-                    val foodImage = FoodImage(imageUri = uri.toString(), timezone = timezone, regDate = localDate.toString())
-                    dataManager?.insertFoodImage(foodImage)
+                    val foodImage = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+                    dataManager?.insertImage(foodImage)
                     setupList()
                 }
             }
         }
-    }private fun randomFileName(): String {
+    }
+
+    private fun randomFileName(): String {
         return SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())
     }
 
@@ -162,11 +171,15 @@ class FoodGalleryFragment : Fragment() {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                when(timezone) {
-                    "아침" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-                    "점심" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-                    "저녁" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-                    "간식" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+                when(type) {
+                    "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+                    "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+                    "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+                    "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+                    "note" -> {
+                        bundle.putString("data", "noteData")
+                        replaceFragment2(requireActivity(), NoteFragment(), bundle)
+                    }
                 }
             }
         }

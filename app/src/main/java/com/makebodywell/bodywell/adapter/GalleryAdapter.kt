@@ -10,12 +10,12 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
 
-class FoodGalleryAdapter(
+class GalleryAdapter(
     private val context: Context,
-    private val itemList: ArrayList<FoodImage>
-) : RecyclerView.Adapter<FoodGalleryAdapter.ViewHolder>() {
+    private val itemList: ArrayList<Image>
+) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
     private var dataManager: DataManager? = null
 
     init {
@@ -24,7 +24,7 @@ class FoodGalleryAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_food_gallery, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_gallery, parent, false)
         return ViewHolder(view)
     }
 
@@ -35,7 +35,7 @@ class FoodGalleryAdapter(
             val dialog = AlertDialog.Builder(context)
                 .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("확인") { _, _ ->
-                    dataManager!!.deleteFoodImage(itemList[position].id)
+                    dataManager!!.deleteImage(itemList[position].id)
                     itemList.removeAt(position)
                     notifyDataSetChanged()
                 }

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter3
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugSelectDateBinding
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateTitle
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -70,19 +70,19 @@ class DrugSelectDateFragment1 : Fragment(), CalendarAdapter3.OnItemListener {
       setMonthView()
 
       binding.btnCalPrev.setOnClickListener {
-         selectedDate = selectedDate!!.minusMonths(1)
+         selectedDate = selectedDate.minusMonths(1)
          setMonthView()
       }
 
       binding.btnCalNext.setOnClickListener {
-         selectedDate = selectedDate!!.plusMonths(1)
+         selectedDate = selectedDate.plusMonths(1)
          setMonthView()
       }
    }
 
    private fun setMonthView() {
-      binding.tvCalTitle.text = dateTitle(selectedDate!!)
-      val days = monthArray(selectedDate!!)
+      binding.tvCalTitle.text = calendarTitle(selectedDate)
+      val days = monthArray(selectedDate)
       val adapter = CalendarAdapter3(requireContext(), days, this)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
       binding.recyclerView1.layoutManager = layoutManager
@@ -90,7 +90,7 @@ class DrugSelectDateFragment1 : Fragment(), CalendarAdapter3.OnItemListener {
    }
 
    override fun onItemClick(position: Int, date: LocalDate?) {
-      selectedDate = date
+      selectedDate = date!!
       setMonthView()
    }
 

@@ -20,7 +20,7 @@ import com.makebodywell.bodywell.view.init.MainActivity
 class FoodIntakeAdapter (
     private val context: Context,
     private var itemList: ArrayList<Food> = ArrayList(),
-    private val timezone: String
+    private val type: String
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var dataManager: DataManager? = null
     private var foodData = Food()
@@ -42,7 +42,7 @@ class FoodIntakeAdapter (
         holder.tvCount.text = itemList[position].amount.toString()
 
         // 섭취한 식단 카운트하기
-        var amount = itemList[position].amount!!
+        var amount = itemList[position].amount
         val kcal = itemList[position].kcal!!
         foodData.id = itemList[position].id
         foodData.amount = amount
@@ -50,7 +50,6 @@ class FoodIntakeAdapter (
         holder.ivMinus.setOnClickListener {
             if (amount > 1) {
                 amount -= 1
-
                 holder.tvCount.text = amount.toString()
                 holder.tvKcal.text =(kcal.toInt() * amount).toString()
                 foodData.amount = amount
@@ -59,7 +58,6 @@ class FoodIntakeAdapter (
 
         holder.ivPlus.setOnClickListener {
             amount += 1
-
             holder.tvCount.text = amount.toString()
             holder.tvKcal.text = (kcal.toInt() * amount).toString()
             foodData.amount = amount
@@ -69,8 +67,8 @@ class FoodIntakeAdapter (
             val dialog = AlertDialog.Builder(context)
                 .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("확인") { _, _ ->
-                    when (timezone) {
-                        "아침" -> {
+                    when (type) {
+                        "breakfast" -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -82,7 +80,7 @@ class FoodIntakeAdapter (
                             }
                         }
 
-                        "점심" -> {
+                        "lunch" -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -94,7 +92,7 @@ class FoodIntakeAdapter (
                             }
                         }
 
-                        "저녁" -> {
+                        "dinner" -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -106,7 +104,7 @@ class FoodIntakeAdapter (
                             }
                         }
 
-                        "간식" -> {
+                        "snack" -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()

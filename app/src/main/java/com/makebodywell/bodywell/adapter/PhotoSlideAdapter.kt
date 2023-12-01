@@ -1,36 +1,41 @@
 package com.makebodywell.bodywell.adapter
 
+import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.PagerAdapter
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
 
 class PhotoSlideAdapter (
-   private val imageList: ArrayList<FoodImage>
-) : RecyclerView.Adapter<PhotoSlideAdapter.ViewHolder>() {
-   class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-      val imageView: ImageView = itemView.findViewById(R.id.imageView)
+   private val context: Context,
+   private val itemList: ArrayList<Image>
+) : PagerAdapter() {
+
+   override fun isViewFromObject(view: View, `object`: Any): Boolean {
+      return view == `object`
    }
 
-   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_photo_slide, parent, false)
-      return ViewHolder(view)
+   override fun instantiateItem(container: ViewGroup, position: Int): Any {
+      val inflater = LayoutInflater.from(context)
+      val view: View = inflater.inflate(R.layout.item_photo_slide, container, false)
+      val imageView: ImageView = view.findViewById(R.id.imageView)
+
+      imageView.setImageURI(Uri.parse(itemList[position].imageUri))
+
+      container.addView(view, 0)
+
+      return view
    }
 
-   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.imageView.setImageURI(Uri.parse(imageList[position].imageUri))
+   override fun getCount(): Int {
+      return itemList.count()
    }
 
-   override fun getItemCount(): Int {
-      return imageList.size
-   }
-
-   private val runnable = Runnable {
-      imageList.addAll(imageList)
-      notifyDataSetChanged()
+   override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+      container.removeView(`object` as View)
    }
 }

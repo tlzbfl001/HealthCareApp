@@ -20,12 +20,11 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
@@ -60,7 +59,7 @@ class ReportFoodFragment : Fragment() {
       binding.pbDrug.max = 100
       binding.pbDrug.progress = 50
 
-      binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+      binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbBody.setOnClickListener {
          replaceFragment1(requireActivity(), ReportBodyFragment())
@@ -76,12 +75,12 @@ class ReportFoodFragment : Fragment() {
 
       binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
-         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+         binding.tvCalTitle.text = dateFormat(calendarDate)
       }
 
       binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
-         binding.tvCalTitle.text = calendarDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+         binding.tvCalTitle.text = dateFormat(calendarDate)
       }
    }
 
@@ -226,13 +225,13 @@ class ReportFoodFragment : Fragment() {
 
       // barChart 설정
       val barEntries = java.util.ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, floatArrayOf(600f)))
-      barEntries.add(BarEntry(1f, floatArrayOf(900f)))
-      barEntries.add(BarEntry(2f, floatArrayOf(800f)))
-      barEntries.add(BarEntry(3f, floatArrayOf(1200f)))
-      barEntries.add(BarEntry(4f, floatArrayOf(1500f)))
-      barEntries.add(BarEntry(5f, floatArrayOf(600f)))
-      barEntries.add(BarEntry(6f, floatArrayOf(1200f)))
+      barEntries.add(BarEntry(0f, 600f))
+      barEntries.add(BarEntry(1f, 900f))
+      barEntries.add(BarEntry(2f, 800f))
+      barEntries.add(BarEntry(3f, 1200f))
+      barEntries.add(BarEntry(4f, 1500f))
+      barEntries.add(BarEntry(5f, 600f))
+      barEntries.add(BarEntry(6f, 1200f))
 
       val barDataSet = BarDataSet(barEntries, "")
       barDataSet.color = Color.parseColor("#4477E6")

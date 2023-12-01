@@ -9,28 +9,36 @@ import java.time.temporal.TemporalAdjusters
 class CalendarUtil {
    companion object {
       var isItemClick = false
-      var selectedDate: LocalDate? = null
+      var selectedDate: LocalDate = LocalDate.now()
       var selectedDate1: LocalDate? = null
       var selectedDate2: LocalDate? = null
       var selectedDays: ArrayList<LocalDate> = ArrayList<LocalDate>()
       var deleteList: ArrayList<Int> = ArrayList<Int>()
 
-      fun dateTitle(date: LocalDate): String? {
+      fun calendarTitle(date: LocalDate): String? {
          val formatter = DateTimeFormatter.ofPattern("yyyy  MMMM")
          return date.format(formatter)
+      }
+
+      fun dateFormat(date: LocalDate?): String? {
+         val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
+         return date!!.format(formatter)
       }
 
       fun monthArray(date: LocalDate?): ArrayList<LocalDate?> {
          val days = ArrayList<LocalDate?>()
          val yearMonth = YearMonth.from(date)
          val daysInMonth = yearMonth.lengthOfMonth()
-         val firstOfMonth = selectedDate!!.withDayOfMonth(1)
+         val firstOfMonth = selectedDate.withDayOfMonth(1)
          var dayOfWeek = firstOfMonth.dayOfWeek.value
+
          if (dayOfWeek == 7) {
             dayOfWeek = 0
          }
+
          val lastDate = firstOfMonth.minusMonths(1)
          val lastOfMonth = lastDate.with(TemporalAdjusters.lastDayOfMonth())
+
          for (i in 1..42) {
             if (i <= dayOfWeek) {
                days.add(lastOfMonth.minusDays((dayOfWeek - i).toLong()))
@@ -38,9 +46,10 @@ class CalendarUtil {
                val num = i - (daysInMonth + dayOfWeek + 1)
                days.add(firstOfMonth.plusMonths(1).plusDays(num.toLong()))
             } else {
-               days.add(LocalDate.of(selectedDate!!.year, selectedDate!!.month, i - dayOfWeek))
+               days.add(LocalDate.of(selectedDate.year, selectedDate.month, i - dayOfWeek))
             }
          }
+
          return days
       }
 
@@ -56,13 +65,13 @@ class CalendarUtil {
       }
 
       private fun sundayForDate(current: LocalDate): LocalDate? {
-         var current = current
-         val oneWeekAgo = current.minusWeeks(1)
-         while (current.isAfter(oneWeekAgo)) {
-            if (current.dayOfWeek == DayOfWeek.SUNDAY) {
-               return current
+         var curr = current
+         val oneWeekAgo = curr.minusWeeks(1)
+         while (curr.isAfter(oneWeekAgo)) {
+            if (curr.dayOfWeek == DayOfWeek.SUNDAY) {
+               return curr
             }
-            current = current.minusDays(1)
+            curr = curr.minusDays(1)
          }
          return null
       }

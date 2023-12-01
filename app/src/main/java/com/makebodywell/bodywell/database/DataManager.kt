@@ -13,14 +13,16 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_DELETE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_ITEM
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_WATER
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.Text
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 
@@ -33,10 +35,10 @@ class DataManager(private var context: Context?) {
       return this
    }
 
-   fun getFood(timezone: String, date: String) : ArrayList<Food> {
+   fun getFood(type: String, date: String) : ArrayList<Food> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Food> = ArrayList()
-      val sql = "select * from $TABLE_FOOD where timezone = '$timezone' and regDate = '$date'"
+      val sql = "select * from $TABLE_FOOD where type = '$type' and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Food()
@@ -50,7 +52,7 @@ class DataManager(private var context: Context?) {
          data.fat= cursor.getDouble(7).toString()
          data.salt= cursor.getDouble(8).toString()
          data.sugar= cursor.getDouble(9).toString()
-         data.timezone = cursor.getString(10)
+         data.type = cursor.getString(10)
          data.regDate = cursor.getString(11)
          list.add(data)
       }
@@ -58,16 +60,16 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getFoodImage(timezone: String, date: String) : ArrayList<FoodImage> {
+   fun getImage(type: String, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
-      val list: ArrayList<FoodImage> = ArrayList()
-      val sql = "select * from $TABLE_FOOD_IMAGE where timezone = '$timezone' and regDate = '$date'"
+      val list: ArrayList<Image> = ArrayList()
+      val sql = "select * from $TABLE_IMAGE where type = '$type' and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         var data = FoodImage()
+         var data = Image()
          data.id=cursor.getInt(0)
          data.imageUri=cursor.getString(1)
-         data.timezone=cursor.getString(2)
+         data.type=cursor.getString(2)
          data.regDate = cursor.getString(3)
          list.add(data)
       }
@@ -249,6 +251,21 @@ class DataManager(private var context: Context?) {
       return list
    }
 
+   fun getNote(date: String) : Text {
+      val db = dbHelper!!.readableDatabase
+      val data = Text()
+      val sql = "select * from $TABLE_NOTE where regDate = '$date'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.int1 = cursor.getInt(0)
+         data.name1 = cursor.getString(1)
+         data.name2 = cursor.getString(2)
+         data.name3 = cursor.getString(3)
+      }
+      cursor.close()
+      return data
+   }
+
    fun getDailyData(date: String) : DailyData {
       val db = dbHelper!!.readableDatabase
       val data = DailyData()
@@ -279,18 +296,18 @@ class DataManager(private var context: Context?) {
       values.put("fat", data?.fat)
       values.put("salt", data?.salt)
       values.put("sugar", data?.sugar)
-      values.put("timezone", data?.timezone)
+      values.put("type", data?.type)
       values.put("regDate", data?.regDate)
       db!!.insert(TABLE_FOOD, null, values)
    }
 
-   fun insertFoodImage(data: FoodImage?) {
+   fun insertImage(data: Image?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("imageUri", data?.imageUri)
-      values.put("timezone", data?.timezone)
+      values.put("type", data?.type)
       values.put("regDate", data?.regDate)
-      db!!.insert(TABLE_FOOD_IMAGE, null, values)
+      db!!.insert(TABLE_IMAGE, null, values)
    }
 
    fun insertWater(data: Water) {
@@ -374,6 +391,15 @@ class DataManager(private var context: Context?) {
       values.put("time", time)
       values.put("dataId", dataId)
       db!!.insert(TABLE_DRUG_TIME, null, values)
+   }
+
+   fun insertNote(data: Text) {
+      val db = dbHelper!!.writableDatabase
+      val values = ContentValues()
+      values.put("title", data.name1)
+      values.put("content", data.name2)
+      values.put("regDate", data.name3)
+      db!!.insert(TABLE_NOTE, null, values)
    }
 
    fun insertDailyData(data: DailyData) {
@@ -461,6 +487,13 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
+   fun updateNote(data: Text){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $TABLE_NOTE set title='${data.name1}', content='${data.name2}' where regDate='${data.name3}'"
+      db.execSQL(sql)
+      db.close()
+   }
+
    fun deleteFood(id: Int): Boolean {
       val db = dbHelper!!.writableDatabase
       val success = db!!.delete("$TABLE_FOOD","id=$id",null)
@@ -468,9 +501,9 @@ class DataManager(private var context: Context?) {
       return (Integer.parseInt("$success") != -1)
    }
 
-   fun deleteFoodImage(id: Int): Boolean {
+   fun deleteImage(id: Int): Boolean {
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete("$TABLE_FOOD_IMAGE","id=$id",null)
+      val success = db!!.delete("$TABLE_IMAGE","id=$id",null)
       db.close()
       return (Integer.parseInt("$success") != -1)
    }

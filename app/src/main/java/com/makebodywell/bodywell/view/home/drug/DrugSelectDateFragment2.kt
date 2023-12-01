@@ -16,7 +16,7 @@ import com.makebodywell.bodywell.adapter.CalendarAdapter5
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugSelectDateBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateTitle
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDays
@@ -67,13 +67,13 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
         }
 
         binding.btnCalPrev.setOnClickListener {
-            selectedDate = selectedDate!!.minusMonths(1)
+            selectedDate = selectedDate.minusMonths(1)
             isItemClick = false
             setMonthView()
         }
 
         binding.btnCalNext.setOnClickListener {
-            selectedDate = selectedDate!!.plusMonths(1)
+            selectedDate = selectedDate.plusMonths(1)
             isItemClick = false
             setMonthView()
         }
@@ -90,8 +90,8 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
     }
 
     private fun setMonthView() {
-        binding.tvCalTitle.text = dateTitle(selectedDate!!)
-        val days = monthArray(selectedDate!!)
+        binding.tvCalTitle.text = calendarTitle(selectedDate)
+        val days = monthArray(selectedDate)
         val adapter = CalendarAdapter4(requireContext(), days, this)
         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
         binding.recyclerView1.layoutManager = layoutManager
@@ -101,7 +101,7 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
     }
 
     override fun onItemClick(position: Int, date: LocalDate?) {
-        selectedDate = date
+        selectedDate = date!!
         isItemClick = true
         setMonthView()
     }

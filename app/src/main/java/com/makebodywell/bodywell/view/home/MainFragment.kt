@@ -15,7 +15,6 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -59,12 +58,12 @@ class MainFragment : Fragment() {
 
    private fun initView() {
       binding.btnCalPrev.setOnClickListener {
-         selectedDate = selectedDate!!.minusWeeks(1)
+         selectedDate = selectedDate.minusWeeks(1)
          setWeekView()
       }
 
       binding.btnCalNext.setOnClickListener {
-         selectedDate = selectedDate!!.plusWeeks(1)
+         selectedDate = selectedDate.plusWeeks(1)
          setWeekView()
       }
 
@@ -97,9 +96,9 @@ class MainFragment : Fragment() {
       selectedDate = LocalDate.now()
       setWeekView()
 
-      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), binding.recyclerView, object : RecyclerItemClickListener.OnItemClickListener {
+      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : RecyclerItemClickListener.OnItemClickListener {
          override fun onItemClick(view: View, position: Int) {
-            selectedDate = days[position]
+            selectedDate = days[position]!!
             setWeekView()
          }
       }))
@@ -117,8 +116,8 @@ class MainFragment : Fragment() {
 
    @SuppressLint("ClickableViewAccessibility")
    private fun setWeekView() {
-      binding.tvCalTitle.text = CalendarUtil.dateTitle(selectedDate!!)
-      days = CalendarUtil.weekArray(selectedDate!!)
+      binding.tvCalTitle.text = CalendarUtil.calendarTitle(selectedDate)
+      days = CalendarUtil.weekArray(selectedDate)
       val adapter = CalendarAdapter1(days)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
@@ -143,10 +142,10 @@ class MainFragment : Fragment() {
             if (abs(diffX) > abs(diffY)) {
                if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
                   if (diffX > 0) {
-                     selectedDate = selectedDate!!.minusWeeks(1)
+                     selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
                   } else {
-                     selectedDate = selectedDate!!.plusWeeks(1)
+                     selectedDate = selectedDate.plusWeeks(1)
                      setWeekView()
                   }
                }
@@ -171,8 +170,7 @@ class MainFragment : Fragment() {
       override fun onLongPress(p0: MotionEvent) {}
    }
 
-   class RecyclerItemClickListener(context: Context, recyclerView: RecyclerView, private val listener: OnItemClickListener?)
-      : RecyclerView.OnItemTouchListener {
+   class RecyclerItemClickListener(context: Context, private val listener: OnItemClickListener?) : RecyclerView.OnItemTouchListener {
       private val mGestureDetector: GestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
          override fun onSingleTapUp(e: MotionEvent): Boolean {
             return true
@@ -191,7 +189,6 @@ class MainFragment : Fragment() {
             } catch (e: Exception) {
                e.printStackTrace()
             }
-
             return true
          }
          return false

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,16 +22,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
-import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
+import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodSnackBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions3
+import com.makebodywell.bodywell.view.home.GalleryFragment
 import kotlin.math.abs
 
 class FoodSnackFragment : Fragment() {
@@ -42,11 +41,12 @@ class FoodSnackFragment : Fragment() {
     private lateinit var callback: OnBackPressedCallback
 
     private var bundle = Bundle()
+
     private var calendarDate = ""
 
     private var dataManager: DataManager? = null
 
-    private var photoAdapter: PhotoSlideAdapter? = null
+    private var photoAdapter: PhotoViewAdapter? = null
     private var foodRecordAdapter: FoodIntakeAdapter? = null
     private var foodFrequentlyAdapter: FoodRecord1Adapter? = null
 
@@ -74,7 +74,7 @@ class FoodSnackFragment : Fragment() {
     private fun initView() {
         calendarDate = arguments?.getString("calendarDate").toString()
         bundle.putString("calendarDate", calendarDate)
-        bundle.putString("timezone", "간식")
+        bundle.putString("type", "snack")
 
         binding.clBack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodFragment())
@@ -94,9 +94,8 @@ class FoodSnackFragment : Fragment() {
 
         binding.clGallery.setOnClickListener {
             val result = requestPermission()
-            Log.d(CustomUtil.TAG, "result: $result")
             if(result) {
-                replaceFragment2(requireActivity(), FoodGalleryFragment(), bundle)
+                replaceFragment2(requireActivity(), GalleryFragment(), bundle)
             }
         }
 
@@ -132,13 +131,13 @@ class FoodSnackFragment : Fragment() {
     private fun setupPhotoView() {
         val imageList: ArrayList<Uri> = ArrayList()
 
-        val getFoodImage = dataManager!!.getFoodImage("간식", calendarDate)
+        val getFoodImage = dataManager!!.getImage("snack", calendarDate)
         for(i in 0 until getFoodImage.size) {
             imageList.add(Uri.parse(getFoodImage[i].imageUri))
         }
 
         if(getFoodImage.size > 0) {
-            photoAdapter = PhotoSlideAdapter(getFoodImage)
+            photoAdapter = PhotoViewAdapter(getFoodImage)
 
             binding.viewPager.adapter = photoAdapter
             binding.viewPager.offscreenPageLimit = 5
@@ -196,7 +195,7 @@ class FoodSnackFragment : Fragment() {
     }
 
     private fun setupList() {
-        dataList = dataManager!!.getFood("간식", calendarDate)
+        dataList = dataManager!!.getFood("snack", calendarDate)
 
         if(dataList.size != 0) {
             binding.clList.visibility = View.VISIBLE
@@ -207,7 +206,7 @@ class FoodSnackFragment : Fragment() {
                     kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
             }
 
-            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, "점심")
+            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, "snack")
             binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView1.adapter = foodRecordAdapter
 

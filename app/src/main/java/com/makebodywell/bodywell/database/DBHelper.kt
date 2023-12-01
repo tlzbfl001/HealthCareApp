@@ -9,7 +9,6 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val DATABASE_NAME = "app.db"
       const val DATABASE_VERSION = 2
       const val TABLE_FOOD = "food"
-      const val TABLE_FOOD_IMAGE = "foodImage"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
       const val TABLE_EXERCISE_CATEGORY = "exerciseCategory"
@@ -20,16 +19,15 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_DRUG = "drug"
       const val TABLE_DRUG_DATE = "drugDate"
       const val TABLE_DRUG_TIME = "drugTime"
+      const val TABLE_NOTE = "note"
       const val TABLE_DAILY_DATA = "dailyData"
+      const val TABLE_IMAGE = "image"
    }
 
    override fun onCreate(db: SQLiteDatabase) {
-      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, name text, unit text, amount integer, " +
-         "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, timezone text, regDate text);"
+      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, name text, unit text, amount integer, kcal integer, carbohydrate real, protein real, " +
+         "fat real, salt real, sugar real, type text, regDate text);"
       db.execSQL(food)
-
-      val foodImage = "create table $TABLE_FOOD_IMAGE(id integer primary key autoincrement, imageUri text, timezone text, regDate text);"
-      db.execSQL(foodImage)
 
       val water = "create table $TABLE_WATER(id integer primary key autoincrement, water integer, volume integer, regDate text);"
       db.execSQL(water)
@@ -63,14 +61,19 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, time text, checked integer, dataId integer);"
       db.execSQL(drugTime)
 
+      val note = "create table $TABLE_NOTE(id integer primary key autoincrement, title text, content integer, regDate text);"
+      db.execSQL(note)
+
       val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, foodGoal integer, waterGoal integer, " +
-         "exerciseGoal integer, bodyGoal integer, sleepGoal integer, drugGoal integer, regDate text);"
+              "exerciseGoal integer, bodyGoal integer, sleepGoal integer, drugGoal integer, regDate text);"
       db.execSQL(dailyData)
+
+      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, imageUri text, type text, regDate text);"
+      db.execSQL(image)
    }
 
    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
       db.execSQL("drop table if exists $TABLE_FOOD")
-      db.execSQL("drop table if exists $TABLE_FOOD_IMAGE")
       db.execSQL("drop table if exists $TABLE_WATER")
       db.execSQL("drop table if exists $TABLE_EXERCISE")
       db.execSQL("drop table if exists $TABLE_EXERCISE_CATEGORY")
@@ -82,6 +85,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $TABLE_DRUG_DATE")
       db.execSQL("drop table if exists $TABLE_DRUG_TIME")
       db.execSQL("drop table if exists $TABLE_DAILY_DATA")
+      db.execSQL("drop table if exists $TABLE_IMAGE")
       onCreate(db)
    }
 }
