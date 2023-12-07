@@ -13,13 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
-import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
+import com.makebodywell.bodywell.view.home.food.CalendarDialog
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
@@ -29,8 +32,6 @@ import kotlin.math.abs
 class MainFragment : Fragment() {
    private var _binding: FragmentMainBinding? = null
    private val binding get() = _binding!!
-
-   private var calendarDate = LocalDate.now()
 
    private var dataManager: DataManager? = null
 
@@ -49,9 +50,6 @@ class MainFragment : Fragment() {
 
       // 달력 설정
       setupCalendar()
-
-      // 차트 값 지정
-      setupChart(calendarDate.toString())
 
       return binding.root
    }
@@ -116,8 +114,8 @@ class MainFragment : Fragment() {
 
    @SuppressLint("ClickableViewAccessibility")
    private fun setWeekView() {
-      binding.tvCalTitle.text = CalendarUtil.calendarTitle(selectedDate)
-      days = CalendarUtil.weekArray(selectedDate)
+      binding.tvCalTitle.text = calendarTitle(selectedDate)
+      days = weekArray(selectedDate)
       val adapter = CalendarAdapter1(days)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
@@ -128,6 +126,9 @@ class MainFragment : Fragment() {
       binding.recyclerView.setOnTouchListener { _, event ->
          return@setOnTouchListener gestureDetector.onTouchEvent(event)
       }
+
+      // 차트 값 지정
+      setupChart()
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -198,16 +199,43 @@ class MainFragment : Fragment() {
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
    }
 
-   private fun setupChart(date: String) {
-      val getDailyData = dataManager!!.getDailyData(date)
-      val sum = getFoodIntake(requireActivity(), date)
-      if (getDailyData.foodGoal > 0 && sum > 0) {
+   private fun setupChart() {
+      // 프로그래스바 초기화
+      binding.pbFood.progress = 0
+      binding.pbWater.progress = 0
+      binding.pbExercise.progress = 0
+
+      // 프로그래스바 설정
+      val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+
+      val foodSum = getFoodIntake(requireActivity(), selectedDate.toString())
+      if (getDailyData.foodGoal > 0 && foodSum > 0) {
          binding.pbFood.max = getDailyData.foodGoal
-         binding.pbFood.progress = sum
-      }else if(getDailyData.foodGoal == 0 && sum > 0) {
-         binding.pbFood.max = sum
-         binding.pbFood.progress = sum
+         binding.pbFood.progress = foodSum
+      }else if(getDailyData.foodGoal == 0 && foodSum > 0) {
+         binding.pbFood.max = foodSum
+         binding.pbFood.progress = foodSum
       }
-      binding.tvFood.text = "$sum/${getDailyData.foodGoal} kcal"
+      binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
+
+      val getWater = dataManager!!.getWater(selectedDate.toString())
+      if (getDailyData.waterGoal > 0 && getWater.water > 0) {
+         binding.pbWater.max = getDailyData.waterGoal
+         binding.pbWater.progress = getWater.water
+      }else if(getDailyData.foodGoal == 0 && getWater.water > 0) {
+         binding.pbWater.max = getWater.water
+         binding.pbWater.progress = getWater.water
+      }
+      binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
+
+      val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
+      if (getDailyData.exerciseGoal > 0 && exerciseSum > 0) {
+         binding.pbExercise.max = getDailyData.exerciseGoal
+         binding.pbExercise.progress = exerciseSum
+      }else if(getDailyData.exerciseGoal == 0 && exerciseSum > 0) {
+         binding.pbExercise.max = exerciseSum
+         binding.pbExercise.progress = exerciseSum
+      }
+      binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
    }
 }

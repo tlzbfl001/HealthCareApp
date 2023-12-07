@@ -31,7 +31,6 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions3
-import com.makebodywell.bodywell.view.home.GalleryFragment
 import kotlin.math.abs
 
 class FoodSnackFragment : Fragment() {

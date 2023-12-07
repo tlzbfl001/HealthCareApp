@@ -29,7 +29,6 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil
-import com.makebodywell.bodywell.view.home.GalleryFragment
 import kotlin.math.abs
 
 class FoodLunchFragment : Fragment() {

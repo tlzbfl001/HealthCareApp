@@ -15,21 +15,25 @@ class CustomUtil {
       const val TAG = "testTag"
 
       fun replaceInputFragment(activity: FragmentActivity, fragment: Fragment?) {
-         val fragmentManager = (activity as InputActivity).supportFragmentManager
-         val fragmentTransaction = fragmentManager.beginTransaction()
-         fragmentTransaction.replace(R.id.inputFrame, fragment!!).commit()
+         (activity as InputActivity).supportFragmentManager.beginTransaction().apply {
+            replace(R.id.inputFrame, fragment!!)
+            commit()
+         }
       }
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
-         val transaction = (activity as MainActivity).supportFragmentManager.beginTransaction()
-         transaction.replace(R.id.mainFrame, fragment!!).commit()
+         (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            replace(R.id.mainFrame, fragment!!)
+            commit()
+         }
       }
 
       fun replaceFragment2(activity: Activity, fragment: Fragment?, bundle: Bundle?) {
-         val transaction = (activity as MainActivity).supportFragmentManager.beginTransaction()
-         fragment?.arguments = bundle
-         transaction.add(R.id.mainFrame, fragment!!)
-         transaction.commit()
+         (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            fragment?.arguments = bundle
+            add(R.id.mainFrame, fragment!!)
+            commit()
+         }
       }
 
       fun getFoodIntake(context: Context, date:String) : Int {
@@ -37,10 +41,10 @@ class CustomUtil {
          dataManager.open()
 
          var sum = 0
-         val getBreakfast = dataManager.getFood("아침", date)
-         val getLunch = dataManager.getFood("점심", date)
-         val getDinner = dataManager.getFood("저녁", date)
-         val getSnack = dataManager.getFood("간식", date)
+         val getBreakfast = dataManager.getFood("breakfast", date)
+         val getLunch = dataManager.getFood("lunch", date)
+         val getDinner = dataManager.getFood("dinner", date)
+         val getSnack = dataManager.getFood("snack", date)
 
          if(getBreakfast.size > 0) {
             for(i in 0 until getBreakfast.size) {

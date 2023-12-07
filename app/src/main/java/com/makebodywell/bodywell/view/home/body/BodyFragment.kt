@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
@@ -39,7 +40,7 @@ class BodyFragment : Fragment() {
    private var calendarDate = LocalDate.now()
 
    private var dataManager: DataManager? = null
-
+   private var getDailyData = DailyData()
    private var getBody = Body()
 
    private var isExpend = false
@@ -54,7 +55,7 @@ class BodyFragment : Fragment() {
       dataManager!!.open()
 
       initView()
-      setupGoal(calendarDate.toString())
+      setupGoal()
       dailyView()
 
       return binding.root
@@ -63,20 +64,51 @@ class BodyFragment : Fragment() {
    private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+      tvUnit.text = "kg"
+      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }else {
+               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }
+
+            binding.pbBody.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kg"
+            binding.tvRemain.text = "${et.text.toString().toInt() - getBody.weight.toString().toDouble().roundToInt()} kg"
+         }
+
+         dialog.dismiss()
+      }
+
+      binding.cvGoal.setOnClickListener {
+         dialog.show()
+      }
+
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.tvPrev.setOnClickListener {
+      binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
+         setupGoal()
       }
 
-      binding.tvNext.setOnClickListener {
+      binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
+         setupGoal()
       }
 
       binding.cvFood.setOnClickListener {
@@ -148,50 +180,25 @@ class BodyFragment : Fragment() {
       }
    }
 
-   private fun setupGoal(date: String) {
+   private fun setupGoal() {
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      val getDailyData = dataManager!!.getDailyData(date)
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       val goal = getDailyData.bodyGoal
       if(goal != 0) {
          binding.pbBody.max = goal
          binding.tvGoal.text = "$goal kg"
       }
 
-      getBody = dataManager!!.getBody(date)
-      if(getBody.weight != 0.0) {
+      getBody = dataManager!!.getBody(calendarDate.toString())
+      if(getBody.weight > 0) {
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
-         binding.tvWeight.text = getBody.weight.toString() + "kg"
+         binding.tvWeight.text = "${getBody.weight} kg"
          val remain = getBody.weight.toString().toDouble() - goal
          if(remain > 0) {
             binding.tvRemain.text = "$remain kg"
          }
-      }
-
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val et = dialog.findViewById<EditText>(R.id.et)
-      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      tvUnit.text = "kg"
-      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() != "") {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }else {
-               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }
-            binding.tvGoal.text = "${et.text} kg"
-         }
-         dialog.dismiss()
-      }
-
-      binding.cvGoal.setOnClickListener {
-         dialog.show()
       }
    }
 

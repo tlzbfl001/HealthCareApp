@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.adapter
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +9,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.view.home.food.CalendarDialog
 import java.time.LocalDate
 
 class CalendarAdapter2 (
+    private val context: Context,
     private val days: ArrayList<LocalDate?>,
     private val onItemListener: OnItemListener
 ) : RecyclerView.Adapter<CalendarAdapter2.ViewHolder>() {
@@ -21,6 +24,8 @@ class CalendarAdapter2 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val dialog = CalendarDialog(context)
+
         val date = days[position]
 
         if (date == null) {
@@ -29,7 +34,7 @@ class CalendarAdapter2 (
             holder.tvDate.text = date.dayOfMonth.toString()
             if (date == selectedDate) {
                 holder.tvDate.setBackgroundResource(R.drawable.oval_cal_select1)
-                holder.tvDate.setTextColor(Color.WHITE )
+                holder.tvDate.setTextColor(Color.WHITE)
             }
         }
 

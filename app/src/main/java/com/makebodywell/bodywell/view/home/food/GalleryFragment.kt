@@ -1,4 +1,4 @@
-package com.makebodywell.bodywell.view.home
+package com.makebodywell.bodywell.view.home.food
 
 import android.app.Activity
 import android.content.ContentValues
@@ -20,10 +20,6 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentGalleryBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
-import com.makebodywell.bodywell.view.home.food.FoodDinnerFragment
-import com.makebodywell.bodywell.view.home.food.FoodLunchFragment
-import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
 import com.makebodywell.bodywell.view.note.NoteFragment
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat

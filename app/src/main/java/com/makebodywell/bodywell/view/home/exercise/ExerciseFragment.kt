@@ -41,8 +41,10 @@ class ExerciseFragment : Fragment() {
    private var calendarDate = LocalDate.now()
 
    private var dataManager: DataManager? = null
-
    private var adapter: ExerciseAdapter? = null
+   private var getDailyData = DailyData()
+
+   private var sum = 0
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +56,7 @@ class ExerciseFragment : Fragment() {
       dataManager!!.open()
 
       initView()
-      setupGoal(calendarDate.toString())
+      setupGoal()
       dailyView()
 
       return binding.root
@@ -63,21 +65,59 @@ class ExerciseFragment : Fragment() {
    private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
+      // 목표 설정
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
+      val et = dialog.findViewById<TextView>(R.id.et)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      tvTitle.text = "운동 / 목표 칼로리 입력"
+      btnSave.setCardBackgroundColor(Color.parseColor("#FFA511"))
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }else {
+               dataManager!!.updateExerciseGoal(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }
+
+            binding.pbExercise.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kcal"
+
+            val remain = et.text.toString().toInt() - sum
+            if(remain > 0) {
+               binding.tvRemain.text = "$remain kcal"
+            }else {
+               binding.tvRemain.text = "0 kcal"
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.cvGoal.setOnClickListener {
+         dialog.show()
+      }
+
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.tvPrev.setOnClickListener {
+      binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
+         setupGoal()
          dailyView()
       }
 
-      binding.tvNext.setOnClickListener {
+      binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
+         setupGoal()
          dailyView()
       }
 
@@ -106,77 +146,32 @@ class ExerciseFragment : Fragment() {
       }
    }
 
-   private fun setupGoal(date: String) {
+   private fun setupGoal() {
       // 텍스트 초기화
       binding.tvConsume.text = "0 kcal"
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      // 목표 칼로리 초기화
-      val getDailyData = dataManager!!.getDailyData(date)
-      val goal = getDailyData.exerciseGoal
-      if(goal != 0) {
-         binding.pbExercise.max = goal
-         binding.tvGoal.text = "$goal kcal"
+      // 목표 초기화
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      sum = getExerciseCalories(requireActivity(), calendarDate.toString())
+
+      if(getDailyData.exerciseGoal > 0 && sum > 0) {
+         binding.pbExercise.max = getDailyData.exerciseGoal
+         binding.pbExercise.progress = sum
+      }else if (getDailyData.exerciseGoal == 0 && sum > 0) {
+         binding.pbExercise.max = sum
+         binding.pbExercise.progress = sum
       }
 
-      // 소모 칼로리 초기화
-      val sum = getExerciseCalories(requireActivity(), date)
-      binding.pbExercise.progress = sum
+      binding.tvGoal.text = "${getDailyData.exerciseGoal} kcal"
       binding.tvConsume.text = "$sum kcal"
 
-      // 남은 칼로리 초기화
-      val remain = goal - sum
+      val remain = getDailyData.exerciseGoal - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {
          binding.tvRemain.text = "0 kcal"
-      }
-
-      // 목표 설정
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
-      val et = dialog.findViewById<TextView>(R.id.et)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      tvTitle.text = "운동 / 목표 칼로리 입력"
-      btnSave.setCardBackgroundColor(Color.parseColor("#FFA511"))
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               binding.tvGoal.text = "${et.text} kcal"
-
-               val remain = et.text.toString().toInt() - sum
-               if(remain > 0) {
-                  binding.tvRemain.text = "$remain kcal"
-               }else {
-                  binding.tvRemain.text = "0 kcal"
-               }
-
-               dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = date))
-            }else {
-               binding.tvGoal.text = "${et.text} kcal"
-
-               val remain = et.text.toString().toInt() - sum
-               if(remain > 0) {
-                  binding.tvRemain.text = "$remain kcal"
-               }else {
-                  binding.tvRemain.text = "0 kcal"
-               }
-
-               dataManager!!.updateExerciseGoal(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = date))
-            }
-
-            dialog.dismiss()
-         }
-      }
-
-      binding.cvGoal.setOnClickListener {
-         dialog.show()
       }
    }
 

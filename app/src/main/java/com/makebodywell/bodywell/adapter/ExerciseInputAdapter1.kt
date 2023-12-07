@@ -7,17 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 
-class ExerciseCategoryAdapter (
+class ExerciseInputAdapter1 (
    private val context: Context,
    private val itemList: ArrayList<String>
-) : RecyclerView.Adapter<ExerciseCategoryAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ExerciseInputAdapter1.ViewHolder>() {
    private var itemClickListener : OnItemClickListener? = null
    private var selectPos = -1
-   var categorySelected = ""
+   var selected = ""
 
    interface OnItemClickListener {
       fun onClick(v: View, position: Int)
@@ -38,22 +37,20 @@ class ExerciseCategoryAdapter (
       if(selectPos == holder.adapterPosition) {
          holder.clBox.background = context.getDrawable(R.drawable.rec_5_purple)
          holder.tvName.setTextColor(Color.WHITE)
-         categorySelected = itemList[position]
       }else {
          holder.clBox.background = context.getDrawable(R.drawable.rec_5_border_gray)
          holder.tvName.setTextColor(Color.BLACK)
       }
 
-      holder.clBox.setOnClickListener {
-         val beforePos = selectPos
+      holder.itemView.setOnClickListener {
+         selected = itemList[position]
          selectPos = holder.adapterPosition
-
-         notifyItemChanged(beforePos)
-         notifyItemChanged(selectPos)
+         notifyDataSetChanged()
       }
 
       holder.clDelete.setOnClickListener {
          itemClickListener?.onClick(it, holder.adapterPosition)
+         notifyDataSetChanged()
       }
    }
 

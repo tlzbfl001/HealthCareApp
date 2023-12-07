@@ -2,6 +2,9 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +12,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
+import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
 class FoodRecord1Fragment : Fragment() {
@@ -22,13 +27,16 @@ class FoodRecord1Fragment : Fragment() {
 
    private var bundle = Bundle()
 
+   private var dataManager: DataManager? = null
+   private var adapter1 = FoodRecord1Adapter()
+   private var adapter2 = SearchAdapter()
+   private var dataList = ArrayList<Food>()
+   private val itemList = ArrayList<Food>()
+   private val searchList = ArrayList<String>()
+   private val originalList = ArrayList<String>()
+
    private var calendarDate = ""
    private var type = ""
-
-   private var dataManager: DataManager? = null
-   private var adapter: FoodRecord1Adapter? = null
-   private var dataList = ArrayList<Food>()
-   private var itemList = ArrayList<Food>()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +49,7 @@ class FoodRecord1Fragment : Fragment() {
 
       initView()
       setupList()
+      searchView()
 
       return binding.root
    }
@@ -59,9 +68,11 @@ class FoodRecord1Fragment : Fragment() {
             "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
          }
       }
+
       binding.tvBtn2.setOnClickListener {
          replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
       }
+
       binding.tvBtn3.setOnClickListener {
          replaceFragment2(requireActivity(), FoodInputFragment(), bundle)
       }
@@ -76,7 +87,7 @@ class FoodRecord1Fragment : Fragment() {
       }
 
       if(dataList.size != 0) {
-         binding.view.visibility = View.VISIBLE
+         binding.cv2.visibility = View.VISIBLE
 
          for (i in 0 until dataList.size) {
             itemList.add(Food(name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, kcal = dataList[i].kcal,
@@ -84,10 +95,49 @@ class FoodRecord1Fragment : Fragment() {
                sugar = dataList[i].sugar))
          }
 
-         adapter = FoodRecord1Adapter(itemList)
-         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.recyclerView.adapter = adapter
+         adapter1 = FoodRecord1Adapter(itemList)
+         binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         binding.recyclerView1.adapter = adapter1
       }
+   }
+
+   private fun searchView() {
+      val strings = arrayListOf<String>(
+         "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "가나", "한국", "가나다", "가다", "중국", "미국", "유럽"
+      )
+
+      for(i in 0 until strings.size) {
+         originalList.add(strings[i])
+      }
+
+      binding.etSearch.addTextChangedListener(object: TextWatcher{
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {
+            searchList.clear()
+            if(binding.etSearch.text.toString() == "") {
+               adapter2.clearItems()
+            }else {
+               // 검색 단어를 포함하는지 확인
+               for(i in 0 until strings.size) {
+                  if(originalList[i].lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+                     searchList.add(originalList[i])
+                  }
+                  adapter2.setItems(searchList)
+               }
+            }
+         }
+      })
+
+      adapter2 = SearchAdapter()
+      binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.recyclerView2.adapter = adapter2
+
+      adapter2.setItemClickListener(object: SearchAdapter.OnItemClickListener{
+         override fun onClick(v: View, position: Int) {
+            Log.d(TAG, "position: ${searchList[position]}")
+         }
+      })
    }
 
    override fun onAttach(context: Context) {

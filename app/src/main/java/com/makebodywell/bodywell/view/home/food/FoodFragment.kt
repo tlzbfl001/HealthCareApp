@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,8 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Text
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -50,11 +53,13 @@ class FoodFragment : Fragment() {
 
    private var bundle = Bundle()
 
-   private var calendarDate = LocalDate.now()
+   private var calendarDate: LocalDate? = null
 
    private var dataManager: DataManager? = null
    private var adapter: PhotoViewAdapter? = null
    private var imageList: ArrayList<Image> = ArrayList()
+   private var getDailyData = DailyData()
+   private var sum = 0
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -66,31 +71,66 @@ class FoodFragment : Fragment() {
       dataManager!!.open()
 
       initView()
-      setupGoal(calendarDate.toString())
-      dailyView(calendarDate.toString())
+      setupGoal()
+      dailyView()
 
       return binding.root
    }
 
    private fun initView() {
+      calendarDate = LocalDate.now()
       binding.tvDate.text = dateFormat(calendarDate)
+
+      // 목표 설정
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }else {
+               dataManager!!.updateFoodGoal(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }
+
+            binding.pbFood.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kcal"
+            val remain = et.text.toString().toInt() - sum
+            if(remain > 0) {
+               binding.tvRemain.text = "$remain kcal"
+            }else {
+               binding.tvRemain.text = "0 kcal"
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.cvGoal.setOnClickListener {
+         dialog.show()
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.tvPrev.setOnClickListener {
+      binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
-         dailyView(calendarDate.toString())
+         setupGoal()
+         dailyView()
       }
 
-      binding.tvNext.setOnClickListener {
+      binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
-         dailyView(calendarDate.toString())
+         setupGoal()
+         dailyView()
       }
 
       binding.cvWater.setOnClickListener {
@@ -119,79 +159,39 @@ class FoodFragment : Fragment() {
       }
    }
 
-   private fun setupGoal(date: String) {
+   private fun setupGoal() {
       // 텍스트 초기화
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      // 목표칼로리 초기화
-      val getDailyData = dataManager!!.getDailyData(date)
-      val goal = getDailyData.foodGoal
-      if(goal != 0) {
-         binding.pbFood.max = goal
-         binding.tvGoal.text = "$goal kcal"
+      // 목표 초기화
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      sum = getFoodIntake(requireActivity(), calendarDate.toString())
+
+      if(getDailyData.foodGoal > 0 && sum > 0) {
+         binding.pbFood.max = getDailyData.foodGoal
+         binding.pbFood.progress = sum
+      }else if (getDailyData.foodGoal == 0 && sum > 0) {
+         binding.pbFood.max = sum
+         binding.pbFood.progress = sum
       }
 
-      // 섭취칼로리 초기화
-      val sum = getFoodIntake(requireActivity(), date)
-      binding.pbFood.progress = sum
+      binding.tvGoal.text = "${getDailyData.foodGoal} kcal"
       binding.tvIntake.text = "$sum kcal"
 
-      // 남은칼로리 초기화
-      val remain = goal - sum
+      val remain = getDailyData.foodGoal  - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {
          binding.tvRemain.text = "0 kcal"
       }
-
-      // 목표 설정
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val et = dialog.findViewById<EditText>(R.id.et)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = date))
-               binding.tvGoal.text = et.text.toString()
-
-               val remain = et.text.toString().toInt() - sum
-               if(remain > 0) {
-                  binding.tvRemain.text = "$remain kcal"
-               }else {
-                  binding.tvRemain.text = "0 kcal"
-               }
-            }else {
-               dataManager!!.updateFoodGoal(DailyData(foodGoal = et.text.toString().toInt(), regDate = date))
-               binding.tvGoal.text = et.text.toString()
-
-               val remain = et.text.toString().toInt() - sum
-               if(remain > 0) {
-                  binding.tvRemain.text = "$remain kcal"
-               }else {
-                  binding.tvRemain.text = "0 kcal"
-               }
-            }
-
-            dialog.dismiss()
-         }
-      }
-
-      binding.cvGoal.setOnClickListener {
-         dialog.show()
-      }
    }
 
-   private fun dailyView(date: String) {
-      val getFood = dataManager!!.getFood("breakfast", date)
+   private fun dailyView() {
+      val getFood = dataManager!!.getFood("breakfast", calendarDate.toString())
 
       // 이미지뷰 설정
-      setupPhotoList("breakfast", date)
+      setupPhotoList("breakfast", calendarDate.toString())
 
       // 텍스트리스트 설정
       setupTextList(getFood)
@@ -214,7 +214,7 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("breakfast", date)
+         setupPhotoList("breakfast", calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -234,8 +234,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("lunch", date)
-         val getFood = dataManager!!.getFood("lunch", date)
+         setupPhotoList("lunch", calendarDate.toString())
+         val getFood = dataManager!!.getFood("lunch", calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -255,8 +255,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("dinner", date)
-         val getFood = dataManager!!.getFood("dinner", date)
+         setupPhotoList("dinner", calendarDate.toString())
+         val getFood = dataManager!!.getFood("dinner", calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -276,8 +276,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn3Title.setTextColor(Color.BLACK)
          binding.tvBtn3Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("snack", date)
-         val getFood = dataManager!!.getFood("snack", date)
+         setupPhotoList("snack", calendarDate.toString())
+         val getFood = dataManager!!.getFood("snack", calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }

@@ -70,7 +70,7 @@ class InputTermsFragment : Fragment() {
          if(extrasData.getString("kakaoIdToken") != null) {
             UserApiClient.instance.me { user, error ->
                if(error != null) {
-                  Log.e(TAG, "kakaoLoginErr: $error")
+                  Log.e(TAG, "$error")
                }else if(user != null) {
                   Log.d(TAG, "user: ${user.kakaoAccount.toString()}")
                   kakaoIdToken = extrasData.getString("kakaoIdToken")!!
@@ -78,6 +78,7 @@ class InputTermsFragment : Fragment() {
                }
             }
          }
+
          // 네이버 로그인
          if(extrasData.getString("naverAccessToken") != null) {
             Log.d(TAG, "naverAccessToken: ${extrasData.getString("naverAccessToken")}")
@@ -89,15 +90,16 @@ class InputTermsFragment : Fragment() {
             Log.d(TAG, "naverBirthDay: ${extrasData.getString("naverBirthDay")}")
             Log.d(TAG, "naverProfileImage: ${extrasData.getString("naverProfileImage")}")
          }
+
          // 구글 로그인
          if(extrasData.getString("googleType") != null) {
             googleType = extrasData.getString("googleType").toString()
             googleName = extrasData.getString("googleName").toString()
             googleEmail = extrasData.getString("googleEmail").toString()
             googleIdToken = extrasData.getString("googleIdToken").toString()
-            Log.d(TAG, "googleIdToken: $googleIdToken")
          }
-         // 구글 로그인
+
+         // 애플 로그인
          if(extrasData.getString("appleIdToken") != null) {
             appleIdToken = extrasData.getString("appleIdToken").toString()
             Log.d(TAG, "appleIdToken: $appleIdToken")

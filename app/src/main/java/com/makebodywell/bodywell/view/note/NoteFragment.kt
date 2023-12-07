@@ -20,10 +20,12 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.GalleryFragment
 import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.view.home.food.GalleryFragment
+import com.makebodywell.bodywell.view.init.InputBodyFragment
 import java.time.LocalDate
 import kotlin.math.abs
 

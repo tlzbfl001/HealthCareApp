@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
          if(error != null) {
             Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
-            Log.e(TAG, "error: $error")
+            Log.e(TAG, "$error")
          }else if(token != null) {
             // 화면 이동
             val intent = Intent(this@LoginActivity, InputActivity::class.java)
@@ -65,14 +65,13 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
          }
       }
+
       binding.clKakao.setOnClickListener {
          if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)){
             UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
          } else {
             UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
          }
-//         val intent = Intent(this@LoginActivity, InputActivity::class.java)
-//         startActivity(intent)
       }
 
       // 구글 로그인
@@ -81,28 +80,87 @@ class LoginActivity : AppCompatActivity() {
          .requestEmail()
          .build()
       googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions!!)
+
       binding.clGoogle.setOnClickListener {
          val signInIntent = googleSignInClient!!.signInIntent
          startActivityForResult(signInIntent, 1000)
-//         val intent = Intent(this@LoginActivity, InputActivity::class.java)
-//         startActivity(intent)
       }
 
       // 네이버 로그인
       binding.clNaver.setOnClickListener {
          naverLogin()
-//         val intent = Intent(this@LoginActivity, InputActivity::class.java)
-//         startActivity(intent)
       }
 
       // 애플 로그인
       binding.clApple.setOnClickListener {
          appleLogin()
-//         val intent = Intent(this@LoginActivity, InputActivity::class.java)
-//         startActivity(intent)
       }
    }
 
+   // 구글로그인 처리
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+      super.onActivityResult(requestCode, resultCode, data)
+      if (requestCode == 1000) {
+         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+         try {
+            task.getResult(ApiException::class.java)
+            googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
+
+            val googleName = googleSignInAccount!!.displayName
+            val googleEmail = googleSignInAccount!!.email
+            val googleIdToken = googleSignInAccount!!.idToken
+            val intent = Intent(this@LoginActivity, InputActivity::class.java)
+
+            intent.putExtra("googleType", "google")
+            intent.putExtra("googleName", googleName)
+            intent.putExtra("googleEmail", googleEmail)
+            intent.putExtra("googleIdToken", googleIdToken)
+
+            startActivity(intent)
+         } catch (e: ApiException) {
+            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+         }
+      }
+   }
+
+   // 네이버로그인 처리
+   private fun naverLogin() {
+      val oAuthLoginCallback = object : OAuthLoginCallback {
+         override fun onSuccess() {
+            NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
+               override fun onSuccess(result: NidProfileResponse) {
+                  val intent = Intent(this@LoginActivity, InputActivity::class.java)
+                  intent.putExtra("naverAccessToken", NaverIdLoginSDK.getAccessToken())
+                  intent.putExtra("naverEmail", result.profile?.email)
+                  intent.putExtra("naverName", result.profile?.name)
+                  intent.putExtra("naverNickname", result.profile?.nickname)
+                  intent.putExtra("naverGender", result.profile?.gender)
+                  intent.putExtra("naverBirthYear", result.profile?.birthYear)
+                  intent.putExtra("naverBirthDay", result.profile?.birthday)
+                  intent.putExtra("naverProfileImage", result.profile?.profileImage)
+                  startActivity(intent)
+               }
+               override fun onError(errorCode: Int, message: String) {
+                  Log.e(TAG, "$errorCode")
+               }
+               override fun onFailure(httpStatus: Int, message: String) {
+                  Log.e(TAG, "$message")
+               }
+            })
+         }
+         override fun onError(errorCode: Int, message: String) {
+            Log.e(TAG, "$message")
+         }
+         override fun onFailure(httpStatus: Int, message: String) {
+            Log.e(TAG, "$message")
+         }
+      }
+      NaverIdLoginSDK.initialize(this@LoginActivity, getString(R.string.naverClientId), getString(R.string.naverClientSecret), "Bodywell")
+      NaverIdLoginSDK.authenticate(this@LoginActivity, oAuthLoginCallback)
+   }
+
+   // 애플 로그인 처리
    private fun appleLogin() {
       webView = WebView(this)
 
@@ -166,66 +224,5 @@ class LoginActivity : AppCompatActivity() {
               + "&scope=$scope"
               + "&state=$state"
               + "&redirect_uri=$redirectUrl")
-   }
-
-   // 구글로그인 처리
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-      super.onActivityResult(requestCode, resultCode, data)
-      if (requestCode == 1000) {
-         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-         try {
-            task.getResult(ApiException::class.java)
-            googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
-            val googleName = googleSignInAccount!!.displayName
-            val googleEmail = googleSignInAccount!!.email
-            val googleIdToken = googleSignInAccount!!.idToken
-            val intent = Intent(this@LoginActivity, InputActivity::class.java)
-            intent.putExtra("googleType", "google")
-            intent.putExtra("googleName", googleName)
-            intent.putExtra("googleEmail", googleEmail)
-            intent.putExtra("googleIdToken", googleIdToken)
-            startActivity(intent)
-         } catch (e: ApiException) {
-            e.printStackTrace()
-            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
-         }
-      }
-   }
-
-   // 네이버로그인 처리
-   private fun naverLogin() {
-      val oAuthLoginCallback = object : OAuthLoginCallback {
-         override fun onSuccess() {
-            NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
-               override fun onSuccess(result: NidProfileResponse) {
-                  Log.d(TAG, "naverProfile: "+result.profile?.toString())
-                  val intent = Intent(this@LoginActivity, InputActivity::class.java)
-                  intent.putExtra("naverAccessToken", NaverIdLoginSDK.getAccessToken())
-                  intent.putExtra("naverEmail", result.profile?.email)
-                  intent.putExtra("naverName", result.profile?.name)
-                  intent.putExtra("naverNickname", result.profile?.nickname)
-                  intent.putExtra("naverGender", result.profile?.gender)
-                  intent.putExtra("naverBirthYear", result.profile?.birthYear)
-                  intent.putExtra("naverBirthDay", result.profile?.birthday)
-                  intent.putExtra("naverProfileImage", result.profile?.profileImage)
-                  startActivity(intent)
-               }
-               override fun onError(errorCode: Int, message: String) {
-                  Log.d(TAG, "naverLoginErr: $errorCode")
-               }
-               override fun onFailure(httpStatus: Int, message: String) {
-                  Log.d(TAG, "naverLoginErr: $message")
-               }
-            })
-         }
-         override fun onError(errorCode: Int, message: String) {
-            Log.d(TAG, "naverLoginErr: $message")
-         }
-         override fun onFailure(httpStatus: Int, message: String) {
-            Log.d(TAG, "naverLoginErr: $message")
-         }
-      }
-      NaverIdLoginSDK.initialize(this@LoginActivity, getString(R.string.naverClientId), getString(R.string.naverClientSecret), "Bodywell")
-      NaverIdLoginSDK.authenticate(this@LoginActivity, oAuthLoginCallback)
    }
 }

@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.init
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -38,11 +39,11 @@ class InputGoalFragment : Fragment() {
       }
 
       binding.tvSkip.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputSleepFragment())
+         startActivity(Intent(activity, StartActivity::class.java))
       }
 
       binding.cvContinue.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputSleepFragment())
+         startActivity(Intent(activity, StartActivity::class.java))
       }
 
       binding.etWeightGoal.addTextChangedListener(object : TextWatcher {

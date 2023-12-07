@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 2
+      const val DATABASE_VERSION = 1
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
@@ -84,6 +84,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $TABLE_DRUG")
       db.execSQL("drop table if exists $TABLE_DRUG_DATE")
       db.execSQL("drop table if exists $TABLE_DRUG_TIME")
+      db.execSQL("drop table if exists $TABLE_NOTE")
       db.execSQL("drop table if exists $TABLE_DAILY_DATA")
       db.execSQL("drop table if exists $TABLE_IMAGE")
       onCreate(db)

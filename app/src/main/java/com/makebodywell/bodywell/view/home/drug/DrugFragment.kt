@@ -69,14 +69,14 @@ class DrugFragment : Fragment() {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.tvPrev.setOnClickListener {
+      binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
          setupList(calendarDate.toString())
       }
 
-      binding.tvNext.setOnClickListener {
+      binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal(calendarDate.toString())
