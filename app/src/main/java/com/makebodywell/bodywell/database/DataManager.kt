@@ -15,6 +15,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_ITEM
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_WATER
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
@@ -23,6 +24,7 @@ import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 
@@ -33,6 +35,28 @@ class DataManager(private var context: Context?) {
    fun open(): DataManager {
       dbHelper = DBHelper(context)
       return this
+   }
+
+   fun getUser(type: String, email: String) : User {
+      val db = dbHelper!!.readableDatabase
+      val data = User()
+      val sql = "select * from $TABLE_USER where type = '$type' and email = '$email'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id=cursor.getInt(0)
+         data.type=cursor.getString(1)
+         data.idToken=cursor.getString(2)
+         data.accessToken = cursor.getString(3)
+         data.email = cursor.getString(4)
+         data.name = cursor.getString(5)
+         data.nickname = cursor.getString(6)
+         data.gender = cursor.getString(7)
+         data.birthYear = cursor.getString(8)
+         data.birthDay = cursor.getString(9)
+         data.profileImage = cursor.getString(10)
+      }
+      cursor.close()
+      return data
    }
 
    fun getFood(type: String, date: String) : ArrayList<Food> {
@@ -284,6 +308,23 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun insertUser(data: User) {
+      val db = dbHelper!!.writableDatabase
+      val values = ContentValues()
+      values.put("type", data.type)
+      values.put("idToken", data.idToken)
+      values.put("accessToken", data.accessToken)
+      values.put("email", data.email)
+      values.put("name", data.name)
+      values.put("nickname", data.nickname)
+      values.put("gender", data.gender)
+      values.put("birthYear", data.birthYear)
+      values.put("birthDay", data.birthDay)
+      values.put("profileImage", data.profileImage)
+      values.put("regDate", data.regDate)
+      db!!.insert(TABLE_USER, null, values)
+   }
+
    fun insertFood(data: Food?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
@@ -319,19 +360,19 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_WATER, null, values)
    }
 
-   fun insertExercise(data: Exercise?) {
+   fun insertExercise(data: Exercise) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
-      values.put("category", data?.category)
-      values.put("name", data?.name)
-      values.put("workoutTime", data?.workoutTime)
-      values.put("distance", data?.distance)
-      values.put("calories", data?.calories)
-      values.put("regDate", data?.regDate)
+      values.put("category", data.category)
+      values.put("name", data.name)
+      values.put("workoutTime", data.workoutTime)
+      values.put("distance", data.distance)
+      values.put("calories", data.calories)
+      values.put("regDate", data.regDate)
       db.insert(TABLE_EXERCISE, null, values)
    }
 
-   fun insertExerciseItem(type: String?, name: String?) {
+   fun insertExerciseItem(type: String, name: String) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("type", type)
@@ -340,7 +381,7 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun insertExerciseDelete(type: String?, name: String?) {
+   fun insertExerciseDelete(type: String, name: String) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("type", type)
@@ -515,7 +556,7 @@ class DataManager(private var context: Context?) {
       return (Integer.parseInt("$success") != -1)
    }
 
-   fun deleteExerciseItem(type: String?, name: String?): Boolean {
+   fun deleteExerciseItem(type: String, name: String?): Boolean {
       val db = dbHelper!!.writableDatabase
       val success = db!!.delete("$TABLE_EXERCISE_ITEM","type='$type' and name='$name'",null)
       db.close()

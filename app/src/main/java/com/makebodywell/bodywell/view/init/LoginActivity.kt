@@ -10,6 +10,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.apollographql.apollo3.ApolloClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
@@ -19,12 +21,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.makebodywell.bodywell.CreateUserGoogleMutation
+import com.makebodywell.bodywell.LoginUserGoogleMutation
+import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.type.CreateGoogleOauthInput
+import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
+import kotlinx.coroutines.launch
 import java.io.UnsupportedEncodingException
 import java.util.UUID
 
@@ -32,15 +43,17 @@ class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
    private val binding get() = _binding!!
 
-   private var googleSignInClient: GoogleSignInClient? = null
-   private var googleSignInOptions: GoogleSignInOptions? = null
-   private var googleSignInAccount: GoogleSignInAccount? = null
+   private var dataManager: DataManager? = null
+
+   private var gsc: GoogleSignInClient? = null
+   private var gso: GoogleSignInOptions? = null
+   private var gsa: GoogleSignInAccount? = null
 
    private lateinit var webView: WebView
    private val authEndpoint = "https://appleid.apple.com/auth/authorize"
    private val responseType = "code%20id_token"
    private val responseMode = "form_post"
-   private lateinit var clientId: String
+   private var clientId = ""
    private val scope = "name%20email"
    private val state = UUID.randomUUID().toString()
    private val redirectUrl = "https://api.bodywell.dev/auth/apple/redirect"
@@ -53,36 +66,27 @@ class LoginActivity : AppCompatActivity() {
       /*val keyHash = Utility.getKeyHash(this)
       Log.d(TAG, keyHash)*/
 
-      // 카카오 로그인
-      val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-         if(error != null) {
-            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
-            Log.e(TAG, "$error")
-         }else if(token != null) {
-            // 화면 이동
-            val intent = Intent(this@LoginActivity, InputActivity::class.java)
-            intent.putExtra("kakaoIdToken", token.idToken)
-            startActivity(intent)
-         }
-      }
+      dataManager = DataManager(this)
+      dataManager!!.open()
 
+      initView()
+   }
+
+   private fun initView() {
+      // 카카오 로그인
       binding.clKakao.setOnClickListener {
-         if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)){
-            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-         } else {
-            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-         }
+         kakaoLogin()
       }
 
       // 구글 로그인
-      googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-         .requestIdToken(getString(R.string.googleWebClientId))
-         .requestEmail()
-         .build()
-      googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions!!)
-
       binding.clGoogle.setOnClickListener {
-         val signInIntent = googleSignInClient!!.signInIntent
+         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.googleWebClientId))
+            .requestEmail()
+            .build()
+         gsc = GoogleSignIn.getClient(this, gso!!)
+
+         val signInIntent = gsc!!.signInIntent
          startActivityForResult(signInIntent, 1000)
       }
 
@@ -97,34 +101,104 @@ class LoginActivity : AppCompatActivity() {
       }
    }
 
-   // 구글로그인 처리
+   private fun kakaoLogin() {
+      val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+         if(error != null) {
+            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "로그인 실패 $error")
+         }else if (token != null) { // 로그인 성공
+            kakaoApollo(token)
+         }
+      }
+
+      // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+      if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+         UserApiClient.instance.loginWithKakaoTalk(this) { token, error -> // 카카오톡으로 로그인
+            if(error != null) { // 로그인 실패 부분
+               Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
+               Log.e(TAG, "로그인 실패 $error")
+
+               // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우, 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리
+               if(error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                  return@loginWithKakaoTalk
+               }else {
+                  // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                  UserApiClient.instance.loginWithKakaoAccount(this, callback = mCallback)
+               }
+            }else if(token != null) { // 로그인 성공
+               kakaoApollo(token)
+            }
+         }
+      }else {
+         UserApiClient.instance.loginWithKakaoAccount(this, callback = mCallback) // 카카오계정으로 로그인
+      }
+   }
+
+   private fun kakaoApollo(token: OAuthToken) {
+      UserApiClient.instance.me { user, error ->
+         Log.d(TAG, "idtoken: ${token.idToken}")
+         Log.d(TAG, "kakaoAccount: ${user?.kakaoAccount}")
+         
+         dataManager!!.insertUser(User(type = "kakao", idToken = token.idToken, email = user?.kakaoAccount?.email, name = user?.kakaoAccount?.name,
+            nickname = user?.kakaoAccount?.profile?.nickname, profileImage = user?.kakaoAccount?.profile?.profileImageUrl))
+
+         // 서버에 사용자 정보 저장
+         lifecycleScope.launch {
+            lifecycleScope.launch{
+               val response = apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
+                  idToken = gsa?.idToken.toString()
+               ))).execute()
+               Log.d(TAG, "CreateUserGoogle: ${response.data?.createUserGoogle}")
+            }
+         }
+      }
+      startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+   }
+
+   // 구글 로그인 처리
    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
       super.onActivityResult(requestCode, resultCode, data)
       if (requestCode == 1000) {
          val task = GoogleSignIn.getSignedInAccountFromIntent(data)
          try {
             task.getResult(ApiException::class.java)
-            googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this)
+            gsa = GoogleSignIn.getLastSignedInAccount(this)
 
-            val googleName = googleSignInAccount!!.displayName
-            val googleEmail = googleSignInAccount!!.email
-            val googleIdToken = googleSignInAccount!!.idToken
-            val intent = Intent(this@LoginActivity, InputActivity::class.java)
+            val getUser = dataManager!!.getUser("google", gsa?.email.toString())
 
-            intent.putExtra("googleType", "google")
-            intent.putExtra("googleName", googleName)
-            intent.putExtra("googleEmail", googleEmail)
-            intent.putExtra("googleIdToken", googleIdToken)
+            if(getUser.id == 0) { // 회원 가입
+               // 로컬 DB 에 사용자 정보 저장
+               dataManager!!.insertUser(User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName))
 
-            startActivity(intent)
-         } catch (e: ApiException) {
+               // 서버에 사용자 정보 저장
+               lifecycleScope.launch {
+                  lifecycleScope.launch{
+                     val response = apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
+                        idToken = gsa?.idToken.toString()
+                     ))).execute()
+                     Log.d(TAG, "CreateUserGoogle: ${response.data?.createUserGoogle}")
+                  }
+               }
+               startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+            }else { // 로그인
+               lifecycleScope.launch {
+                  lifecycleScope.launch{
+                     val response = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+                        idToken = gsa?.idToken.toString()
+                     ))).execute()
+                     Log.d(TAG, "LoginUserGoogle: ${response.data?.loginUserGoogle}")
+                  }
+               }
+               startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            }
+         }catch (e: ApiException) {
             Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
          }
       }
    }
 
-   // 네이버로그인 처리
+   // 네이버 로그인 처리
    private fun naverLogin() {
       val oAuthLoginCallback = object : OAuthLoginCallback {
          override fun onSuccess() {
@@ -224,5 +298,11 @@ class LoginActivity : AppCompatActivity() {
               + "&scope=$scope"
               + "&state=$state"
               + "&redirect_uri=$redirectUrl")
+   }
+
+   companion object {
+      val apolloClient = ApolloClient.Builder()
+         .serverUrl("https://api.bodywell.dev/graphql")
+         .build()
    }
 }

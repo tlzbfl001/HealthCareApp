@@ -78,6 +78,8 @@
       <activity android:name=".view.init.LoginActivity" />
       <activity android:name=".view.init.InitActivity" />
       <activity android:name=".view.init.MainActivity" />
+
+      <!-- 카카오 로그인, 인가코드를 받기 위한 액티비티 -->
       <activity
          android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
          android:exported="true">
@@ -90,7 +92,9 @@
                android:scheme="@string/nativeAppKey2" />
          </intent-filter>
       </activity>
+
       <service android:name=".util.BluetoothService" />
+
       <receiver
           android:name=".util.AlarmReceiver"
           android:exported="false">

@@ -7,7 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 1
+      const val DATABASE_VERSION = 4
+      const val TABLE_USER = "user"
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
@@ -25,6 +26,10 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onCreate(db: SQLiteDatabase) {
+      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, accessToken text, email text, name text, " +
+         "nickname text, gender text, birthYear text, birthDay text, profileImage text, regDate text);"
+      db.execSQL(user)
+
       val food = "create table $TABLE_FOOD(id integer primary key autoincrement, name text, unit text, amount integer, kcal integer, carbohydrate real, protein real, " +
          "fat real, salt real, sugar real, type text, regDate text);"
       db.execSQL(food)
@@ -73,6 +78,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+      db.execSQL("drop table if exists $TABLE_USER")
       db.execSQL("drop table if exists $TABLE_FOOD")
       db.execSQL("drop table if exists $TABLE_WATER")
       db.execSQL("drop table if exists $TABLE_EXERCISE")
