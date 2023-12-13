@@ -13,50 +13,56 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.Time
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.model.DrugDate
+import com.makebodywell.bodywell.model.DrugTime
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
     private var pendingIntent: PendingIntent? = null
+    private val channelId = "channel1"
+    private val channelName: CharSequence = "AlarmChannel"
 
     override fun onReceive(context: Context, intent: Intent) {
-        val startDate = intent.getStringExtra("startDate")
-        val endDate = intent.getStringExtra("endDate")
-        val time: ArrayList<Time> = intent.getParcelableArrayListExtra("time")!!
+        val id = intent.getStringExtra("id")
+        val time: ArrayList<DrugTime> = intent.getParcelableArrayListExtra("time")!!
         val message = intent.getStringExtra("message")
 
-        if (intent.getStringExtra("idDaily") != null) {
-            val idDaily = intent.getStringExtra("idDaily")
-            showAlarmNotification(context, idDaily!!.toInt(),  message)
-            setAlarmDaily(context, idDaily.toInt(), startDate!!, endDate!!, time, message!!)
+        if(intent.getParcelableArrayListExtra<DrugDate>("drugDate") == null) {
+            val startDate = intent.getStringExtra("startDate")
+            val endDate = intent.getStringExtra("endDate")
+            showAlarmNotification(context, id!!.toInt(), message)
+            setAlarm1(context, id.toInt(), startDate!!, endDate!!, time, message!!)
+        }else {
+            val drugDate: ArrayList<DrugDate> = intent.getParcelableArrayListExtra("drugDate")!!
+            showAlarmNotification(context, id!!.toInt(), message)
+            setAlarm2(context, id.toInt(), time, drugDate, message!!)
         }
     }
 
     private fun showAlarmNotification(context: Context, id: Int, message: String?) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.logo2)
             .setContentTitle("약복용")
             .setContentText(message)
             .setColor(ContextCompat.getColor(context, R.color.transparent))
 
-        val notificationChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
-        mBuilder.setChannelId(CHANNEL_ID)
+        val notificationChannel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+        mBuilder.setChannelId(channelId)
         notificationManager.createNotificationChannel(notificationChannel)
 
         val notification = mBuilder.build()
         notificationManager.notify(id, notification)
     }
 
-    fun setAlarmDaily(context: Context, id: Int, startDate: String, endDate: String, time: ArrayList<Time>, message: String) {
+    fun setAlarm1(context: Context, id: Int, startDate: String, endDate: String, time: ArrayList<DrugTime>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, AlarmReceiver::class.java)
-        intent.putExtra("idDaily", id.toString())
+        intent.putExtra("id", id.toString())
         intent.putExtra("startDate", startDate)
         intent.putExtra("endDate", endDate)
         intent.putExtra("time", time)
@@ -127,17 +133,45 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    fun cancelAlarm(context: Context, id: Int) {
+    fun setAlarm2(context: Context, id: Int, time: ArrayList<DrugTime>, drugDate: ArrayList<DrugDate>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, AlarmReceiver::class.java)
 
-        pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val intent = Intent(context, AlarmReceiver::class.java)
+        intent.putExtra("id", id.toString())
+        intent.putExtra("time", time)
+        intent.putExtra("drugDate", drugDate)
+        intent.putExtra("message", message)
+
+        pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE)
-        } else {
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        }else {
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE)
         }
 
-        alarmManager.cancel(pendingIntent)
+        val today = LocalDate.now()
+        for(i in 0 until drugDate.size) {
+            if(today >= LocalDate.parse(drugDate[i].date)) {
+                val cal = Calendar.getInstance()
+                val currentTime = System.currentTimeMillis()
+
+                for(j in 0 until time.size) {
+                    cal.set(Calendar.HOUR_OF_DAY, time[j].hour.toInt())
+                    cal.set(Calendar.MINUTE, time[j].minute.toInt())
+                    cal.set(Calendar.SECOND, 0)
+                    cal.set(Calendar.MILLISECOND, 0)
+                    val selectTime = cal.timeInMillis
+
+                    if(selectTime > currentTime) {
+                        try{
+                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent)
+                        }catch (e: SecurityException) {
+                            e.printStackTrace()
+                        }
+                        return
+                    }
+                }
+            }
+        }
     }
 
     fun isAlarmSet(context: Context?, id: Int): Boolean {
@@ -152,8 +186,16 @@ class AlarmReceiver : BroadcastReceiver() {
         return pendingIntent != null
     }
 
-    companion object {
-        private const val CHANNEL_ID = "channel1"
-        private val CHANNEL_NAME: CharSequence = "AlarmChannel"
+    fun cancelAlarm(context: Context, id: Int) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java)
+
+        pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE)
+        } else {
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        }
+
+        alarmManager.cancel(pendingIntent)
     }
 }

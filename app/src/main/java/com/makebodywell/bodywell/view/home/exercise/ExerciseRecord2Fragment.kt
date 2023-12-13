@@ -43,9 +43,11 @@ class ExerciseRecord2Fragment : Fragment() {
       binding.ivX.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseListFragment())
       }
+
       binding.cv1.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
+
       binding.cv3.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseInputFragment())
       }

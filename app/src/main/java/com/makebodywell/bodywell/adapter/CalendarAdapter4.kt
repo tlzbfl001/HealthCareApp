@@ -12,15 +12,15 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.deleteList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDays
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
 import com.makebodywell.bodywell.view.home.drug.DrugSelectDateFragment2
 import com.makebodywell.bodywell.view.init.MainActivity
 import java.time.LocalDate
 
 class CalendarAdapter4 (
     private val context: Context,
-    private val days: ArrayList<LocalDate?>,
-    private val onItemListener: OnItemListener
+    private val onItemListener: OnItemListener,
+    private val days: ArrayList<LocalDate?>
 ) : RecyclerView.Adapter<CalendarAdapter4.ViewHolder>() {
     private var isExistence = false
     private var isPrev = false
@@ -40,17 +40,23 @@ class CalendarAdapter4 (
             holder.tvDate.text = ""
         }else {
             holder.tvDate.text = date.dayOfMonth.toString()
+
+            if (!days.contains(null) && (date.month != days[6]!!.month)) {
+                holder.tvDate.setTextColor(Color.LTGRAY)
+            }
+
             if(isItemClick && date == selectedDate) {
-                for(i in 0 until selectedDays.size) {
-                    if(selectedDate == selectedDays[i]) {
+                for(i in 0 until drugDateList.size) {
+                    if(selectedDate == drugDateList[i]) {
                         deleteList.add(i)
                         isExistence = true
                     }
                 }
 
+                // 날짜 두번 클릭 시 삭제
                 if(deleteList.size > 0) {
                     for(i in 0 until deleteList.size) {
-                        selectedDays.removeAt(deleteList[i])
+                        drugDateList.removeAt(deleteList[i])
                     }
                     deleteList.clear()
                 }
@@ -58,8 +64,8 @@ class CalendarAdapter4 (
                 if(isExistence) {
                     isExistence = false
                 }else {
-                    for(i in 0 until selectedDays.size) {
-                        if(date < selectedDays[i]) {
+                    for(i in 0 until drugDateList.size) {
+                        if(date < drugDateList[i]) {
                             Toast.makeText(context, "순서대로 입력해주세요.", Toast.LENGTH_SHORT).show()
                             isPrev=true
                             return
@@ -69,30 +75,26 @@ class CalendarAdapter4 (
                     if(isPrev) {
                         isPrev = false
                     }else {
-                        selectedDays.add(date)
+                        drugDateList.add(date)
                     }
                 }
             }
 
-            if(selectedDays.size > 0) {
-                for(i in 0 until selectedDays.size) {
-                    if(date == selectedDays[i]) {
+            if(drugDateList.size > 0) {
+                for(i in 0 until drugDateList.size) {
+                    if(date == drugDateList[i]) {
                         holder.tvDate.setBackgroundResource(R.drawable.oval_cal_select2)
                     }
                 }
             }
 
-            if(selectedDays.size == 0) {
+            if(drugDateList.size == 0) {
                 fragment.binding.tvStart.text = ""
-            }else if(selectedDays.size == 1) {
+            }else if(drugDateList.size == 1) {
                 fragment.binding.tvEnd.text = ""
-                fragment.binding.tvStart.text = selectedDays[0].toString()
+                fragment.binding.tvStart.text = drugDateList[0].toString()
             }else {
-                fragment.binding.tvEnd.text = selectedDays[selectedDays.size-1].toString()
-            }
-
-            if (!days.contains(null) && (date.month != days[6]!!.month)) {
-                holder.tvDate.setTextColor(Color.LTGRAY)
+                fragment.binding.tvEnd.text = drugDateList[drugDateList.size-1].toString()
             }
         }
     }

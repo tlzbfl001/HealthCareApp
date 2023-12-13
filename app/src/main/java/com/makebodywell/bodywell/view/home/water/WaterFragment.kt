@@ -174,6 +174,7 @@ class WaterFragment : Fragment() {
       goal = getDailyData.waterGoal
       volume = getWater.volume
       count = 0
+
       binding.pbWater.max = -1
       binding.pbWater.progress = 0
       binding.tvIntake.text = "0잔/0ml"

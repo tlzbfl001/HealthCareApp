@@ -18,9 +18,9 @@ class FoodTextAdapter (
    }
 
    override fun onBindViewHolder(holder: FoodTextAdapter.ViewHolder, position: Int) {
-      holder.tvName1.text = itemList[position].name1
-      holder.tvName2.text = itemList[position].name2
-      holder.tvName3.text = itemList[position].name3
+      holder.tvName1.text = itemList[position].string1
+      holder.tvName2.text = itemList[position].string2
+      holder.tvName3.text = itemList[position].string3
 
       if(itemList[position].int1 != 0) {
          val text = "${itemList[position].int1} kcal"

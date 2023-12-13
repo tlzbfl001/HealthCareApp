@@ -54,6 +54,7 @@ class DataManager(private var context: Context?) {
          data.birthYear = cursor.getString(8)
          data.birthDay = cursor.getString(9)
          data.profileImage = cursor.getString(10)
+         data.regDate = cursor.getString(11)
       }
       cursor.close()
       return data
@@ -282,9 +283,9 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.int1 = cursor.getInt(0)
-         data.name1 = cursor.getString(1)
-         data.name2 = cursor.getString(2)
-         data.name3 = cursor.getString(3)
+         data.string1 = cursor.getString(1)
+         data.string2 = cursor.getString(2)
+         data.string3 = cursor.getString(3)
       }
       cursor.close()
       return data
@@ -437,9 +438,9 @@ class DataManager(private var context: Context?) {
    fun insertNote(data: Text) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
-      values.put("title", data.name1)
-      values.put("content", data.name2)
-      values.put("regDate", data.name3)
+      values.put("title", data.string1)
+      values.put("content", data.string2)
+      values.put("regDate", data.string3)
       db!!.insert(TABLE_NOTE, null, values)
    }
 
@@ -530,7 +531,7 @@ class DataManager(private var context: Context?) {
 
    fun updateNote(data: Text){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_NOTE set title='${data.name1}', content='${data.name2}' where regDate='${data.name3}'"
+      val sql = "update $TABLE_NOTE set title='${data.string1}', content='${data.string2}' where regDate='${data.string3}'"
       db.execSQL(sql)
       db.close()
    }

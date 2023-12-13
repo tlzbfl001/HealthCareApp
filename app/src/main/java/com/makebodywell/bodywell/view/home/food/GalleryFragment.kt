@@ -116,6 +116,7 @@ class GalleryFragment : Fragment() {
                         val img = data.extras?.get("data") as Bitmap
                         val uri = saveFile(randomFileName(), "image/jpeg", img)
                         val foodImage = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+
                         dataManager?.insertImage(foodImage)
                         setupList()
                     }else {
@@ -125,6 +126,7 @@ class GalleryFragment : Fragment() {
                 storageCode -> {
                     val uri = data?.data
                     val foodImage = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+
                     dataManager?.insertImage(foodImage)
                     setupList()
                 }
@@ -156,6 +158,7 @@ class GalleryFragment : Fragment() {
             fos.close()
 
             cv.clear()
+
             // IS_PENDING 을 초기화
             cv.put(MediaStore.Images.Media.IS_PENDING, 0)
             requireActivity().contentResolver.update(uri, cv, null, null)

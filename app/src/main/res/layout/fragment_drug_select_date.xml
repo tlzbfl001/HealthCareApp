@@ -223,7 +223,7 @@
                            app:layout_constraintHorizontal_weight="1"/>
                      </androidx.constraintlayout.widget.ConstraintLayout>
                      <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView1"
+                        android:id="@+id/calenderView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
@@ -329,7 +329,7 @@
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintEnd_toEndOf="parent" />
                <androidx.recyclerview.widget.RecyclerView
-                  android:id="@+id/recyclerView2"
+                  android:id="@+id/dateView"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:visibility="gone"

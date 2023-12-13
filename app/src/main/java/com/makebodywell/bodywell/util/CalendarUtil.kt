@@ -10,10 +10,9 @@ class CalendarUtil {
    companion object {
       var isItemClick = false
       var selectedDate: LocalDate = LocalDate.now()
-      var selectedDate1: LocalDate? = null
-      var selectedDate2: LocalDate? = null
-      var selectedDays: ArrayList<LocalDate> = ArrayList<LocalDate>()
       var deleteList: ArrayList<Int> = ArrayList<Int>()
+      var drugSelected1: LocalDate? = null
+      var drugSelected2: LocalDate? = null
 
       fun calendarTitle(date: LocalDate): String? {
          val formatter = DateTimeFormatter.ofPattern("yyyy  MMMM")
@@ -22,7 +21,7 @@ class CalendarUtil {
 
       fun dateFormat(date: LocalDate?): String? {
          val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
-         return date!!.format(formatter)
+         return date?.format(formatter)
       }
 
       fun monthArray(date: LocalDate?): ArrayList<LocalDate?> {

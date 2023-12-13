@@ -207,8 +207,10 @@ class MainFragment : Fragment() {
 
       // 프로그래스바 설정
       val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
-
       val foodSum = getFoodIntake(requireActivity(), selectedDate.toString())
+      val getWater = dataManager!!.getWater(selectedDate.toString())
+      val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
+
       if (getDailyData.foodGoal > 0 && foodSum > 0) {
          binding.pbFood.max = getDailyData.foodGoal
          binding.pbFood.progress = foodSum
@@ -216,9 +218,7 @@ class MainFragment : Fragment() {
          binding.pbFood.max = foodSum
          binding.pbFood.progress = foodSum
       }
-      binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
 
-      val getWater = dataManager!!.getWater(selectedDate.toString())
       if (getDailyData.waterGoal > 0 && getWater.water > 0) {
          binding.pbWater.max = getDailyData.waterGoal
          binding.pbWater.progress = getWater.water
@@ -226,9 +226,7 @@ class MainFragment : Fragment() {
          binding.pbWater.max = getWater.water
          binding.pbWater.progress = getWater.water
       }
-      binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
 
-      val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       if (getDailyData.exerciseGoal > 0 && exerciseSum > 0) {
          binding.pbExercise.max = getDailyData.exerciseGoal
          binding.pbExercise.progress = exerciseSum
@@ -236,6 +234,9 @@ class MainFragment : Fragment() {
          binding.pbExercise.max = exerciseSum
          binding.pbExercise.progress = exerciseSum
       }
+
+      binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
+      binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
    }
 }

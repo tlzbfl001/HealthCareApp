@@ -20,12 +20,10 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.food.GalleryFragment
-import com.makebodywell.bodywell.view.init.InputBodyFragment
 import java.time.LocalDate
 import kotlin.math.abs
 
@@ -103,8 +101,8 @@ class NoteFragment : Fragment() {
       binding.tvDate.text = dateFormat(selectedDate)
 
       val getNote = dataManager!!.getNote(selectedDate.toString())
-      if(getNote.name1 != "") {
-         binding.tvNoteTitle.text = getNote.name1
+      if(getNote.string1 != "") {
+         binding.tvNoteTitle.text = getNote.string1
       }else {
          binding.tvNoteTitle.text = "제목."
       }

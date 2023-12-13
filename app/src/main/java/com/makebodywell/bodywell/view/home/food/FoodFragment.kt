@@ -6,7 +6,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,8 +29,6 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Text
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -100,6 +97,7 @@ class FoodFragment : Fragment() {
 
             binding.pbFood.max = et.text.toString().toInt()
             binding.tvGoal.text = "${et.text} kcal"
+
             val remain = et.text.toString().toInt() - sum
             if(remain > 0) {
                binding.tvRemain.text = "$remain kcal"
@@ -373,7 +371,7 @@ class FoodFragment : Fragment() {
             )
             num += 3
          }
-         itemList.add(Text(name1 = dataList[minus1].name, int1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit))
+         itemList.add(Text(string1 = dataList[minus1].name, int1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit))
       }else if(dataList.size % 3 == 2) {
          for(i in 0 until divide) {
             itemList.add(Text(
@@ -384,8 +382,8 @@ class FoodFragment : Fragment() {
             num += 3
          }
          itemList.add(Text(
-            name1 = dataList[minus2].name, int1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit,
-            name2 = dataList[minus1].name, int2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit))
+            string1 = dataList[minus2].name, int1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit,
+            string2 = dataList[minus1].name, int2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit))
       }
 
       binding.viewpager.adapter = FoodTextAdapter(itemList)

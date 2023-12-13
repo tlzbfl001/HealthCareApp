@@ -62,8 +62,9 @@ class DrugRecordFragment : Fragment() {
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.requestLayout()
 
+      // 데이터 삭제, 등록된 알람 취소
       adapter!!.setOnItemClickListener(object : DrugAdapter2.OnItemClickListener {
-         override fun onItemClick(pos: Int) { //데이터삭제, 등록된 알람취소
+         override fun onItemClick(pos: Int) {
             dataManager!!.deleteDrugDate(itemList[pos].id)
             dataManager!!.deleteDrugTime(itemList[pos].id)
             dataManager!!.deleteDrug(itemList[pos].id)

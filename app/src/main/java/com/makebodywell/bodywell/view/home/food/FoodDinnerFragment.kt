@@ -183,6 +183,7 @@ class FoodDinnerFragment : Fragment() {
                 var current = binding.viewPager.currentItem
                 binding.viewPager.setCurrentItem(current-1, true)
             }
+
             binding.cvRight.setOnClickListener {
                 var current = binding.viewPager.currentItem
                 binding.viewPager.setCurrentItem(current+1, true)

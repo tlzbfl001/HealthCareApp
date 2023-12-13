@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,18 +11,28 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter5
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
+import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.util.AlarmReceiver
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDays
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MainViewModel
+import com.makebodywell.bodywell.util.DrugUtil
+import com.makebodywell.bodywell.util.DrugUtil.Companion.clearDrugData
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugCount
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugEndDate
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugName
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugPeriodNum
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugStartDate
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugTimeList
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugType
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugUnitNum
+import com.makebodywell.bodywell.util.DrugUtil.Companion.setDrugTimeList
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 
 class DrugAddFragment : Fragment() {
@@ -32,17 +41,13 @@ class DrugAddFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
 
-   private val viewModel : MainViewModel by activityViewModels()
-
    private val alarmReceiver = AlarmReceiver()
-
    private var dataManager: DataManager? = null
+
    private var adapter: DrugAdapter5? = null
    private val itemList = ArrayList<Drug>()
    private var unit = "정"
    private var period = "매일"
-   private var startDate = ""
-   private var endDate = ""
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +66,33 @@ class DrugAddFragment : Fragment() {
    }
 
    private fun initView() {
+      // 복용주기 화면이동 후 설정값 재지정
+      if(arguments?.getString("data") == "DrugSelectDateFragment") {
+         binding.etType.setText(drugType)
+         binding.etName.setText(drugName)
+         binding.etCount.setText(drugCount)
+
+         if(drugStartDate != "" && drugEndDate != "") {
+            binding.tvPeriod.text = "$drugStartDate ~ $drugEndDate"
+         }
+
+         when(drugUnitNum) {
+            1 -> unit1()
+            2 -> unit2()
+            3 -> unit3()
+            4 -> unit4()
+            5 -> unit5()
+            6 -> unit6()
+         }
+
+         when(drugPeriodNum) {
+            1 -> period1()
+            2 -> period2()
+         }
+      }else {
+         clearDrugData()
+      }
+
       binding.ivBack.setOnClickListener {
          replaceFragment1(requireActivity(), DrugRecordFragment())
       }
@@ -71,111 +103,77 @@ class DrugAddFragment : Fragment() {
 
       binding.clUnit1.setOnClickListener {
          unit1()
-         viewModel.setDrugUnitNum(1)
+         drugUnitNum = 1
       }
+
       binding.clUnit2.setOnClickListener {
          unit2()
-         viewModel.setDrugUnitNum(2)
+         drugUnitNum = 2
       }
+
       binding.clUnit3.setOnClickListener {
          unit3()
-         viewModel.setDrugUnitNum(3)
+         drugUnitNum = 3
       }
+
       binding.clUnit4.setOnClickListener {
          unit4()
-         viewModel.setDrugUnitNum(4)
+         drugUnitNum = 4
       }
+
       binding.clUnit5.setOnClickListener {
          unit5()
-         viewModel.setDrugUnitNum(5)
+         drugUnitNum = 5
       }
+
       binding.clUnit6.setOnClickListener {
          unit6()
-         viewModel.setDrugUnitNum(6)
+         drugUnitNum = 6
       }
 
       binding.cvDaily.setOnClickListener {
          period1()
-         viewModel.setDrugPeriodNum(1)
-         viewModel.setDrugType(binding.etType.text.toString())
-         viewModel.setDrugName(binding.etName.text.toString())
-         viewModel.setDrugCount(binding.etCount.text.toString())
+         drugPeriodNum = 1
+         drugType = binding.etType.text.toString()
+         drugName = binding.etName.text.toString()
+         drugCount = binding.etCount.text.toString()
+
          replaceFragment1(requireActivity(), DrugSelectDateFragment1())
       }
 
       binding.cvSpecific.setOnClickListener {
          period2()
-         viewModel.setDrugPeriodNum(2)
-         viewModel.setDrugType(binding.etType.text.toString())
-         viewModel.setDrugName(binding.etName.text.toString())
-         viewModel.setDrugCount(binding.etCount.text.toString())
+         drugPeriodNum = 2
+         drugType = binding.etType.text.toString()
+         drugName = binding.etName.text.toString()
+         drugCount = binding.etCount.text.toString()
+
          replaceFragment1(requireActivity(), DrugSelectDateFragment2())
       }
 
       binding.tvSave.setOnClickListener {
-         if(binding.etType.text.isEmpty() || binding.etName.text.isEmpty() || binding.etCount.text.isEmpty() ||
-            binding.tvPeriod.text == "" || itemList.size == 0) {
+         if(binding.etType.text.isEmpty() || binding.etName.text.isEmpty() || binding.etCount.text.isEmpty() || binding.tvPeriod.text == "" || itemList.size == 0) {
             Toast.makeText(activity, "입력을 확인해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            settingAlarm()
+            // 약 데이터 저장
+            dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etCount.text.toString(),
+               unit = unit, period = period, startDate = drugStartDate, endDate = drugEndDate))
+
+            val getDrugId = dataManager!!.getDrugId()
+
+            // 시간 데이터 저장
+            for(i in 0 until drugTimeList.size) {
+               val hour = String.format("%02d", Integer.parseInt(drugTimeList[i].hour))
+               val minute = String.format("%02d", Integer.parseInt(drugTimeList[i].minute))
+               dataManager!!.insertDrugTime("$hour:$minute", getDrugId.id)
+            }
+
+            // 알람 설정
+            settingAlarm(getDrugId)
+
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), DrugRecordFragment())
-//            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//               when {
-//                  alarmManager.canScheduleExactAlarms() -> {
-//                     settingAlarm()
-//                     Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-//                     replaceFragment1(requireActivity(), DrugRecordFragment())
-//                  }
-//                  else -> {
-//                     Intent().apply {
-//                        action = ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-//                     }.also {
-//                        startActivity(it)
-//                     }
-//                  }
-//               }
-//            }else {
-//               settingAlarm()
-//               Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-//               replaceFragment1(requireActivity(), DrugRecordFragment())
-//            }
          }
-      }
-
-      val data = arguments?.getString("data")
-      if(data == "DrugSelectDateFragment") {
-         binding.etType.setText(viewModel.getDrugType())
-         binding.etName.setText(viewModel.getDrugName())
-         binding.etCount.setText(viewModel.getDrugCount())
-         settingPeriod()
-
-         when(viewModel.getDrugUnitNum()) {
-            1 -> unit1()
-            2 -> unit2()
-            3 -> unit3()
-            4 -> unit4()
-            5 -> unit5()
-            6 -> unit6()
-         }
-
-         when(viewModel.getDrugPeriodNum()) {
-            1 -> period1()
-            2 -> period2()
-         }
-      }else {
-         viewModel.clearDrugTimeList()
-      }
-   }
-
-   private fun settingPeriod() {
-      val getDrugStartDate = viewModel.getDrugStartDate()
-      val getDrugEndDate = viewModel.getDrugEndDate()
-
-      if(getDrugStartDate != "" && getDrugEndDate != "") {
-         startDate = getDrugStartDate
-         endDate = getDrugEndDate
-         binding.tvPeriod.text = "$getDrugStartDate ~ $getDrugEndDate"
       }
    }
 
@@ -195,7 +193,7 @@ class DrugAddFragment : Fragment() {
                   m = dateTime.minute
                }
 
-               viewModel.setDrugTimeList(h.toString(), m.toString())
+               setDrugTimeList(h.toString(), m.toString())
                showTimeList()
             }
 
@@ -210,9 +208,9 @@ class DrugAddFragment : Fragment() {
    private fun showTimeList() {
       itemList.clear()
 
-      for(i in 0 until viewModel.getDrugTimeList().size) {
-         val hour = String.format("%02d", Integer.parseInt(viewModel.getDrugTimeList()[i].hour))
-         val minute = String.format("%02d", Integer.parseInt(viewModel.getDrugTimeList()[i].minute))
+      for(i in 0 until drugTimeList.size) {
+         val hour = String.format("%02d", Integer.parseInt(drugTimeList[i].hour))
+         val minute = String.format("%02d", Integer.parseInt(drugTimeList[i].minute))
          itemList.add(Drug(name = "$hour:$minute", count = i + 1))
       }
 
@@ -226,25 +224,22 @@ class DrugAddFragment : Fragment() {
       binding.recyclerView.adapter = adapter
    }
 
-   private fun settingAlarm() {
-      dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(),
-         amount = binding.etCount.text.toString(), unit = unit, period = period, startDate = startDate, endDate = endDate))
-
-      val getDrugId = dataManager!!.getDrugId()
-
-      for(i in 0 until viewModel.getDrugTimeList().size) {
-         val hour = String.format("%02d", Integer.parseInt(viewModel.getDrugTimeList()[i].hour))
-         val minute = String.format("%02d", Integer.parseInt(viewModel.getDrugTimeList()[i].minute))
-         dataManager!!.insertDrugTime("$hour:$minute", getDrugId.id)
-      }
+   private fun settingAlarm(getDrugId: Drug) {
+      val message = binding.etName.text.toString() + " " + binding.etCount.text.toString() + unit
 
       if(period == "매일") {
-         val time = viewModel.getDrugTimeList()
-         val message = binding.etName.text.toString() + " " + binding.etCount.text.toString() + unit
-         alarmReceiver.setAlarmDaily(requireActivity(), getDrugId.id, startDate, endDate, time, message)
+         alarmReceiver.setAlarm1(requireActivity(), getDrugId.id, drugStartDate, drugEndDate, drugTimeList, message)
       }else {
-         for(i in 0 until selectedDays.size) {
-            dataManager!!.insertDrugDate(selectedDays[i].toString(), getDrugId.id)
+         if(drugDateList.size > 0) {
+            val drugDate = ArrayList<DrugDate>()
+
+            // 특정 날짜 데이터 저장
+            for(i in 0 until drugDateList.size) {
+               dataManager!!.insertDrugDate(drugDateList[i].toString(), getDrugId.id)
+               drugDate.add(DrugDate(date = drugDateList[i].toString()))
+            }
+
+            alarmReceiver.setAlarm2(requireActivity(), getDrugId.id, drugTimeList, drugDate, message)
          }
       }
    }

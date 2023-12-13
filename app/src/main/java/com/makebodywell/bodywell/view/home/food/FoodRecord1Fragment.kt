@@ -102,9 +102,7 @@ class FoodRecord1Fragment : Fragment() {
    }
 
    private fun searchView() {
-      val strings = arrayListOf<String>(
-         "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "가나", "한국", "가나다", "가다", "중국", "미국", "유럽"
-      )
+      val strings = arrayListOf("Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "가나", "한국", "가나다", "가다", "중국", "미국", "유럽")
 
       for(i in 0 until strings.size) {
          originalList.add(strings[i])

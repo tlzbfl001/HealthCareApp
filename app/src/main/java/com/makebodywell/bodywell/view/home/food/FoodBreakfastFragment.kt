@@ -247,11 +247,13 @@ class FoodBreakfastFragment : Fragment() {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults)
       if(requestCode == permissionRequestCode && grantResults.isNotEmpty()) {
          var result = true
+
          for (element in grantResults) {
             if (element == -1) {
                result = false
             }
          }
+
          if(!result) {
             val alertDialog: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(requireActivity())
             alertDialog.setTitle("권한 설정")

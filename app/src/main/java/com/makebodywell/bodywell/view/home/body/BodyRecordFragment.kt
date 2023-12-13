@@ -51,6 +51,7 @@ class BodyRecordFragment : Fragment() {
          binding.etWeight.setText(bundleData.weight.toString())
          binding.etAge.setText(bundleData.age.toString())
          binding.etGender.setText(bundleData.gender)
+
          when(bundleData.exerciseLevel) {
             1 -> {
                binding.radioBtn1.isChecked = true

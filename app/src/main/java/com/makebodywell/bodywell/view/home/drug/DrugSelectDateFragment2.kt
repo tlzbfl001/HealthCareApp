@@ -8,20 +8,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter4
 import com.makebodywell.bodywell.adapter.CalendarAdapter5
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugSelectDateBinding
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDays
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MainViewModel
+import com.makebodywell.bodywell.util.DrugUtil
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugEndDate
+import com.makebodywell.bodywell.util.DrugUtil.Companion.drugStartDate
 import java.time.LocalDate
 
 class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
@@ -32,9 +35,8 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
 
     private var bundle = Bundle()
 
-    private val viewModel: MainViewModel by activityViewModels()
-
     private var dataManager: DataManager? = null
+
     private var adapter: CalendarAdapter5? = null
 
     override fun onCreateView(
@@ -54,13 +56,13 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
     private fun initView() {
         bundle.putString("data", "DrugSelectDateFragment")
 
-        selectedDays.clear()
         selectedDate = LocalDate.now()
+        drugDateList.clear()
         setMonthView()
 
         binding.marginView.visibility = View.GONE
         binding.view.visibility = View.VISIBLE
-        binding.recyclerView2.visibility = View.VISIBLE
+        binding.dateView.visibility = View.VISIBLE
 
         binding.ivBack.setOnClickListener {
             replaceFragment2(requireActivity(), DrugAddFragment(), bundle)
@@ -80,8 +82,9 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
 
         binding.tvSave.setOnClickListener {
             if(binding.tvStart.text != "" && binding.tvEnd.text != "") {
-                viewModel.setDrugStartDate(binding.tvStart.text.toString())
-                viewModel.setDrugEndDate(binding.tvEnd.text.toString())
+                drugStartDate = binding.tvStart.text.toString()
+                drugEndDate = binding.tvEnd.text.toString()
+
                 replaceFragment2(requireActivity(), DrugAddFragment(), bundle)
             }else {
                 Toast.makeText(activity, "입력을 확인해주세요.", Toast.LENGTH_SHORT).show()
@@ -92,27 +95,27 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
     private fun setMonthView() {
         binding.tvCalTitle.text = calendarTitle(selectedDate)
         val days = monthArray(selectedDate)
-        val adapter = CalendarAdapter4(requireContext(), days, this)
+        val adapter = CalendarAdapter4(requireContext(), this, days)
         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
-        binding.recyclerView1.layoutManager = layoutManager
-        binding.recyclerView1.adapter = adapter
+
+        binding.calenderView.layoutManager = layoutManager
+        binding.calenderView.adapter = adapter
 
         setupBottom()
+    }
+
+    private fun setupBottom() {
+        val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 5)
+        binding.dateView.layoutManager = layoutManager
+
+        adapter = CalendarAdapter5(drugDateList)
+        binding.dateView.adapter = adapter
     }
 
     override fun onItemClick(position: Int, date: LocalDate?) {
         selectedDate = date!!
         isItemClick = true
         setMonthView()
-    }
-
-    private fun setupBottom() {
-        val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 5)
-        binding.recyclerView2.layoutManager = layoutManager
-        binding.recyclerView2.requestLayout()
-
-        adapter = CalendarAdapter5(selectedDays)
-        binding.recyclerView2.adapter = adapter
     }
 
     override fun onAttach(context: Context) {
