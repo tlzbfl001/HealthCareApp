@@ -39,8 +39,6 @@ class DrugAddFragment : Fragment() {
    private var _binding: FragmentDrugAddBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private val alarmReceiver = AlarmReceiver()
    private var dataManager: DataManager? = null
 
@@ -354,20 +352,5 @@ class DrugAddFragment : Fragment() {
       binding.cvSpecific.setCardBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
       binding.tvSpecific.setTextColor(Color.WHITE)
       period = "특정일 지정"
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), DrugRecordFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

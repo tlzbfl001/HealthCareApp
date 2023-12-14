@@ -19,8 +19,6 @@ class BodyRecordFragment : Fragment() {
    private var _binding: FragmentBodyRecordBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var dataManager: DataManager? = null
 
    private var exerciseLevel = 1
@@ -147,20 +145,5 @@ class BodyRecordFragment : Fragment() {
 
          replaceFragment1(requireActivity(), BodyFragment())
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), BodyFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

@@ -33,8 +33,6 @@ class DrugFragment : Fragment() {
    private var _binding: FragmentDrugBinding? = null
    val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var calendarDate = LocalDate.now()
 
    private var dataManager: DataManager? = null
@@ -54,8 +52,8 @@ class DrugFragment : Fragment() {
       dataManager!!.open()
 
       initView()
-      setupGoal(calendarDate.toString())
-      setupList(calendarDate.toString())
+      setupGoal()
+      setupList()
 
       return binding.root
    }
@@ -72,15 +70,15 @@ class DrugFragment : Fragment() {
       binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
-         setupList(calendarDate.toString())
+         setupGoal()
+         setupList()
       }
 
       binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal(calendarDate.toString())
-         setupList(calendarDate.toString())
+         setupGoal()
+         setupList()
       }
 
       binding.clRecord.setOnClickListener {
@@ -112,11 +110,11 @@ class DrugFragment : Fragment() {
       }
    }
 
-   private fun setupGoal(date: String) {
+   private fun setupGoal() {
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
 
-      val getDailyData = dataManager!!.getDailyData(date)
+      val getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       val goal = getDailyData.drugGoal
       if(goal != 0) {
          binding.pbDrug.max = goal
@@ -148,8 +146,8 @@ class DrugFragment : Fragment() {
                val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugDaily[i].id)
                checkedCount += getDrugCheckCount.count
                for(j in 0 until getDrugTime.size) {
-                  itemList.add(Drug(id = getDrugDaily[i].id, type = date, name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit,
-                     startDate = getDrugTime[j].name, endDate = checkedCount.toString(), count = getDrugTime[j].count))
+                  itemList.add(Drug(id = getDrugDaily[i].id, type = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
+                     unit = getDrugDaily[i].unit, startDate = getDrugTime[j].name, endDate = checkedCount.toString(), count = getDrugTime[j].count))
                }
             }
             adapter!!.notifyDataSetChanged()
@@ -163,14 +161,14 @@ class DrugFragment : Fragment() {
       }
    }
 
-   private fun setupList(date: String) {
+   private fun setupList() {
       var checkedCount = 0
       for(i in 0 until getDrugDaily.size) {
          val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
          val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugDaily[i].id)
          checkedCount += getDrugCheckCount.count
          for(j in 0 until getDrugTime.size) {
-            itemList.add(Drug(id = getDrugDaily[i].id, type = date, name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit,
+            itemList.add(Drug(id = getDrugDaily[i].id, type = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit,
                startDate = getDrugTime[j].name, endDate = checkedCount.toString(), count = getDrugTime[j].count))
          }
       }
@@ -179,20 +177,5 @@ class DrugFragment : Fragment() {
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.requestLayout()
       binding.recyclerView.adapter = adapter
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

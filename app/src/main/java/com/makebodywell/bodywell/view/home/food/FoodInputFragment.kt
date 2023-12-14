@@ -17,8 +17,6 @@ class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var bundle = Bundle()
 
    private var calendarDate = ""
@@ -91,25 +89,5 @@ class FoodInputFragment : Fragment() {
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            when(type) {
-               "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-               "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-               "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-               "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
-            }
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

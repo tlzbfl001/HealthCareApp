@@ -41,6 +41,7 @@ import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.round
+import kotlin.system.exitProcess
 
 class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
@@ -414,20 +415,5 @@ class FoodFragment : Fragment() {
       binding.tvCar.text = carbohydrate.toString() + "g"
       binding.tvProtein.text = protein.toString() + "g"
       binding.tvFat.text = fat.toString() + "g"
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

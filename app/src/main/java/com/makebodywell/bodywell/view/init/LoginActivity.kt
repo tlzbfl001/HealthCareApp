@@ -3,16 +3,16 @@ package com.makebodywell.bodywell.view.init
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.webkit.ConsoleMessage
-import android.webkit.JsResult
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.apollographql.apollo3.ApolloClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -48,14 +48,17 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.launch
-import java.io.UnsupportedEncodingException
+import java.net.URISyntaxException
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.system.exitProcess
 
 
 class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
    private val binding get() = _binding!!
+
+   private var backWait:Long = 0
 
    private var dataManager: DataManager? = null
 
@@ -293,8 +296,7 @@ class LoginActivity : AppCompatActivity() {
       }
 
       // 웹뷰 동작
-      val url = createUrl()
-      webView.loadUrl(url)
+      webView.loadUrl(createUrl())
 
       webView.webChromeClient = object : WebChromeClient() {
          override fun onConsoleMessage(cmsg: ConsoleMessage): Boolean {
@@ -318,6 +320,52 @@ class LoginActivity : AppCompatActivity() {
       setContentView(webView)
    }
 
+   private fun apple2() {
+      webView.webViewClient = AppleWebViewClient()
+      webView.webChromeClient = WebChromeClient()
+      webView.settings.loadWithOverviewMode =true // WebView 화면크기에 맞추도록 설정 (setUseWideViewPort와 같이 선언)
+      webView.settings.useWideViewPort = true // wide viewport 설정 (setLoadWithOverviewMode와 같이 선언)
+      webView.settings.javaScriptEnabled = true // 자바스크립트 사용여부
+      webView.settings.javaScriptCanOpenWindowsAutomatically =true
+      webView.settings.setSupportMultipleWindows(true) // 멀티 윈도우 사용 여부
+      webView.settings.domStorageEnabled = true // 로컬 스토리지 (localStorage) 사용여부
+
+      webView.loadUrl(createUrl())
+   }
+
+   class AppleWebViewClient: WebViewClient() {
+      override fun shouldOverrideUrlLoading(
+         view: WebView?,
+         request: WebResourceRequest?
+      ): Boolean {
+         // 로드하려는 URL 받기
+         val url = request?.url
+         Log.d(TAG, "url: $url")
+
+         if (url != null && url.toString().contains("intent://")) {
+            Log.d(TAG, "shouldOverrideUrlLoading: ")
+         }
+
+         // 리턴값이 true: 여기서 세팅한 대로 동작 명령
+         // 리턴값이 false: 웹뷰 기본 설정대로 동작 명령
+         return when {
+            // url null 체크용
+            url == null -> {
+               false
+            }
+            // 로드하려는 URL이 리다이렉트 서버의 응답URL이면 로그인 정보 추출하기
+            url.toString().contains("intent") -> {
+               val idTokenParam = url.getQueryParameter("id_token")
+               if (idTokenParam != null) {
+
+               }
+               true
+            }
+            else -> false
+         }
+      }
+   }
+
    private fun createUrl(): String{
       clientId = getString(R.string.appleServiceId)
       return (authEndpoint
@@ -332,5 +380,16 @@ class LoginActivity : AppCompatActivity() {
    private fun getKeyHash() {
       val keyHash = Utility.getKeyHash(applicationContext)
       Log.d(TAG, keyHash)
+   }
+
+   override fun onBackPressed() {
+      if(System.currentTimeMillis() - backWait >=2000 ) {
+         backWait = System.currentTimeMillis()
+         Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+      } else {
+         ActivityCompat.finishAffinity(this)
+         System.runFinalization()
+         exitProcess(0)
+      }
    }
 }

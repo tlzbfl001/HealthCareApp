@@ -19,8 +19,6 @@ class ExerciseListFragment : Fragment() {
    private var _binding: FragmentExerciseListBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var dataManager: DataManager? = null
 
    override fun onCreateView(
@@ -73,20 +71,5 @@ class ExerciseListFragment : Fragment() {
       val adapter = ExerciseListAdapter(requireActivity(), itemList)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), ExerciseFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

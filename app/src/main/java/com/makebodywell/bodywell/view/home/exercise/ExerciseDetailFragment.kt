@@ -23,8 +23,6 @@ class ExerciseDetailFragment : Fragment() {
     private var _binding: FragmentExerciseDetailBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var callback: OnBackPressedCallback
-
     private var dataManager: DataManager? = null
 
     private var bundleData: Exercise = Exercise()
@@ -69,20 +67,5 @@ class ExerciseDetailFragment : Fragment() {
 
     private fun setupList() {
 
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback.remove()
     }
 }

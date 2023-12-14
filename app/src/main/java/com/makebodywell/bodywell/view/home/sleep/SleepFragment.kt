@@ -25,8 +25,6 @@ class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -71,20 +69,5 @@ class SleepFragment : Fragment() {
       binding.clRecord.setOnClickListener {
          replaceFragment1(requireActivity(), SleepRecordFragment())
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

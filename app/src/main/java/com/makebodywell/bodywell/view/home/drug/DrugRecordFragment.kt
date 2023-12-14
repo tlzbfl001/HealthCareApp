@@ -19,8 +19,6 @@ class DrugRecordFragment : Fragment() {
    private var _binding: FragmentDrugRecordBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private val alarmReceiver = AlarmReceiver()
 
    private var dataManager: DataManager? = null
@@ -77,20 +75,5 @@ class DrugRecordFragment : Fragment() {
       })
 
       binding.recyclerView.adapter = adapter
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), DrugFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

@@ -37,8 +37,6 @@ class WaterFragment : Fragment() {
    private var _binding: FragmentWaterBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var calendarDate = LocalDate.now()
 
    private var dataManager: DataManager? = null
@@ -275,20 +273,5 @@ class WaterFragment : Fragment() {
             dataManager!!.updateWater(Water(water = count, volume = getWater.volume, regDate = calendarDate.toString()))
          }
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

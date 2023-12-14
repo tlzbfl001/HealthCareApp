@@ -19,8 +19,6 @@ class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var bundle = Bundle()
 
    private var dataManager: DataManager? = null
@@ -84,20 +82,5 @@ class NoteWriteFragment : Fragment() {
          binding.etTitle.hint = "제목."
          binding.etContent.hint = "내용입력"
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment2(requireActivity(), NoteFragment(), bundle)
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

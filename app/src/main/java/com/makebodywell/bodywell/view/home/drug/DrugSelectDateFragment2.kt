@@ -31,8 +31,6 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
     private var _binding: FragmentDrugSelectDateBinding? = null
     val binding get() = _binding!!
 
-    private lateinit var callback: OnBackPressedCallback
-
     private var bundle = Bundle()
 
     private var dataManager: DataManager? = null
@@ -116,20 +114,5 @@ class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {
         selectedDate = date!!
         isItemClick = true
         setMonthView()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                replaceFragment2(requireActivity(), DrugAddFragment(), bundle)
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback.remove()
     }
 }

@@ -28,8 +28,6 @@ class ExerciseInputFragment : Fragment() {
    private var _binding: FragmentExerciseInputBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var dataManager: DataManager? = null
 
    private var adapter1: ExerciseInputAdapter1? = null
@@ -288,20 +286,5 @@ class ExerciseInputFragment : Fragment() {
       binding.clAddPart.setOnClickListener {
          dialog.show()
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), ExerciseListFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

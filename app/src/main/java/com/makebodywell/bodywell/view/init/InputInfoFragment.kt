@@ -19,8 +19,6 @@ class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -50,21 +48,5 @@ class InputInfoFragment : Fragment() {
       binding.ivBack.setOnClickListener {
          replaceInputFragment(requireActivity(), InputTermsFragment())
       }
-   }
-
-   // 뒤로가기 클릭시 동작하는 로직
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceInputFragment(requireActivity(), InputTermsFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

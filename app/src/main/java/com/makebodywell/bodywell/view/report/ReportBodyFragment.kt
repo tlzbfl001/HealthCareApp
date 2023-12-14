@@ -27,8 +27,6 @@ class ReportBodyFragment : Fragment() {
    private var _binding: FragmentReportBodyBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var calendarDate = LocalDate.now()
 
    private var itemList = ArrayList<Body>()
@@ -154,20 +152,5 @@ class ReportBodyFragment : Fragment() {
       yAxisLeft.textSize = 7f
 
       lineChart.invalidate()
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

@@ -29,8 +29,6 @@ class ReportDrugFragment : Fragment() {
    private var _binding: FragmentReportDrugBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var calendarDate = LocalDate.now()
 
    override fun onCreateView(
@@ -163,20 +161,5 @@ class ReportDrugFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

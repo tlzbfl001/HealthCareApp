@@ -30,8 +30,6 @@ class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var calendarDate = LocalDate.now()
 
    override fun onCreateView(
@@ -274,20 +272,5 @@ class ReportFoodFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

@@ -82,7 +82,9 @@
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
             <data
-               android:scheme="signing"/>
+               android:scheme="https"
+               android:host="domainone.store"
+               android:path="/redirect" />
          </intent-filter>
       </activity>
       <activity android:name=".view.init.InitActivity" />

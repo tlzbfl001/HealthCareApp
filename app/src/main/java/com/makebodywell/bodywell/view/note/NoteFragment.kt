@@ -31,8 +31,6 @@ class NoteFragment : Fragment() {
    private var _binding: FragmentNoteBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private val bundle = Bundle()
 
    private var dataManager: DataManager? = null
@@ -199,20 +197,5 @@ class NoteFragment : Fragment() {
 
       override fun onTouchEvent(view: RecyclerView, motionEvent: MotionEvent) {}
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

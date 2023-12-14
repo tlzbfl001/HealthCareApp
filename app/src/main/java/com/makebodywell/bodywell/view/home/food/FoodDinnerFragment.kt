@@ -35,8 +35,6 @@ class FoodDinnerFragment : Fragment() {
     private var _binding: FragmentFoodDinnerBinding? = null
     val binding get() = _binding!!
 
-    private lateinit var callback: OnBackPressedCallback
-
     private var bundle = Bundle()
     private var calendarDate = ""
 
@@ -265,20 +263,5 @@ class FoodDinnerFragment : Fragment() {
                 alertDialog.show()
             }
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                replaceFragment1(requireActivity(), FoodFragment())
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback.remove()
     }
 }

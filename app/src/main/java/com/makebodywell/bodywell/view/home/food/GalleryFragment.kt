@@ -29,8 +29,6 @@ class GalleryFragment : Fragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var callback: OnBackPressedCallback
-
     private var bundle = Bundle()
 
     private var dataManager: DataManager? = null
@@ -164,29 +162,5 @@ class GalleryFragment : Fragment() {
             requireActivity().contentResolver.update(uri, cv, null, null)
         }
         return uri
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                when(type) {
-                    "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-                    "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-                    "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-                    "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
-                    "note" -> {
-                        bundle.putString("data", "noteData")
-                        replaceFragment2(requireActivity(), NoteFragment(), bundle)
-                    }
-                }
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback.remove()
     }
 }

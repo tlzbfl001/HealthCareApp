@@ -7,24 +7,28 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
-import com.makebodywell.bodywell.adapter.SectionPageAdapter
-import com.makebodywell.bodywell.databinding.ActivityInitBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.makebodywell.bodywell.adapter.SectionPageAdapter
+import com.makebodywell.bodywell.databinding.ActivityInitBinding
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.permissions1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.permissions2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.permissions3
+import kotlin.system.exitProcess
 
 class InitActivity : AppCompatActivity() {
    private var _binding: ActivityInitBinding? = null
    private val binding get() = _binding!!
+
+   private var backWait:Long = 0
 
    private var adapter: SectionPageAdapter = SectionPageAdapter(supportFragmentManager)
 
@@ -169,6 +173,17 @@ class InitActivity : AppCompatActivity() {
          intent.putExtra("userName", userName)
          intent.putExtra("userEmail", userEmail)
          startActivity(intent)
+      }
+   }
+
+   override fun onBackPressed() {
+      if(System.currentTimeMillis() - backWait >= 2000) {
+         backWait = System.currentTimeMillis()
+         Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+      } else {
+         ActivityCompat.finishAffinity(this) // 액티비티 종료
+         System.runFinalization()
+         exitProcess(0) // 프로세스 종료
       }
    }
 }

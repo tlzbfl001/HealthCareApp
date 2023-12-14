@@ -36,8 +36,6 @@ class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var calendarDate = LocalDate.now()
 
    private var dataManager: DataManager? = null
@@ -189,20 +187,5 @@ class ExerciseFragment : Fragment() {
       binding.recyclerView.layoutManager = layoutManager
       adapter = ExerciseAdapter(itemList)
       binding.recyclerView.adapter = adapter
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

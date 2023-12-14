@@ -19,8 +19,6 @@ class FoodRecord2Fragment : Fragment() {
    private var _binding: FragmentFoodRecord2Binding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var bundle = Bundle()
 
    private var calendarDate = ""
@@ -87,25 +85,5 @@ class FoodRecord2Fragment : Fragment() {
          binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
          binding.recyclerView.adapter = adapter
       }
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            when(type) {
-               "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-               "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-               "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-               "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
-            }
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

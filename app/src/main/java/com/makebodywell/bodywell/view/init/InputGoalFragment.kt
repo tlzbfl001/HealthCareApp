@@ -17,8 +17,6 @@ class InputGoalFragment : Fragment() {
    private var _binding: FragmentInputGoalBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    var isTwoDigitDecimal = false
    var isThreeDigit = false
 
@@ -72,20 +70,5 @@ class InputGoalFragment : Fragment() {
          override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
          override fun afterTextChanged(p0: Editable?) {}
       })
-   }
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceInputFragment(requireActivity(), InputBodyFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }
