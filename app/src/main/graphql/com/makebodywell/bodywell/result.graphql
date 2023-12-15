@@ -1,0 +1,88 @@
+mutation CreateUserKakao($createKakaoLoginInput: CreateKakaoOauthInput!) {
+  createUserKakao(createKakaoLoginInput: $createKakaoLoginInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation CreateUserGoogle($createGoogleInput: CreateGoogleOauthInput!) {
+  createUserGoogle(createGoogleInput: $createGoogleInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation CreateUserNaver($createNaverLoginInput: CreateNaverOauthInput!) {
+  createUserNaver(createNaverLoginInput: $createNaverLoginInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation CreateUserApple($createAppleLoginInput: CreateAppleOauthInput!) {
+  createUserApple(createAppleLoginInput: $createAppleLoginInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation LoginUserKakao($loginKakaoLoginInput: LoginKakaoOauthInput!) {
+  loginUserKakao(loginKakaoLoginInput: $loginKakaoLoginInput) {
+    accessToken
+    code
+    message
+    refreshToken
+    success
+  }
+}
+
+mutation LoginUserGoogle($loginGoogleInput: LoginGoogleOauthInput!) {
+  loginUserGoogle(loginGoogleInput: $loginGoogleInput) {
+    accessToken
+    code
+    message
+    refreshToken
+    success
+  }
+}
+
+mutation LoginUserNaver($loginNaverLoginInput: LoginNaverOauthInput!) {
+  loginUserNaver(loginNaverLoginInput: $loginNaverLoginInput) {
+    accessToken
+    code
+    message
+    refreshToken
+    success
+  }
+}
+
+mutation LoginUserApple($loginAppleLoginInput: LoginAppleOauthInput!) {
+  loginUserApple(loginAppleLoginInput: $loginAppleLoginInput) {
+    accessToken
+    code
+    message
+    refreshToken
+    success
+  }
+}
+
+query Me {
+  me {
+    code
+    message
+    success
+    user {
+      createdAt
+      email
+      emailVerified
+      role
+      updatedAt
+      userId
+      username
+    }
+  }
+}

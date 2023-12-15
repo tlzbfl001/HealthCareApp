@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:app="http://schemas.android.com/apk/res-auto">
+   <item
+      android:id="@+id/menu1"
+      android:enabled="true"
+      android:icon="@drawable/home"
+      android:title="홈" />
+   <item
+      android:id="@+id/menu2"
+      android:enabled="true"
+      android:icon="@drawable/chart"
+      android:title="분석" />
+   <item
+      android:id="@+id/menu3"
+      android:enabled="true"
+      android:icon="@drawable/report"
+      android:title="기록" />
+   <item
+      android:id="@+id/menu4"
+      android:enabled="true"
+      android:icon="@drawable/user"
+      android:title="메뉴" />
+</menu>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BodyWell</string>
+    <string name="googleWebClientId">598051682826-f7lamjml7e8lbnf4il224tnvebi706qh.apps.googleusercontent.com</string>
+    <string name="nativeAppKey">d9c3b1c89cfbb632aa6cbfeadd09861e</string>
+    <string name="nativeAppKey2">kakaod9c3b1c89cfbb632aa6cbfeadd09861e</string>
+    <string name="naverClientId">MhfyG1p13DZogqMU_T2M</string>
+    <string name="naverClientSecret">tkqS2oroTP</string>
+    <string name="appleServiceId">com.makebodywell.bodywell.android</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
