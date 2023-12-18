@@ -1,18 +1,10 @@
 package com.makebodywell.bodywell.view.report
 
-<<<<<<< HEAD
-=======
-import android.content.Context
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-<<<<<<< HEAD
-=======
-import androidx.activity.OnBackPressedCallback
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis

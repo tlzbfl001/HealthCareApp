@@ -1,19 +1,11 @@
 package com.makebodywell.bodywell.view.report
 
-<<<<<<< HEAD
-=======
-import android.content.Context
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-<<<<<<< HEAD
-=======
-import androidx.activity.OnBackPressedCallback
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -28,10 +20,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.makebodywell.bodywell.databinding.FragmentReportDrugBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-<<<<<<< HEAD
-=======
-import com.makebodywell.bodywell.view.home.MainFragment
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import java.time.LocalDate
 
 class ReportDrugFragment : Fragment() {

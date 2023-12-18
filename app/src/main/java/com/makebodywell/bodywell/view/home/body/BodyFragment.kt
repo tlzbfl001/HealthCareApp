@@ -1,33 +1,16 @@
 package com.makebodywell.bodywell.view.home.body
 
 import android.app.Dialog
-<<<<<<< HEAD
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 
-=======
-import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
-<<<<<<< HEAD
-import android.text.InputType
-import android.util.Log
-=======
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-<<<<<<< HEAD
-=======
-import androidx.activity.OnBackPressedCallback
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
@@ -36,15 +19,6 @@ import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
-<<<<<<< HEAD
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-=======
-<<<<<<< HEAD
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-=======
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
@@ -78,7 +52,6 @@ class BodyFragment : Fragment() {
       dataManager!!.open()
 
       initView()
-      setupGoal()
       dailyView()
 
       return binding.root
@@ -87,16 +60,9 @@ class BodyFragment : Fragment() {
    private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
-<<<<<<< HEAD
       getBody = dataManager!!.getBody(calendarDate.toString())
 
       // 목표 설정
-=======
-<<<<<<< HEAD
-      // 목표 설정
-=======
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -111,10 +77,6 @@ class BodyFragment : Fragment() {
             Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyData.regDate == "") {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
                dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
             }else {
                dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
@@ -133,23 +95,10 @@ class BodyFragment : Fragment() {
             }else {
                binding.tvRemain.text = "0 kg"
             }
-<<<<<<< HEAD
 
             binding.pbBody.max = et.text.toString().toDouble().roundToInt()
             binding.tvGoal.text = "${et.text} kg"
             binding.tvRemain.text = "${et.text.toString().toDouble() - getBody.weight.toString().toDouble()} kg"
-=======
-=======
-               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }else {
-               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }
-
-            binding.pbBody.max = et.text.toString().toInt()
-            binding.tvGoal.text = "${et.text} kg"
-            binding.tvRemain.text = "${et.text.toString().toInt() - getBody.weight.toString().toDouble().roundToInt()} kg"
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
          }
 
          dialog.dismiss()
@@ -199,11 +148,7 @@ class BodyFragment : Fragment() {
          if(getBody.regDate == "") {
             replaceFragment1(requireActivity(), BodyRecordFragment())
          }else {
-<<<<<<< HEAD
-            val bundle = Bundle()
-=======
             var bundle = Bundle()
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
             val body = Body(id = getBody.id, height = getBody.height, weight = getBody.weight, age = getBody.age, gender = getBody.gender,
                exerciseLevel = getBody.exerciseLevel, fat = getBody.fat, muscle = getBody.muscle, bmi = getBody.bmi, bmr = getBody.bmr)
             bundle.putParcelable("body", body)
@@ -249,89 +194,57 @@ class BodyFragment : Fragment() {
    }
 
    private fun setupGoal() {
-<<<<<<< HEAD
       binding.tvWeight.text = "0 kg"
-=======
-<<<<<<< HEAD
-      binding.tvWeight.text = "0 kg"
-=======
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-<<<<<<< HEAD
 
       val goal = getDailyData.bodyGoal
-      if(goal > 0) {
-          binding.pbBody.max = goal.roundToInt()
-
-          val split = goal.toString().split(".")
-          when (split[1]) {
-              "0" -> binding.tvGoal.text = "${split[0]} kg"
-              else -> binding.tvGoal.text = "$goal kg"
-          }
-      }
-
-      if(getBody.weight > 0) {
-         binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
-=======
-      val goal = getDailyData.bodyGoal
-<<<<<<< HEAD
-      if(goal > 0) {
+      if (goal > 0) {
          binding.pbBody.max = goal.roundToInt()
 
          val split = goal.toString().split(".")
-         when(split[1]) {
+         when (split[1]) {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
             else -> binding.tvGoal.text = "$goal kg"
          }
-=======
-      if(goal != 0) {
-         binding.pbBody.max = goal
-         binding.tvGoal.text = "$goal kg"
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       }
 
-      getBody = dataManager!!.getBody(calendarDate.toString())
-      if(getBody.weight > 0) {
+      if (getBody.weight > 0) {
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
-<<<<<<< HEAD
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 
-         val split = getBody.weight.toString().split(".")
-         when(split[1]) {
-            "0" -> binding.tvWeight.text = "${split[0]} kg"
-            else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
+         val goal = getDailyData.bodyGoal
+         if (goal > 0) {
+            binding.pbBody.max = goal.roundToInt()
+
+            val split = goal.toString().split(".")
+            when (split[1]) {
+               "0" -> binding.tvGoal.text = "${split[0]} kg"
+               else -> binding.tvGoal.text = "$goal kg"
+            }
          }
-<<<<<<< HEAD
-      }
 
-      val remain = goal - getBody.weight.toString().toDouble()
-      if(remain > 0) {
-          val split = remain.toString().split(".")
-          when (split[1]) {
-              "0" -> binding.tvRemain.text = "${split[0]} kg"
-              else -> binding.tvRemain.text = "$remain kg"
-          }
-=======
+         getBody = dataManager!!.getBody(calendarDate.toString())
+         if (getBody.weight > 0) {
+            binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
+
+            val split = getBody.weight.toString().split(".")
+            when (split[1]) {
+               "0" -> binding.tvWeight.text = "${split[0]} kg"
+               else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
+            }
+         }
 
          val remain = goal - getBody.weight.toString().toDouble()
-         if(remain > 0) {
+         if (remain > 0) {
             val split = remain.toString().split(".")
-            when(split[1]) {
+            when (split[1]) {
                "0" -> binding.tvRemain.text = "${split[0]} kg"
                else -> binding.tvRemain.text = "$remain kg"
             }
-=======
-         binding.tvWeight.text = "${getBody.weight} kg"
-         val remain = getBody.weight.toString().toDouble() - goal
-         if(remain > 0) {
-            binding.tvRemain.text = "$remain kg"
->>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+            binding.tvWeight.text = "${getBody.weight} kg"
          }
->>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
       }
    }
 
@@ -449,7 +362,7 @@ class BodyFragment : Fragment() {
 
       // 골격근량 범위
       val format3 = String.format("%.1f", getBody.muscle)
-      val muscle = format3.replace(".", "").toInt() 
+      val muscle = format3.replace(".", "").toInt()
       when{
          muscle < 267 -> {
             binding.muscleIndicator1.progress = muscle
