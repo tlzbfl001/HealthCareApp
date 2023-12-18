@@ -259,10 +259,23 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
    fun getDrugDaily(date: String): ArrayList<Drug> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Drug> = ArrayList()
       val sql = "select id, name, amount, unit from $TABLE_DRUG where date('$date') between date(startDate) and date(endDate)"
+<<<<<<< HEAD
+=======
+=======
+   fun getDrugDaily(): ArrayList<Drug> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Drug> = ArrayList()
+      val sql = "select id, name, amount, unit from $TABLE_DRUG where date('now') between date(startDate) and date(endDate)"
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Drug()
@@ -300,7 +313,15 @@ class DataManager(private var context: Context?) {
          data.foodGoal = cursor.getInt(1)
          data.waterGoal = cursor.getInt(2)
          data.exerciseGoal = cursor.getInt(3)
+<<<<<<< HEAD
          data.bodyGoal = cursor.getDouble(4)
+=======
+<<<<<<< HEAD
+         data.bodyGoal = cursor.getDouble(4)
+=======
+         data.bodyGoal = cursor.getInt(4)
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
          data.sleepGoal = cursor.getInt(5)
          data.drugGoal = cursor.getInt(6)
          data.regDate = cursor.getString(7)
@@ -500,6 +521,10 @@ class DataManager(private var context: Context?) {
    }
 
    fun updateBody(data: Body){
+<<<<<<< HEAD
+=======
+      Log.d(TAG, "updateBody: $data")
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_BODY set height=${data.height}, weight=${data.weight}, age=${data.age}, gender='${data.gender}', " +
          "exerciseLevel=${data.exerciseLevel}, fat=${data.fat}, muscle=${data.muscle}, bmi=${data.bmi}, bmr=${data.bmr} where id=${data.id}"

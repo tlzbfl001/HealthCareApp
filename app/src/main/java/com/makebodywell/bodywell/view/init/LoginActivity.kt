@@ -53,6 +53,10 @@ import java.time.LocalDate
 import java.util.UUID
 import kotlin.system.exitProcess
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
    private val binding get() = _binding!!
@@ -300,6 +304,10 @@ class LoginActivity : AppCompatActivity() {
       webView.webChromeClient = object : WebChromeClient() {
          override fun onConsoleMessage(cmsg: ConsoleMessage): Boolean {
             Log.d(TAG, cmsg.message())
+<<<<<<< HEAD
+=======
+//            Log.d(TAG, "cmsg: ${cmsg.message().substring(120)}")
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 
             return true
          }
@@ -318,6 +326,55 @@ class LoginActivity : AppCompatActivity() {
       setContentView(webView)
    }
 
+<<<<<<< HEAD
+=======
+   private fun apple2() {
+      webView.webViewClient = AppleWebViewClient()
+      webView.webChromeClient = WebChromeClient()
+      webView.settings.loadWithOverviewMode =true // WebView 화면크기에 맞추도록 설정 (setUseWideViewPort와 같이 선언)
+      webView.settings.useWideViewPort = true // wide viewport 설정 (setLoadWithOverviewMode와 같이 선언)
+      webView.settings.javaScriptEnabled = true // 자바스크립트 사용여부
+      webView.settings.javaScriptCanOpenWindowsAutomatically =true
+      webView.settings.setSupportMultipleWindows(true) // 멀티 윈도우 사용 여부
+      webView.settings.domStorageEnabled = true // 로컬 스토리지 (localStorage) 사용여부
+
+      webView.loadUrl(createUrl())
+   }
+
+   class AppleWebViewClient: WebViewClient() {
+      override fun shouldOverrideUrlLoading(
+         view: WebView?,
+         request: WebResourceRequest?
+      ): Boolean {
+         // 로드하려는 URL 받기
+         val url = request?.url
+         Log.d(TAG, "url: $url")
+
+         if (url != null && url.toString().contains("intent://")) {
+            Log.d(TAG, "shouldOverrideUrlLoading: ")
+         }
+
+         // 리턴값이 true: 여기서 세팅한 대로 동작 명령
+         // 리턴값이 false: 웹뷰 기본 설정대로 동작 명령
+         return when {
+            // url null 체크용
+            url == null -> {
+               false
+            }
+            // 로드하려는 URL이 리다이렉트 서버의 응답URL이면 로그인 정보 추출하기
+            url.toString().contains("intent") -> {
+               val idTokenParam = url.getQueryParameter("id_token")
+               if (idTokenParam != null) {
+
+               }
+               true
+            }
+            else -> false
+         }
+      }
+   }
+
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
    private fun createUrl(): String{
       clientId = getString(R.string.appleServiceId)
       return (authEndpoint

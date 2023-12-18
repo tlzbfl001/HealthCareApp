@@ -1,15 +1,36 @@
 package com.makebodywell.bodywell.view.report
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+import android.content.Context
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+import androidx.activity.OnBackPressedCallback
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.FragmentReportBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+import com.makebodywell.bodywell.view.home.MainFragment
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry

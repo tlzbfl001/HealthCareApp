@@ -1,10 +1,18 @@
 package com.makebodywell.bodywell.view.home.food
 
+<<<<<<< HEAD
+=======
+import android.content.Context
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+<<<<<<< HEAD
+=======
+import androidx.activity.OnBackPressedCallback
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri

@@ -1,20 +1,34 @@
 package com.makebodywell.bodywell.view.home.body
 
+<<<<<<< HEAD
 import android.os.Bundle
 import android.util.Log
+=======
+import android.content.Context
+import android.os.Bundle
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+<<<<<<< HEAD
+=======
+import androidx.activity.OnBackPressedCallback
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
+<<<<<<< HEAD
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.time.LocalDate
 import kotlin.math.log
+=======
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import java.time.LocalDate
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 
 class BodyRecordFragment : Fragment() {
    private var _binding: FragmentBodyRecordBinding? = null
@@ -39,6 +53,7 @@ class BodyRecordFragment : Fragment() {
    }
 
    private fun initView() {
+<<<<<<< HEAD
       val bundle = arguments?.getParcelable<Body>("body")
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
@@ -52,6 +67,21 @@ class BodyRecordFragment : Fragment() {
          binding.etGender.setText(bundle.gender)
 
          when(bundle.exerciseLevel) {
+=======
+      val bundleData = arguments?.getParcelable<Body>("body")
+
+      // 데이터가 존재하는 경우 데이터 가져와서 수정
+      if (bundleData != null) {
+         binding.etBmi.setText(bundleData.bmi.toString())
+         binding.etFat.setText(bundleData.fat.toString())
+         binding.etMuscle.setText(bundleData.muscle.toString())
+         binding.etHeight.setText(bundleData.height.toString())
+         binding.etWeight.setText(bundleData.weight.toString())
+         binding.etAge.setText(bundleData.age.toString())
+         binding.etGender.setText(bundleData.gender)
+
+         when(bundleData.exerciseLevel) {
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
             1 -> {
                binding.radioBtn1.isChecked = true
                exerciseLevel = 1
@@ -134,13 +164,31 @@ class BodyRecordFragment : Fragment() {
          if(bmi == "") bmi = "0.0"
          if(bmr == "") bmr = "0.0"
 
+<<<<<<< HEAD
          if(bundle == null) {
+=======
+         if(bundleData == null) {
+<<<<<<< HEAD
+            dataManager!!.insertBody(Body(height = height.toDouble(), weight = String.format("%.1f", weight.toDouble()).toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
+            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            dataManager!!.updateBody(Body(id = bundleData.id, height = height.toDouble(), weight = String.format("%.1f", weight.toDouble()).toDouble(), age = age.toInt(),
+               gender = binding.etGender.text.toString(), exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
+=======
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
             dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
                exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
+<<<<<<< HEAD
             dataManager!!.updateBody(Body(id = bundle.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
                exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
+=======
+            dataManager!!.updateBody(Body(id = bundleData.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
 

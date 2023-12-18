@@ -1,5 +1,9 @@
 package com.makebodywell.bodywell.view.init
 
+<<<<<<< HEAD
+=======
+import android.content.Context
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -8,6 +12,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+<<<<<<< HEAD
+=======
+import androidx.activity.OnBackPressedCallback
+>>>>>>> 3efab1c7d38269b4ee96ffb382a8145466a19130
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
 
