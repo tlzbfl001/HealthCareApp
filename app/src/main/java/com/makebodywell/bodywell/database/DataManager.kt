@@ -259,10 +259,17 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+<<<<<<< HEAD
+   fun getDrugDaily(date: String): ArrayList<Drug> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Drug> = ArrayList()
+      val sql = "select id, name, amount, unit from $TABLE_DRUG where date('$date') between date(startDate) and date(endDate)"
+=======
    fun getDrugDaily(): ArrayList<Drug> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Drug> = ArrayList()
       val sql = "select id, name, amount, unit from $TABLE_DRUG where date('now') between date(startDate) and date(endDate)"
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Drug()
@@ -300,7 +307,11 @@ class DataManager(private var context: Context?) {
          data.foodGoal = cursor.getInt(1)
          data.waterGoal = cursor.getInt(2)
          data.exerciseGoal = cursor.getInt(3)
+<<<<<<< HEAD
+         data.bodyGoal = cursor.getDouble(4)
+=======
          data.bodyGoal = cursor.getInt(4)
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
          data.sleepGoal = cursor.getInt(5)
          data.drugGoal = cursor.getInt(6)
          data.regDate = cursor.getString(7)

@@ -28,6 +28,10 @@ import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 import kotlin.math.abs
+<<<<<<< HEAD
+import kotlin.math.roundToInt
+=======
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
 
 class MainFragment : Fragment() {
    private var _binding: FragmentMainBinding? = null
@@ -128,7 +132,11 @@ class MainFragment : Fragment() {
       }
 
       // 차트 값 지정
+<<<<<<< HEAD
+      recordView()
+=======
       setupChart()
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -199,19 +207,35 @@ class MainFragment : Fragment() {
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
    }
 
+<<<<<<< HEAD
+   private fun recordView() {
+=======
    private fun setupChart() {
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       // 프로그래스바 초기화
       binding.pbFood.progress = 0
       binding.pbWater.progress = 0
       binding.pbExercise.progress = 0
+<<<<<<< HEAD
+      binding.pbBody.progress = 0
+
+=======
 
       // 프로그래스바 설정
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
       val foodSum = getFoodIntake(requireActivity(), selectedDate.toString())
       val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
+<<<<<<< HEAD
+      val getBody = dataManager!!.getBody(selectedDate.toString())
+
+      // 프로그래스바 설정
+      if(getDailyData.foodGoal > 0 && foodSum > 0) {
+=======
 
       if (getDailyData.foodGoal > 0 && foodSum > 0) {
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
          binding.pbFood.max = getDailyData.foodGoal
          binding.pbFood.progress = foodSum
       }else if(getDailyData.foodGoal == 0 && foodSum > 0) {
@@ -219,15 +243,26 @@ class MainFragment : Fragment() {
          binding.pbFood.progress = foodSum
       }
 
+<<<<<<< HEAD
+      if(getDailyData.waterGoal > 0 && getWater.water > 0) {
+         binding.pbWater.max = getDailyData.waterGoal
+         binding.pbWater.progress = getWater.water
+      }else if(getDailyData.waterGoal == 0 && getWater.water > 0) {
+=======
       if (getDailyData.waterGoal > 0 && getWater.water > 0) {
          binding.pbWater.max = getDailyData.waterGoal
          binding.pbWater.progress = getWater.water
       }else if(getDailyData.foodGoal == 0 && getWater.water > 0) {
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
          binding.pbWater.max = getWater.water
          binding.pbWater.progress = getWater.water
       }
 
+<<<<<<< HEAD
+      if(getDailyData.exerciseGoal > 0 && exerciseSum > 0) {
+=======
       if (getDailyData.exerciseGoal > 0 && exerciseSum > 0) {
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
          binding.pbExercise.max = getDailyData.exerciseGoal
          binding.pbExercise.progress = exerciseSum
       }else if(getDailyData.exerciseGoal == 0 && exerciseSum > 0) {
@@ -235,8 +270,35 @@ class MainFragment : Fragment() {
          binding.pbExercise.progress = exerciseSum
       }
 
+<<<<<<< HEAD
+      val weightSplit = getBody.weight.toString().split(".")
+      val bodyGoalSplit = getDailyData.bodyGoal.toString().split(".")
+
+      val weight = when(weightSplit[1]) {
+         "0" -> weightSplit[0]
+         else -> getBody.weight
+      }
+      val bodyGoal = when(bodyGoalSplit[1]) {
+         "0" -> bodyGoalSplit[0]
+         else -> getDailyData.bodyGoal
+      }
+
+      if(getDailyData.bodyGoal > 0 && getBody.weight > 0) {
+         binding.pbBody.max = getDailyData.bodyGoal.roundToInt()
+         binding.pbBody.progress = getBody.weight.toInt()
+      }else if(getDailyData.foodGoal == 0 && getBody.weight > 0) {
+         binding.pbBody.max = getBody.weight.toInt()
+         binding.pbBody.progress = getBody.weight.toInt()
+      }
+
       binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
       binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
+      binding.tvBody.text = "$weight/$bodyGoal kg"
+=======
+      binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
+      binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
+      binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
    }
 }
