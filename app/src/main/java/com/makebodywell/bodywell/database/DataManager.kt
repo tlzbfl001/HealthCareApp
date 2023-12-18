@@ -259,10 +259,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getDrugDaily(): ArrayList<Drug> {
+   fun getDrugDaily(date: String): ArrayList<Drug> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Drug> = ArrayList()
-      val sql = "select id, name, amount, unit from $TABLE_DRUG where date('now') between date(startDate) and date(endDate)"
+      val sql = "select id, name, amount, unit from $TABLE_DRUG where date('$date') between date(startDate) and date(endDate)"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Drug()
