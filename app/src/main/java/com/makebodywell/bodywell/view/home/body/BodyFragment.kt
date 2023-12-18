@@ -62,6 +62,7 @@ class BodyFragment : Fragment() {
    private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
+      // 목표 설정
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -83,7 +84,11 @@ class BodyFragment : Fragment() {
 
             binding.pbBody.max = et.text.toString().toInt()
             binding.tvGoal.text = "${et.text} kg"
-            binding.tvRemain.text = "${et.text.toString().toInt() - getBody.weight.toString().toDouble().roundToInt()} kg"
+
+            val remain = getBody.weight.toString().toDouble() - et.text.toString().toInt()
+            if(remain > 0) {
+               binding.tvRemain.text = "$remain kg"
+            }
          }
 
          dialog.dismiss()
@@ -179,12 +184,13 @@ class BodyFragment : Fragment() {
    }
 
    private fun setupGoal() {
+      binding.tvWeight.text = "0 kg"
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       val goal = getDailyData.bodyGoal
-      if(goal != 0) {
+      if(goal > 0) {
          binding.pbBody.max = goal
          binding.tvGoal.text = "$goal kg"
       }
