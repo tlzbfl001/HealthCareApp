@@ -5,8 +5,11 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+<<<<<<< HEAD
 import android.text.InputType
 import android.util.Log
+=======
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +25,10 @@ import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+<<<<<<< HEAD
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+=======
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
@@ -65,7 +71,10 @@ class BodyFragment : Fragment() {
    private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
+<<<<<<< HEAD
       // 목표 설정
+=======
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -80,6 +89,7 @@ class BodyFragment : Fragment() {
             Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyData.regDate == "") {
+<<<<<<< HEAD
                dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
             }else {
                dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
@@ -98,6 +108,16 @@ class BodyFragment : Fragment() {
             }else {
                binding.tvRemain.text = "0 kg"
             }
+=======
+               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }else {
+               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }
+
+            binding.pbBody.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kg"
+            binding.tvRemain.text = "${et.text.toString().toInt() - getBody.weight.toString().toDouble().roundToInt()} kg"
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
          }
 
          dialog.dismiss()
@@ -193,12 +213,16 @@ class BodyFragment : Fragment() {
    }
 
    private fun setupGoal() {
+<<<<<<< HEAD
       binding.tvWeight.text = "0 kg"
+=======
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       val goal = getDailyData.bodyGoal
+<<<<<<< HEAD
       if(goal > 0) {
          binding.pbBody.max = goal.roundToInt()
 
@@ -207,11 +231,17 @@ class BodyFragment : Fragment() {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
             else -> binding.tvGoal.text = "$goal kg"
          }
+=======
+      if(goal != 0) {
+         binding.pbBody.max = goal
+         binding.tvGoal.text = "$goal kg"
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
       }
 
       getBody = dataManager!!.getBody(calendarDate.toString())
       if(getBody.weight > 0) {
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
+<<<<<<< HEAD
 
          val split = getBody.weight.toString().split(".")
          when(split[1]) {
@@ -226,6 +256,12 @@ class BodyFragment : Fragment() {
                "0" -> binding.tvRemain.text = "${split[0]} kg"
                else -> binding.tvRemain.text = "$remain kg"
             }
+=======
+         binding.tvWeight.text = "${getBody.weight} kg"
+         val remain = getBody.weight.toString().toDouble() - goal
+         if(remain > 0) {
+            binding.tvRemain.text = "$remain kg"
+>>>>>>> e5f18d1dfc2f1449657445a53cc6b46714d681ac
          }
       }
    }
