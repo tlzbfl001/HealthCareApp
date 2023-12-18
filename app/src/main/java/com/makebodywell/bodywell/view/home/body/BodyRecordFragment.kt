@@ -134,12 +134,12 @@ class BodyRecordFragment : Fragment() {
          if(bmr == "") bmr = "0.0"
 
          if(bundleData == null) {
-            dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+            dataManager!!.insertBody(Body(height = height.toDouble(), weight = String.format("%.1f", weight.toDouble()).toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
                exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateBody(Body(id = bundleData.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
-               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
+            dataManager!!.updateBody(Body(id = bundleData.id, height = height.toDouble(), weight = String.format("%.1f", weight.toDouble()).toDouble(), age = age.toInt(),
+               gender = binding.etGender.text.toString(), exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
 

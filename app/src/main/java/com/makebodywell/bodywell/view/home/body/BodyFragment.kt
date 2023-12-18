@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +22,7 @@ import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
@@ -77,17 +80,23 @@ class BodyFragment : Fragment() {
             Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
             }else {
-               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
             }
 
-            binding.pbBody.max = et.text.toString().toInt()
+            binding.pbBody.max = et.text.toString().toDouble().roundToInt()
             binding.tvGoal.text = "${et.text} kg"
 
-            val remain = getBody.weight.toString().toDouble() - et.text.toString().toInt()
+            val remain = et.text.toString().toDouble() - getBody.weight.toString().toDouble()
             if(remain > 0) {
-               binding.tvRemain.text = "$remain kg"
+               val split = remain.toString().split(".")
+               when(split[1]) {
+                  "0" -> binding.tvRemain.text = "${split[0]} kg"
+                  else -> binding.tvRemain.text = "$remain kg"
+               }
+            }else {
+               binding.tvRemain.text = "0 kg"
             }
          }
 
@@ -191,17 +200,32 @@ class BodyFragment : Fragment() {
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       val goal = getDailyData.bodyGoal
       if(goal > 0) {
-         binding.pbBody.max = goal
-         binding.tvGoal.text = "$goal kg"
+         binding.pbBody.max = goal.roundToInt()
+
+         val split = goal.toString().split(".")
+         when(split[1]) {
+            "0" -> binding.tvGoal.text = "${split[0]} kg"
+            else -> binding.tvGoal.text = "$goal kg"
+         }
       }
 
       getBody = dataManager!!.getBody(calendarDate.toString())
       if(getBody.weight > 0) {
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
-         binding.tvWeight.text = "${getBody.weight} kg"
-         val remain = getBody.weight.toString().toDouble() - goal
+
+         val split = getBody.weight.toString().split(".")
+         when(split[1]) {
+            "0" -> binding.tvWeight.text = "${split[0]} kg"
+            else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
+         }
+
+         val remain = goal - getBody.weight.toString().toDouble()
          if(remain > 0) {
-            binding.tvRemain.text = "$remain kg"
+            val split = remain.toString().split(".")
+            when(split[1]) {
+               "0" -> binding.tvRemain.text = "${split[0]} kg"
+               else -> binding.tvRemain.text = "$remain kg"
+            }
          }
       }
    }

@@ -300,7 +300,7 @@ class DataManager(private var context: Context?) {
          data.foodGoal = cursor.getInt(1)
          data.waterGoal = cursor.getInt(2)
          data.exerciseGoal = cursor.getInt(3)
-         data.bodyGoal = cursor.getInt(4)
+         data.bodyGoal = cursor.getDouble(4)
          data.sleepGoal = cursor.getInt(5)
          data.drugGoal = cursor.getInt(6)
          data.regDate = cursor.getString(7)
