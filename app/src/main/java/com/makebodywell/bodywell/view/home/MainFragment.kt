@@ -215,7 +215,6 @@ class MainFragment : Fragment() {
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       val getBody = dataManager!!.getBody(selectedDate.toString())
 
-      // 프로그래스바 설정
       if(getDailyData.foodGoal > 0 && foodSum > 0) {
          binding.pbFood.max = getDailyData.foodGoal
          binding.pbFood.progress = foodSum

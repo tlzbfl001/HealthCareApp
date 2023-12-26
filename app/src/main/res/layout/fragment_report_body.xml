@@ -42,6 +42,13 @@
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/ivLogo"
                 app:layout_constraintStart_toStartOf="parent"/>
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:background="#dddddd"
+               app:layout_constraintTop_toTopOf="@id/tvReport"
+               app:layout_constraintStart_toEndOf="@id/tvReport"/>
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvDate"
                 android:layout_width="wrap_content"
@@ -94,8 +101,7 @@
                 android:id="@+id/tvDaily"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rec_12_border_gray"
-                android:backgroundTint="#5A8EFF"
+                android:background="@drawable/rec_12_blue"
                 android:layout_marginRight="5dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
@@ -126,6 +132,7 @@
                 app:layout_constraintStart_toStartOf="@id/cvDate"
                 app:layout_constraintEnd_toEndOf="@id/cvDate"/>
             <TextView
+                android:id="@+id/tvMonthly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rec_12_border_gray"

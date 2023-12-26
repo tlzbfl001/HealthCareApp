@@ -52,6 +52,7 @@ class BodyFragment : Fragment() {
       dataManager!!.open()
 
       initView()
+      setupGoal()
       dailyView()
 
       return binding.root
@@ -59,8 +60,6 @@ class BodyFragment : Fragment() {
 
    private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
-
-      getBody = dataManager!!.getBody(calendarDate.toString())
 
       // 목표 설정
       val dialog = Dialog(requireActivity())
@@ -95,10 +94,6 @@ class BodyFragment : Fragment() {
             }else {
                binding.tvRemain.text = "0 kg"
             }
-
-            binding.pbBody.max = et.text.toString().toDouble().roundToInt()
-            binding.tvGoal.text = "${et.text} kg"
-            binding.tvRemain.text = "${et.text.toString().toDouble() - getBody.weight.toString().toDouble()} kg"
          }
 
          dialog.dismiss()
@@ -116,12 +111,14 @@ class BodyFragment : Fragment() {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
+         dailyView()
       }
 
       binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
+         dailyView()
       }
 
       binding.cvFood.setOnClickListener {
@@ -148,7 +145,7 @@ class BodyFragment : Fragment() {
          if(getBody.regDate == "") {
             replaceFragment1(requireActivity(), BodyRecordFragment())
          }else {
-            var bundle = Bundle()
+            val bundle = Bundle()
             val body = Body(id = getBody.id, height = getBody.height, weight = getBody.weight, age = getBody.age, gender = getBody.gender,
                exerciseLevel = getBody.exerciseLevel, fat = getBody.fat, muscle = getBody.muscle, bmi = getBody.bmi, bmr = getBody.bmr)
             bundle.putParcelable("body", body)
@@ -211,40 +208,25 @@ class BodyFragment : Fragment() {
          }
       }
 
+      getBody = dataManager!!.getBody(calendarDate.toString())
       if (getBody.weight > 0) {
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
 
-         val goal = getDailyData.bodyGoal
-         if (goal > 0) {
-            binding.pbBody.max = goal.roundToInt()
-
-            val split = goal.toString().split(".")
-            when (split[1]) {
-               "0" -> binding.tvGoal.text = "${split[0]} kg"
-               else -> binding.tvGoal.text = "$goal kg"
-            }
+         val split = getBody.weight.toString().split(".")
+         when (split[1]) {
+            "0" -> binding.tvWeight.text = "${split[0]} kg"
+            else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
          }
+      }
 
-         getBody = dataManager!!.getBody(calendarDate.toString())
-         if (getBody.weight > 0) {
-            binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
-
-            val split = getBody.weight.toString().split(".")
-            when (split[1]) {
-               "0" -> binding.tvWeight.text = "${split[0]} kg"
-               else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
-            }
+      val remain = goal - getBody.weight.toString().toDouble()
+      if (remain > 0) {
+         val split = remain.toString().split(".")
+         when (split[1]) {
+            "0" -> binding.tvRemain.text = "${split[0]} kg"
+            else -> binding.tvRemain.text = "$remain kg"
          }
-
-         val remain = goal - getBody.weight.toString().toDouble()
-         if (remain > 0) {
-            val split = remain.toString().split(".")
-            when (split[1]) {
-               "0" -> binding.tvRemain.text = "${split[0]} kg"
-               else -> binding.tvRemain.text = "$remain kg"
-            }
-            binding.tvWeight.text = "${getBody.weight} kg"
-         }
+         binding.tvWeight.text = "${getBody.weight} kg"
       }
    }
 

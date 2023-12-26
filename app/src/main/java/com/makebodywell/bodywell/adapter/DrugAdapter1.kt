@@ -42,12 +42,11 @@ class DrugAdapter1 (
 
         // 복용횟수 초기화
         check = itemList[position].endDate.toInt()
-        fragment.binding.tvDrugCount.text = "${check}회"
-
-        // check 값 설정
+        // 체크값 설정
         if(itemList[position].count == 1) {
             holder.tvCheck.isChecked = true
         }
+        fragment.binding.tvDrugCount.text = "${check}회"
 
         val getDailyData = dataManager!!.getDailyData(itemList[position].type)
         val result = getDailyData.drugGoal - check
@@ -63,8 +62,8 @@ class DrugAdapter1 (
             }else {
                 if(check > 0) {
                     check -= 1
+                    dataManager!!.updateDrugTime(Drug(id = itemList[position].id, name = itemList[position].startDate, count = 0))
                 }
-                dataManager!!.updateDrugTime(Drug(id = itemList[position].id, name = itemList[position].startDate, count = 0))
             }
 
             val result = getDailyData.drugGoal - check

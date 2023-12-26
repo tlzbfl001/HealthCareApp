@@ -3,7 +3,6 @@ package com.makebodywell.bodywell.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
-import android.util.Log
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_DATA
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
@@ -26,7 +25,6 @@ import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Text
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 
 class DataManager(private var context: Context?) {
    private var dbHelper: DBHelper? = null
@@ -183,9 +181,23 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun getBodyDaily(date: String) : Body {
+      val db = dbHelper!!.readableDatabase
+      val data = Body()
+//      val sql = "select weight, regDate from body where regDate < '$date' order by regDate desc limit 7"
+      val sql = "select weight, regDate from body where regDate=strftime('%Y-%m-%d',datetime('$date', '-1 day'))"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.weight = cursor.getDouble(0)
+         data.regDate = cursor.getString(1)
+      }
+      cursor.close()
+      return data
+   }
+
    fun getDrug() : ArrayList<Drug> {
       val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Drug> = ArrayList()
+      val list = ArrayList<Drug>()
       val sql = "select * from $TABLE_DRUG"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
@@ -395,7 +407,7 @@ class DataManager(private var context: Context?) {
       val values = ContentValues()
       values.put("height", data.height)
       values.put("weight", data.weight)
-      values.put("weight", data.age)
+      values.put("age", data.age)
       values.put("gender", data.gender)
       values.put("exerciseLevel", data.exerciseLevel)
       values.put("fat", data.fat)
