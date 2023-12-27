@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.apollographql.apollo3.api.toInput
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.FragmentReportBodyBinding
 import com.makebodywell.bodywell.model.Body
@@ -20,11 +21,15 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.sundayForDate
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class ReportBodyFragment : Fragment() {
    private var _binding: FragmentReportBodyBinding? = null
@@ -82,42 +87,68 @@ class ReportBodyFragment : Fragment() {
       }
 
       binding.ivPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvCalTitle.text = dateFormat(calendarDate)
-
          when(dateType) {
-            0->dailyView()
-            1->weeklyView()
-            2->monthlyView()
+            0->{
+               calendarDate = calendarDate!!.minusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               dailyView()
+            }
+            1->{
+               calendarDate = calendarDate!!.minusWeeks(1)
+               val calendar = Calendar.getInstance()
+               val split = calendarDate.toString().split("-")
+               calendar.set(split[0].toInt(), split[1].toInt()-1, split[2].toInt())
+               binding.tvCalTitle.text = "${split[0]}년 ${split[1]}월 ${calendar.get(Calendar.WEEK_OF_MONTH)}주차"
+               weeklyView()
+            }
+            2->{
+               calendarDate = calendarDate!!.minusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               monthlyView()
+            }
          }
       }
 
       binding.ivNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvCalTitle.text = dateFormat(calendarDate)
-
          when(dateType) {
-            0->dailyView()
-            1->weeklyView()
-            2->monthlyView()
+            0->{
+               calendarDate = calendarDate!!.plusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               dailyView()
+            }
+            1->{
+               calendarDate = calendarDate!!.plusWeeks(1)
+               val calendar = Calendar.getInstance()
+               val split = calendarDate.toString().split("-")
+               calendar.set(split[0].toInt(), split[1].toInt()-1, split[2].toInt())
+               binding.tvCalTitle.text = "${split[0]}년 ${split[1]}월 ${calendar.get(Calendar.WEEK_OF_MONTH)}주차"
+               weeklyView()
+            }
+            2->{
+               calendarDate = calendarDate!!.plusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               monthlyView()
+            }
          }
       }
 
       binding.tvDaily.setOnClickListener {
+         binding.tvCalTitle.text = dateFormat(calendarDate)
          dailyView()
       }
 
       binding.tvWeekly.setOnClickListener {
          weeklyView()
+         val calendar = Calendar.getInstance()
+         val split = calendarDate.toString().split("-")
+         calendar.set(split[0].toInt(), split[1].toInt()-1, split[2].toInt())
+         binding.tvCalTitle.text = "${split[0]}년 ${split[1]}월 ${calendar.get(Calendar.WEEK_OF_MONTH)}주차"
       }
 
       binding.tvMonthly.setOnClickListener {
+         binding.tvCalTitle.text = dateFormat(calendarDate)
          monthlyView()
       }
-
-//      binding.tvReport.setOnClickListener {
-//         dataManager!!.insertBody(Body(weight = binding.edittext.text.toString().toDouble(), regDate = calendarDate.toString()))
-//      }
    }
 
    private fun dailyView() {
@@ -137,7 +168,6 @@ class ReportBodyFragment : Fragment() {
          itemList.add(Body(weight = getBodyDaily.weight, regDate = formatter2.format(formatter1.parse(date.toString())!!)))
       }
 
-      // 차트세팅
       setupChart(binding.lineChart1)
       setupChart(binding.lineChart2)
       setupChart(binding.lineChart3)
@@ -154,13 +184,30 @@ class ReportBodyFragment : Fragment() {
 
       itemList.clear()
 
-      for(i in 0 until 7) {
-         val date = calendarDate.minusDays(i.toLong())
-         val getBodyDaily = dataManager!!.getBodyDaily(date.toString())
-         itemList.add(Body(weight = getBodyDaily.weight, regDate = formatter2.format(formatter1.parse(date.toString())!!)))
+      val weekArray = weekArray(calendarDate!!)
+      val startDate = sundayForDate(calendarDate!!)
+      val endDate = startDate!!.plusWeeks(1).minusDays(1)
+      val getBodyWeekly = dataManager!!.getBodyWeekly(startDate.toString(), endDate.toString())
+
+      for(i in 0 until weekArray.size) {
+         var check = false
+         for(j in 0 until getBodyWeekly.size) {
+            if(weekArray[i].toString() == getBodyWeekly[j].regDate) {
+               itemList.add(Body(weight = getBodyWeekly[j].weight, regDate = formatter2.format(formatter1.parse("${weekArray[i]}")!!)))
+               check = true
+            }
+            if(j == (getBodyWeekly.size -1) && !check) {
+               itemList.add(Body(weight = 0.0, regDate = formatter2.format(formatter1.parse("${weekArray[i]}")!!)))
+            }
+         }
       }
 
-      // 차트세팅
+      if(itemList.size == 0) {
+         for(i in 0 until weekArray.size) {
+            itemList.add(Body(weight = 0.0, regDate = formatter2.format(formatter1.parse("${weekArray[i]}")!!)))
+         }
+      }
+
       setupChart(binding.lineChart1)
       setupChart(binding.lineChart2)
       setupChart(binding.lineChart3)
@@ -202,15 +249,14 @@ class ReportBodyFragment : Fragment() {
       lineChart.setExtraOffsets(0f, 0f, 0f, 10f)
 
       val lineDataSet = LineDataSet(entries, "data")
-      lineDataSet.lineWidth = 3.4f
-      lineDataSet.circleRadius = 3.3f
+      lineDataSet.lineWidth = 3f
+      lineDataSet.circleRadius = 3f
       lineDataSet.color = Color.parseColor("#EAEAEA")
       lineDataSet.setCircleColor(resources.getColor(R.color.black))
       lineDataSet.setDrawCircles(true)
       lineDataSet.setDrawCircleHole(false)
       lineDataSet.setDrawHorizontalHighlightIndicator(false)
       lineDataSet.setDrawHighlightIndicators(false)
-      lineDataSet.setCircleColors(colors, activity)
 
       val dataSets = ArrayList<ILineDataSet>()
       dataSets.add(lineDataSet)

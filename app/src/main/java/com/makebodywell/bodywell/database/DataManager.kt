@@ -184,7 +184,6 @@ class DataManager(private var context: Context?) {
    fun getBodyDaily(date: String) : Body {
       val db = dbHelper!!.readableDatabase
       val data = Body()
-//      val sql = "select weight, regDate from body where regDate < '$date' order by regDate desc limit 7"
       val sql = "select weight, regDate from body where regDate=strftime('%Y-%m-%d',datetime('$date', '-1 day'))"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
@@ -193,6 +192,21 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return data
+   }
+
+   fun getBodyWeekly(start: String, end: String) : ArrayList<Body> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Body>()
+      val sql = "select weight, regDate from body where regDate BETWEEN '$start' and '$end'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         var data = Body()
+         data.weight = cursor.getDouble(0)
+         data.regDate = cursor.getString(1)
+         list.add(data)
+      }
+      cursor.close()
+      return list
    }
 
    fun getDrug() : ArrayList<Drug> {

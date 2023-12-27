@@ -63,7 +63,7 @@ class CalendarUtil {
          return days
       }
 
-      private fun sundayForDate(current: LocalDate): LocalDate? {
+      fun sundayForDate(current: LocalDate): LocalDate? {
          var curr = current
          val oneWeekAgo = curr.minusWeeks(1)
          while (curr.isAfter(oneWeekAgo)) {
