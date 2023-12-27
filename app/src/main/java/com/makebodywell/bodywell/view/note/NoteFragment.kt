@@ -95,7 +95,7 @@ class NoteFragment : Fragment() {
 
    private fun setWeekView() {
       // 텍스트 초기화
-      binding.tvCalTitle.text = calendarTitle(selectedDate)
+      binding.tvCalTitle.text = calendarTitle()
       binding.tvDate.text = dateFormat(selectedDate)
 
       val getNote = dataManager!!.getNote(selectedDate.toString())

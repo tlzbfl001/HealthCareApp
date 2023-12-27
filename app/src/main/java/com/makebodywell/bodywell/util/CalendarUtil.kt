@@ -5,6 +5,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
+import java.util.Calendar
 
 class CalendarUtil {
    companion object {
@@ -14,9 +15,9 @@ class CalendarUtil {
       var drugSelected1: LocalDate? = null
       var drugSelected2: LocalDate? = null
 
-      fun calendarTitle(date: LocalDate): String? {
+      fun calendarTitle(): String? {
          val formatter = DateTimeFormatter.ofPattern("yyyy  MMMM")
-         return date.format(formatter)
+         return selectedDate.format(formatter)
       }
 
       fun dateFormat(date: LocalDate?): String? {
@@ -24,9 +25,21 @@ class CalendarUtil {
          return date?.format(formatter)
       }
 
-      fun monthArray(date: LocalDate?): ArrayList<LocalDate?> {
+      fun weekFormat(date: LocalDate?): String? {
+         val calendar = Calendar.getInstance()
+         val split = date.toString().split("-")
+         calendar.set(split[0].toInt(), split[1].toInt()-1, split[2].toInt())
+         return "${split[0]}년 ${split[1]}월 ${calendar.get(Calendar.WEEK_OF_MONTH)}주차"
+      }
+
+      fun monthFormat(date: LocalDate?): String? {
+         val split = date.toString().split("-")
+         return "${split[0]}년 ${split[1]}월"
+      }
+
+      fun monthArray(): ArrayList<LocalDate?> {
          val days = ArrayList<LocalDate?>()
-         val yearMonth = YearMonth.from(date)
+         val yearMonth = YearMonth.from(selectedDate)
          val daysInMonth = yearMonth.lengthOfMonth()
          val firstOfMonth = selectedDate.withDayOfMonth(1)
          var dayOfWeek = firstOfMonth.dayOfWeek.value
@@ -52,9 +65,23 @@ class CalendarUtil {
          return days
       }
 
-      fun weekArray(selectedDate: LocalDate?): ArrayList<LocalDate?> {
+      fun monthArray2(date: LocalDate?): ArrayList<LocalDate?> {
          val days = ArrayList<LocalDate?>()
-         var sunday = sundayForDate(selectedDate!!)
+         val yearMonth = YearMonth.from(date)
+         val daysInMonth = yearMonth.lengthOfMonth()
+         var firstOfMonth = date?.withDayOfMonth(1)
+
+         for (i in 0 until daysInMonth) {
+            days.add(firstOfMonth)
+            firstOfMonth = firstOfMonth?.plusDays(1)
+         }
+
+         return days
+      }
+
+      fun weekArray(date: LocalDate): ArrayList<LocalDate?> {
+         val days = ArrayList<LocalDate?>()
+         var sunday = sundayForDate(date)
          val endDate = sunday!!.plusWeeks(1)
          while (sunday!!.isBefore(endDate)) {
             days.add(sunday)
@@ -63,7 +90,7 @@ class CalendarUtil {
          return days
       }
 
-      fun sundayForDate(current: LocalDate): LocalDate? {
+      private fun sundayForDate(current: LocalDate): LocalDate? {
          var curr = current
          val oneWeekAgo = curr.minusWeeks(1)
          while (curr.isAfter(oneWeekAgo)) {

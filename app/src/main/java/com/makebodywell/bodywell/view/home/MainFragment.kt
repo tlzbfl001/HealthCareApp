@@ -116,7 +116,7 @@ class MainFragment : Fragment() {
 
    @SuppressLint("ClickableViewAccessibility")
    private fun setWeekView() {
-      binding.tvCalTitle.text = calendarTitle(selectedDate)
+      binding.tvCalTitle.text = calendarTitle()
       days = weekArray(selectedDate)
       val adapter = CalendarAdapter1(days)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)

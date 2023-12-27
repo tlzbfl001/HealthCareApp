@@ -68,8 +68,8 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    }
 
    private fun setMonthView() {
-      tvCalTitle?.text = calendarTitle(selectedDate)
-      val days = monthArray(selectedDate)
+      tvCalTitle?.text = calendarTitle()
+      val days = monthArray()
       val adapter = CalendarAdapter2(context, days, this)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
       recyclerView?.layoutManager = layoutManager

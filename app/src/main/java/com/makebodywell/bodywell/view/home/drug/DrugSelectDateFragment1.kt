@@ -79,8 +79,8 @@ class DrugSelectDateFragment1 : Fragment(), CalendarAdapter3.OnItemListener {
    }
 
    private fun setMonthView() {
-      binding.tvCalTitle.text = calendarTitle(selectedDate)
-      val days = monthArray(selectedDate)
+      binding.tvCalTitle.text = calendarTitle()
+      val days = monthArray()
       val adapter = CalendarAdapter3(requireContext(), this, days)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
 

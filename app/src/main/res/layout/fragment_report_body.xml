@@ -343,10 +343,9 @@
                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.constraintlayout.widget.ConstraintLayout>
-         <LinearLayout
+         <androidx.constraintlayout.widget.ConstraintLayout
              android:layout_width="match_parent"
              android:layout_height="0dp"
-             android:orientation="vertical"
              app:layout_constraintTop_toBottomOf="@id/cl"
              app:layout_constraintStart_toStartOf="parent"
              app:layout_constraintBottom_toBottomOf="parent"
@@ -355,54 +354,139 @@
                 android:id="@+id/tvWeight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="25dp"
                 android:text="체중 (kg)"
                 android:textSize="14dp"
-                android:textColor="@color/black"/>
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart1"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/box1"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/box1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
                 android:layout_marginTop="6dp"
-                android:background="@color/white"/>
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/tvWeight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tvBmi"
+                app:layout_constraintVertical_weight="1">
+               <com.github.mikephil.charting.charts.LineChart
+                   android:id="@+id/lineChart1"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:background="@color/white"
+                   android:visibility="gone"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+               <TextView
+                   android:id="@+id/tvEmpty1"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="데이터가 없습니다."
+                   android:textSize="14dp"
+                   android:textColor="#EEEEEE"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <TextView
                 android:id="@+id/tvBmi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="25dp"
                 android:text="BMI (체질량지수)"
                 android:textSize="14dp"
-                android:textColor="@color/black"/>
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart2"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/box1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/box2"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/box2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
                 android:layout_marginTop="6dp"
-                android:background="@color/white"/>
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/tvBmi"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tvFat"
+                app:layout_constraintVertical_weight="1">
+               <com.github.mikephil.charting.charts.LineChart
+                   android:id="@+id/lineChart2"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:background="@color/white"
+                   android:visibility="gone"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+               <TextView
+                   android:id="@+id/tvEmpty2"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="데이터가 없습니다."
+                   android:textSize="14dp"
+                   android:textColor="#EEEEEE"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <TextView
                 android:id="@+id/tvFat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="25dp"
                 android:text="체지방률(%)"
                 android:textSize="14dp"
                 android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/lineChart2"
-                app:layout_constraintStart_toStartOf="parent"/>
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart3"
+                app:layout_constraintTop_toBottomOf="@id/box2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/box3"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/box3"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
                 android:layout_marginTop="6dp"
+                android:background="@color/white"
                 android:layout_marginBottom="20dp"
-                android:background="@color/white"/>
-         </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/tvFat"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_weight="1">
+               <com.github.mikephil.charting.charts.LineChart
+                   android:id="@+id/lineChart3"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:background="@color/white"
+                   android:visibility="gone"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+               <TextView
+                   android:id="@+id/tvEmpty3"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="데이터가 없습니다."
+                   android:textSize="14dp"
+                   android:textColor="#EEEEEE"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+         </androidx.constraintlayout.widget.ConstraintLayout>
       </androidx.constraintlayout.widget.ConstraintLayout>
    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
