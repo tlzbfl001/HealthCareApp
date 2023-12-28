@@ -36,25 +36,6 @@ class ReportFoodFragment : Fragment() {
    ): View {
       _binding = FragmentReportFoodBinding.inflate(layoutInflater)
 
-      setupView()
-
-      settingChart1(binding.chart1)
-      settingChart2(binding.chart2)
-      settingChart3(binding.chart3)
-
-      return binding.root
-   }
-
-   private fun setupView() {
-      binding.pbBody.max = 100
-      binding.pbBody.progress = 50
-      binding.pbFood.max = 100
-      binding.pbFood.progress = 50
-      binding.pbExercise.max = 100
-      binding.pbExercise.progress = 50
-      binding.pbDrug.max = 100
-      binding.pbDrug.progress = 50
-
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbBody.setOnClickListener {
@@ -78,6 +59,14 @@ class ReportFoodFragment : Fragment() {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvCalTitle.text = dateFormat(calendarDate)
       }
+
+      buttonUI()
+
+      settingChart1(binding.chart1)
+      settingChart2(binding.chart2)
+      settingChart3(binding.chart3)
+
+      return binding.root
    }
 
    private fun settingChart1(chart: CombinedChart) {
@@ -85,7 +74,6 @@ class ReportFoodFragment : Fragment() {
 
       val data = CombinedData()
 
-      // lineChart 설정
       val lineData = LineData()
       val entries = ArrayList<Entry>()
 
@@ -270,5 +258,16 @@ class ReportFoodFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
+   }
+
+   private fun buttonUI() {
+      binding.pbBody.max = 100
+      binding.pbBody.progress = 50
+      binding.pbFood.max = 100
+      binding.pbFood.progress = 50
+      binding.pbExercise.max = 100
+      binding.pbExercise.progress = 50
+      binding.pbDrug.max = 100
+      binding.pbDrug.progress = 50
    }
 }

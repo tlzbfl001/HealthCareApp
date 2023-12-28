@@ -42,10 +42,12 @@ class DrugAdapter1 (
 
         // 복용횟수 초기화
         check = itemList[position].endDate.toInt()
+
         // 체크값 설정
         if(itemList[position].count == 1) {
             holder.tvCheck.isChecked = true
         }
+
         fragment.binding.tvDrugCount.text = "${check}회"
 
         val getDailyData = dataManager!!.getDailyData(itemList[position].type)

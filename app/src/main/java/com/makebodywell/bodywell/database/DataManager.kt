@@ -184,12 +184,14 @@ class DataManager(private var context: Context?) {
    fun getBodyDaily() : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select weight, regDate from body"
+      val sql = "select weight, fat, bmi, regDate from body"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Body()
          data.weight = cursor.getDouble(0)
-         data.regDate = cursor.getString(1)
+         data.fat = cursor.getDouble(1)
+         data.bmi = cursor.getDouble(2)
+         data.regDate = cursor.getString(3)
          list.add(data)
       }
       cursor.close()
@@ -199,12 +201,14 @@ class DataManager(private var context: Context?) {
    fun getBody(start: String, end: String) : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select weight, regDate from body where regDate BETWEEN '$start' and '$end'"
+      val sql = "select weight, fat, bmi, regDate from body where regDate BETWEEN '$start' and '$end'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Body()
          data.weight = cursor.getDouble(0)
-         data.regDate = cursor.getString(1)
+         data.fat = cursor.getDouble(1)
+         data.bmi = cursor.getDouble(2)
+         data.regDate = cursor.getString(3)
          list.add(data)
       }
       cursor.close()

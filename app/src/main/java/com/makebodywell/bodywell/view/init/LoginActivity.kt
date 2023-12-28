@@ -1,13 +1,10 @@
 package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -20,6 +17,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.OAuthCredential
+import com.google.firebase.auth.OAuthProvider
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -34,6 +34,7 @@ import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
+import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.CreateGoogleOauthInput
 import com.makebodywell.bodywell.type.CreateKakaoOauthInput
@@ -48,7 +49,6 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.launch
-import java.net.URISyntaxException
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.system.exitProcess
@@ -71,10 +71,12 @@ class LoginActivity : AppCompatActivity() {
    private val authEndpoint = "https://appleid.apple.com/auth/authorize"
    private val responseType = "code%20id_token"
    private val responseMode = "form_post"
-   private var clientId = ""
    private val scope = "name%20email"
    private val state = UUID.randomUUID().toString()
-   private val redirectUrl = "https://domainone.store/redirect"
+   private val redirectUrl = "https://api.bodywell.dev/auth/apple/redirect"
+
+   private lateinit var oauthProvider: OAuthProvider.Builder
+   private lateinit var firebaseAuth: FirebaseAuth
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -84,10 +86,6 @@ class LoginActivity : AppCompatActivity() {
       dataManager = DataManager(this)
       dataManager!!.open()
 
-      initView()
-   }
-
-   private fun initView() {
       apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
       // 카카오 로그인
@@ -114,8 +112,45 @@ class LoginActivity : AppCompatActivity() {
 
       // 애플 로그인
       binding.clApple.setOnClickListener {
+//         initAuth()
+//         checkPending()
          appleLogin()
       }
+   }
+
+   // 인증 API 초기화
+   private fun initAuth(){
+      oauthProvider = OAuthProvider.newBuilder("apple.com")
+      oauthProvider.scopes = listOf("email", "name")
+      oauthProvider.addCustomParameter("locale", "ko")
+      firebaseAuth = FirebaseAuth.getInstance()
+   }
+
+   // 이미 받은 응답이 있는지 확인
+   private fun checkPending(){
+      val pending = firebaseAuth.pendingAuthResult
+      if (pending != null) {
+         pending.addOnSuccessListener { authResult ->
+            // 로그인 결과 및 유저 정보가 AuthResult 객체에 담겨서 받아짐, 이 객체로 후속 작업 진행
+            Log.d(TAG, "checkPending:onSuccess1:${authResult.user?.email}")
+            Log.d(TAG, "checkPending:onSuccess1:${(authResult.credential as OAuthCredential?)!!.idToken}")
+         }.addOnFailureListener { e ->
+            Log.w(TAG, "checkPending:onFailure", e)
+         }
+      } else {
+         startAuth()
+      }
+   }
+
+   private fun startAuth(){
+      firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build())
+         .addOnSuccessListener { authResult ->
+            // 로그인 결과 및 유저 정보가 AuthResult 객체에 담겨서 받아짐, 이 객체로 후속 작업 진행
+            Log.d(TAG, "checkPending:onSuccess2:${authResult.user?.email}")
+            Log.d(TAG, "checkPending:onSuccess2:${(authResult.credential as OAuthCredential?)!!.idToken}")
+         }.addOnFailureListener { e ->
+            Log.w(TAG, "checkPending:onFailure", e)
+         }
    }
 
    private fun kakaoLogin() {
@@ -252,6 +287,7 @@ class LoginActivity : AppCompatActivity() {
 
             val getUser = dataManager!!.getUser("google", gsa?.email.toString())
 
+            Log.d(TAG, "idToken: ${gsa?.idToken}")
             if(getUser.regDate == "") {
                dataManager!!.insertUser(User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString()))
 
@@ -318,7 +354,7 @@ class LoginActivity : AppCompatActivity() {
    }
 
    private fun createUrl(): String{
-      clientId = getString(R.string.appleServiceId)
+      val clientId = getString(R.string.appleServiceId)
       return (authEndpoint
               + "?response_type=$responseType"
               + "&response_mode=$responseMode"

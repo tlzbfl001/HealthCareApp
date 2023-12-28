@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter1
 import com.makebodywell.bodywell.database.DataManager
@@ -41,7 +42,7 @@ class DrugFragment : Fragment() {
    private var getDrugDaily = ArrayList<Drug>()
    private var getDailyData = DailyData()
 
-   private var checkedCount = 0
+   private var check = 0
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -87,15 +88,15 @@ class DrugFragment : Fragment() {
             for(i in 0 until getDrugDaily.size) {
                val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
                val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugDaily[i].id)
-               checkedCount += getDrugCheckCount.count
+               check += getDrugCheckCount.count
 
                for(j in 0 until getDrugTime.size) {
                   itemList.add(Drug(id = getDrugDaily[i].id, type = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
-                     unit = getDrugDaily[i].unit, startDate = getDrugTime[j].name, endDate = checkedCount.toString(), count = getDrugTime[j].count))
+                     unit = getDrugDaily[i].unit, startDate = getDrugTime[j].name, endDate = check.toString(), count = getDrugTime[j].count))
                }
             }
 
-//            adapter!!.notifyDataSetChanged()
+            adapter!!.notifyDataSetChanged()
             binding.tvGoal.text = "${et.text}회"
          }
          dialog.dismiss()
@@ -167,46 +168,24 @@ class DrugFragment : Fragment() {
 
    private fun recordView() {
       itemList.clear()
-      checkedCount = 0
+      check = 0
 
       getDrugDaily = dataManager!!.getDrugDaily(calendarDate.toString())
-      Log.d(TAG, "getDrugDaily: $getDrugDaily")
 
-      val dateItem = intArrayOf()
-      for(i in 0 until getDrugDaily.size) {
-         val getDrugDate = dataManager!!.getDrugDate(getDrugDaily[i].id)
-         if(getDrugDate.size > 0) {
-
-         }
-      }
-
-//      for(i in 0 until getDrugDaily.size) {
-//         val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
-//         val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugDaily[i].id)
-//         checkedCount += getDrugCheckCount.count
-//
-//         for(j in 0 until getDrugTime.size) {
-//            itemList.add(Drug(id = getDrugDaily[i].id, type = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit,
-//               startDate = getDrugTime[j].name, endDate = checkedCount.toString(), count = getDrugTime[j].count))
-//         }
-//      }
-//
-//      adapter = DrugAdapter1(requireActivity(), itemList)
-//      binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-//      binding.recyclerView.requestLayout()
-//      binding.recyclerView.adapter = adapter
-   }
-
-   private fun createItemList(id: Int) {
       for(i in 0 until getDrugDaily.size) {
          val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
          val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugDaily[i].id)
-         checkedCount += getDrugCheckCount.count
+         check += getDrugCheckCount.count
 
          for(j in 0 until getDrugTime.size) {
             itemList.add(Drug(id = getDrugDaily[i].id, type = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit,
-               startDate = getDrugTime[j].name, endDate = checkedCount.toString(), count = getDrugTime[j].count))
+               startDate = getDrugTime[j].name, endDate = check.toString(), count = getDrugTime[j].count))
          }
       }
+
+      adapter = DrugAdapter1(requireActivity(), itemList)
+      binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.recyclerView.requestLayout()
+      binding.recyclerView.adapter = adapter
    }
 }

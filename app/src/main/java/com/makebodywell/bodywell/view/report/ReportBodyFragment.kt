@@ -11,8 +11,10 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportBodyBinding
@@ -23,6 +25,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -34,9 +37,15 @@ class ReportBodyFragment : Fragment() {
 
    private var calendarDate = LocalDate.now()
 
-   private var itemList = ArrayList<Body>()
-   private var entries = ArrayList<Entry>()
-   private var xValue = ArrayList<String>()
+   private var itemList1 = ArrayList<Body>()
+   private var itemList2 = ArrayList<Body>()
+   private var itemList3 = ArrayList<Body>()
+   private var entries1 = ArrayList<Entry>()
+   private var xValue1 = ArrayList<String>()
+   private var entries2 = ArrayList<Entry>()
+   private var xValue2 = ArrayList<String>()
+   private var entries3 = ArrayList<Entry>()
+   private var xValue3 = ArrayList<String>()
    private var dateType = 0
 
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
@@ -50,22 +59,6 @@ class ReportBodyFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
-
-      setupView()
-      dailyView()
-
-      return binding.root
-   }
-
-   private fun setupView() {
-      binding.pbBody.max = 100
-      binding.pbBody.progress = 50
-      binding.pbFood.max = 100
-      binding.pbFood.progress = 50
-      binding.pbExercise.max = 100
-      binding.pbExercise.progress = 50
-      binding.pbDrug.max = 100
-      binding.pbDrug.progress = 50
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -135,6 +128,11 @@ class ReportBodyFragment : Fragment() {
          binding.tvCalTitle.text = monthFormat(calendarDate)
          monthlyView()
       }
+
+      buttonUI()
+      dailyView()
+
+      return binding.root
    }
 
    private fun dailyView() {
@@ -146,20 +144,75 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      itemList.clear()
+      itemList1.clear()
+      itemList2.clear()
+      itemList3.clear()
 
       val getData = dataManager!!.getBodyDaily()
       for(i in 0 until getData.size) {
-         itemList.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         if (getData[i].weight > 0) {
+            itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
+         if (getData[i].bmi > 0) {
+            itemList2.add(Body(bmi = getData[i].bmi, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
+         if (getData[i].fat > 0) {
+            itemList3.add(Body(fat = getData[i].fat, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
       }
 
-      if(itemList.size > 0) {
+      if(itemList1.size > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.lineChart1.visibility = View.VISIBLE
-         setupChart(binding.lineChart1)
+
+         entries1.clear()
+         xValue1.clear()
+
+         for(i in 0 until itemList1.size) {
+            entries1.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
+            xValue1.add(itemList1[i].regDate)
+         }
+
+         setupChart(binding.lineChart1, entries1, xValue1)
       }else {
          binding.tvEmpty1.visibility = View.VISIBLE
          binding.lineChart1.visibility = View.GONE
+      }
+
+      if(itemList2.size > 0) {
+         binding.tvEmpty2.visibility = View.GONE
+         binding.lineChart2.visibility = View.VISIBLE
+
+         entries2.clear()
+         xValue2.clear()
+
+         for(i in 0 until itemList2.size) {
+            entries2.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
+            xValue2.add(itemList2[i].regDate)
+         }
+
+         setupChart(binding.lineChart2, entries2, xValue2)
+      }else {
+         binding.tvEmpty2.visibility = View.VISIBLE
+         binding.lineChart2.visibility = View.GONE
+      }
+
+      if(itemList3.size > 0) {
+         binding.tvEmpty3.visibility = View.GONE
+         binding.lineChart3.visibility = View.VISIBLE
+
+         entries3.clear()
+         xValue3.clear()
+
+         for(i in 0 until itemList3.size) {
+            entries3.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
+            xValue3.add(itemList3[i].regDate)
+         }
+
+         setupChart(binding.lineChart3, entries3, xValue3)
+      }else {
+         binding.tvEmpty3.visibility = View.VISIBLE
+         binding.lineChart3.visibility = View.GONE
       }
    }
 
@@ -172,22 +225,77 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      itemList.clear()
+      itemList1.clear()
+      itemList2.clear()
+      itemList3.clear()
 
       val weekArray = weekArray(calendarDate)
       val getData = dataManager!!.getBody(weekArray[0].toString(), weekArray[6].toString())
 
       for(i in 0 until getData.size) {
-         itemList.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         if (getData[i].weight > 0) {
+            itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
+         if (getData[i].bmi > 0) {
+            itemList2.add(Body(bmi = getData[i].bmi, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
+         if (getData[i].fat > 0) {
+            itemList3.add(Body(fat = getData[i].fat, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
       }
 
-      if(itemList.size > 0) {
+      if(itemList1.size > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.lineChart1.visibility = View.VISIBLE
-         setupChart(binding.lineChart1)
+
+         entries1.clear()
+         xValue1.clear()
+
+         for(i in 0 until itemList1.size) {
+            entries1.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
+            xValue1.add(itemList1[i].regDate)
+         }
+
+         setupChart(binding.lineChart1, entries1, xValue1)
       }else {
          binding.tvEmpty1.visibility = View.VISIBLE
          binding.lineChart1.visibility = View.GONE
+      }
+
+      if(itemList2.size > 0) {
+         binding.tvEmpty2.visibility = View.GONE
+         binding.lineChart2.visibility = View.VISIBLE
+
+         entries2.clear()
+         xValue2.clear()
+
+         for(i in 0 until itemList2.size) {
+            entries2.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
+            xValue2.add(itemList2[i].regDate)
+         }
+
+         setupChart(binding.lineChart2, entries2, xValue2)
+      }else {
+         binding.tvEmpty2.visibility = View.VISIBLE
+         binding.lineChart2.visibility = View.GONE
+      }
+
+      if(itemList3.size > 0) {
+         binding.tvEmpty3.visibility = View.GONE
+         binding.lineChart3.visibility = View.VISIBLE
+
+         entries3.clear()
+         xValue3.clear()
+
+         for(i in 0 until itemList3.size) {
+            entries3.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
+            xValue3.add(itemList3[i].regDate)
+         }
+
+         setupChart(binding.lineChart3, entries3, xValue3)
+      }else {
+         binding.tvEmpty3.visibility = View.VISIBLE
+         binding.lineChart3.visibility = View.GONE
       }
    }
 
@@ -200,32 +308,88 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
-      itemList.clear()
+      itemList1.clear()
+      itemList2.clear()
+      itemList3.clear()
 
       val monthArray = monthArray2(calendarDate)
       val getData = dataManager!!.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
-         itemList.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         if (getData[i].weight > 0) {
+            itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
+         if (getData[i].bmi > 0) {
+            itemList2.add(Body(bmi = getData[i].bmi, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
+         if (getData[i].fat > 0) {
+            itemList3.add(Body(fat = getData[i].fat, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+         }
       }
 
-      if(itemList.size > 0) {
+      if(itemList1.size > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.lineChart1.visibility = View.VISIBLE
-         setupChart(binding.lineChart1)
+
+         entries1.clear()
+         xValue1.clear()
+
+         for(i in 0 until itemList1.size) {
+            entries1.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
+            xValue1.add(itemList1[i].regDate)
+         }
+
+         setupChart(binding.lineChart1, entries1, xValue1)
       }else {
          binding.tvEmpty1.visibility = View.VISIBLE
          binding.lineChart1.visibility = View.GONE
       }
+
+      if(itemList2.size > 0) {
+         binding.tvEmpty2.visibility = View.GONE
+         binding.lineChart2.visibility = View.VISIBLE
+
+         entries2.clear()
+         xValue2.clear()
+
+         for(i in 0 until itemList2.size) {
+            entries2.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
+            xValue2.add(itemList2[i].regDate)
+         }
+
+         setupChart(binding.lineChart2, entries2, xValue2)
+      }else {
+         binding.tvEmpty2.visibility = View.VISIBLE
+         binding.lineChart2.visibility = View.GONE
+      }
+
+      if(itemList3.size > 0) {
+         binding.tvEmpty3.visibility = View.GONE
+         binding.lineChart3.visibility = View.VISIBLE
+
+         entries3.clear()
+         xValue3.clear()
+
+         for(i in 0 until itemList3.size) {
+            entries3.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
+            xValue3.add(itemList3[i].regDate)
+         }
+
+         setupChart(binding.lineChart3, entries3, xValue3)
+      }else {
+         binding.tvEmpty3.visibility = View.VISIBLE
+         binding.lineChart3.visibility = View.GONE
+      }
    }
 
-   private fun setupChart(lineChart: LineChart) {
-      entries.clear()
-      xValue.clear()
-
-      for(i in 0 until itemList.size) {
-         entries.add(Entry(i.toFloat(), itemList[i].weight.toFloat()))
-         xValue.add(itemList[i].regDate)
-      }
+   private fun setupChart(
+      lineChart: LineChart,
+      entries: ArrayList<Entry>,
+      xValue: ArrayList<String>
+   ) {
+      lineChart.data = null
+      lineChart.fitScreen()
+      lineChart.xAxis.valueFormatter = null
+      lineChart.clear()
 
       val legend = lineChart.legend
       legend.isEnabled = false
@@ -245,11 +409,8 @@ class ReportBodyFragment : Fragment() {
 
       val lineData = LineData(dataSets)
       lineData.setValueTextSize(8f)
+      lineData.setValueFormatter(MyValueFormatter())
 
-      lineChart.data = null
-      lineChart.fitScreen()
-      lineChart.xAxis.valueFormatter = null
-      lineChart.clear()
       lineChart.data = lineData
       lineChart.notifyDataSetChanged()
       lineChart.invalidate()
@@ -277,10 +438,29 @@ class ReportBodyFragment : Fragment() {
       xAxis.spaceMin = 0.7f
       xAxis.gridColor = Color.parseColor("#EAEAEA")
 
-
       val yAxisLeft = lineChart.axisLeft
       yAxisLeft.textSize = 7f
-      yAxisLeft.granularity = 10f
-      yAxisLeft.mAxisMaximum=60f
+   }
+
+   private fun buttonUI() {
+      binding.pbBody.max = 100
+      binding.pbBody.progress = 50
+      binding.pbFood.max = 100
+      binding.pbFood.progress = 50
+      binding.pbExercise.max = 100
+      binding.pbExercise.progress = 50
+      binding.pbDrug.max = 100
+      binding.pbDrug.progress = 50
+   }
+
+   class MyValueFormatter : IValueFormatter {
+      override fun getFormattedValue(
+         value: Float,
+         entry: Entry,
+         dataSetIndex: Int,
+         viewPortHandler: ViewPortHandler
+      ): String {
+         return value.toString()
+      }
    }
 }
