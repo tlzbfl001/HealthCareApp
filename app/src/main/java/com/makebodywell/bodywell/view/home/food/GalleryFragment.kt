@@ -62,10 +62,10 @@ class GalleryFragment : Fragment() {
 
         binding.clBack.setOnClickListener {
             when(type) {
-                "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-                "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-                "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-                "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+                "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+                "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+                "3" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+                "4" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
                 "note" -> {
                     bundle.putString("data", "noteData")
                     replaceFragment2(requireActivity(), NoteFragment(), bundle)
@@ -86,7 +86,7 @@ class GalleryFragment : Fragment() {
         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
         binding.recyclerView.layoutManager = layoutManager
 
-        val getFoodImage = dataManager!!.getImage(type, calendarDate)
+        val getFoodImage = dataManager!!.getImage(type.toInt(), calendarDate)
         if(getFoodImage.size > 0) {
             val adapter = GalleryAdapter(requireActivity(), getFoodImage)
             binding.recyclerView.adapter = adapter

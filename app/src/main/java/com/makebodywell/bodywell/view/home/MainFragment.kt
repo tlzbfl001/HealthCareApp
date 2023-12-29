@@ -17,7 +17,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
-import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -28,7 +28,6 @@ import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import kotlin.math.roundToInt
 
 class MainFragment : Fragment() {
@@ -47,6 +46,7 @@ class MainFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
+
 
       initView()
 
@@ -210,7 +210,7 @@ class MainFragment : Fragment() {
 
       // 프로그래스바 설정
       val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
-      val foodSum = getFoodIntake(requireActivity(), selectedDate.toString())
+      val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5!!
       val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       val getBody = dataManager!!.getBody(selectedDate.toString())

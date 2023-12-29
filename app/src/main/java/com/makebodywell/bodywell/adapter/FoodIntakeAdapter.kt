@@ -20,7 +20,7 @@ import com.makebodywell.bodywell.view.init.MainActivity
 class FoodIntakeAdapter (
     private val context: Context,
     private var itemList: ArrayList<Food> = ArrayList(),
-    private val type: String
+    private val type: Int
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var dataManager: DataManager? = null
     private var foodData = Food()
@@ -68,7 +68,7 @@ class FoodIntakeAdapter (
                 .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("확인") { _, _ ->
                     when (type) {
-                        "breakfast" -> {
+                        1 -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -80,7 +80,7 @@ class FoodIntakeAdapter (
                             }
                         }
 
-                        "lunch" -> {
+                        2 -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -92,7 +92,7 @@ class FoodIntakeAdapter (
                             }
                         }
 
-                        "dinner" -> {
+                        3 -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -104,7 +104,7 @@ class FoodIntakeAdapter (
                             }
                         }
 
-                        "snack" -> {
+                        4 -> {
                             dataManager!!.deleteFood(itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()

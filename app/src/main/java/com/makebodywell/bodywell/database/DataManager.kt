@@ -58,10 +58,24 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getFood(type: String, date: String) : ArrayList<Food> {
+   fun getFoodDates() : ArrayList<Food> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Food> = ArrayList()
-      val sql = "select * from $TABLE_FOOD where type = '$type' and regDate = '$date'"
+      val sql = "select distinct regDate from $TABLE_FOOD"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         var data = Food()
+         data.regDate = cursor.getString(0)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getFood(type: Int, date: String) : ArrayList<Food> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Food> = ArrayList()
+      val sql = "select * from $TABLE_FOOD where type = $type and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Food()
@@ -75,7 +89,7 @@ class DataManager(private var context: Context?) {
          data.fat= cursor.getDouble(7).toString()
          data.salt= cursor.getDouble(8).toString()
          data.sugar= cursor.getDouble(9).toString()
-         data.type = cursor.getString(10)
+         data.type = cursor.getInt(10)
          data.regDate = cursor.getString(11)
          list.add(data)
       }
@@ -83,10 +97,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getImage(type: String, date: String) : ArrayList<Image> {
+   fun getImage(type: Int, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Image> = ArrayList()
-      val sql = "select * from $TABLE_IMAGE where type = '$type' and regDate = '$date'"
+      val sql = "select * from $TABLE_IMAGE where type = $type and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Image()

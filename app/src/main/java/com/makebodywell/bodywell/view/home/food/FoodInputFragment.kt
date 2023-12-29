@@ -40,14 +40,14 @@ class FoodInputFragment : Fragment() {
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
-      bundle.putString("type", type)
+      bundle.putString("type", type.toString())
 
       binding.clOut.setOnClickListener {
          when(type) {
-            "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-            "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-            "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-            "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+            "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+            "3" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+            "4" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
          }
       }
 
@@ -58,29 +58,29 @@ class FoodInputFragment : Fragment() {
          }
 
          when(type) {
-            "breakfast" -> {
+            "1" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), type = "breakfast", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = 1, regDate = calendarDate))
             }
-            "lunch" -> {
+            "2" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), type = "lunch", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = 2, regDate = calendarDate))
             }
-            "dinner" -> {
+            "3" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), type = "dinner", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = 3, regDate = calendarDate))
             }
-            "snack" -> {
+            "4" -> {
                dataManager!!.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
                   amount = amount, kcal = binding.etKcal.text.toString(), carbohydrate = binding.etCal.text.toString(),
                   protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(), salt = binding.etSalt.text.toString(),
-                  sugar = binding.etSugar.text.toString(), type = "snack", regDate = calendarDate))
+                  sugar = binding.etSugar.text.toString(), type = 4, regDate = calendarDate))
             }
          }
 

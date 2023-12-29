@@ -1,6 +1,6 @@
 package com.makebodywell.bodywell.model
 
-data class Text (
+data class Text(
    var string1: String? = "",
    var int1: Int? = 0,
    var unit1: String? = "",
@@ -9,5 +9,9 @@ data class Text (
    var unit2: String? = "",
    var string3: String? = "",
    var int3: Int? = 0,
-   var unit3: String? = ""
+   var unit3: String? = "",
+   var string4: String? = "",
+   var int4: Int? = 0,
+   var unit4: String? = "",
+   var int5: Int? = 0
 )

@@ -72,8 +72,7 @@
       android:id="@+id/tvDaily"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:background="@drawable/rec_12_border_gray"
-      android:backgroundTint="#5A8EFF"
+      android:background="@drawable/rec_12_blue"
       android:layout_marginRight="5dp"
       android:paddingTop="4dp"
       android:paddingBottom="4dp"
@@ -104,6 +103,7 @@
       app:layout_constraintStart_toStartOf="@id/cvDate"
       app:layout_constraintEnd_toEndOf="@id/cvDate"/>
    <TextView
+      android:id="@+id/tvMonthly"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:background="@drawable/rec_12_border_gray"

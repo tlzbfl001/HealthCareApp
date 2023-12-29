@@ -120,7 +120,7 @@ class NoteFragment : Fragment() {
       }
 
       // 이미지뷰
-      val dataList = dataManager!!.getImage("note", selectedDate.toString())
+      val dataList = dataManager!!.getImage(4, selectedDate.toString())
       val itemList = ArrayList<Image>()
       for (i in 0 until dataList.size) {
          itemList.add(Image(id = dataList[i].id, imageUri = dataList[i].imageUri, type = "note", regDate = selectedDate.toString()))

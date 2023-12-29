@@ -80,10 +80,10 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
       itemList.clear()
 
       // 데이터 가져오기
-      val getImage1 = dataManager!!.getImage("breakfast", selectedDate.toString())
-      val getImage2 = dataManager!!.getImage("lunch", selectedDate.toString())
-      val getImage3 = dataManager!!.getImage("dinner", selectedDate.toString())
-      val getImage4 = dataManager!!.getImage("snack", selectedDate.toString())
+      val getImage1 = dataManager!!.getImage(1, selectedDate.toString())
+      val getImage2 = dataManager!!.getImage(2, selectedDate.toString())
+      val getImage3 = dataManager!!.getImage(3, selectedDate.toString())
+      val getImage4 = dataManager!!.getImage(4, selectedDate.toString())
 
       // 리스트에 데이터 저장
       for (i in 0 until getImage1.size) {

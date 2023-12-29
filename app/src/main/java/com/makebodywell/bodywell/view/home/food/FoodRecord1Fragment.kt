@@ -58,10 +58,10 @@ class FoodRecord1Fragment : Fragment() {
 
       binding.btnOut.setOnClickListener {
          when(type) {
-            "breakfast" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-            "lunch" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-            "dinner" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-            "snack" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+            "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+            "3" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
+            "4" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
          }
       }
 
@@ -76,10 +76,10 @@ class FoodRecord1Fragment : Fragment() {
 
    private fun setupList() {
       when(type) {
-         "breakfast" -> dataList = dataManager!!.getFood("breakfast", calendarDate)
-         "lunch" -> dataList = dataManager!!.getFood("lunch", calendarDate)
-         "dinner" -> dataList = dataManager!!.getFood("dinner", calendarDate)
-         "snack" -> dataList = dataManager!!.getFood("snack", calendarDate)
+         "1" -> dataList = dataManager!!.getFood(1, calendarDate)
+         "2" -> dataList = dataManager!!.getFood(2, calendarDate)
+         "3" -> dataList = dataManager!!.getFood(3, calendarDate)
+         "4" -> dataList = dataManager!!.getFood(4, calendarDate)
       }
 
       if(dataList.size != 0) {

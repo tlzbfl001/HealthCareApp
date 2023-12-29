@@ -18,23 +18,37 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainFragment
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
    private val binding get() = _binding!!
 
+   private var dataManager: DataManager? = null
+
    private var calendarDate = LocalDate.now()
+   private var dateType = 0
+
+   private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   private val format2 = SimpleDateFormat("M.dd")
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentReportFoodBinding.inflate(layoutInflater)
+
+      dataManager = DataManager(activity)
+      dataManager!!.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -51,36 +65,126 @@ class ReportFoodFragment : Fragment() {
       }
 
       binding.ivPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvCalTitle.text = dateFormat(calendarDate)
+         when(dateType) {
+            0->{
+               calendarDate = calendarDate!!.minusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               dailyView()
+            }
+            1->{
+               calendarDate = calendarDate!!.minusWeeks(1)
+               binding.tvCalTitle.text = weekFormat(calendarDate)
+               weeklyView()
+            }
+            2->{
+               calendarDate = calendarDate!!.minusMonths(1)
+               binding.tvCalTitle.text = monthFormat(calendarDate)
+               monthlyView()
+            }
+         }
       }
 
       binding.ivNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
+         when(dateType) {
+            0->{
+               calendarDate = calendarDate!!.plusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               dailyView()
+            }
+            1->{
+               calendarDate = calendarDate!!.plusWeeks(1)
+               binding.tvCalTitle.text = weekFormat(calendarDate)
+               weeklyView()
+            }
+            2->{
+               calendarDate = calendarDate!!.plusMonths(1)
+               binding.tvCalTitle.text = monthFormat(calendarDate)
+               monthlyView()
+            }
+         }
+      }
+
+      binding.tvDaily.setOnClickListener {
          binding.tvCalTitle.text = dateFormat(calendarDate)
+         dailyView()
+      }
+
+      binding.tvWeekly.setOnClickListener {
+         binding.tvCalTitle.text = weekFormat(calendarDate)
+         weeklyView()
+      }
+
+      binding.tvMonthly.setOnClickListener {
+         binding.tvCalTitle.text = monthFormat(calendarDate)
+         monthlyView()
       }
 
       buttonUI()
-
-      settingChart1(binding.chart1)
-      settingChart2(binding.chart2)
-      settingChart3(binding.chart3)
+      dailyView()
 
       return binding.root
    }
 
+   private fun dailyView() {
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvDaily.setTextColor(Color.WHITE)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setTextColor(Color.BLACK)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setTextColor(Color.BLACK)
+      dateType = 0
+
+      settingChart1(binding.chart1)
+//      settingChart2(binding.chart2)
+//      settingChart3(binding.chart3)
+   }
+
+   private fun weeklyView() {
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setTextColor(Color.BLACK)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvWeekly.setTextColor(Color.WHITE)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setTextColor(Color.BLACK)
+      dateType = 1
+
+   }
+
+   private fun monthlyView() {
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setTextColor(Color.BLACK)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setTextColor(Color.BLACK)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvMonthly.setTextColor(Color.WHITE)
+      dateType = 2
+   }
+
    private fun settingChart1(chart: CombinedChart) {
-      chartCommon(chart)
-
       val data = CombinedData()
-
+      var xVals = arrayOf<String>()
       val lineData = LineData()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
+      val barEntries = ArrayList<BarEntry>()
 
-      val lineList = floatArrayOf(1350f, 1089f, 870f, 1135f, 1485f, 487f, 1201f)
+      val getData = dataManager!!.getFoodDates()
+      for(i in 0 until getData.size){
+         xVals += format2.format(format1.parse(getData[i].regDate))
+         lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
+         barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int1!!.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int2!!.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int3!!.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int4!!.toFloat()
+         )))
+      }
+
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
+
+      chartCommon(chart, xVals)
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
@@ -94,16 +198,6 @@ class ReportFoodFragment : Fragment() {
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
-
-      // barChart 설정
-      val barEntries = java.util.ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, floatArrayOf(350f, 250f, 500f, 250f)))
-      barEntries.add(BarEntry(1f, floatArrayOf(200f, 489f, 100f, 300f)))
-      barEntries.add(BarEntry(2f, floatArrayOf(150f, 450f, 170f, 100f)))
-      barEntries.add(BarEntry(3f, floatArrayOf(400f, 100f, 300f, 335f)))
-      barEntries.add(BarEntry(4f, floatArrayOf(500f, 705f, 140f, 140f)))
-      barEntries.add(BarEntry(5f, floatArrayOf(100f, 100f, 237f, 50f)))
-      barEntries.add(BarEntry(6f, floatArrayOf(450f, 100f, 50f, 601f)))
 
       val barColor = ArrayList<Int>()
       barColor.add(Color.parseColor("#FFC6D7"))
@@ -122,21 +216,35 @@ class ReportFoodFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = true
    }
 
    private fun settingChart2(chart: CombinedChart) {
-      chartCommon(chart)
-
       val data = CombinedData()
-
-      // lineChart 설정
+      var xVal = arrayOf<String>()
       val lineData = LineData()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
+      val barEntries = ArrayList<BarEntry>()
 
-      val lineList = floatArrayOf(1350f, 1089f, 870f, 1135f, 1485f, 487f, 1201f)
+      val getData = dataManager!!.getFoodDates()
+      for(i in 0 until getData.size){
+         xVal += format2.format(format1.parse(getData[i].regDate))
+         lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
+         barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int1!!.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int2!!.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int3!!.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int4!!.toFloat()
+         )))
+      }
+
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
+
+      chartCommon(chart, xVal)
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
@@ -150,16 +258,6 @@ class ReportFoodFragment : Fragment() {
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
-
-      // barChart 설정
-      val barEntries = java.util.ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, floatArrayOf(350f, 250f, 500f, 250f)))
-      barEntries.add(BarEntry(1f, floatArrayOf(200f, 489f, 100f, 300f)))
-      barEntries.add(BarEntry(2f, floatArrayOf(150f, 450f, 170f, 100f)))
-      barEntries.add(BarEntry(3f, floatArrayOf(400f, 100f, 300f, 335f)))
-      barEntries.add(BarEntry(4f, floatArrayOf(500f, 705f, 140f, 140f)))
-      barEntries.add(BarEntry(5f, floatArrayOf(100f, 100f, 237f, 50f)))
-      barEntries.add(BarEntry(6f, floatArrayOf(450f, 100f, 50f, 601f)))
 
       val barColor = ArrayList<Int>()
       barColor.add(Color.parseColor("#FFE380"))
@@ -180,7 +278,7 @@ class ReportFoodFragment : Fragment() {
       chart.invalidate()
    }
 
-   private fun settingChart3(chart: CombinedChart) {
+   /*private fun settingChart3(chart: CombinedChart) {
       chartCommon(chart)
 
       val data = CombinedData()
@@ -228,16 +326,16 @@ class ReportFoodFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
-   }
+   }*/
 
-   private fun chartCommon(chart: CombinedChart) {
+   private fun chartCommon(chart: CombinedChart, xVals: Array<String>) {
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
       chart.isClickable = false
       chart.isHighlightPerDragEnabled = false
       chart.isHighlightPerTapEnabled = false
-      chart.setExtraOffsets(15f, 15f, 15f, 10f)
+      chart.setExtraOffsets(12f, 15f, 15f, 10f)
 
       val xAxis = chart.xAxis
       xAxis.axisLineColor = Color.BLACK
@@ -245,7 +343,7 @@ class ReportFoodFragment : Fragment() {
       xAxis.position = XAxis.XAxisPosition.BOTTOM
       xAxis.spaceMax = 0.6f
       xAxis.spaceMin = 0.6f
-      xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("7.10", "7.11","7.12", "7.13", "7.14", "7.15", "오늘"))
+      xAxis.valueFormatter = IndexAxisValueFormatter(xVals)
       xAxis.setDrawGridLines(false)
 
       val rightAxis = chart.axisRight

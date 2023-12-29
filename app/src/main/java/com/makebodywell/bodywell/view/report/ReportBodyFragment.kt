@@ -36,6 +36,7 @@ class ReportBodyFragment : Fragment() {
    private var dataManager: DataManager? = null
 
    private var calendarDate = LocalDate.now()
+   private var dateType = 0
 
    private var itemList1 = ArrayList<Body>()
    private var itemList2 = ArrayList<Body>()
@@ -46,7 +47,6 @@ class ReportBodyFragment : Fragment() {
    private var xValue2 = ArrayList<String>()
    private var entries3 = ArrayList<Entry>()
    private var xValue3 = ArrayList<String>()
-   private var dateType = 0
 
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    private val format2 = SimpleDateFormat("M.dd")
@@ -417,12 +417,12 @@ class ReportBodyFragment : Fragment() {
 
       lineChart.description.isEnabled = false
       lineChart.axisRight.isEnabled = false
-      lineChart.setVisibleXRangeMaximum(7f)
       lineChart.setScaleEnabled(false)
       lineChart.setPinchZoom(false)
-      lineChart.moveViewToX(1f)
       lineChart.setDrawGridBackground(false)
       lineChart.axisLeft.isEnabled = false
+      lineChart.moveViewToX(1f)
+      lineChart.setVisibleXRangeMaximum(7f)
       lineChart.isDragXEnabled = dateType==0 || dateType==2
       lineChart.setExtraOffsets(0f, 0f, 0f, 10f)
 

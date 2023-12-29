@@ -1,7 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.app.Dialog
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -29,7 +28,7 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Text
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodIntake
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
@@ -41,7 +40,6 @@ import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.round
-import kotlin.system.exitProcess
 
 class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
@@ -165,7 +163,7 @@ class FoodFragment : Fragment() {
 
       // 목표 초기화
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-      sum = getFoodIntake(requireActivity(), calendarDate.toString())
+      sum = getFoodKcal(requireActivity(), calendarDate.toString()).int1!!
 
       if(getDailyData.foodGoal > 0 && sum > 0) {
          binding.pbFood.max = getDailyData.foodGoal
@@ -187,10 +185,10 @@ class FoodFragment : Fragment() {
    }
 
    private fun dailyView() {
-      val getFood = dataManager!!.getFood("breakfast", calendarDate.toString())
+      val getFood = dataManager!!.getFood(1, calendarDate.toString())
 
       // 이미지뷰 설정
-      setupPhotoList("breakfast", calendarDate.toString())
+      setupPhotoList(1, calendarDate.toString())
 
       // 텍스트리스트 설정
       setupTextList(getFood)
@@ -213,7 +211,7 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("breakfast", calendarDate.toString())
+         setupPhotoList(1, calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -233,8 +231,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("lunch", calendarDate.toString())
-         val getFood = dataManager!!.getFood("lunch", calendarDate.toString())
+         setupPhotoList(2, calendarDate.toString())
+         val getFood = dataManager!!.getFood(2, calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -254,8 +252,8 @@ class FoodFragment : Fragment() {
          binding.tvBtn4Title.setTextColor(Color.BLACK)
          binding.tvBtn4Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("dinner", calendarDate.toString())
-         val getFood = dataManager!!.getFood("dinner", calendarDate.toString())
+         setupPhotoList(3, calendarDate.toString())
+         val getFood = dataManager!!.getFood(3, calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
@@ -275,14 +273,14 @@ class FoodFragment : Fragment() {
          binding.tvBtn3Title.setTextColor(Color.BLACK)
          binding.tvBtn3Desc.setTextColor(Color.BLACK)
 
-         setupPhotoList("snack", calendarDate.toString())
-         val getFood = dataManager!!.getFood("snack", calendarDate.toString())
+         setupPhotoList(4, calendarDate.toString())
+         val getFood = dataManager!!.getFood(4, calendarDate.toString())
          setupTextList(getFood)
          setupNutrients(getFood)
       }
    }
 
-   private fun setupPhotoList(type: String, date: String) {
+   private fun setupPhotoList(type: Int, date: String) {
       imageList.clear()
       adapter?.notifyDataSetChanged()
 

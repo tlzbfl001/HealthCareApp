@@ -67,7 +67,7 @@ class FoodLunchFragment : Fragment() {
     private fun initView() {
         calendarDate = arguments?.getString("calendarDate").toString()
         bundle.putString("calendarDate", calendarDate)
-        bundle.putString("type", "lunch")
+        bundle.putString("type", "2")
 
         binding.clBack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodFragment())
@@ -124,7 +124,7 @@ class FoodLunchFragment : Fragment() {
     private fun setupPhotoView() {
         val imageList: ArrayList<Uri> = ArrayList()
 
-        val getFoodImage = dataManager!!.getImage("lunch", calendarDate)
+        val getFoodImage = dataManager!!.getImage(2, calendarDate)
         for(i in 0 until getFoodImage.size) {
             imageList.add(Uri.parse(getFoodImage[i].imageUri))
         }
@@ -188,7 +188,7 @@ class FoodLunchFragment : Fragment() {
     }
 
     private fun setupList() {
-        dataList = dataManager!!.getFood("lunch", calendarDate)
+        dataList = dataManager!!.getFood(2, calendarDate)
 
         if(dataList.size != 0) {
             binding.clList.visibility = View.VISIBLE
@@ -199,7 +199,7 @@ class FoodLunchFragment : Fragment() {
                     kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
             }
 
-            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, "lunch")
+            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, 2)
             binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView1.adapter = foodRecordAdapter
 
