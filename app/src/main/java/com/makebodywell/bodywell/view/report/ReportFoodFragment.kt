@@ -1,8 +1,8 @@
 package com.makebodywell.bodywell.view.report
 
 import android.graphics.Color
-import android.icu.number.NumberFormatter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,19 +20,25 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
+import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+
 
 class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
@@ -139,9 +145,16 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      settingChart1(binding.chart1)
-      settingChart2(binding.chart2)
-//      settingChart3(binding.chart3)
+      val getFoodDates = dataManager!!.getFoodDates()
+      if(getFoodDates.size > 0) {
+         settingChart1(binding.chart1, getFoodDates)
+         settingChart2(binding.chart2, getFoodDates)
+      }
+
+      val getWater = dataManager!!.getWater()
+      if(getWater.size > 0) {
+         settingChart3(binding.chart3, getWater)
+      }
    }
 
    private fun weeklyView() {
@@ -165,7 +178,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
    }
 
-   private fun settingChart1(chart: CombinedChart) {
+   private fun settingChart1(chart: CombinedChart, getData: ArrayList<Food>) {
       val data = CombinedData()
       var xVal = arrayOf<String>()
       val lineData = LineData()
@@ -173,7 +186,6 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      val getData = dataManager!!.getFoodDates()
       for(i in 0 until getData.size){
          xVal += format2.format(format1.parse(getData[i].regDate))
          lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
@@ -223,9 +235,10 @@ class ReportFoodFragment : Fragment() {
       chart.invalidate()
       chart.setVisibleXRangeMaximum(7f)
       chart.isDragXEnabled = true
+      chart.setOnKeyListener()
    }
 
-   private fun settingChart2(chart: CombinedChart) {
+   private fun settingChart2(chart: CombinedChart, getData: ArrayList<Food>) {
       val data = CombinedData()
       var xVal = arrayOf<String>()
       val lineData = LineData()
@@ -233,7 +246,6 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      val getData = dataManager!!.getFoodDates()
       for(i in 0 until getData.size){
          xVal += format2.format(format1.parse(getData[i].regDate))
          lineList += getNutrition(requireActivity(), getData[i].regDate!!).unit!!.toFloat()
@@ -285,24 +297,30 @@ class ReportFoodFragment : Fragment() {
       chart.isDragXEnabled = true
    }
 
-   /*private fun settingChart3(chart: CombinedChart) {
-      chartCommon(chart)
-
+   private fun settingChart3(chart: CombinedChart, getData: ArrayList<Water>) {
       val data = CombinedData()
-
-      // lineChart 설정
       val lineData = LineData()
+      var xVal = arrayOf<String>()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
-      val lineList = floatArrayOf(600f, 900f, 800f, 1200f, 1500f, 600f, 1200f)
+      val barEntries = ArrayList<BarEntry>()
+
+      for(i in 0 until getData.size){
+         xVal += format2.format(format1.parse(getData[i].regDate))
+         lineList += (getData[i].water * getData[i].volume).toFloat()
+         barEntries.add(BarEntry(i.toFloat(), (getData[i].water * getData[i].volume).toFloat()))
+      }
+
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
 
+      chartCommon(chart, xVal)
+
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
       lineDataSet.lineWidth = 0.5f
-      lineDataSet.setCircleColor(Color.parseColor("#4477E6"))
-      lineDataSet.circleRadius = 0.3f
+      lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
@@ -311,16 +329,6 @@ class ReportFoodFragment : Fragment() {
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
-
-      // barChart 설정
-      val barEntries = java.util.ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, 600f))
-      barEntries.add(BarEntry(1f, 900f))
-      barEntries.add(BarEntry(2f, 800f))
-      barEntries.add(BarEntry(3f, 1200f))
-      barEntries.add(BarEntry(4f, 1500f))
-      barEntries.add(BarEntry(5f, 600f))
-      barEntries.add(BarEntry(6f, 1200f))
 
       val barDataSet = BarDataSet(barEntries, "")
       barDataSet.color = Color.parseColor("#4477E6")
@@ -333,7 +341,9 @@ class ReportFoodFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
-   }*/
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = true
+   }
 
    private fun chartCommon(chart: CombinedChart, xVal: Array<String>) {
       chart.description.isEnabled = false

@@ -114,6 +114,23 @@ class DataManager(private var context: Context?) {
       return list
    }
 
+   fun getWater() : ArrayList<Water> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Water> = ArrayList()
+      val sql = "select * from $TABLE_WATER"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         var data = Water()
+         data.id=cursor.getInt(0)
+         data.water=cursor.getInt(1)
+         data.volume=cursor.getInt(2)
+         data.regDate = cursor.getString(3)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
    fun getWater(date: String) : Water {
       val db = dbHelper!!.readableDatabase
       val data = Water()
