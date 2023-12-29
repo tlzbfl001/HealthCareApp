@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.report
 
 import android.graphics.Color
+import android.icu.number.NumberFormatter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,9 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
+import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
@@ -25,7 +28,9 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -135,7 +140,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 0
 
       settingChart1(binding.chart1)
-//      settingChart2(binding.chart2)
+      settingChart2(binding.chart2)
 //      settingChart3(binding.chart3)
    }
 
@@ -162,7 +167,7 @@ class ReportFoodFragment : Fragment() {
 
    private fun settingChart1(chart: CombinedChart) {
       val data = CombinedData()
-      var xVals = arrayOf<String>()
+      var xVal = arrayOf<String>()
       val lineData = LineData()
       var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
@@ -170,7 +175,7 @@ class ReportFoodFragment : Fragment() {
 
       val getData = dataManager!!.getFoodDates()
       for(i in 0 until getData.size){
-         xVals += format2.format(format1.parse(getData[i].regDate))
+         xVal += format2.format(format1.parse(getData[i].regDate))
          lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
             getFoodKcal(requireActivity(), getData[i].regDate!!).int1!!.toFloat(),
@@ -184,7 +189,7 @@ class ReportFoodFragment : Fragment() {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
 
-      chartCommon(chart, xVals)
+      chartCommon(chart, xVal)
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
@@ -231,12 +236,12 @@ class ReportFoodFragment : Fragment() {
       val getData = dataManager!!.getFoodDates()
       for(i in 0 until getData.size){
          xVal += format2.format(format1.parse(getData[i].regDate))
-         lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
+         lineList += getNutrition(requireActivity(), getData[i].regDate!!).unit!!.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int1!!.toFloat(),
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int2!!.toFloat(),
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int3!!.toFloat(),
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int4!!.toFloat()
+            getNutrition(requireActivity(), getData[i].regDate!!).carbohydrate!!.toFloat(),
+            getNutrition(requireActivity(), getData[i].regDate!!).protein!!.toFloat(),
+            getNutrition(requireActivity(), getData[i].regDate!!).fat!!.toFloat(),
+            getNutrition(requireActivity(), getData[i].regDate!!).sugar!!.toFloat()
          )))
       }
 
@@ -254,7 +259,7 @@ class ReportFoodFragment : Fragment() {
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
       lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = DefaultValueFormatter(0)
+      lineDataSet.valueFormatter = MyValueFormatter()
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
@@ -276,6 +281,8 @@ class ReportFoodFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = true
    }
 
    /*private fun settingChart3(chart: CombinedChart) {
@@ -328,7 +335,7 @@ class ReportFoodFragment : Fragment() {
       chart.invalidate()
    }*/
 
-   private fun chartCommon(chart: CombinedChart, xVals: Array<String>) {
+   private fun chartCommon(chart: CombinedChart, xVal: Array<String>) {
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
@@ -343,7 +350,7 @@ class ReportFoodFragment : Fragment() {
       xAxis.position = XAxis.XAxisPosition.BOTTOM
       xAxis.spaceMax = 0.6f
       xAxis.spaceMin = 0.6f
-      xAxis.valueFormatter = IndexAxisValueFormatter(xVals)
+      xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
       xAxis.setDrawGridLines(false)
 
       val rightAxis = chart.axisRight
@@ -367,5 +374,17 @@ class ReportFoodFragment : Fragment() {
       binding.pbExercise.progress = 50
       binding.pbDrug.max = 100
       binding.pbDrug.progress = 50
+   }
+
+   class MyValueFormatter : IValueFormatter {
+      override fun getFormattedValue(
+         value: Float,
+         entry: Entry,
+         dataSetIndex: Int,
+         viewPortHandler: ViewPortHandler
+      ): String {
+         val formatter= DecimalFormat("#.#");
+         return formatter.format(value)
+      }
    }
 }
