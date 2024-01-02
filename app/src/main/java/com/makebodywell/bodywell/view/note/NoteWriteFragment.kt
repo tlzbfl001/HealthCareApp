@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteWriteBinding
-import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -20,7 +20,6 @@ class NoteWriteFragment : Fragment() {
    private var bundle = Bundle()
 
    private var dataManager: DataManager? = null
-   private var getNote = Text()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -31,17 +30,9 @@ class NoteWriteFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
+      val getNote = dataManager!!.getNote(selectedDate.toString())
 
-      return binding.root
-   }
-
-   private fun initView() {
-      getNote = dataManager!!.getNote(selectedDate.toString())
-
-      bundle.putString("data", "noteData")
-
-      settingData()
+      bundle.putString("data", "note")
 
       binding.ivBack.setOnClickListener {
          replaceFragment2(requireActivity(), NoteFragment(), bundle)
@@ -58,25 +49,32 @@ class NoteWriteFragment : Fragment() {
       }
 
       binding.tvSave.setOnClickListener {
-         if(getNote.string3 == null) {
-            dataManager!!.insertNote(Text(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
+         if(getNote.string3 == "") {
+            dataManager!!.insertNote(Item(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateNote(Text(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
+            dataManager!!.updateNote(Item(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
             Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
          replaceFragment2(requireActivity(), NoteFragment(), bundle)
       }
+
+      settingData()
+
+      return binding.root
    }
 
    private fun settingData() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
       binding.tvNoteDate.text = dateFormat(selectedDate)
 
-      if(getNote.string3 != null) {
+      val getNote = dataManager!!.getNote(selectedDate.toString())
+      if(getNote.int1 != 0) {
          binding.etTitle.setText(getNote.string1)
          binding.etContent.setText(getNote.string2)
       }else {
+         binding.etTitle.setText("")
+         binding.etContent.setText("")
          binding.etTitle.hint = "제목."
          binding.etContent.hint = "내용입력"
       }

@@ -25,7 +25,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -231,7 +230,6 @@ class ReportBodyFragment : Fragment() {
 
       val weekArray = weekArray(calendarDate)
       val getData = dataManager!!.getBody(weekArray[0].toString(), weekArray[6].toString())
-
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
@@ -382,16 +380,16 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun setupChart(
-      lineChart: LineChart,
+      chart: LineChart,
       entries: ArrayList<Entry>,
       xValue: ArrayList<String>
    ) {
-      lineChart.data = null
-      lineChart.fitScreen()
-      lineChart.xAxis.valueFormatter = null
-      lineChart.clear()
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
 
-      val legend = lineChart.legend
+      val legend = chart.legend
       legend.isEnabled = false
 
       val lineDataSet = LineDataSet(entries, "data")
@@ -411,22 +409,22 @@ class ReportBodyFragment : Fragment() {
       lineData.setValueTextSize(8f)
       lineData.setValueFormatter(MyValueFormatter())
 
-      lineChart.data = lineData
-      lineChart.notifyDataSetChanged()
-      lineChart.invalidate()
+      chart.data = lineData
+      chart.notifyDataSetChanged()
+      chart.invalidate()
 
-      lineChart.description.isEnabled = false
-      lineChart.axisRight.isEnabled = false
-      lineChart.setScaleEnabled(false)
-      lineChart.setPinchZoom(false)
-      lineChart.setDrawGridBackground(false)
-      lineChart.axisLeft.isEnabled = false
-      lineChart.moveViewToX(1f)
-      lineChart.setVisibleXRangeMaximum(7f)
-      lineChart.isDragXEnabled = dateType==0 || dateType==2
-      lineChart.setExtraOffsets(0f, 0f, 0f, 10f)
+      chart.description.isEnabled = false
+      chart.axisRight.isEnabled = false
+      chart.setScaleEnabled(false)
+      chart.setPinchZoom(false)
+      chart.setDrawGridBackground(false)
+      chart.axisLeft.isEnabled = false
+      chart.moveViewToX(1f)
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = dateType==0 || dateType==2
+      chart.setExtraOffsets(0f, 0f, 0f, 10f)
 
-      val xAxis = lineChart.xAxis
+      val xAxis = chart.xAxis
       xAxis.setDrawLabels(true)
       xAxis.position = XAxis.XAxisPosition.BOTTOM
       xAxis.textColor = Color.BLACK
@@ -438,7 +436,7 @@ class ReportBodyFragment : Fragment() {
       xAxis.spaceMin = 0.7f
       xAxis.gridColor = Color.parseColor("#EAEAEA")
 
-      val yAxisLeft = lineChart.axisLeft
+      val yAxisLeft = chart.axisLeft
       yAxisLeft.textSize = 7f
    }
 

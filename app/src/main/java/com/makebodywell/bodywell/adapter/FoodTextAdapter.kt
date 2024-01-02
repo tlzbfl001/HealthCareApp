@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.model.Item
 
 class FoodTextAdapter (
-   private var itemList: ArrayList<Text> = ArrayList<Text>()
+   private var itemList: ArrayList<Item> = ArrayList<Item>()
 ) : RecyclerView.Adapter<FoodTextAdapter.ViewHolder>() {
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

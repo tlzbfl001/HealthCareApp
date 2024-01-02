@@ -22,7 +22,7 @@ import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
 
@@ -65,6 +65,20 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          var data = Food()
+         data.regDate = cursor.getString(0)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getFoodDa(start: String, end: String) : ArrayList<Food> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Food>()
+      val sql = "select distinct regDate from $TABLE_FOOD where regDate BETWEEN '$start' and '$end'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Food()
          data.regDate = cursor.getString(0)
          list.add(data)
       }
@@ -339,9 +353,9 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getNote(date: String) : Text {
+   fun getNote(date: String) : Item {
       val db = dbHelper!!.readableDatabase
-      val data = Text()
+      val data = Item()
       val sql = "select * from $TABLE_NOTE where regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
@@ -498,7 +512,7 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_DRUG_TIME, null, values)
    }
 
-   fun insertNote(data: Text) {
+   fun insertNote(data: Item) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("title", data.string1)
@@ -591,7 +605,7 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateNote(data: Text){
+   fun updateNote(data: Item){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_NOTE set title='${data.string1}', content='${data.string2}' where regDate='${data.string3}'"
       db.execSQL(sql)

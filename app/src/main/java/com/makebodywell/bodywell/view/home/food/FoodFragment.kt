@@ -26,7 +26,7 @@ import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -346,7 +346,7 @@ class FoodFragment : Fragment() {
    }
 
    private fun setupTextList(dataList: ArrayList<Food>) {
-      val itemList = ArrayList<Text>()
+      val itemList = ArrayList<Item>()
       val divide = dataList.size / 3
       val minus1 = dataList.size - 1
       val minus2 = dataList.size - 2
@@ -354,35 +354,35 @@ class FoodFragment : Fragment() {
 
       if(dataList.size % 3 == 0) {
          for(i in 0 until divide) {
-            itemList.add(Text(
-               dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
-               dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
-               dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
+            itemList.add(Item(
+               dataList[num].name!!, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit!!,
+               dataList[num + 1].name!!, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit!!,
+               dataList[num + 2].name!!, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit!!)
             )
             num += 3
          }
       }else if(dataList.size % 3 == 1) {
          for(i in 0 until divide) {
-            itemList.add(Text(
-               dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
-               dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
-               dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
+            itemList.add(Item(
+               dataList[num].name!!, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit!!,
+               dataList[num + 1].name!!, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit!!,
+               dataList[num + 2].name!!, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit!!)
             )
             num += 3
          }
-         itemList.add(Text(string1 = dataList[minus1].name, int1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit))
+         itemList.add(Item(string1 = dataList[minus1].name!!, int1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit!!))
       }else if(dataList.size % 3 == 2) {
          for(i in 0 until divide) {
-            itemList.add(Text(
-               dataList[num].name, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit,
-               dataList[num + 1].name, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit,
-               dataList[num + 2].name, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit)
+            itemList.add(Item(
+               dataList[num].name!!, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit!!,
+               dataList[num + 1].name!!, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit!!,
+               dataList[num + 2].name!!, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit!!)
             )
             num += 3
          }
-         itemList.add(Text(
-            string1 = dataList[minus2].name, int1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit,
-            string2 = dataList[minus1].name, int2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit))
+         itemList.add(Item(
+            string1 = dataList[minus2].name!!, int1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit!!,
+            string2 = dataList[minus1].name!!, int2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit!!))
       }
 
       binding.viewpager.adapter = FoodTextAdapter(itemList)

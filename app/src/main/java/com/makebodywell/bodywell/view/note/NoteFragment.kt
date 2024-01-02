@@ -1,14 +1,21 @@
 package com.makebodywell.bodywell.view.note
 
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.GestureDetector
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
@@ -22,7 +29,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.view.home.food.GalleryFragment
 import java.time.LocalDate
 import kotlin.math.abs
@@ -37,6 +44,8 @@ class NoteFragment : Fragment() {
 
    private var days = ArrayList<LocalDate?>()
 
+   private val requestCode = 1
+
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -46,19 +55,11 @@ class NoteFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-
-      return binding.root
-   }
-
-   private fun initView() {
       // 날짜 초기화
       val data = arguments?.getString("data").toString()
-      if(data != "noteData") {
+      if(data != "note") {
          selectedDate = LocalDate.now()
       }
-
-      setWeekView()
 
       binding.ivWrite.setOnClickListener {
          replaceFragment1(requireActivity(), NoteWriteFragment())
@@ -78,8 +79,8 @@ class NoteFragment : Fragment() {
          setWeekView()
       }
 
-      // 클릭이벤트 설정
-      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : RecyclerItemClickListener.OnItemClickListener {
+      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(
+         requireActivity(), object : RecyclerItemClickListener.OnItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                selectedDate = days[position]!!
                setWeekView()
@@ -88,9 +89,14 @@ class NoteFragment : Fragment() {
       )
 
       binding.clGallery.setOnClickListener {
-         bundle.putString("type", "note")
+         bundle.putString("type", "5")
+         bundle.putString("calendarDate", selectedDate.toString())
          replaceFragment2(requireActivity(), GalleryFragment(), bundle)
       }
+
+      setWeekView()
+
+      return binding.root
    }
 
    private fun setWeekView() {
@@ -120,15 +126,13 @@ class NoteFragment : Fragment() {
       }
 
       // 이미지뷰
-      val dataList = dataManager!!.getImage(4, selectedDate.toString())
-      val itemList = ArrayList<Image>()
-      for (i in 0 until dataList.size) {
-         itemList.add(Image(id = dataList[i].id, imageUri = dataList[i].imageUri, type = "note", regDate = selectedDate.toString()))
+      val result = requestPermission()
+      if(result) {
+         val dataList = dataManager!!.getImage(5, selectedDate.toString())
+         val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
+         binding.viewPager.adapter = photoAdapter
+         binding.viewPager.setPadding(180, 0, 180, 0)
       }
-
-      val calendarPhotoAdapter = PhotoSlideAdapter(requireActivity(), itemList)
-      binding.viewPager.adapter = calendarPhotoAdapter
-      binding.viewPager.setPadding(180, 0, 180, 0)
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -197,5 +201,61 @@ class NoteFragment : Fragment() {
 
       override fun onTouchEvent(view: RecyclerView, motionEvent: MotionEvent) {}
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+   }
+
+   private fun requestPermission(): Boolean {
+      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+         for(permission in PermissionUtil.cameraPermissions3) {
+            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions3), requestCode)
+               return false
+            }
+         }
+      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+         for(permission in PermissionUtil.cameraPermissions2) {
+            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions2), requestCode)
+               return false
+            }
+         }
+      }else {
+         for(permission in PermissionUtil.cameraPermissions1) {
+            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions1), requestCode)
+               return false
+            }
+         }
+      }
+      return true
+   }
+
+   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+      if(requestCode == this.requestCode && grantResults.isNotEmpty()) {
+         var result = true
+
+         for (element in grantResults) {
+            if (element == -1) {
+               result = false
+            }
+         }
+
+         if(!result) {
+            val alertDialog: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(requireActivity())
+            alertDialog.setTitle("권한 설정")
+            alertDialog.setMessage("권한을 허가하지 않으셨습니다.\n[설정]에서 권한을 허가해주세요.")
+            alertDialog.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, _ ->
+               val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
+                  Uri.parse("package:" + requireActivity().packageName)
+               )
+               startActivity(intent)
+               dialogInterface.cancel()
+            })
+            alertDialog.setNegativeButton("취소", DialogInterface.OnClickListener { dialogInterface, _ ->
+               dialogInterface.cancel()
+            })
+            alertDialog.show()
+         }
+      }
    }
 }

@@ -2,7 +2,6 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -12,7 +11,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.GalleryAdapter
@@ -48,13 +46,6 @@ class GalleryFragment : Fragment() {
         dataManager = DataManager(activity)
         dataManager!!.open()
 
-        initView()
-        setupList()
-
-        return binding.root
-    }
-
-    private fun initView() {
         calendarDate = arguments?.getString("calendarDate").toString()
         type = arguments?.getString("type").toString()
         bundle.putString("calendarDate", calendarDate)
@@ -66,8 +57,8 @@ class GalleryFragment : Fragment() {
                 "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
                 "3" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
                 "4" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
-                "note" -> {
-                    bundle.putString("data", "noteData")
+                "5" -> {
+                    bundle.putString("data", "note")
                     replaceFragment2(requireActivity(), NoteFragment(), bundle)
                 }
             }
@@ -80,15 +71,19 @@ class GalleryFragment : Fragment() {
         binding.clGallery.setOnClickListener {
             getGallery()
         }
+
+        listView()
+
+        return binding.root
     }
 
-    private fun setupList() {
+    private fun listView() {
         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
         binding.recyclerView.layoutManager = layoutManager
 
-        val getFoodImage = dataManager!!.getImage(type.toInt(), calendarDate)
-        if(getFoodImage.size > 0) {
-            val adapter = GalleryAdapter(requireActivity(), getFoodImage)
+        val getImage = dataManager!!.getImage(type.toInt(), calendarDate)
+        if(getImage.size > 0) {
+            val adapter = GalleryAdapter(requireActivity(), getImage)
             binding.recyclerView.adapter = adapter
         }
     }
@@ -113,20 +108,20 @@ class GalleryFragment : Fragment() {
                     if(data?.extras?.get("data") != null){
                         val img = data.extras?.get("data") as Bitmap
                         val uri = saveFile(randomFileName(), "image/jpeg", img)
-                        val foodImage = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+                        val image = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
 
-                        dataManager?.insertImage(foodImage)
-                        setupList()
+                        dataManager?.insertImage(image)
+                        listView()
                     }else {
-                        setupList()
+                        listView()
                     }
                 }
                 storageCode -> {
                     val uri = data?.data
-                    val foodImage = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+                    val image = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
 
-                    dataManager?.insertImage(foodImage)
-                    setupList()
+                    dataManager?.insertImage(image)
+                    listView()
                 }
             }
         }

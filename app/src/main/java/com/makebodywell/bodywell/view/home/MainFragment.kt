@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
+import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate

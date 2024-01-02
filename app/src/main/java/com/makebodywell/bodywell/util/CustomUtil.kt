@@ -3,13 +3,12 @@ package com.makebodywell.bodywell.util
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Text
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.view.init.InputActivity
 import com.makebodywell.bodywell.view.init.MainActivity
 
@@ -39,11 +38,11 @@ class CustomUtil {
          }
       }
 
-      fun getFoodKcal(context: Context, date:String) : Text {
+      fun getFoodKcal(context: Context, date:String) : Item {
          val dataManager = DataManager(context)
          dataManager.open()
 
-         val text = Text()
+         val text = Item()
 
          var sum = 0
          val getFood1 = dataManager.getFood(1, date)
@@ -53,19 +52,19 @@ class CustomUtil {
 
          for(i in 0 until getFood1.size) {
             sum += getFood1[i].kcal!!.toInt() * getFood1[i].amount
-            text.int1 = text.int1?.plus(getFood1[i].kcal!!.toInt() * getFood1[i].amount)
+            text.int1 = text.int1.plus(getFood1[i].kcal!!.toInt() * getFood1[i].amount)
          }
          for(i in 0 until getFood2.size) {
             sum += getFood2[i].kcal!!.toInt() * getFood2[i].amount
-            text.int2 = text.int2?.plus(getFood2[i].kcal!!.toInt() * getFood2[i].amount)
+            text.int2 = text.int2.plus(getFood2[i].kcal!!.toInt() * getFood2[i].amount)
          }
          for(i in 0 until getFood3.size) {
             sum += getFood3[i].kcal!!.toInt() * getFood3[i].amount
-            text.int3 = text.int3?.plus(getFood3[i].kcal!!.toInt() * getFood3[i].amount)
+            text.int3 = text.int3.plus(getFood3[i].kcal!!.toInt() * getFood3[i].amount)
          }
          for(i in 0 until getFood4.size) {
             sum += getFood4[i].kcal!!.toInt() * getFood4[i].amount
-            text.int4 = text.int4?.plus(getFood4[i].kcal!!.toInt() * getFood4[i].amount)
+            text.int4 = text.int4.plus(getFood4[i].kcal!!.toInt() * getFood4[i].amount)
          }
 
          text.int5 = sum
