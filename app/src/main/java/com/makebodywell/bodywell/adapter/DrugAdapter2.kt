@@ -25,9 +25,9 @@ class DrugAdapter2 (
    private val itemList2: ArrayList<String> = ArrayList()
    private val itemList3: ArrayList<Drug> = ArrayList()
 
-   private val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-   private val formatter2 = SimpleDateFormat("yyyy. MM. dd")
-   private val formatter3 = SimpleDateFormat("M/dd")
+   private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   private val format2 = SimpleDateFormat("yyyy. MM. dd")
+   private val format3 = SimpleDateFormat("M/dd")
 
    init {
       dataManager = DataManager(context)
@@ -46,15 +46,15 @@ class DrugAdapter2 (
       holder.tvCount.text = itemList1[position].amount
       holder.tvUnit.text = itemList1[position].unit
 
-      val startDate = formatter2.format(formatter1.parse(itemList1[position].startDate)!!)
-      val endDate = formatter2.format(formatter1.parse(itemList1[position].endDate)!!)
+      val startDate = format2.format(format1.parse(itemList1[position].startDate)!!)
+      val endDate = format2.format(format1.parse(itemList1[position].endDate)!!)
       holder.tvDate.text = "$startDate ~ $endDate"
 
       val getDrugDate = dataManager?.getDrugDate(itemList1[position].id)
       if(getDrugDate!!.isNotEmpty()) {
          itemList2.clear()
          for(i in 0 until getDrugDate.size) {
-            val date = formatter3.format(formatter1.parse(getDrugDate[i].name)!!)
+            val date = format3.format(format1.parse(getDrugDate[i].date)!!)
             itemList2.add(date)
          }
          val adapter1 = DrugAdapter3(itemList2)
@@ -66,7 +66,7 @@ class DrugAdapter2 (
       if(getDrugTime!!.isNotEmpty()) {
          itemList3.clear()
          for(i in 0 until getDrugTime.size) {
-            itemList3.add(Drug(name = getDrugTime[i].name, count = i+1))
+            itemList3.add(Drug(name = getDrugTime[i].time, count = i+1))
          }
          val adapter2 = DrugAdapter4(itemList3)
          holder.recyclerView2.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -79,6 +79,10 @@ class DrugAdapter2 (
          }else {
             Log.d(TAG, "id: ${itemList1[position].id}")
          }
+      }
+
+      holder.ivDelete.setOnClickListener {
+         onItemClickListener!!.onItemClick(position)
       }
    }
 
@@ -106,15 +110,6 @@ class DrugAdapter2 (
       val tvUnit: TextView = itemView.findViewById(R.id.tvUnit)
       val recyclerView1: RecyclerView = itemView.findViewById(R.id.recyclerView1)
       val recyclerView2: RecyclerView = itemView.findViewById(R.id.recyclerView2)
-      private val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
-
-      init {
-         ivDelete.setOnClickListener {
-            val position = adapterPosition
-            if(position != RecyclerView.NO_POSITION) {
-               onItemClickListener!!.onItemClick(position)
-            }
-         }
-      }
+      val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
    }
 }

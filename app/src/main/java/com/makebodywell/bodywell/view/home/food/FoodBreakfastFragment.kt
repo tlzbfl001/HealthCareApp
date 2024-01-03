@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -41,11 +40,9 @@ class FoodBreakfastFragment : Fragment() {
    private var calendarDate = ""
 
    private var dataManager: DataManager? = null
-
    private var photoAdapter: PhotoViewAdapter? = null
    private var foodRecordAdapter: FoodIntakeAdapter? = null
    private var foodFrequentlyAdapter: FoodRecord1Adapter? = null
-
    private var dataList = ArrayList<Food>()
    private var itemList = ArrayList<Food>()
 
@@ -180,12 +177,10 @@ class FoodBreakfastFragment : Fragment() {
          binding.viewPager.setPageTransformer(transformer)
 
          binding.cvLeft.setOnClickListener {
-            var current = binding.viewPager.currentItem
-            binding.viewPager.setCurrentItem(current-1, true)
+            binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
          }
          binding.cvRight.setOnClickListener {
-            var current = binding.viewPager.currentItem
-            binding.viewPager.setCurrentItem(current+1, true)
+            binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
          }
       }
    }

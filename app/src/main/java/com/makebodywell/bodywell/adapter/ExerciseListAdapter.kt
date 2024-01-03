@@ -42,6 +42,7 @@ class ExerciseListAdapter (
             .setPositiveButton("확인") { _, _ ->
                dataManager!!.deleteExercise(itemList[position].id!!)
                itemList.removeAt(position)
+
                notifyDataSetChanged()
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
             }

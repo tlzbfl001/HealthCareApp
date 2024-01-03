@@ -42,8 +42,8 @@ class WaterFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var getDailyData = DailyData()
    private var getWater = Water()
-
    private var adapter: WaterAdapter? = null
+
    private var goal = 0
    private var volume = 0
    private var count = 0

@@ -29,7 +29,7 @@ class ExerciseRecord1Adapter (
         holder.tvName.text = itemList[position].name
 
         holder.itemView.setOnClickListener {
-            var bundle = Bundle()
+            val bundle = Bundle()
             val exercise = Exercise(id = itemList[position].id, name = itemList[position].name, workoutTime = itemList[position].workoutTime,
                 calories = itemList[position].calories)
             bundle.putParcelable("exercise", exercise)

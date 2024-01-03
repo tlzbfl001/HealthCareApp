@@ -1,10 +1,12 @@
 package com.makebodywell.bodywell.view.home.drug
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -63,14 +65,27 @@ class DrugRecordFragment : Fragment() {
       // 데이터 삭제, 등록된 알람 취소
       adapter!!.setOnItemClickListener(object : DrugAdapter2.OnItemClickListener {
          override fun onItemClick(pos: Int) {
-            dataManager!!.deleteDrugDate(itemList[pos].id)
-            dataManager!!.deleteDrugTime(itemList[pos].id)
-            dataManager!!.deleteDrug(itemList[pos].id)
+            val dialog = AlertDialog.Builder(context)
+               .setMessage("정말 삭제하시겠습니까?")
+               .setPositiveButton("확인") { _, _ ->
+                  dataManager!!.deleteDrugDate(itemList[pos].id)
+                  val getDrugTime = dataManager!!.getDrugTime(itemList[pos].id)
+                  for(i in 0 until getDrugTime.size) {
+                     dataManager!!.deleteDrugCheck(getDrugTime[i].id)
+                  }
+                  dataManager!!.deleteDrugTime(itemList[pos].id)
+                  dataManager!!.deleteDrug(itemList[pos].id)
 
-            alarmReceiver.cancelAlarm(requireActivity(), itemList[pos].id)
+                  alarmReceiver.cancelAlarm(requireActivity(), itemList[pos].id)
 
-            itemList.removeAt(pos)
-            adapter!!.notifyDataSetChanged()
+                  itemList.removeAt(pos)
+                  adapter!!.notifyDataSetChanged()
+
+                  Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+               }
+               .setNegativeButton("취소", null)
+               .create()
+            dialog.show()
          }
       })
 

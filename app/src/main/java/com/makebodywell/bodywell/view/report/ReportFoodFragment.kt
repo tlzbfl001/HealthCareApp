@@ -20,6 +20,8 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
@@ -28,14 +30,15 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+
 
 class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
@@ -45,10 +48,6 @@ class ReportFoodFragment : Fragment() {
 
    private var calendarDate = LocalDate.now()
    private var dateType = 0
-
-   private var xVal = arrayOf<String>()
-   private var lineList = floatArrayOf()
-   private val barEntries = ArrayList<BarEntry>()
 
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    private val format2 = SimpleDateFormat("M.dd")
@@ -148,56 +147,12 @@ class ReportFoodFragment : Fragment() {
 
       val getFoodDates = dataManager!!.getFoodDates()
       if(getFoodDates.size > 0) {
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-
-         xVal = arrayOf()
-         lineList = floatArrayOf()
-         barEntries.clear()
-
-         var xVal = arrayOf<String>()
-         var lineList = floatArrayOf()
-         val barEntries = ArrayList<BarEntry>()
-
-         for(i in 0 until getFoodDates.size){
-            xVal += format2.format(format1.parse(getFoodDates[i].regDate))
-            lineList += getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int5!!.toFloat()
-            barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int1!!.toFloat(),
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int2!!.toFloat(),
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int3!!.toFloat(),
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int4!!.toFloat()
-            )))
-         }
-
-         settingChart1(binding.chart1, xVal, lineList, barEntries)
-         settingChart2(binding.chart2, xVal, lineList, barEntries)
-      }else {
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
+         settingChart1(binding.chart1, getFoodDates)
+         settingChart2(binding.chart2, getFoodDates)
       }
 
       val getWater = dataManager!!.getWater()
       if(getWater.size > 0) {
-         var xVal = arrayOf<String>()
-         var lineList = floatArrayOf()
-         val barEntries = ArrayList<BarEntry>()
-
-         for(i in 0 until getWater.size){
-            xVal += format2.format(format1.parse(getWater[i].regDate))
-            lineList += getDailyData(getWater[i].regDate).unit!!.toFloat()
-            barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-               getDailyData(getWater[i].regDate).carbohydrate!!.toFloat(),
-               getDailyData(getWater[i].regDate).protein!!.toFloat(),
-               getDailyData(getWater[i].regDate).fat!!.toFloat(),
-               getDailyData(getWater[i].regDate).sugar!!.toFloat()
-            )))
-         }
-
          settingChart3(binding.chart3, getWater)
       }
    }
@@ -211,43 +166,6 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val weekArray = weekArray(calendarDate)
-      val getFoodDates = dataManager!!.getFoodDa(weekArray[0].toString(), weekArray[6].toString())
-
-      if(getFoodDates.size > 0) {
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-
-         xVal = arrayOf()
-         lineList = floatArrayOf()
-         barEntries.clear()
-
-         for(i in 0 until getFoodDates.size){
-            xVal += format2.format(format1.parse(getFoodDates[i].regDate))
-            lineList += getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int5!!.toFloat()
-            barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int1!!.toFloat(),
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int2!!.toFloat(),
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int3!!.toFloat(),
-               getFoodKcal(requireActivity(), getFoodDates[i].regDate!!).int4!!.toFloat()
-            )))
-         }
-
-         settingChart1(binding.chart1, xVal, lineList, barEntries)
-         settingChart2(binding.chart2, xVal, lineList, barEntries)
-      }else {
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-      }
-
-      val getWater = dataManager!!.getWater()
-      if(getWater.size > 0) {
-
-      }
    }
 
    private fun monthlyView() {
@@ -260,20 +178,24 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
    }
 
-   private fun settingChart1(
-      chart: CombinedChart,
-      xVal: Array<String>,
-      lineList: FloatArray,
-      barEntries: ArrayList<BarEntry>
-   ) {
-      chart.data = null
-      chart.fitScreen()
-      chart.xAxis.valueFormatter = null
-      chart.clear()
-
+   private fun settingChart1(chart: CombinedChart, getData: ArrayList<Food>) {
       val data = CombinedData()
+      var xVal = arrayOf<String>()
       val lineData = LineData()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
+      val barEntries = ArrayList<BarEntry>()
+
+      for(i in 0 until getData.size){
+         xVal += format2.format(format1.parse(getData[i].regDate))
+         lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
+         barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int1.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int2.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int3.toFloat(),
+            getFoodKcal(requireActivity(), getData[i].regDate!!).int4.toFloat()
+         )))
+      }
 
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
@@ -312,23 +234,27 @@ class ReportFoodFragment : Fragment() {
       chart.data = data
       chart.invalidate()
       chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = dateType==0 || dateType==2
+      chart.isDragXEnabled = true
    }
 
-   private fun settingChart2(
-      chart: CombinedChart,
-      xVal: Array<String>,
-      lineList: FloatArray,
-      barEntries: ArrayList<BarEntry>
-   ) {
-      chart.data = null
-      chart.fitScreen()
-      chart.xAxis.valueFormatter = null
-      chart.clear()
-
+   private fun settingChart2(chart: CombinedChart, getData: ArrayList<Food>) {
       val data = CombinedData()
+      var xVal = arrayOf<String>()
       val lineData = LineData()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
+      val barEntries = ArrayList<BarEntry>()
+
+      for(i in 0 until getData.size){
+         xVal += format2.format(format1.parse(getData[i].regDate))
+         lineList += getNutrition(requireActivity(), getData[i].regDate!!).unit!!.toFloat()
+         barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
+            getNutrition(requireActivity(), getData[i].regDate!!).carbohydrate!!.toFloat(),
+            getNutrition(requireActivity(), getData[i].regDate!!).protein!!.toFloat(),
+            getNutrition(requireActivity(), getData[i].regDate!!).fat!!.toFloat(),
+            getNutrition(requireActivity(), getData[i].regDate!!).sugar!!.toFloat()
+         )))
+      }
 
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
@@ -446,86 +372,6 @@ class ReportFoodFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
-   }
-
-   private fun getDailyData(date:String) : Food {
-      val getFood1 = dataManager!!.getFood(1, date)
-      val getFood2 = dataManager!!.getFood(2, date)
-      val getFood3 = dataManager!!.getFood(3, date)
-      val getFood4 = dataManager!!.getFood(4, date)
-
-      var carbohydrate = 0.0
-      var protein = 0.0
-      var fat = 0.0
-      var sugar = 0.0
-
-      for(i in 0 until getFood1.size) {
-         carbohydrate += getFood1[i].carbohydrate!!.toDouble() * getFood1[i].amount
-         protein += getFood1[i].protein!!.toDouble() * getFood1[i].amount
-         fat += getFood1[i].fat!!.toDouble() * getFood1[i].amount
-         sugar += getFood1[i].sugar!!.toDouble() * getFood1[i].amount
-      }
-      for(i in 0 until getFood2.size) {
-         carbohydrate += getFood2[i].carbohydrate!!.toDouble() * getFood2[i].amount
-         protein += getFood2[i].protein!!.toDouble() * getFood2[i].amount
-         fat += getFood2[i].fat!!.toDouble() * getFood2[i].amount
-         sugar += getFood2[i].sugar!!.toDouble() * getFood2[i].amount
-      }
-      for(i in 0 until getFood3.size) {
-         carbohydrate += getFood3[i].carbohydrate!!.toDouble() * getFood3[i].amount
-         protein += getFood3[i].protein!!.toDouble() * getFood3[i].amount
-         fat += getFood3[i].fat!!.toDouble() * getFood3[i].amount
-         sugar += getFood3[i].sugar!!.toDouble() * getFood3[i].amount
-      }
-      for(i in 0 until getFood4.size) {
-         carbohydrate += getFood4[i].carbohydrate!!.toDouble() * getFood4[i].amount
-         protein += getFood4[i].protein!!.toDouble() * getFood4[i].amount
-         fat += getFood4[i].fat!!.toDouble() * getFood4[i].amount
-         sugar += getFood4[i].sugar!!.toDouble() * getFood4[i].amount
-      }
-
-      return Food(unit = (carbohydrate+protein+fat+sugar).toString(), carbohydrate = carbohydrate.toString(),
-         protein = protein.toString(), fat = fat.toString(), sugar = sugar.toString())
-   }
-
-   private fun getWeeklyData(date: String) : Food {
-      val getFood1 = dataManager!!.getFood(1, date)
-      val getFood2 = dataManager!!.getFood(2, date)
-      val getFood3 = dataManager!!.getFood(3, date)
-      val getFood4 = dataManager!!.getFood(4, date)
-
-      var carbohydrate = 0.0
-      var protein = 0.0
-      var fat = 0.0
-      var sugar = 0.0
-
-      for(i in 0 until getFood1.size) {
-         carbohydrate += getFood1[i].carbohydrate!!.toDouble() * getFood1[i].amount
-         protein += getFood1[i].protein!!.toDouble() * getFood1[i].amount
-         fat += getFood1[i].fat!!.toDouble() * getFood1[i].amount
-         sugar += getFood1[i].sugar!!.toDouble() * getFood1[i].amount
-      }
-      for(i in 0 until getFood2.size) {
-         carbohydrate += getFood2[i].carbohydrate!!.toDouble() * getFood2[i].amount
-         protein += getFood2[i].protein!!.toDouble() * getFood2[i].amount
-         fat += getFood2[i].fat!!.toDouble() * getFood2[i].amount
-         sugar += getFood2[i].sugar!!.toDouble() * getFood2[i].amount
-      }
-      for(i in 0 until getFood3.size) {
-         carbohydrate += getFood3[i].carbohydrate!!.toDouble() * getFood3[i].amount
-         protein += getFood3[i].protein!!.toDouble() * getFood3[i].amount
-         fat += getFood3[i].fat!!.toDouble() * getFood3[i].amount
-         sugar += getFood3[i].sugar!!.toDouble() * getFood3[i].amount
-      }
-      for(i in 0 until getFood4.size) {
-         carbohydrate += getFood4[i].carbohydrate!!.toDouble() * getFood4[i].amount
-         protein += getFood4[i].protein!!.toDouble() * getFood4[i].amount
-         fat += getFood4[i].fat!!.toDouble() * getFood4[i].amount
-         sugar += getFood4[i].sugar!!.toDouble() * getFood4[i].amount
-      }
-
-      return Food(unit = (carbohydrate+protein+fat+sugar).toString(), carbohydrate = carbohydrate.toString(),
-         protein = protein.toString(), fat = fat.toString(), sugar = sugar.toString())
    }
 
    private fun buttonUI() {

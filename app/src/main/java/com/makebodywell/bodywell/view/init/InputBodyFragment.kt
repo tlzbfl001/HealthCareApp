@@ -69,20 +69,20 @@ class InputBodyFragment : Fragment() {
                isThreeDigit1 = false
             }
             if(!isTwoDigitDecimal1 && s.length == 3) {
-               var text = s[0].toString()+s[1].toString()+"."+s[2].toString()
+               val text = s[0].toString()+s[1].toString()+"."+s[2].toString()
                binding.etHeight.setText(text)
                binding.etHeight.setSelection(text.length)
                isTwoDigitDecimal1 = true
             }
             if(isTwoDigitDecimal1 && s.length == 5) {
-               var text = s[0].toString()+s[1].toString()+s[4].toString()
+               val text = s[0].toString()+s[1].toString()+s[4].toString()
                binding.etHeight.setText(text)
                binding.etHeight.setSelection(text.length)
                isTwoDigitDecimal1 = false
                isThreeDigit1 = true
             }
             if(isThreeDigit1 && s.length == 4) {
-               var text = s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
+               val text = s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
                binding.etHeight.setText(text)
                binding.etHeight.setSelection(text.length)
                isThreeDigit1 = false
@@ -100,20 +100,20 @@ class InputBodyFragment : Fragment() {
                isThreeDigit2 = false
             }
             if(!isTwoDigitDecimal2 && s.length == 3) {
-               var text = s[0].toString()+s[1].toString()+"."+s[2].toString()
+               val text = s[0].toString()+s[1].toString()+"."+s[2].toString()
                binding.etWeight.setText(text)
                binding.etWeight.setSelection(text.length)
                isTwoDigitDecimal2 = true
             }
             if(isTwoDigitDecimal2 && s.length == 5) {
-               var text = s[0].toString()+s[1].toString()+s[4].toString()
+               val text = s[0].toString()+s[1].toString()+s[4].toString()
                binding.etWeight.setText(text)
                binding.etWeight.setSelection(text.length)
                isTwoDigitDecimal2 = false
                isThreeDigit2 = true
             }
             if(isThreeDigit2 && s.length == 4) {
-               var text = s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
+               val text = s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
                binding.etWeight.setText(text)
                binding.etWeight.setSelection(text.length)
                isThreeDigit2 = false

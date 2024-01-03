@@ -15,13 +15,33 @@ data class Drug(
    var count: Int = 0
 )
 
-@Parcelize
 data class DrugTime(
-   var hour: String = "",
-   var minute: String = ""
-) : Parcelable
+   var id: Int = 0,
+   var time: String = "",
+   var drugId: Int = 0
+)
 
 @Parcelize
 data class DrugDate(
-   var date: String = ""
+   var id: Int = 0,
+   var date: String = "",
+   var drugId: Int = 0
 ) : Parcelable
+
+data class DrugCheck(
+   var id: Int = 0,
+   var checked: Int = 0,
+   var drugTimeId: Int = 0,
+   var regDate: String = ""
+)
+
+data class DrugList(
+   var id: Int = 0,
+   var date: String = "",
+   var name: String = "",
+   var amount: String = "",
+   var unit: String = "",
+   var time: String = "",
+   var initCheck: Int = 0,
+   var checked: Int = 0
+)

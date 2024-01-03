@@ -113,7 +113,7 @@
             android:id="@+id/tvCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
+            android:layout_marginTop="2dp"
             android:text="text"
             android:textSize="14dp"
             android:textColor="@color/black"

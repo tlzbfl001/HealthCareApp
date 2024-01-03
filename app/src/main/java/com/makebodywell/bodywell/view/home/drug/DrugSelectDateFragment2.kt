@@ -1,12 +1,10 @@
 package com.makebodywell.bodywell.view.home.drug
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,14 +12,11 @@ import com.makebodywell.bodywell.adapter.CalendarAdapter4
 import com.makebodywell.bodywell.adapter.CalendarAdapter5
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugSelectDateBinding
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.DrugUtil
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugEndDate
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugStartDate

@@ -38,11 +38,9 @@ class FoodLunchFragment : Fragment() {
     private var calendarDate = ""
 
     private var dataManager: DataManager? = null
-
     private var photoAdapter: PhotoViewAdapter? = null
     private var foodRecordAdapter: FoodIntakeAdapter? = null
     private var foodFrequentlyAdapter: FoodRecord1Adapter? = null
-
     private var dataList = ArrayList<Food>()
     private var itemList = ArrayList<Food>()
 

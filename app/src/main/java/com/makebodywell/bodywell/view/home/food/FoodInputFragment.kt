@@ -40,7 +40,7 @@ class FoodInputFragment : Fragment() {
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
-      bundle.putString("type", type.toString())
+      bundle.putString("type", type)
 
       binding.clOut.setOnClickListener {
          when(type) {

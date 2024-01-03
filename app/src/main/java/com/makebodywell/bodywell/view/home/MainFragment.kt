@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.ViewGroup.LayoutParams
 import androidx.fragment.app.Fragment
@@ -18,6 +19,8 @@ import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -49,15 +52,6 @@ class MainFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-
-      // 달력 설정
-      setupCalendar()
-
-      return binding.root
-   }
-
-   private fun initView() {
       binding.btnCalPrev.setOnClickListener {
          selectedDate = selectedDate.minusWeeks(1)
          setWeekView()
@@ -91,6 +85,11 @@ class MainFragment : Fragment() {
       binding.clDrug.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
       }
+
+      // 달력 설정
+      setupCalendar()
+
+      return binding.root
    }
 
    private fun setupCalendar() {

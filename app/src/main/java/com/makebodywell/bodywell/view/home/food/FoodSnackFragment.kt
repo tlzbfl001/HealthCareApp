@@ -179,12 +179,10 @@ class FoodSnackFragment : Fragment() {
             binding.viewPager.setPageTransformer(transformer)
 
             binding.cvLeft.setOnClickListener {
-                var current = binding.viewPager.currentItem
-                binding.viewPager.setCurrentItem(current-1, true)
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
             }
             binding.cvRight.setOnClickListener {
-                var current = binding.viewPager.currentItem
-                binding.viewPager.setCurrentItem(current+1, true)
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
             }
         }
     }

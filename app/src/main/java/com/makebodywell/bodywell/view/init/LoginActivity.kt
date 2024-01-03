@@ -67,14 +67,6 @@ class LoginActivity : AppCompatActivity() {
    private var gso: GoogleSignInOptions? = null
    private var gsa: GoogleSignInAccount? = null
 
-   private lateinit var webView: WebView
-   private val authEndpoint = "https://appleid.apple.com/auth/authorize"
-   private val responseType = "code%20id_token"
-   private val responseMode = "form_post"
-   private val scope = "name%20email"
-   private val state = UUID.randomUUID().toString()
-   private val redirectUrl = "https://api.bodywell.dev/auth/apple/redirect"
-
    private lateinit var oauthProvider: OAuthProvider.Builder
    private lateinit var firebaseAuth: FirebaseAuth
 
@@ -112,18 +104,14 @@ class LoginActivity : AppCompatActivity() {
 
       // 애플 로그인
       binding.clApple.setOnClickListener {
-//         initAuth()
-//         checkPending()
-         appleLogin()
-      }
-   }
+         // 인증 API 초기화
+         oauthProvider = OAuthProvider.newBuilder("apple.com")
+         oauthProvider.scopes = listOf("email", "name")
+         oauthProvider.addCustomParameter("locale", "ko")
+         firebaseAuth = FirebaseAuth.getInstance()
 
-   // 인증 API 초기화
-   private fun initAuth(){
-      oauthProvider = OAuthProvider.newBuilder("apple.com")
-      oauthProvider.scopes = listOf("email", "name")
-      oauthProvider.addCustomParameter("locale", "ko")
-      firebaseAuth = FirebaseAuth.getInstance()
+         checkPending()
+      }
    }
 
    // 이미 받은 응답이 있는지 확인
@@ -131,11 +119,10 @@ class LoginActivity : AppCompatActivity() {
       val pending = firebaseAuth.pendingAuthResult
       if (pending != null) {
          pending.addOnSuccessListener { authResult ->
-            // 로그인 결과 및 유저 정보가 AuthResult 객체에 담겨서 받아짐, 이 객체로 후속 작업 진행
-            Log.d(TAG, "checkPending:onSuccess1:${authResult.user?.email}")
-            Log.d(TAG, "checkPending:onSuccess1:${(authResult.credential as OAuthCredential?)!!.idToken}")
+            Log.d(TAG, "email:${authResult.user?.email}")
+            Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
          }.addOnFailureListener { e ->
-            Log.w(TAG, "checkPending:onFailure", e)
+            e.printStackTrace()
          }
       } else {
          startAuth()
@@ -143,14 +130,12 @@ class LoginActivity : AppCompatActivity() {
    }
 
    private fun startAuth(){
-      firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build())
-         .addOnSuccessListener { authResult ->
-            // 로그인 결과 및 유저 정보가 AuthResult 객체에 담겨서 받아짐, 이 객체로 후속 작업 진행
-            Log.d(TAG, "checkPending:onSuccess2:${authResult.user?.email}")
-            Log.d(TAG, "checkPending:onSuccess2:${(authResult.credential as OAuthCredential?)!!.idToken}")
-         }.addOnFailureListener { e ->
-            Log.w(TAG, "checkPending:onFailure", e)
-         }
+      firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build()).addOnSuccessListener { authResult ->
+         Log.d(TAG, "email:${authResult.user?.email}")
+         Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
+      }.addOnFailureListener { e ->
+         e.printStackTrace()
+      }
    }
 
    private fun kakaoLogin() {
@@ -318,50 +303,6 @@ class LoginActivity : AppCompatActivity() {
             e.printStackTrace()
          }
       }
-   }
-
-   private fun appleLogin() {
-      webView = WebView(this)
-
-      // 웹뷰 세팅
-      webView.apply {
-         settings.javaScriptEnabled = true
-         settings.allowFileAccessFromFileURLs = true
-         settings.allowUniversalAccessFromFileURLs = true
-      }
-
-      // 웹뷰 동작
-      webView.loadUrl(createUrl())
-
-      webView.webChromeClient = object : WebChromeClient() {
-         override fun onConsoleMessage(cmsg: ConsoleMessage): Boolean {
-            Log.d(TAG, cmsg.message())
-            return true
-         }
-      }
-
-      webView.webViewClient = object : WebViewClient() {
-         override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
-            Log.e(TAG, description)
-         }
-
-         override fun onPageFinished(view: WebView, url: String) {
-            view.loadUrl("javascript:console.log(document.body.getElementsByTagName('pre')[0].innerHTML);")
-         }
-      }
-
-      setContentView(webView)
-   }
-
-   private fun createUrl(): String{
-      val clientId = getString(R.string.appleServiceId)
-      return (authEndpoint
-              + "?response_type=$responseType"
-              + "&response_mode=$responseMode"
-              + "&client_id=$clientId"
-              + "&scope=$scope"
-              + "&state=$state"
-              + "&redirect_uri=$redirectUrl")
    }
 
    private fun getKeyHash() {

@@ -36,6 +36,7 @@ class GalleryAdapter(
                 .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("확인") { _, _ ->
                     dataManager!!.deleteImage(itemList[position].id)
+
                     itemList.removeAt(position)
                     notifyDataSetChanged()
                 }

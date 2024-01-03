@@ -45,8 +45,6 @@ class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
-
    private var bundle = Bundle()
 
    private var calendarDate: LocalDate? = null
@@ -55,6 +53,7 @@ class FoodFragment : Fragment() {
    private var adapter: PhotoViewAdapter? = null
    private var imageList: ArrayList<Image> = ArrayList()
    private var getDailyData = DailyData()
+
    private var sum = 0
 
    override fun onCreateView(

@@ -1,23 +1,15 @@
 package com.makebodywell.bodywell.view.home.exercise
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseDetailBinding
-import com.makebodywell.bodywell.databinding.FragmentExerciseRecord1Binding
 import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import kotlin.math.E
 
 class ExerciseDetailFragment : Fragment() {
     private var _binding: FragmentExerciseDetailBinding? = null
@@ -43,7 +35,6 @@ class ExerciseDetailFragment : Fragment() {
     }
 
     private fun initView() {
-        // 번들데이터 가져오기
         bundleData = arguments?.getParcelable("exercise")!!
 
         // 텍스트 설정

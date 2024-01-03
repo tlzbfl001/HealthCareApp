@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.drug
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -8,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +18,6 @@ import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.DrugUtil
 import com.makebodywell.bodywell.util.DrugUtil.Companion.clearDrugData
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugCount
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
@@ -32,7 +29,6 @@ import com.makebodywell.bodywell.util.DrugUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugType
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugUnitNum
 import com.makebodywell.bodywell.util.DrugUtil.Companion.setDrugTimeList
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 
 class DrugAddFragment : Fragment() {
@@ -68,7 +64,7 @@ class DrugAddFragment : Fragment() {
       if(arguments?.getString("data") == "DrugSelectDateFragment") {
          binding.etType.setText(drugType)
          binding.etName.setText(drugName)
-         binding.etCount.setText(drugCount)
+         binding.etAmount.setText(drugCount)
 
          if(drugStartDate != "" && drugEndDate != "") {
             binding.tvPeriod.text = "$drugStartDate ~ $drugEndDate"
@@ -134,7 +130,7 @@ class DrugAddFragment : Fragment() {
          drugPeriodNum = 1
          drugType = binding.etType.text.toString()
          drugName = binding.etName.text.toString()
-         drugCount = binding.etCount.text.toString()
+         drugCount = binding.etAmount.text.toString()
 
          replaceFragment1(requireActivity(), DrugSelectDateFragment1())
       }
@@ -144,17 +140,17 @@ class DrugAddFragment : Fragment() {
          drugPeriodNum = 2
          drugType = binding.etType.text.toString()
          drugName = binding.etName.text.toString()
-         drugCount = binding.etCount.text.toString()
+         drugCount = binding.etAmount.text.toString()
 
          replaceFragment1(requireActivity(), DrugSelectDateFragment2())
       }
 
       binding.tvSave.setOnClickListener {
-         if(binding.etType.text.isEmpty() || binding.etName.text.isEmpty() || binding.etCount.text.isEmpty() || binding.tvPeriod.text == "" || itemList.size == 0) {
+         if(binding.etType.text.isEmpty() || binding.etName.text.isEmpty() || binding.etAmount.text.isEmpty() || binding.tvPeriod.text == "" || itemList.size == 0) {
             Toast.makeText(activity, "입력을 확인해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             // 약 데이터 저장
-            dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etCount.text.toString(),
+            dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etAmount.text.toString(),
                unit = unit, period = period, startDate = drugStartDate, endDate = drugEndDate))
 
             val getDrugId = dataManager!!.getDrugId()
@@ -163,6 +159,7 @@ class DrugAddFragment : Fragment() {
             for(i in 0 until drugTimeList.size) {
                val hour = String.format("%02d", Integer.parseInt(drugTimeList[i].hour))
                val minute = String.format("%02d", Integer.parseInt(drugTimeList[i].minute))
+
                dataManager!!.insertDrugTime("$hour:$minute", getDrugId.id)
             }
 
@@ -223,7 +220,7 @@ class DrugAddFragment : Fragment() {
    }
 
    private fun settingAlarm(getDrugId: Drug) {
-      val message = binding.etName.text.toString() + " " + binding.etCount.text.toString() + unit
+      val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
 
       if(period == "매일") {
          alarmReceiver.setAlarm1(requireActivity(), getDrugId.id, drugStartDate, drugEndDate, drugTimeList, message)

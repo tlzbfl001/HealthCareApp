@@ -9,12 +9,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.DrugDate
-import com.makebodywell.bodywell.model.DrugTime
+import com.makebodywell.bodywell.model.Time
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
@@ -26,7 +25,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val id = intent.getStringExtra("id")
-        val time: ArrayList<DrugTime> = intent.getParcelableArrayListExtra("time")!!
+        val time: ArrayList<Time> = intent.getParcelableArrayListExtra("time")!!
         val message = intent.getStringExtra("message")
 
         if(intent.getParcelableArrayListExtra<DrugDate>("drugDate") == null) {
@@ -58,7 +57,7 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.notify(id, notification)
     }
 
-    fun setAlarm1(context: Context, id: Int, startDate: String, endDate: String, time: ArrayList<DrugTime>, message: String) {
+    fun setAlarm1(context: Context, id: Int, startDate: String, endDate: String, time: ArrayList<Time>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, AlarmReceiver::class.java)
@@ -112,9 +111,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // 설정된 날짜가 오늘보다 크면 설정된 날짜로 알람 설정
         if(today < LocalDate.parse(startDate)) {
-            val formatter1 = SimpleDateFormat("yyyy-MM-dd")
-            val formatter2 = SimpleDateFormat("yyyyMMdd")
-            val formatDate = formatter2.format(formatter1.parse(startDate)!!)
+            val format1 = SimpleDateFormat("yyyy-MM-dd")
+            val format2 = SimpleDateFormat("yyyyMMdd")
+            val formatDate = format2.format(format1.parse(startDate)!!)
 
             val cal = Calendar.getInstance()
             cal.set(Calendar.YEAR, Integer.parseInt(formatDate.substring(0, 4)))
@@ -133,7 +132,7 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    fun setAlarm2(context: Context, id: Int, time: ArrayList<DrugTime>, drugDate: ArrayList<DrugDate>, message: String) {
+    fun setAlarm2(context: Context, id: Int, time: ArrayList<Time>, drugDate: ArrayList<DrugDate>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, AlarmReceiver::class.java)

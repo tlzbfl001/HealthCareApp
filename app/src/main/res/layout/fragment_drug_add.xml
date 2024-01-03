@@ -102,10 +102,10 @@
                 android:textColor="@color/black"
                 android:textSize="16dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/etCount"
-                app:layout_constraintBottom_toBottomOf="@id/etCount"/>
+                app:layout_constraintTop_toTopOf="@id/etAmount"
+                app:layout_constraintBottom_toBottomOf="@id/etAmount"/>
             <EditText
-                android:id="@+id/etCount"
+                android:id="@+id/etAmount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rec_30"
@@ -135,7 +135,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                app:layout_constraintTop_toBottomOf="@id/etCount"
+                app:layout_constraintTop_toBottomOf="@id/etAmount"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvTitle3">
                <androidx.cardview.widget.CardView
