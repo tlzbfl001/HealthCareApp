@@ -55,7 +55,7 @@ class DrugRecordFragment : Fragment() {
       val getDrug = dataManager!!.getDrug()
       for(i in 0 until getDrug.size) {
          itemList.add(Drug(id = getDrug[i].id, type = getDrug[i].type, name = getDrug[i].name, amount = getDrug[i].amount, unit = getDrug[i].unit,
-            period = getDrug[i].period, startDate = getDrug[i].startDate, endDate = getDrug[i].endDate))
+            period = getDrug[i].period, startDate = getDrug[i].startDate, endDate = getDrug[i].endDate, isSet = getDrug[i].isSet))
       }
 
       adapter = DrugAdapter2(requireActivity(), itemList)

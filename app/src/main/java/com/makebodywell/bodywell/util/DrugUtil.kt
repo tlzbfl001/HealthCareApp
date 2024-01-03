@@ -1,6 +1,6 @@
 package com.makebodywell.bodywell.util
 
-import com.makebodywell.bodywell.model.Time
+import com.makebodywell.bodywell.model.DrugTime
 import java.time.LocalDate
 
 class DrugUtil {
@@ -12,11 +12,11 @@ class DrugUtil {
         var drugPeriodNum = 0
         var drugStartDate = ""
         var drugEndDate = ""
-        var drugTimeList = ArrayList<Time>()
+        var drugTimeList = ArrayList<DrugTime>()
         var drugDateList = ArrayList<LocalDate>()
 
-        fun setDrugTimeList(h: String, m: String) {
-            drugTimeList.add(Time(hour = h, minute = m))
+        fun setDrugTimeList(h: Int, m: Int) {
+            drugTimeList.add(DrugTime(hour = h, minute = m))
         }
 
         fun clearDrugData() {

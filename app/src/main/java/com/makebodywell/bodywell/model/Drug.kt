@@ -12,14 +12,17 @@ data class Drug(
    var period: String = "",
    var startDate: String = "",
    var endDate: String = "",
+   var isSet: Int = 0,
    var count: Int = 0
 )
 
+@Parcelize
 data class DrugTime(
    var id: Int = 0,
-   var time: String = "",
+   var hour: Int = 0,
+   var minute: Int = 0,
    var drugId: Int = 0
-)
+) : Parcelable
 
 @Parcelize
 data class DrugDate(

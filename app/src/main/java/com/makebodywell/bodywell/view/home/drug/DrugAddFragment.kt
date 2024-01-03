@@ -16,6 +16,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugDate
+import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.DrugUtil.Companion.clearDrugData
@@ -35,9 +36,7 @@ class DrugAddFragment : Fragment() {
    private var _binding: FragmentDrugAddBinding? = null
    private val binding get() = _binding!!
 
-   private val alarmReceiver = AlarmReceiver()
    private var dataManager: DataManager? = null
-
    private var adapter: DrugAdapter5? = null
    private val itemList = ArrayList<Drug>()
    private var unit = "정"
@@ -157,14 +156,8 @@ class DrugAddFragment : Fragment() {
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
-               val hour = String.format("%02d", Integer.parseInt(drugTimeList[i].hour))
-               val minute = String.format("%02d", Integer.parseInt(drugTimeList[i].minute))
-
-               dataManager!!.insertDrugTime("$hour:$minute", getDrugId.id)
+               dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
             }
-
-            // 알람 설정
-            settingAlarm(getDrugId)
 
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), DrugRecordFragment())
@@ -188,7 +181,7 @@ class DrugAddFragment : Fragment() {
                   m = dateTime.minute
                }
 
-               setDrugTimeList(h.toString(), m.toString())
+               setDrugTimeList(h, m)
                showTimeList()
             }
 
@@ -204,8 +197,8 @@ class DrugAddFragment : Fragment() {
       itemList.clear()
 
       for(i in 0 until drugTimeList.size) {
-         val hour = String.format("%02d", Integer.parseInt(drugTimeList[i].hour))
-         val minute = String.format("%02d", Integer.parseInt(drugTimeList[i].minute))
+         val hour = String.format("%02d", drugTimeList[i].hour)
+         val minute = String.format("%02d", drugTimeList[i].minute)
          itemList.add(Drug(name = "$hour:$minute", count = i + 1))
       }
 
@@ -217,26 +210,6 @@ class DrugAddFragment : Fragment() {
 
       adapter = DrugAdapter5(itemList)
       binding.recyclerView.adapter = adapter
-   }
-
-   private fun settingAlarm(getDrugId: Drug) {
-      val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
-
-      if(period == "매일") {
-         alarmReceiver.setAlarm1(requireActivity(), getDrugId.id, drugStartDate, drugEndDate, drugTimeList, message)
-      }else {
-         if(drugDateList.size > 0) {
-            val drugDate = ArrayList<DrugDate>()
-
-            // 특정 날짜 데이터 저장
-            for(i in 0 until drugDateList.size) {
-               dataManager!!.insertDrugDate(drugDateList[i].toString(), getDrugId.id)
-               drugDate.add(DrugDate(date = drugDateList[i].toString()))
-            }
-
-            alarmReceiver.setAlarm2(requireActivity(), getDrugId.id, drugTimeList, drugDate, message)
-         }
-      }
    }
 
    private fun unit1() {

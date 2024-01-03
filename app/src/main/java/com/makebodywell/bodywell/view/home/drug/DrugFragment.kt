@@ -163,8 +163,8 @@ class DrugFragment : Fragment() {
             for(j in 0 until getDrugTime.size) {
                val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, calendarDate.toString())
                itemList.add(DrugList(id = getDrugTime[j].id, date = calendarDate.toString(), name = getDrugDaily[i].name,
-                  amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check,
-                  checked = getDrugCheck.checked)
+                  amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = "${getDrugTime[j].hour}:${getDrugTime[j].minute}",
+                  initCheck = check, checked = getDrugCheck.checked)
                )
             }
          }
@@ -176,8 +176,8 @@ class DrugFragment : Fragment() {
                   for(k in 0 until getDrugTime.size) {
                      val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[k].id, calendarDate.toString())
                      itemList.add(DrugList(id = getDrugTime[k].id, date = calendarDate.toString(), name = getDrugDaily[i].name,
-                        amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[k].time, initCheck = check,
-                        checked = getDrugCheck.checked)
+                        amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = "${getDrugTime[k].hour}:${getDrugTime[k].minute}",
+                        initCheck = check, checked = getDrugCheck.checked)
                      )
                   }
                }

@@ -1,7 +1,6 @@
 package com.makebodywell.bodywell.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,17 +13,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Drug
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.model.DrugDate
+import com.makebodywell.bodywell.model.DrugTime
+import com.makebodywell.bodywell.util.AlarmReceiver
 import java.text.SimpleDateFormat
 
 class DrugAdapter2 (
    private val context: Context,
-   private val itemList1: ArrayList<Drug> = ArrayList()
+   private val itemList: ArrayList<Drug> = ArrayList()
 ) : RecyclerView.Adapter<DrugAdapter2.ViewHolder>() {
    private var dataManager: DataManager? = null
-   private val itemList2: ArrayList<String> = ArrayList()
-   private val itemList3: ArrayList<Drug> = ArrayList()
-
+   private var alarmReceiver: AlarmReceiver
+   private val timeList: ArrayList<DrugTime> = ArrayList()
+   private val dateList: ArrayList<DrugDate> = ArrayList()
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    private val format2 = SimpleDateFormat("yyyy. MM. dd")
    private val format3 = SimpleDateFormat("M/dd")
@@ -32,6 +33,8 @@ class DrugAdapter2 (
    init {
       dataManager = DataManager(context)
       dataManager!!.open()
+
+      alarmReceiver = AlarmReceiver()
    }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,44 +43,57 @@ class DrugAdapter2 (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.tvType.text = itemList1[position].type
-      holder.tvName.text = itemList1[position].name
-      holder.tvPeriod.text = itemList1[position].period
-      holder.tvCount.text = itemList1[position].amount
-      holder.tvUnit.text = itemList1[position].unit
+      holder.tvType.text = itemList[position].type
+      holder.tvName.text = itemList[position].name
+      holder.tvPeriod.text = itemList[position].period
+      holder.tvCount.text = itemList[position].amount
+      holder.tvUnit.text = itemList[position].unit
 
-      val startDate = format2.format(format1.parse(itemList1[position].startDate)!!)
-      val endDate = format2.format(format1.parse(itemList1[position].endDate)!!)
+      val startDate = format2.format(format1.parse(itemList[position].startDate)!!)
+      val endDate = format2.format(format1.parse(itemList[position].endDate)!!)
       holder.tvDate.text = "$startDate ~ $endDate"
 
-      val getDrugDate = dataManager?.getDrugDate(itemList1[position].id)
-      if(getDrugDate!!.isNotEmpty()) {
-         itemList2.clear()
-         for(i in 0 until getDrugDate.size) {
-            val date = format3.format(format1.parse(getDrugDate[i].date)!!)
-            itemList2.add(date)
-         }
-         val adapter1 = DrugAdapter3(itemList2)
-         holder.recyclerView1.layoutManager = GridLayoutManager(context, 6)
-         holder.recyclerView1.adapter = adapter1
-      }
-
-      val getDrugTime = dataManager?.getDrugTime(itemList1[position].id)
+      val getDrugTime = dataManager?.getDrugTime(itemList[position].id)
       if(getDrugTime!!.isNotEmpty()) {
-         itemList3.clear()
+         timeList.clear()
+
          for(i in 0 until getDrugTime.size) {
-            itemList3.add(Drug(name = getDrugTime[i].time, count = i+1))
+            timeList.add(DrugTime(hour = getDrugTime[i].hour, minute = getDrugTime[i].minute, drugId = i+1))
          }
-         val adapter2 = DrugAdapter4(itemList3)
+
+         val adapter = DrugAdapter3(timeList)
          holder.recyclerView2.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-         holder.recyclerView2.adapter = adapter2
+         holder.recyclerView2.adapter = adapter
       }
 
-      holder.switchOnOff.setOnCheckedChangeListener { buttonView, isChecked ->
+      val getDrugDate = dataManager?.getDrugDate(itemList[position].id)
+      if(getDrugDate!!.isNotEmpty()) {
+         dateList.clear()
+
+         for(i in 0 until getDrugDate.size) {
+            dateList.add(DrugDate(date = format3.format(format1.parse(getDrugDate[i].date)!!)))
+         }
+
+         val adapter = DrugAdapter4(dateList)
+         holder.recyclerView1.layoutManager = GridLayoutManager(context, 6)
+         holder.recyclerView1.adapter = adapter
+      }
+
+      holder.switchOnOff.isChecked = itemList[position].isSet == 1
+
+      holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if (isChecked) {
-            Log.d(TAG, "id: ${itemList1[position].id}")
+            if(itemList[position].period == "매일") {
+               val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
+               alarmReceiver.setAlarm1(context, itemList[position].id, itemList[position].startDate, itemList[position].endDate, timeList, message)
+            }else {
+               val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
+               alarmReceiver.setAlarm2(context, itemList[position].id, timeList, dateList, message)
+            }
+            dataManager!!.updateDrugSet(1)
          }else {
-            Log.d(TAG, "id: ${itemList1[position].id}")
+            alarmReceiver.cancelAlarm(context, itemList[position].id)
+            dataManager!!.updateDrugSet(0)
          }
       }
 
@@ -87,7 +103,7 @@ class DrugAdapter2 (
    }
 
    override fun getItemCount(): Int {
-      return itemList1.count()
+      return itemList.count()
    }
 
    interface OnItemClickListener {
