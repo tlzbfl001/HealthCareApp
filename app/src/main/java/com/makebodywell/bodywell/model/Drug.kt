@@ -13,6 +13,7 @@ data class Drug(
    var startDate: String = "",
    var endDate: String = "",
    var isSet: Int = 0,
+   var regDate: String = "",
    var count: Int = 0
 )
 

@@ -20,16 +20,17 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Water
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
@@ -147,13 +148,27 @@ class ReportFoodFragment : Fragment() {
 
       val getFoodDates = dataManager!!.getFoodDates()
       if(getFoodDates.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
          settingChart1(binding.chart1, getFoodDates)
          settingChart2(binding.chart2, getFoodDates)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
 
       val getWater = dataManager!!.getWater()
       if(getWater.size > 0) {
+         binding.chart3.visibility = View.VISIBLE
+         binding.tvEmpty3.visibility = View.GONE
          settingChart3(binding.chart3, getWater)
+      }else {
+         binding.chart3.visibility = View.GONE
+         binding.tvEmpty3.visibility = View.VISIBLE
       }
    }
 
@@ -166,6 +181,31 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
+      val weekArray = weekArray(calendarDate)
+      val foodDates = dataManager!!.getFoodDates(weekArray[0].toString(), weekArray[6].toString())
+      if(foodDates.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+         settingChart1(binding.chart1, foodDates)
+         settingChart2(binding.chart2, foodDates)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
+      }
+
+      val getWater = dataManager!!.getWater(weekArray[0].toString(), weekArray[6].toString())
+      if(getWater.size > 0) {
+         binding.chart3.visibility = View.VISIBLE
+         binding.tvEmpty3.visibility = View.GONE
+         settingChart3(binding.chart3, getWater)
+      }else {
+         binding.chart3.visibility = View.GONE
+         binding.tvEmpty3.visibility = View.VISIBLE
+      }
    }
 
    private fun monthlyView() {
@@ -176,9 +216,42 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
+
+      val monthArray = monthArray2(calendarDate)
+      val foodDates = dataManager!!.getFoodDates(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      if(foodDates.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+
+         settingChart1(binding.chart1, foodDates)
+         settingChart2(binding.chart2, foodDates)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
+      }
+
+      val getWater = dataManager!!.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      if(getWater.size > 0) {
+         binding.chart3.visibility = View.VISIBLE
+         binding.tvEmpty3.visibility = View.GONE
+
+         settingChart3(binding.chart3, getWater)
+      }else {
+         binding.chart3.visibility = View.GONE
+         binding.tvEmpty3.visibility = View.VISIBLE
+      }
    }
 
-   private fun settingChart1(chart: CombinedChart, getData: ArrayList<Food>) {
+   private fun settingChart1(chart: CombinedChart, foodData: ArrayList<Food>) {
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
+
       val data = CombinedData()
       var xVal = arrayOf<String>()
       val lineData = LineData()
@@ -186,22 +259,18 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      for(i in 0 until getData.size){
-         xVal += format2.format(format1.parse(getData[i].regDate))
-         lineList += getFoodKcal(requireActivity(), getData[i].regDate!!).int5!!.toFloat()
+      for(i in 0 until foodData.size){
+         val foodKcal = getFoodKcal(requireActivity(), foodData[i].regDate!!)
+         xVal += format2.format(format1.parse(foodData[i].regDate!!)!!)
+         lineList += foodKcal.int5.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int1.toFloat(),
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int2.toFloat(),
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int3.toFloat(),
-            getFoodKcal(requireActivity(), getData[i].regDate!!).int4.toFloat()
+            foodKcal.int1.toFloat(), foodKcal.int2.toFloat(), foodKcal.int3.toFloat(), foodKcal.int4.toFloat()
          )))
       }
 
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
-
-      chartCommon(chart, xVal)
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
@@ -232,12 +301,20 @@ class ReportFoodFragment : Fragment() {
       data.setData(barData)
 
       chart.data = data
+      chart.notifyDataSetChanged()
       chart.invalidate()
       chart.setVisibleXRangeMaximum(7f)
       chart.isDragXEnabled = true
+
+      chartCommon(chart, xVal)
    }
 
-   private fun settingChart2(chart: CombinedChart, getData: ArrayList<Food>) {
+   private fun settingChart2(chart: CombinedChart, foodData: ArrayList<Food>) {
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
+
       val data = CombinedData()
       var xVal = arrayOf<String>()
       val lineData = LineData()
@@ -245,22 +322,18 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      for(i in 0 until getData.size){
-         xVal += format2.format(format1.parse(getData[i].regDate))
-         lineList += getNutrition(requireActivity(), getData[i].regDate!!).unit!!.toFloat()
+      for(i in 0 until foodData.size){
+         val nutrition = getNutrition(requireActivity(), foodData[i].regDate!!)
+         xVal += format2.format(format1.parse(foodData[i].regDate!!))
+         lineList += nutrition.unit!!.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-            getNutrition(requireActivity(), getData[i].regDate!!).carbohydrate!!.toFloat(),
-            getNutrition(requireActivity(), getData[i].regDate!!).protein!!.toFloat(),
-            getNutrition(requireActivity(), getData[i].regDate!!).fat!!.toFloat(),
-            getNutrition(requireActivity(), getData[i].regDate!!).sugar!!.toFloat()
+            nutrition.carbohydrate!!.toFloat(), nutrition.protein!!.toFloat(), nutrition.fat!!.toFloat(), nutrition.sugar!!.toFloat()
          )))
       }
 
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
-
-      chartCommon(chart, xVal)
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
@@ -294,9 +367,16 @@ class ReportFoodFragment : Fragment() {
       chart.invalidate()
       chart.setVisibleXRangeMaximum(7f)
       chart.isDragXEnabled = true
+
+      chartCommon(chart, xVal)
    }
 
    private fun settingChart3(chart: CombinedChart, getData: ArrayList<Water>) {
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
+
       val data = CombinedData()
       val lineData = LineData()
       var xVal = arrayOf<String>()
@@ -313,8 +393,6 @@ class ReportFoodFragment : Fragment() {
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
-
-      chartCommon(chart, xVal)
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
@@ -342,6 +420,8 @@ class ReportFoodFragment : Fragment() {
       chart.invalidate()
       chart.setVisibleXRangeMaximum(7f)
       chart.isDragXEnabled = true
+
+      chartCommon(chart, xVal)
    }
 
    private fun chartCommon(chart: CombinedChart, xVal: Array<String>) {
@@ -361,6 +441,7 @@ class ReportFoodFragment : Fragment() {
       xAxis.spaceMin = 0.6f
       xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
       xAxis.setDrawGridLines(false)
+      xAxis.isGranularityEnabled = true
 
       val rightAxis = chart.axisRight
       rightAxis.axisMinimum = 0f

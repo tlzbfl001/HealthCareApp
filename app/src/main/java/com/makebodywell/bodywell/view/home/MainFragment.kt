@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.ViewGroup.LayoutParams
 import androidx.fragment.app.Fragment
@@ -14,13 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
-import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -203,40 +198,59 @@ class MainFragment : Fragment() {
 
    private fun recordView() {
       // 프로그래스바 초기화
-      binding.pbFood.progress = 0
-      binding.pbWater.progress = 0
-      binding.pbExercise.progress = 0
-      binding.pbBody.progress = 0
+      binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
+      binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
+      binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
+      binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
+      binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
       // 프로그래스바 설정
       val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
-      val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5!!
+      val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
       val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       val getBody = dataManager!!.getBody(selectedDate.toString())
+      val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
 
-      if(getDailyData.foodGoal > 0 && foodSum > 0) {
-         binding.pbFood.max = getDailyData.foodGoal
-         binding.pbFood.progress = foodSum
-      }else if(getDailyData.foodGoal == 0 && foodSum > 0) {
-         binding.pbFood.max = foodSum
-         binding.pbFood.progress = foodSum
+      if(foodSum > 0) {
+         binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
+         binding.pbFood.setProgressEndColor(Color.parseColor("#EE6685"))
+         if(getDailyData.foodGoal > 0) {
+            binding.pbFood.max = getDailyData.foodGoal
+            binding.pbFood.progress = foodSum
+         }else if(getDailyData.foodGoal == 0) {
+            binding.pbFood.max = foodSum
+            binding.pbFood.progress = foodSum
+         }
       }
 
-      if(getDailyData.waterGoal > 0 && getWater.water > 0) {
-         binding.pbWater.max = getDailyData.waterGoal
-         binding.pbWater.progress = getWater.water
-      }else if(getDailyData.foodGoal == 0 && getWater.water > 0) {
-         binding.pbWater.max = getWater.water
-         binding.pbWater.progress = getWater.water
+      if(getWater.water > 0) {
+         binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
+         binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
+         if(getDailyData.waterGoal > 0) {
+            binding.pbWater.max = getDailyData.waterGoal
+            binding.pbWater.progress = getWater.water
+         }else if(getDailyData.foodGoal == 0) {
+            binding.pbWater.max = getWater.water
+            binding.pbWater.progress = getWater.water
+         }
       }
 
-      if(getDailyData.exerciseGoal > 0 && exerciseSum > 0) {
-         binding.pbExercise.max = getDailyData.exerciseGoal
-         binding.pbExercise.progress = exerciseSum
-      }else if(getDailyData.exerciseGoal == 0 && exerciseSum > 0) {
-         binding.pbExercise.max = exerciseSum
-         binding.pbExercise.progress = exerciseSum
+      if(exerciseSum > 0) {
+         binding.pbExercise.setProgressStartColor(Color.parseColor("#FA9B01"))
+         binding.pbExercise.setProgressEndColor(Color.parseColor("#FA9B01"))
+         if(getDailyData.exerciseGoal > 0) {
+            binding.pbExercise.max = getDailyData.exerciseGoal
+            binding.pbExercise.progress = exerciseSum
+         }else if(getDailyData.exerciseGoal == 0) {
+            binding.pbExercise.max = exerciseSum
+            binding.pbExercise.progress = exerciseSum
+         }
       }
 
       val weightSplit = getBody.weight.toString().split(".")
@@ -251,17 +265,34 @@ class MainFragment : Fragment() {
          else -> getDailyData.bodyGoal
       }
 
-      if(getDailyData.bodyGoal > 0 && getBody.weight > 0) {
-         binding.pbBody.max = getDailyData.bodyGoal.roundToInt()
-         binding.pbBody.progress = getBody.weight.toInt()
-      }else if(getDailyData.foodGoal == 0 && getBody.weight > 0) {
-         binding.pbBody.max = getBody.weight.toInt()
-         binding.pbBody.progress = getBody.weight.toInt()
+      if(getBody.weight > 0) {
+         binding.pbBody.setProgressStartColor(Color.parseColor("#88CB38"))
+         binding.pbBody.setProgressEndColor(Color.parseColor("#88CB38"))
+         if(getDailyData.bodyGoal > 0) {
+            binding.pbBody.max = getDailyData.bodyGoal.roundToInt()
+            binding.pbBody.progress = getBody.weight.toInt()
+         }else if(getDailyData.bodyGoal == 0.0) {
+            binding.pbBody.max = getBody.weight.toInt()
+            binding.pbBody.progress = getBody.weight.toInt()
+         }
+      }
+
+      if(getDrugCheckCount > 0) {
+         binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
+         binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
+         if(getDailyData.drugGoal > 0) {
+            binding.pbDrug.max = getDailyData.drugGoal
+            binding.pbDrug.progress = getDrugCheckCount
+         }else if(getDailyData.drugGoal == 0) {
+            binding.pbDrug.max = getDrugCheckCount
+            binding.pbDrug.progress = getDrugCheckCount
+         }
       }
 
       binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
       binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
       binding.tvBody.text = "$weight/$bodyGoal kg"
+      binding.tvDrug.text = "$getDrugCheckCount/${getDailyData.drugGoal}회"
    }
 }

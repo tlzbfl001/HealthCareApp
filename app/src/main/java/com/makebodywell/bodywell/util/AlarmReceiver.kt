@@ -68,7 +68,7 @@ class AlarmReceiver : BroadcastReceiver() {
         intent.putExtra("message", message)
 
         pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
         }else {
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
@@ -132,24 +132,24 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    fun setAlarm2(context: Context, id: Int, timeList: ArrayList<DrugTime>, drugList: ArrayList<DrugDate>, message: String) {
+    fun setAlarm2(context: Context, id: Int, timeList: ArrayList<DrugTime>, dateList: ArrayList<DrugDate>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra("id", id.toString())
         intent.putExtra("timeList", timeList)
-        intent.putExtra("drugList", drugList)
+        intent.putExtra("dateList", dateList)
         intent.putExtra("message", message)
 
         pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
         }else {
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
         val today = LocalDate.now()
-        for(i in 0 until drugList.size) {
-            if(today >= LocalDate.parse(drugList[i].date)) {
+        for(i in 0 until dateList.size) {
+            if(today >= LocalDate.parse(dateList[i].date)) {
                 val cal = Calendar.getInstance()
                 val currentTime = System.currentTimeMillis()
 
@@ -178,7 +178,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val intent = Intent(context, AlarmReceiver::class.java)
 
         pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
         } else {
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }

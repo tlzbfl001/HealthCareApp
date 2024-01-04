@@ -169,24 +169,26 @@ class WaterFragment : Fragment() {
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       getWater = dataManager!!.getWater(calendarDate.toString())
 
-      goal = getDailyData.waterGoal
-      volume = getWater.volume
-      count = 0
-
-      binding.pbWater.max = -1
-      binding.pbWater.progress = 0
+      binding.pbWater.max = 0
+      binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
       binding.tvIntake.text = "0잔/0ml"
       binding.tvVolume.text = "200ml"
       binding.tvGoal.text = "0잔/0ml"
       binding.tvRemain.text = "0잔/0ml"
+      goal = getDailyData.waterGoal
+      volume = getWater.volume
+      count = 0
 
       if(getWater.regDate != "") {
          count = getWater.water
 
-         if(goal == 0 && count == 0) {
-            binding.pbWater.max = -1
-            binding.pbWater.progress = 0
+         if(count == 0) {
+            binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
+            binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
          }else {
+            binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
+            binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.max = goal
             binding.pbWater.progress = count
          }
@@ -217,12 +219,14 @@ class WaterFragment : Fragment() {
       binding.ivMinus.setOnClickListener {
          if(count > 0) {
             count -= 1
+            binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
+            binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.progress = count
          }
 
-         if(goal == 0 && count == 0) {
-            binding.pbWater.max = -1
-            binding.pbWater.progress = 0
+         if(count == 0) {
+            binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
+            binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
          }
 
          binding.tvWaterCount.text = count.toString()
@@ -250,6 +254,8 @@ class WaterFragment : Fragment() {
       binding.ivPlus.setOnClickListener {
          count += 1
 
+         binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
+         binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.max = goal
          binding.pbWater.progress = count
          binding.tvWaterCount.text = count.toString()

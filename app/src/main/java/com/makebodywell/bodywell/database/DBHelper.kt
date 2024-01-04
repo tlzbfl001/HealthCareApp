@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 17
+      const val DATABASE_VERSION = 19
       const val TABLE_USER = "user"
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
@@ -58,7 +58,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL(body)
 
       val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, type text, name text, amount text, unit text, period text," +
-              "startDate text, endDate text, isSet integer);"
+              "startDate text, endDate text, isSet integer, regDate text);"
       db.execSQL(drug)
 
       val drugDate = "create table $TABLE_DRUG_DATE(id integer primary key autoincrement, date text, drugId integer);"

@@ -153,7 +153,7 @@ class DrugFragment : Fragment() {
 
       // 약복용 체크값 초기화
       val getDrugCheckCount = dataManager!!.getDrugCheckCount(calendarDate.toString())
-      check += getDrugCheckCount.count
+      check += getDrugCheckCount
 
       // 약복용 리스트 생성
       val getDrugDaily = dataManager!!.getDrugDaily(calendarDate.toString())

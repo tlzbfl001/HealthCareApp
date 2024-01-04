@@ -64,20 +64,6 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getFoodDates() : ArrayList<Food> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Food> = ArrayList()
-      val sql = "select distinct regDate from $TABLE_FOOD"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Food()
-         data.regDate = cursor.getString(0)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getFood(type: Int, date: String) : ArrayList<Food> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Food> = ArrayList()
@@ -97,6 +83,34 @@ class DataManager(private var context: Context?) {
          data.sugar= cursor.getDouble(9).toString()
          data.type = cursor.getInt(10)
          data.regDate = cursor.getString(11)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getFoodDates() : ArrayList<Food> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Food>()
+      val sql = "select distinct regDate from $TABLE_FOOD"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Food()
+         data.regDate = cursor.getString(0)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getFoodDates(start: String, end: String) : ArrayList<Food> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Food>()
+      val sql = "select distinct regDate from $TABLE_FOOD where regDate BETWEEN '$start' and '$end'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Food()
+         data.regDate = cursor.getString(0)
          list.add(data)
       }
       cursor.close()
@@ -124,6 +138,23 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Water> = ArrayList()
       val sql = "select * from $TABLE_WATER"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Water()
+         data.id=cursor.getInt(0)
+         data.water=cursor.getInt(1)
+         data.volume=cursor.getInt(2)
+         data.regDate = cursor.getString(3)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getWater(start: String, end: String) : ArrayList<Water> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Water>()
+      val sql = "select * from $TABLE_WATER where regDate BETWEEN '$start' and '$end'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Water()
@@ -218,10 +249,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getBodyDaily() : ArrayList<Body> {
+   fun getBody() : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select weight, fat, bmi, regDate from body"
+      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Body()
@@ -238,7 +269,7 @@ class DataManager(private var context: Context?) {
    fun getBody(start: String, end: String) : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select weight, fat, bmi, regDate from body where regDate BETWEEN '$start' and '$end'"
+      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY where regDate BETWEEN '$start' and '$end'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Body()
@@ -274,10 +305,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getDrugId() : Drug {
+   fun getDrugId(date: String) : Drug {
       val db = dbHelper!!.readableDatabase
       val data = Drug()
-      val sql = "select id from $TABLE_DRUG order by id desc limit 1"
+      val sql = "select id from $TABLE_DRUG where regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id = cursor.getInt(0)
@@ -333,13 +364,13 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getDrugCheckCount(date: String) : Drug {
+   fun getDrugCheckCount(date: String) : Int {
       val db = dbHelper!!.readableDatabase
-      val data = Drug()
+      var data = 0
       val sql = "select count(id) from $TABLE_DRUG_CHECK where checked = 1 and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         data.count = cursor.getInt(0)
+         data = cursor.getInt(0)
       }
       cursor.close()
       return data
@@ -507,6 +538,7 @@ class DataManager(private var context: Context?) {
       values.put("period", data.period)
       values.put("startDate", data.startDate)
       values.put("endDate", data.endDate)
+      values.put("regDate", data.regDate)
       db!!.insert(TABLE_DRUG, null, values)
    }
 
@@ -517,6 +549,14 @@ class DataManager(private var context: Context?) {
       values.put("minute", data.minute)
       values.put("drugId", data.drugId)
       db!!.insert(TABLE_DRUG_TIME, null, values)
+   }
+
+   fun insertDrugDate(data: DrugDate) {
+      val db = dbHelper!!.writableDatabase
+      val values = ContentValues()
+      values.put("date", data.date)
+      values.put("drugId", data.drugId)
+      db!!.insert(TABLE_DRUG_DATE, null, values)
    }
 
    fun insertDrugCheck(checked: Int, drugTimeId: Int, regDate: String) {

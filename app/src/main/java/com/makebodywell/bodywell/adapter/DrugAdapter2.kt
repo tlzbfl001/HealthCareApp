@@ -71,7 +71,7 @@ class DrugAdapter2 (
          dateList.clear()
 
          for(i in 0 until getDrugDate.size) {
-            dateList.add(DrugDate(date = format3.format(format1.parse(getDrugDate[i].date)!!)))
+            dateList.add(DrugDate(date = getDrugDate[i].date))
          }
 
          val adapter = DrugAdapter4(dateList)

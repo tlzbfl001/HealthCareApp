@@ -30,6 +30,7 @@ import com.makebodywell.bodywell.util.DrugUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugType
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugUnitNum
 import com.makebodywell.bodywell.util.DrugUtil.Companion.setDrugTimeList
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DrugAddFragment : Fragment() {
@@ -150,13 +151,22 @@ class DrugAddFragment : Fragment() {
          }else {
             // 약 데이터 저장
             dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etAmount.text.toString(),
-               unit = unit, period = period, startDate = drugStartDate, endDate = drugEndDate))
+               unit = unit, period = period, startDate = drugStartDate, endDate = drugEndDate, regDate = LocalDate.now().toString()))
 
-            val getDrugId = dataManager!!.getDrugId()
+            val getDrugId = dataManager!!.getDrugId(LocalDate.now().toString())
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
                dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+            }
+
+            // 특정 날짜 데이터 저장
+            if(period == "특정일 지정") {
+               val drugDate = ArrayList<DrugDate>()
+               for(i in 0 until drugDateList.size) {
+                  dataManager!!.insertDrugDate(DrugDate(date = drugDateList[i].toString(), drugId = getDrugId.id))
+                  drugDate.add(DrugDate(date = drugDateList[i].toString()))
+               }
             }
 
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
