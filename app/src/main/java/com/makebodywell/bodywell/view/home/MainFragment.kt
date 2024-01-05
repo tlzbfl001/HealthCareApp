@@ -47,6 +47,13 @@ class MainFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
+      initView()
+      setupCalendar()
+
+      return binding.root
+   }
+
+   private fun initView() {
       binding.btnCalPrev.setOnClickListener {
          selectedDate = selectedDate.minusWeeks(1)
          setWeekView()
@@ -80,11 +87,6 @@ class MainFragment : Fragment() {
       binding.clDrug.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
       }
-
-      // 달력 설정
-      setupCalendar()
-
-      return binding.root
    }
 
    private fun setupCalendar() {

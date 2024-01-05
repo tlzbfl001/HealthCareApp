@@ -2,15 +2,16 @@ package com.makebodywell.bodywell.view
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContract
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.health.connect.client.HealthConnectClient
-import androidx.health.connect.client.PermissionController
-import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.permission.HealthDataRequestPermissions
+import androidx.health.connect.client.permission.Permission
 import androidx.health.connect.client.records.*
-import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.lifecycle.lifecycleScope
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import kotlinx.coroutines.CoroutineScope
@@ -18,79 +19,63 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.*
-import java.time.format.DateTimeFormatter
 
 class HealthConnectTestActivity : AppCompatActivity() {
+
    private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(this) }
 
-   private val strDate = "2023-09-06"
-   private val strTime = "10:00"
-   private val zdt: ZonedDateTime = ZonedDateTime.of(
-      LocalDate.parse(strDate), LocalTime.parse(strTime),
-      ZoneId.systemDefault()
-   )
+   private var textView: TextView? = null
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.activity_health_connect_test)
 
-      val PERMISSIONS = setOf(
-         HealthPermission.getReadPermission(StepsRecord::class),
-         HealthPermission.getWritePermission(StepsRecord::class),
+      textView = findViewById(R.id.textView)
+
+      val permissions = setOf(
+         Permission.createReadPermission(Steps::class),
+         Permission.createWritePermission(Steps::class)
       )
 
-      suspend fun hasAllPermissions(permissions: Set<String>): Boolean {
-         return healthConnectClient.permissionController.getGrantedPermissions().containsAll(permissions)
-      }
-
-      fun requestPermissionsActivityContract(): ActivityResultContract<Set<String>, Set<String>> {
-         return PermissionController.createRequestPermissionResultContract()
-      }
-
-      CoroutineScope(Dispatchers.IO).launch {
-         while (true) {
-//            readSteps(zdt.toInstant(), Instant.now())
-            readSteps(healthConnectClient)
-            readWeight(healthConnectClient)
-            delay(3000)
+      // 권한 요청
+      val requestPermissions = registerForActivityResult(HealthDataRequestPermissions()) { granted ->
+         if (granted.containsAll(permissions)) {
+            Log.e(TAG, "헬스커넥트 권한이 모두 허용되었습니다.")
+         }else {
+            Log.e(TAG, "헬스커넥트 권한이 거부되었습니다.")
          }
       }
-   }
 
-   var str = "2023-09-08 01:26:39.098"
-   var formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-   var dateTime = LocalDateTime.parse(str, formatter)
-
-   private suspend fun readSteps (
-      healthConnectClient: HealthConnectClient,
-   ) {
-      val response =
-         healthConnectClient.aggregateGroupByPeriod(
-            AggregateGroupByPeriodRequest(
-               metrics = setOf(StepsRecord.COUNT_TOTAL),
-               timeRangeFilter = TimeRangeFilter.between(dateTime, LocalDateTime.now()),
-               timeRangeSlicer = Period.ofMonths(1)
-            )
-         )
-      for (monthlyResult in response) {
-         val totalSteps = monthlyResult.result[StepsRecord.COUNT_TOTAL]
-         Log.d(TAG, totalSteps.toString())
+      fun checkPermissionsAndRun(client: HealthConnectClient) {
+         lifecycleScope.launch {
+            val granted = client.permissionController.getGrantedPermissions(permissions)
+            if (granted.containsAll(permissions)) {
+               readStepsByTimeRange(healthConnectClient)
+            } else {
+               requestPermissions.launch(permissions)
+            }
+         }
       }
+
+      checkPermissionsAndRun(healthConnectClient)
    }
 
-   private suspend fun readWeight (
-      healthConnectClient: HealthConnectClient,
-   ) {
+   private suspend fun readStepsByTimeRange(healthConnectClient: HealthConnectClient) {
       try {
+         var count = 0
          val response = healthConnectClient.readRecords(
             ReadRecordsRequest(
-               WeightRecord::class,
-               timeRangeFilter = TimeRangeFilter.between(zdt.toInstant(), Instant.now())
+               Steps::class,
+               timeRangeFilter = TimeRangeFilter.between(
+                  LocalDateTime.now().with(LocalTime.of(0, 0, 0)),
+                  LocalDateTime.now()
+               )
             )
          )
-         response.records.forEach {
-            Log.d(TAG, it.weight.toString())
+         for (stepRecord in response.records) {
+            count += stepRecord.count.toInt()
          }
+         textView?.text = count.toString()
       } catch (e: Exception) {
          e.printStackTrace()
       }
