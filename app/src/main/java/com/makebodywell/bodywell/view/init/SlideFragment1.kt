@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.makebodywell.bodywell.databinding.FragmentSlide1Binding
-import com.makebodywell.bodywell.view.HealthConnectTestActivity
 
 class SlideFragment1 : Fragment() {
    private var _binding: FragmentSlide1Binding? = null
@@ -20,8 +19,7 @@ class SlideFragment1 : Fragment() {
       _binding = FragmentSlide1Binding.inflate(layoutInflater)
 
       binding.ivLogo.setOnClickListener {
-//         startActivity(Intent(context, MainActivity::class.java))
-         startActivity(Intent(context, HealthConnectTestActivity::class.java))
+         startActivity(Intent(context, InputActivity::class.java))
       }
 
       return binding.root
