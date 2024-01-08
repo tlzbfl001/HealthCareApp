@@ -183,44 +183,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getExerciseDates() : ArrayList<Exercise> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Exercise>()
-      val sql = "select distinct regDate from $TABLE_EXERCISE"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Exercise()
-         data.regDate = cursor.getString(0)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getExercise() : ArrayList<Exercise> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Exercise> = ArrayList()
       val sql = "select * from $TABLE_EXERCISE"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Exercise()
-         data.id=cursor.getInt(0)
-         data.category=cursor.getString(1)
-         data.name=cursor.getString(2)
-         data.workoutTime= cursor.getInt(3)
-         data.distance= cursor.getDouble(4)
-         data.calories= cursor.getInt(5)
-         data.regDate= cursor.getString(6)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getExercise(start: String, end: String) : ArrayList<Exercise> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Exercise>()
-      val sql = "select * from $TABLE_EXERCISE where regDate BETWEEN '$start' and '$end'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Exercise()
@@ -257,6 +223,34 @@ class DataManager(private var context: Context?) {
       return list
    }
 
+   fun getExerciseDates() : ArrayList<Exercise> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Exercise>()
+      val sql = "select distinct regDate from $TABLE_EXERCISE"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Exercise()
+         data.regDate = cursor.getString(0)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getExerciseDates(start: String, end: String) : ArrayList<Exercise> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Exercise>()
+      val sql = "select distinct regDate from $TABLE_EXERCISE where regDate BETWEEN '$start' and '$end'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Exercise()
+         data.regDate = cursor.getString(0)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
    fun getExerciseItem(type: String?) : ArrayList<String> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<String> = ArrayList()
@@ -276,6 +270,23 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          list.add(cursor.getString(0))
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getBody() : ArrayList<Body> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Body>()
+      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Body()
+         data.weight = cursor.getDouble(0)
+         data.fat = cursor.getDouble(1)
+         data.bmi = cursor.getDouble(2)
+         data.regDate = cursor.getString(3)
+         list.add(data)
       }
       cursor.close()
       return list
@@ -301,23 +312,6 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return data
-   }
-
-   fun getBody() : ArrayList<Body> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Body>()
-      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Body()
-         data.weight = cursor.getDouble(0)
-         data.fat = cursor.getDouble(1)
-         data.bmi = cursor.getDouble(2)
-         data.regDate = cursor.getString(3)
-         list.add(data)
-      }
-      cursor.close()
-      return list
    }
 
    fun getBody(start: String, end: String) : ArrayList<Body> {

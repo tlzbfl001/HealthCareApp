@@ -2,7 +2,6 @@ package com.makebodywell.bodywell.view.report
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,13 +25,11 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Water
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -145,14 +142,14 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getFoodDates = dataManager!!.getFoodDates()
-      if(getFoodDates.size > 0) {
+      val getDates = dataManager!!.getFoodDates()
+      if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
-         settingChart1(binding.chart1, getFoodDates)
-         settingChart2(binding.chart2, getFoodDates)
+         settingChart1(binding.chart1, getDates)
+         settingChart2(binding.chart2, getDates)
       }else {
          binding.chart1.visibility = View.GONE
          binding.tvEmpty1.visibility = View.VISIBLE
@@ -181,14 +178,14 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val foodDates = dataManager!!.getFoodDates(weekArray[0].toString(), weekArray[6].toString())
-      if(foodDates.size > 0) {
+      val getDates = dataManager!!.getFoodDates(weekArray[0].toString(), weekArray[6].toString())
+      if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
-         settingChart1(binding.chart1, foodDates)
-         settingChart2(binding.chart2, foodDates)
+         settingChart1(binding.chart1, getDates)
+         settingChart2(binding.chart2, getDates)
       }else {
          binding.chart1.visibility = View.GONE
          binding.tvEmpty1.visibility = View.VISIBLE
@@ -217,15 +214,15 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val foodDates = dataManager!!.getFoodDates(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      if(foodDates.size > 0) {
+      val getDates = dataManager!!.getFoodDates(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
 
-         settingChart1(binding.chart1, foodDates)
-         settingChart2(binding.chart2, foodDates)
+         settingChart1(binding.chart1, getDates)
+         settingChart2(binding.chart2, getDates)
       }else {
          binding.chart1.visibility = View.GONE
          binding.tvEmpty1.visibility = View.VISIBLE

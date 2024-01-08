@@ -27,7 +27,8 @@ import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
-import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -52,13 +53,6 @@ class ReportExerciseFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
-
-      setupView()
-
-      return binding.root
-   }
-
-   private fun setupView() {
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbBody.setOnClickListener {
@@ -130,6 +124,8 @@ class ReportExerciseFragment : Fragment() {
 
       buttonUI()
       dailyView()
+
+      return binding.root
    }
 
    private fun dailyView() {
@@ -141,14 +137,14 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getExerciseDates = dataManager!!.getExerciseDates()
-      if(getExerciseDates.size > 0) {
+      val getDates = dataManager!!.getExerciseDates()
+      if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
-         settingChart1(binding.chart1, getExerciseDates)
-         settingChart2(binding.chart2, getExerciseDates)
+         settingChart1(binding.chart1, getDates)
+         settingChart2(binding.chart2, getDates)
       }else {
          binding.chart1.visibility = View.GONE
          binding.tvEmpty1.visibility = View.VISIBLE
@@ -160,9 +156,8 @@ class ReportExerciseFragment : Fragment() {
       var soccer = 0
       var yoga = 0
       var basketball = 0
-      for(i in 0 until getExerciseDates.size){
-         var total = 0f
-         val getExercise = dataManager!!.getExercise(getExerciseDates[i].regDate)
+      for(i in 0 until getDates.size){
+         val getExercise = dataManager!!.getExercise(getDates[i].regDate)
          for(j in 0 until getExercise.size) {
             when(getExercise[j].name) {
                "달리기" -> running++
@@ -187,6 +182,43 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
+
+      val weekArray = weekArray(calendarDate)
+      val getDates = dataManager!!.getExerciseDates(weekArray[0].toString(), weekArray[6].toString())
+      if(getDates.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+         settingChart1(binding.chart1, getDates)
+         settingChart2(binding.chart2, getDates)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
+      }
+
+      var running = 0
+      var soccer = 0
+      var yoga = 0
+      var basketball = 0
+      for(i in 0 until getDates.size){
+         val getExercise = dataManager!!.getExercise(getDates[i].regDate)
+         for(j in 0 until getExercise.size) {
+            when(getExercise[j].name) {
+               "달리기" -> running++
+               "축구" -> soccer++
+               "요가" -> yoga++
+               "농구" -> basketball++
+            }
+         }
+      }
+
+      binding.tvRunning.text = "${running}회"
+      binding.tvSoccer.text = "${soccer}회"
+      binding.tvYoga.text = "${yoga}회"
+      binding.tvBasketball.text = "${basketball}회"
    }
 
    private fun monthlyView() {
@@ -197,6 +229,43 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
+
+      val monthArray = monthArray2(calendarDate)
+      val getDates = dataManager!!.getExerciseDates(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      if(getDates.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+         settingChart1(binding.chart1, getDates)
+         settingChart2(binding.chart2, getDates)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
+      }
+
+      var running = 0
+      var soccer = 0
+      var yoga = 0
+      var basketball = 0
+      for(i in 0 until getDates.size){
+         val getExercise = dataManager!!.getExercise(getDates[i].regDate)
+         for(j in 0 until getExercise.size) {
+            when(getExercise[j].name) {
+               "달리기" -> running++
+               "축구" -> soccer++
+               "요가" -> yoga++
+               "농구" -> basketball++
+            }
+         }
+      }
+
+      binding.tvRunning.text = "${running}회"
+      binding.tvSoccer.text = "${soccer}회"
+      binding.tvYoga.text = "${yoga}회"
+      binding.tvBasketball.text = "${basketball}회"
    }
 
    private fun settingChart1(chart: CombinedChart, getData: ArrayList<Exercise>) {
