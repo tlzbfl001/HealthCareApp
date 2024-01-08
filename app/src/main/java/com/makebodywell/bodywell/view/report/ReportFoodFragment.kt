@@ -40,7 +40,6 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
-
 class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
    private val binding get() = _binding!!

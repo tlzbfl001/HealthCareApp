@@ -124,7 +124,7 @@ class CustomUtil {
 
          if(getExercise.size > 0) {
             for(i in 0 until getExercise.size) {
-               sum += getExercise[i].calories!!
+               sum += getExercise[i].calories
             }
          }
 

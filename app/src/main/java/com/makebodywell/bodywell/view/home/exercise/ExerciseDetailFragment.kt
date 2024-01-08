@@ -47,7 +47,7 @@ class ExerciseDetailFragment : Fragment() {
         }
 
         binding.tvSave.setOnClickListener {
-            val exercise = Exercise(id = bundleData.id, workoutTime = binding.etWorkoutTime.text.toString(), calories = binding.etKcal.text.toString().toInt())
+            val exercise = Exercise(id = bundleData.id, workoutTime = binding.etWorkoutTime.text.toString().toInt(), calories = binding.etKcal.text.toString().toInt())
 
             dataManager!!.updateExercise(exercise)
 

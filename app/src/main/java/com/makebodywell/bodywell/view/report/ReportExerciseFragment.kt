@@ -1,14 +1,13 @@
 package com.makebodywell.bodywell.view.report
 
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.CombinedChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -18,19 +17,32 @@ import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.DefaultValueFormatter
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.utils.ViewPortHandler
+import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
+import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainFragment
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 class ReportExerciseFragment : Fragment() {
    private var _binding: FragmentReportExerciseBinding? = null
    private val binding get() = _binding!!
 
+   private var dataManager: DataManager? = null
+
    private var calendarDate = LocalDate.now()
+   private var dateType = 0
+
+   private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   private val format2 = SimpleDateFormat("M.dd")
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -38,24 +50,15 @@ class ReportExerciseFragment : Fragment() {
    ): View {
       _binding = FragmentReportExerciseBinding.inflate(layoutInflater)
 
-      setupView()
+      dataManager = DataManager(activity)
+      dataManager!!.open()
 
-      settingChart1(binding.chart1)
-      settingChart2(binding.chart2)
+      setupView()
 
       return binding.root
    }
 
    private fun setupView() {
-      binding.pbBody.max = 100
-      binding.pbBody.progress = 50
-      binding.pbFood.max = 100
-      binding.pbFood.progress = 50
-      binding.pbExercise.max = 100
-      binding.pbExercise.progress = 50
-      binding.pbDrug.max = 100
-      binding.pbDrug.progress = 50
-
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbBody.setOnClickListener {
@@ -71,25 +74,155 @@ class ReportExerciseFragment : Fragment() {
       }
 
       binding.ivPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvCalTitle.text = dateFormat(calendarDate)
+         when(dateType) {
+            0->{
+               calendarDate = calendarDate!!.minusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               dailyView()
+            }
+            1->{
+               calendarDate = calendarDate!!.minusWeeks(1)
+               binding.tvCalTitle.text = CalendarUtil.weekFormat(calendarDate)
+               weeklyView()
+            }
+            2->{
+               calendarDate = calendarDate!!.minusMonths(1)
+               binding.tvCalTitle.text = CalendarUtil.monthFormat(calendarDate)
+               monthlyView()
+            }
+         }
       }
 
       binding.ivNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvCalTitle.text = dateFormat(calendarDate)
+         when(dateType) {
+            0->{
+               calendarDate = calendarDate!!.plusDays(1)
+               binding.tvCalTitle.text = dateFormat(calendarDate)
+               dailyView()
+            }
+            1->{
+               calendarDate = calendarDate!!.plusWeeks(1)
+               binding.tvCalTitle.text = CalendarUtil.weekFormat(calendarDate)
+               weeklyView()
+            }
+            2->{
+               calendarDate = calendarDate!!.plusMonths(1)
+               binding.tvCalTitle.text = CalendarUtil.monthFormat(calendarDate)
+               monthlyView()
+            }
+         }
       }
+
+      binding.tvDaily.setOnClickListener {
+         binding.tvCalTitle.text = dateFormat(calendarDate)
+         dailyView()
+      }
+
+      binding.tvWeekly.setOnClickListener {
+         binding.tvCalTitle.text = CalendarUtil.weekFormat(calendarDate)
+         weeklyView()
+      }
+
+      binding.tvMonthly.setOnClickListener {
+         binding.tvCalTitle.text = CalendarUtil.monthFormat(calendarDate)
+         monthlyView()
+      }
+
+      buttonUI()
+      dailyView()
    }
 
-   private fun settingChart1(chart: CombinedChart) {
-      chartCommon(chart, "workoutTime")
+   private fun dailyView() {
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvDaily.setTextColor(Color.WHITE)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setTextColor(Color.BLACK)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setTextColor(Color.BLACK)
+      dateType = 0
+
+      val getExerciseDates = dataManager!!.getExerciseDates()
+      if(getExerciseDates.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+         settingChart1(binding.chart1, getExerciseDates)
+         settingChart2(binding.chart2, getExerciseDates)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
+      }
+
+      var running = 0
+      var soccer = 0
+      var yoga = 0
+      var basketball = 0
+      for(i in 0 until getExerciseDates.size){
+         var total = 0f
+         val getExercise = dataManager!!.getExercise(getExerciseDates[i].regDate)
+         for(j in 0 until getExercise.size) {
+            when(getExercise[j].name) {
+               "달리기" -> running++
+               "축구" -> soccer++
+               "요가" -> yoga++
+               "농구" -> basketball++
+            }
+         }
+      }
+
+      binding.tvRunning.text = "${running}회"
+      binding.tvSoccer.text = "${soccer}회"
+      binding.tvYoga.text = "${yoga}회"
+      binding.tvBasketball.text = "${basketball}회"
+   }
+
+   private fun weeklyView() {
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setTextColor(Color.BLACK)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvWeekly.setTextColor(Color.WHITE)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setTextColor(Color.BLACK)
+      dateType = 1
+   }
+
+   private fun monthlyView() {
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setTextColor(Color.BLACK)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setTextColor(Color.BLACK)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvMonthly.setTextColor(Color.WHITE)
+      dateType = 2
+   }
+
+   private fun settingChart1(chart: CombinedChart, getData: ArrayList<Exercise>) {
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
 
       val data = CombinedData()
-
-      // lineChart 설정
       val lineData = LineData()
+      var xVal = arrayOf<String>()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
-      val lineList = floatArrayOf(200f, 320f, 200f, 410f, 450f, 235f, 320f)
+      val barEntries = ArrayList<BarEntry>()
+
+      for(i in 0 until getData.size){
+         var total = 0f
+         xVal += format2.format(format1.parse(getData[i].regDate)!!)
+         val getExercise = dataManager!!.getExercise(getData[i].regDate)
+         for(j in 0 until getExercise.size) {
+            total += getExercise[j].workoutTime.toFloat()
+         }
+         lineList += total
+         barEntries.add(BarEntry(i.toFloat(), total))
+      }
+
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
@@ -102,41 +235,10 @@ class ReportExerciseFragment : Fragment() {
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
       lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.setValueFormatter { value, entry, dataSetIndex, viewPortHandler ->
-         var result = ""
-         if (value.toInt() > 0) {
-            when(value.toInt().toString().length) {
-               3 -> {
-                  result = if(value.toInt().toString().substring(1 until 3) == "00") {
-                     value.toInt().toString().substring(0 until 1) + "시간"
-                  }else {
-                     value.toInt().toString().substring(0 until 1) + "시간" + value.toInt().toString().substring(1 until 3) + "분"
-                  }
-               }
-               4 -> {
-                  result = if(value.toInt().toString().substring(2 until 4) == "00") {
-                     value.toInt().toString().substring(0 until 2) + "시간"
-                  }else {
-                     value.toInt().toString().substring(0 until 2) + "시간" + value.toInt().toString().substring(2 until 4) + "분"
-                  }
-               }
-            }
-         }
-         return@setValueFormatter result
-      }
+      lineDataSet.valueFormatter = XValueFormatter()
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
-
-      // barChart 설정
-      val barEntries = ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, 200f))
-      barEntries.add(BarEntry(1f, 320f))
-      barEntries.add(BarEntry(2f, 200f))
-      barEntries.add(BarEntry(3f, 410f))
-      barEntries.add(BarEntry(4f, 450f))
-      barEntries.add(BarEntry(5f, 235f))
-      barEntries.add(BarEntry(6f, 320f))
 
       val barDataSet = BarDataSet(barEntries, "")
       barDataSet.color = Color.parseColor("#D3B479")
@@ -149,17 +251,36 @@ class ReportExerciseFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = true
+
+      chartCommon(chart, xVal, 1)
    }
 
-   private fun settingChart2(chart: CombinedChart) {
-      chartCommon(chart, "")
+   private fun settingChart2(chart: CombinedChart, getData: ArrayList<Exercise>) {
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
 
       val data = CombinedData()
-
-      // lineChart 설정
       val lineData = LineData()
+      var xVal = arrayOf<String>()
+      var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
-      val lineList = floatArrayOf(600f, 900f, 800f, 1200f, 1500f, 600f, 1200f)
+      val barEntries = ArrayList<BarEntry>()
+
+      for(i in 0 until getData.size){
+         var total = 0f
+         xVal += format2.format(format1.parse(getData[i].regDate)!!)
+         val getExercise = dataManager!!.getExercise(getData[i].regDate)
+         for(j in 0 until getExercise.size) {
+            total += getExercise[j].calories.toFloat()
+         }
+         lineList += total
+         barEntries.add(BarEntry(i.toFloat(), total))
+      }
+
       for (index in lineList.indices) {
          entries.add(Entry(index.toFloat(), lineList[index]))
       }
@@ -172,20 +293,9 @@ class ReportExerciseFragment : Fragment() {
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
       lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = DefaultValueFormatter(0)
 
       lineData.addDataSet(lineDataSet)
       data.setData(lineData)
-
-      // barChart 설정
-      val barEntries = ArrayList<BarEntry>()
-      barEntries.add(BarEntry(0f, 600f))
-      barEntries.add(BarEntry(1f, 900f))
-      barEntries.add(BarEntry(2f, 800f))
-      barEntries.add(BarEntry(3f, 1200f))
-      barEntries.add(BarEntry(4f, 1500f))
-      barEntries.add(BarEntry(5f, 600f))
-      barEntries.add(BarEntry(6f, 1200f))
 
       val barDataSet = BarDataSet(barEntries, "")
       barDataSet.color = Color.parseColor("#8F8C6E")
@@ -198,16 +308,20 @@ class ReportExerciseFragment : Fragment() {
 
       chart.data = data
       chart.invalidate()
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = true
+
+      chartCommon(chart, xVal, 2)
    }
 
-   private fun chartCommon(chart: CombinedChart, text: String) {
+   private fun chartCommon(chart: CombinedChart, xVal: Array<String>, type: Int) {
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
       chart.isClickable = false
       chart.isHighlightPerDragEnabled = false
       chart.isHighlightPerTapEnabled = false
-      chart.setExtraOffsets(15f, 15f, 15f, 10f)
+      chart.setExtraOffsets(12f, 15f, 15f, 10f)
 
       val xAxis = chart.xAxis
       xAxis.axisLineColor = Color.BLACK
@@ -215,8 +329,9 @@ class ReportExerciseFragment : Fragment() {
       xAxis.position = XAxis.XAxisPosition.BOTTOM
       xAxis.spaceMax = 0.6f
       xAxis.spaceMin = 0.6f
-      xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("7.10", "7.11","7.12", "7.13", "7.14", "7.15", "오늘"))
+      xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
       xAxis.setDrawGridLines(false)
+      xAxis.isGranularityEnabled = true
 
       val rightAxis = chart.axisRight
       rightAxis.axisMinimum = 0f
@@ -228,20 +343,46 @@ class ReportExerciseFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
-
-      if(text == "workoutTime") {
-         leftAxis.setValueFormatter { value, axis ->
-            var result = ""
-            if (value.toInt() > 0) {
-               when(value.toInt().toString().length) {
-                  3 -> result = value.toInt().toString().substring(0 until 1) + "시간"
-                  4 -> result = value.toInt().toString().substring(0 until 2) + "시간"
-               }
-            }else {
-               result = "0"
-            }
-            return@setValueFormatter result
-         }
+      if(type == 1) {
+         leftAxis.valueFormatter = LeftAxisFormatter()
       }
+   }
+
+   class XValueFormatter : IValueFormatter {
+      override fun getFormattedValue(
+         value: Float,
+         entry: Entry,
+         dataSetIndex: Int,
+         viewPortHandler: ViewPortHandler
+      ): String {
+         val remain = value.toInt() % 60
+         val result = if(value.toInt() < 60) {
+            value.toInt().toString() + "분"
+         }else {
+            if(remain == 0) {
+               "${value.toInt() / 60}시간"
+            }else {
+               "${value.toInt() / 60}시간 ${remain}분"
+            }
+         }
+         return result
+      }
+   }
+
+   class LeftAxisFormatter : IAxisValueFormatter {
+      override fun getFormattedValue(value: Float, axis: AxisBase?): String {
+         return "${value.toInt()}분"
+      }
+   }
+
+   private fun buttonUI() {
+      binding.pbBody.max = 100
+      binding.pbBody.progress = 50
+      binding.pbFood.max = 100
+      binding.pbFood.progress = 50
+      binding.pbExercise.max = 100
+      binding.pbExercise.progress = 50
+      binding.pbDrug.max = 100
+      binding.pbDrug.progress = 50
    }
 }

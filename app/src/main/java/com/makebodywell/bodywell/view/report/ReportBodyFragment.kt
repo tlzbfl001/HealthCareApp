@@ -25,6 +25,8 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.TestUtil.Companion.deleteData
+import com.makebodywell.bodywell.util.TestUtil.Companion.insertData
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -120,6 +122,7 @@ class ReportBodyFragment : Fragment() {
 
       buttonUI()
       dailyView()
+      test()
 
       return binding.root
    }
@@ -431,6 +434,17 @@ class ReportBodyFragment : Fragment() {
       yAxisLeft.textSize = 7f
    }
 
+   class MyValueFormatter : IValueFormatter {
+      override fun getFormattedValue(
+         value: Float,
+         entry: Entry,
+         dataSetIndex: Int,
+         viewPortHandler: ViewPortHandler
+      ): String {
+         return value.toString()
+      }
+   }
+
    private fun buttonUI() {
       binding.pbBody.max = 100
       binding.pbBody.progress = 50
@@ -442,14 +456,12 @@ class ReportBodyFragment : Fragment() {
       binding.pbDrug.progress = 50
    }
 
-   class MyValueFormatter : IValueFormatter {
-      override fun getFormattedValue(
-         value: Float,
-         entry: Entry,
-         dataSetIndex: Int,
-         viewPortHandler: ViewPortHandler
-      ): String {
-         return value.toString()
+   private fun test() {
+      binding.ivLogo.setOnClickListener {
+         deleteData(requireActivity())
+      }
+      binding.tvReport.setOnClickListener {
+         insertData(requireActivity())
       }
    }
 }

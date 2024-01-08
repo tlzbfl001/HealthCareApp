@@ -130,8 +130,8 @@ class ExerciseInputFragment : Fragment() {
             }
 
             // 입력결과 DB 에 저장
-            dataManager!!.insertExercise(Exercise(category = adapter1?.selected, name = binding.etName.text.toString(),
-               workoutTime = binding.etWorkoutTime.text.toString(), calories = binding.etCalories.text.toString().toInt(), regDate = LocalDate.now().toString()))
+            dataManager!!.insertExercise(Exercise(category = adapter1!!.selected, name = binding.etName.text.toString(),
+               workoutTime = binding.etWorkoutTime.text.toString().toInt(), calories = binding.etCalories.text.toString().toInt(), regDate = LocalDate.now().toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), ExerciseListFragment())

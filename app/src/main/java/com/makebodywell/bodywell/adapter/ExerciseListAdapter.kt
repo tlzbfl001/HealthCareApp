@@ -32,7 +32,7 @@ class ExerciseListAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvCategory.text = itemList[position].category
       holder.tvName.text = itemList[position].name
-      holder.tvWorkoutTime.text = itemList[position].workoutTime
+      holder.tvWorkoutTime.text = itemList[position].workoutTime.toString()
       holder.tvDistance.text = itemList[position].distance.toString()
       holder.tvKcal.text = itemList[position].calories.toString()
 
@@ -40,7 +40,7 @@ class ExerciseListAdapter (
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteExercise(itemList[position].id!!)
+               dataManager!!.deleteExercise(itemList[position].id)
                itemList.removeAt(position)
 
                notifyDataSetChanged()
