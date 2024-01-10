@@ -45,19 +45,19 @@ class InputBodyFragment : Fragment() {
 
       binding.cvMan.setOnClickListener {
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#5A8EFF"))
-         binding.ivMan.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+         binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvMan.setTextColor(Color.WHITE)
          binding.cvWoman.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
-         binding.ivWoman.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.aaa))
+         binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvWoman.setTextColor(Color.BLACK)
       }
 
       binding.cvWoman.setOnClickListener {
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
-         binding.ivMan.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.aaa))
+         binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvMan.setTextColor(Color.BLACK)
          binding.cvWoman.setCardBackgroundColor(Color.parseColor("#FD7E9B"))
-         binding.ivWoman.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+         binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvWoman.setTextColor(Color.WHITE)
       }
 

@@ -11,6 +11,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.DrugAdapter2
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_DATE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugRecordBinding
 import com.makebodywell.bodywell.model.Drug
@@ -68,13 +73,15 @@ class DrugRecordFragment : Fragment() {
             val dialog = AlertDialog.Builder(context)
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  dataManager!!.deleteDrugDate(itemList[pos].id)
+                  dataManager!!.deleteItem(TABLE_DRUG_DATE, "drugId", itemList[pos].id)
+
                   val getDrugTime = dataManager!!.getDrugTime(itemList[pos].id)
                   for(i in 0 until getDrugTime.size) {
-                     dataManager!!.deleteDrugCheck(getDrugTime[i].id)
+                     dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", getDrugTime[i].id)
                   }
-                  dataManager!!.deleteDrugTime(itemList[pos].id)
-                  dataManager!!.deleteDrug(itemList[pos].id)
+
+                  dataManager!!.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[pos].id)
+                  dataManager!!.deleteItem(TABLE_DRUG, "id", itemList[pos].id)
 
                   alarmReceiver.cancelAlarm(requireActivity(), itemList[pos].id)
 

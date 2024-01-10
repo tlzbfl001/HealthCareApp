@@ -9,11 +9,4 @@
    <color name="white">#ffffff</color>
    <color name="black">#000000</color>
    <color name="transparent">#00FFFFFF</color>
-   <color name="aaa">#aaaaaa</color>
-   <color name="foodBtn1">#EF7979</color>
-   <color name="foodBtn2">#FFC3C3</color>
-   <color name="foodBtn3">#FFD9D9</color>
-   <color name="foodBtn4">#FFEFEF</color>
-   <color name="drugSelected">#A47AE8</color>
-   <color name="red">#FF0000</color>
 </resources>

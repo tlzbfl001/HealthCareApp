@@ -22,13 +22,15 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
-import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -53,6 +55,7 @@ class ReportExerciseFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
+
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.pbBody.setOnClickListener {
@@ -76,12 +79,12 @@ class ReportExerciseFragment : Fragment() {
             }
             1->{
                calendarDate = calendarDate!!.minusWeeks(1)
-               binding.tvCalTitle.text = CalendarUtil.weekFormat(calendarDate)
+               binding.tvCalTitle.text = weekFormat(calendarDate)
                weeklyView()
             }
             2->{
                calendarDate = calendarDate!!.minusMonths(1)
-               binding.tvCalTitle.text = CalendarUtil.monthFormat(calendarDate)
+               binding.tvCalTitle.text = monthFormat(calendarDate)
                monthlyView()
             }
          }
@@ -96,12 +99,12 @@ class ReportExerciseFragment : Fragment() {
             }
             1->{
                calendarDate = calendarDate!!.plusWeeks(1)
-               binding.tvCalTitle.text = CalendarUtil.weekFormat(calendarDate)
+               binding.tvCalTitle.text = weekFormat(calendarDate)
                weeklyView()
             }
             2->{
                calendarDate = calendarDate!!.plusMonths(1)
-               binding.tvCalTitle.text = CalendarUtil.monthFormat(calendarDate)
+               binding.tvCalTitle.text = monthFormat(calendarDate)
                monthlyView()
             }
          }
@@ -113,12 +116,12 @@ class ReportExerciseFragment : Fragment() {
       }
 
       binding.tvWeekly.setOnClickListener {
-         binding.tvCalTitle.text = CalendarUtil.weekFormat(calendarDate)
+         binding.tvCalTitle.text = weekFormat(calendarDate)
          weeklyView()
       }
 
       binding.tvMonthly.setOnClickListener {
-         binding.tvCalTitle.text = CalendarUtil.monthFormat(calendarDate)
+         binding.tvCalTitle.text = monthFormat(calendarDate)
          monthlyView()
       }
 
@@ -137,7 +140,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getExerciseDates()
+      val getDates = dataManager!!.getDates(TABLE_EXERCISE)
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -152,26 +155,7 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      var running = 0
-      var soccer = 0
-      var yoga = 0
-      var basketball = 0
-      for(i in 0 until getDates.size){
-         val getExercise = dataManager!!.getExercise(getDates[i].regDate)
-         for(j in 0 until getExercise.size) {
-            when(getExercise[j].name) {
-               "달리기" -> running++
-               "축구" -> soccer++
-               "요가" -> yoga++
-               "농구" -> basketball++
-            }
-         }
-      }
-
-      binding.tvRunning.text = "${running}회"
-      binding.tvSoccer.text = "${soccer}회"
-      binding.tvYoga.text = "${yoga}회"
-      binding.tvBasketball.text = "${basketball}회"
+      countView(getDates)
    }
 
    private fun weeklyView() {
@@ -184,7 +168,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getExerciseDates(weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -199,26 +183,7 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      var running = 0
-      var soccer = 0
-      var yoga = 0
-      var basketball = 0
-      for(i in 0 until getDates.size){
-         val getExercise = dataManager!!.getExercise(getDates[i].regDate)
-         for(j in 0 until getExercise.size) {
-            when(getExercise[j].name) {
-               "달리기" -> running++
-               "축구" -> soccer++
-               "요가" -> yoga++
-               "농구" -> basketball++
-            }
-         }
-      }
-
-      binding.tvRunning.text = "${running}회"
-      binding.tvSoccer.text = "${soccer}회"
-      binding.tvYoga.text = "${yoga}회"
-      binding.tvBasketball.text = "${basketball}회"
+      countView(getDates)
    }
 
    private fun monthlyView() {
@@ -231,7 +196,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getExerciseDates(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -246,29 +211,10 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      var running = 0
-      var soccer = 0
-      var yoga = 0
-      var basketball = 0
-      for(i in 0 until getDates.size){
-         val getExercise = dataManager!!.getExercise(getDates[i].regDate)
-         for(j in 0 until getExercise.size) {
-            when(getExercise[j].name) {
-               "달리기" -> running++
-               "축구" -> soccer++
-               "요가" -> yoga++
-               "농구" -> basketball++
-            }
-         }
-      }
-
-      binding.tvRunning.text = "${running}회"
-      binding.tvSoccer.text = "${soccer}회"
-      binding.tvYoga.text = "${yoga}회"
-      binding.tvBasketball.text = "${basketball}회"
+      countView(getDates)
    }
 
-   private fun settingChart1(chart: CombinedChart, getData: ArrayList<Exercise>) {
+   private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -283,8 +229,8 @@ class ReportExerciseFragment : Fragment() {
 
       for(i in 0 until getData.size){
          var total = 0f
-         xVal += format2.format(format1.parse(getData[i].regDate)!!)
-         val getExercise = dataManager!!.getExercise(getData[i].regDate)
+         xVal += format2.format(format1.parse(getData[i])!!)
+         val getExercise = dataManager!!.getExercise(getData[i])
          for(j in 0 until getExercise.size) {
             total += getExercise[j].workoutTime.toFloat()
          }
@@ -299,7 +245,7 @@ class ReportExerciseFragment : Fragment() {
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
       lineDataSet.lineWidth = 0.5f
-      lineDataSet.setCircleColor(Color.parseColor("#D3B479"))
+      lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
@@ -326,7 +272,7 @@ class ReportExerciseFragment : Fragment() {
       chartCommon(chart, xVal, 1)
    }
 
-   private fun settingChart2(chart: CombinedChart, getData: ArrayList<Exercise>) {
+   private fun settingChart2(chart: CombinedChart, getData: ArrayList<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -341,8 +287,8 @@ class ReportExerciseFragment : Fragment() {
 
       for(i in 0 until getData.size){
          var total = 0f
-         xVal += format2.format(format1.parse(getData[i].regDate)!!)
-         val getExercise = dataManager!!.getExercise(getData[i].regDate)
+         xVal += format2.format(format1.parse(getData[i])!!)
+         val getExercise = dataManager!!.getExercise(getData[i])
          for(j in 0 until getExercise.size) {
             total += getExercise[j].calories.toFloat()
          }
@@ -357,7 +303,7 @@ class ReportExerciseFragment : Fragment() {
       val lineDataSet = LineDataSet(entries, "Line DataSet")
       lineDataSet.color = Color.parseColor("#BBBBBB")
       lineDataSet.lineWidth = 0.5f
-      lineDataSet.setCircleColor(Color.parseColor("#8F8C6E"))
+      lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f
       lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
@@ -442,6 +388,30 @@ class ReportExerciseFragment : Fragment() {
       override fun getFormattedValue(value: Float, axis: AxisBase?): String {
          return "${value.toInt()}분"
       }
+   }
+
+   private fun countView(data: ArrayList<String>) {
+      var running = 0
+      var soccer = 0
+      var yoga = 0
+      var basketball = 0
+
+      for(i in 0 until data.size){
+         val getExercise = dataManager!!.getExercise(data[i])
+         for(j in 0 until getExercise.size) {
+            when(getExercise[j].name) {
+               "달리기" -> running++
+               "축구" -> soccer++
+               "요가" -> yoga++
+               "농구" -> basketball++
+            }
+         }
+      }
+
+      binding.tvRunning.text = "${running}회"
+      binding.tvSoccer.text = "${soccer}회"
+      binding.tvYoga.text = "${yoga}회"
+      binding.tvBasketball.text = "${basketball}회"
    }
 
    private fun buttonUI() {

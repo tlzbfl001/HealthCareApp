@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.makebodywell.bodywell.R
 
 class SplashActivity : AppCompatActivity() {
-   private val splashDisplayLength = 1000
-
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.activity_splash)
@@ -16,6 +14,6 @@ class SplashActivity : AppCompatActivity() {
       Handler().postDelayed({
          startActivity(Intent(this@SplashActivity, InitActivity::class.java))
          finish()
-      }, splashDisplayLength.toLong())
+      }, 1000)
    }
 }

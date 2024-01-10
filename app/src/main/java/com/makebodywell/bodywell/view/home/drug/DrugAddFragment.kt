@@ -223,113 +223,113 @@ class DrugAddFragment : Fragment() {
    }
 
    private fun unit1() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit1.setTextColor(Color.WHITE)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "정"
    }
 
    private fun unit2() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit2.setTextColor(Color.WHITE)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "개"
    }
 
    private fun unit3() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit3.setTextColor(Color.WHITE)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "ml"
    }
 
    private fun unit4() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit4.setTextColor(Color.WHITE)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "mg"
    }
 
    private fun unit5() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit5.setTextColor(Color.WHITE)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "set"
    }
 
    private fun unit6() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit6.setTextColor(Color.WHITE)
       unit = "봉"
    }
 
    private fun period1() {
-      binding.cvDaily.setCardBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.cvDaily.setCardBackgroundColor(Color.parseColor("#A47AE8"))
       binding.tvDaily.setTextColor(Color.WHITE)
-      binding.cvSpecific.setCardBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.cvSpecific.setCardBackgroundColor(Color.WHITE)
       binding.tvSpecific.setTextColor(Color.BLACK)
       period = "매일"
    }
 
    private fun period2() {
-      binding.cvDaily.setCardBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.white))
+      binding.cvDaily.setCardBackgroundColor(Color.WHITE)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.cvSpecific.setCardBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.drugSelected))
+      binding.cvSpecific.setCardBackgroundColor(Color.parseColor("#A47AE8"))
       binding.tvSpecific.setTextColor(Color.WHITE)
       period = "특정일 지정"
    }

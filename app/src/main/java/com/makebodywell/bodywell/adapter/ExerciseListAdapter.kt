@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
 
@@ -40,10 +42,11 @@ class ExerciseListAdapter (
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteExercise(itemList[position].id)
-               itemList.removeAt(position)
+               dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
 
+               itemList.removeAt(position)
                notifyDataSetChanged()
+
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("취소", null)

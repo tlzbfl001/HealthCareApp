@@ -19,7 +19,9 @@ import com.makebodywell.bodywell.databinding.FragmentGalleryBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.note.NoteFragment
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -33,9 +35,6 @@ class GalleryFragment : Fragment() {
 
     private var calendarDate = ""
     private var type = ""
-
-    private val cameraCode = 2
-    private val storageCode = 3
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,11 +64,14 @@ class GalleryFragment : Fragment() {
         }
 
         binding.clCamera.setOnClickListener {
-            getCamera()
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(intent, CAMERA_REQUEST_CODE)
         }
 
         binding.clGallery.setOnClickListener {
-            getGallery()
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = MediaStore.Images.Media.CONTENT_TYPE
+            startActivityForResult(intent, STORAGE_REQUEST_CODE)
         }
 
         listView()
@@ -77,49 +79,25 @@ class GalleryFragment : Fragment() {
         return binding.root
     }
 
-    private fun listView() {
-        val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
-        binding.recyclerView.layoutManager = layoutManager
-
-        val getImage = dataManager!!.getImage(type.toInt(), calendarDate)
-        if(getImage.size > 0) {
-            val adapter = GalleryAdapter(requireActivity(), getImage)
-            binding.recyclerView.adapter = adapter
-        }
-    }
-
-    private fun getCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(intent, cameraCode)
-    }
-
-    private fun getGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = MediaStore.Images.Media.CONTENT_TYPE
-        startActivityForResult(intent, storageCode)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if(resultCode == Activity.RESULT_OK){
             when(requestCode){
-                cameraCode -> {
+                CAMERA_REQUEST_CODE -> {
                     if(data?.extras?.get("data") != null){
                         val img = data.extras?.get("data") as Bitmap
                         val uri = saveFile(randomFileName(), "image/jpeg", img)
                         val image = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
-
                         dataManager?.insertImage(image)
                         listView()
                     }else {
                         listView()
                     }
                 }
-                storageCode -> {
+                STORAGE_REQUEST_CODE -> {
                     val uri = data?.data
                     val image = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
-
                     dataManager?.insertImage(image)
                     listView()
                 }
@@ -133,29 +111,50 @@ class GalleryFragment : Fragment() {
 
     // 사진 저장
     private fun saveFile(fileName:String, mimeType:String, bitmap: Bitmap): Uri?{
-        val cv = ContentValues()
-
         // MediaStore 에 파일명, mimeType 을 지정
+        val cv = ContentValues()
         cv.put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
         cv.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
         cv.put(MediaStore.Images.Media.IS_PENDING, 1)
 
         // MediaStore 에 파일을 저장
         val uri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
-        if(uri != null){
-            val scriptor = requireActivity().contentResolver.openFileDescriptor(uri, "w")
+        try {
+            if(uri != null){
+                val descriptor = requireActivity().contentResolver.openFileDescriptor(uri, "w")
+                val fos = FileOutputStream(descriptor?.fileDescriptor)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
 
-            val fos = FileOutputStream(scriptor?.fileDescriptor)
+                fos.close()
+                cv.clear()
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            fos.close()
-
-            cv.clear()
-
-            // IS_PENDING 을 초기화
-            cv.put(MediaStore.Images.Media.IS_PENDING, 0)
-            requireActivity().contentResolver.update(uri, cv, null, null)
+                cv.put(MediaStore.Images.Media.IS_PENDING, 0) // IS_PENDING 을 초기화
+                requireActivity().contentResolver.update(uri, cv, null, null)
+            }
+        } catch(e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
         return uri
+    }
+
+    private fun listView() {
+        val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
+        binding.recyclerView.layoutManager = layoutManager
+
+        val getImage = dataManager!!.getImage(type.toInt(), calendarDate)
+        if(getImage.size > 0) {
+            val adapter = GalleryAdapter(requireActivity(), getImage)
+            binding.recyclerView.adapter = adapter
+        }
+    }
+
+    companion object {
+        private const val CAMERA_REQUEST_CODE = 98
+        private const val STORAGE_REQUEST_CODE = 99
     }
 }

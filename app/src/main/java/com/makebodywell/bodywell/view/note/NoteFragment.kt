@@ -22,7 +22,6 @@ import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteBinding
-import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
@@ -43,8 +42,6 @@ class NoteFragment : Fragment() {
    private var dataManager: DataManager? = null
 
    private var days = ArrayList<LocalDate?>()
-
-   private val requestCode = 1
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -136,16 +133,13 @@ class NoteFragment : Fragment() {
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
-      private val swipeThreshold = 100
-      private val swipeVelocityThreshold = 100
-
       override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
          var result = false
          try {
             val diffY = e2.y - e1.y
             val diffX = e2.x - e1.x
             if (abs(diffX) > abs(diffY)) {
-               if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
+               if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
@@ -207,21 +201,21 @@ class NoteFragment : Fragment() {
       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
          for(permission in PermissionUtil.cameraPermissions3) {
             if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions3), requestCode)
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions3), PERMISSION_REQUEST_CODE)
                return false
             }
          }
       }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
          for(permission in PermissionUtil.cameraPermissions2) {
             if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions2), requestCode)
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions2), PERMISSION_REQUEST_CODE)
                return false
             }
          }
       }else {
          for(permission in PermissionUtil.cameraPermissions1) {
             if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions1), requestCode)
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions1), PERMISSION_REQUEST_CODE)
                return false
             }
          }
@@ -231,7 +225,7 @@ class NoteFragment : Fragment() {
 
    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-      if(requestCode == this.requestCode && grantResults.isNotEmpty()) {
+      if(requestCode == PERMISSION_REQUEST_CODE && grantResults.isNotEmpty()) {
          var result = true
 
          for (element in grantResults) {
@@ -257,5 +251,11 @@ class NoteFragment : Fragment() {
             alertDialog.show()
          }
       }
+   }
+
+   companion object {
+      private const val PERMISSION_REQUEST_CODE = 1
+      private const val SWIPE_THRESHOLD = 100
+      private const val SWIPE_VELOCITY_THRESHOLD = 100
    }
 }

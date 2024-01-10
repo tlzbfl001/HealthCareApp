@@ -87,7 +87,7 @@ class WaterFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(waterGoal = goal, regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateWaterGoal(DailyData(waterGoal = goal, regDate = calendarDate.toString()))
+               dataManager!!.updateGoal("waterGoal", goal, calendarDate.toString())
             }
 
             if(getWater.regDate == "") {

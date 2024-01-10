@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Image
 
@@ -35,7 +37,7 @@ class GalleryAdapter(
             val dialog = AlertDialog.Builder(context)
                 .setMessage("삭제하시겠습니까?")
                 .setPositiveButton("확인") { _, _ ->
-                    dataManager!!.deleteImage(itemList[position].id)
+                    dataManager!!.deleteItem(TABLE_IMAGE, "id", itemList[position].id)
 
                     itemList.removeAt(position)
                     notifyDataSetChanged()

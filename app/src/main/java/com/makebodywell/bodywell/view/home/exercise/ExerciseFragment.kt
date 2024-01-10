@@ -80,7 +80,7 @@ class ExerciseFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateExerciseGoal(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+               dataManager!!.updateGoal("exerciseGoal",  et.text.toString().toInt(), calendarDate.toString())
             }
 
             binding.pbExercise.max = et.text.toString().toInt()

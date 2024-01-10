@@ -44,8 +44,6 @@ class FoodLunchFragment : Fragment() {
     private var dataList = ArrayList<Food>()
     private var itemList = ArrayList<Food>()
 
-    private val permissionRequestCode = 1
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -211,21 +209,21 @@ class FoodLunchFragment : Fragment() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             for(permission in PermissionUtil.cameraPermissions3) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions3), permissionRequestCode)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions3), PERMISSION_REQUEST_CODE)
                     return false
                 }
             }
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             for(permission in PermissionUtil.cameraPermissions2) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions2), permissionRequestCode)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions2), PERMISSION_REQUEST_CODE)
                     return false
                 }
             }
         }else {
             for(permission in PermissionUtil.cameraPermissions1) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions1), permissionRequestCode)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions1), PERMISSION_REQUEST_CODE)
                     return false
                 }
             }
@@ -235,7 +233,7 @@ class FoodLunchFragment : Fragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == permissionRequestCode && grantResults.isNotEmpty()) {
+        if(requestCode == PERMISSION_REQUEST_CODE && grantResults.isNotEmpty()) {
             var result = true
             for (element in grantResults) {
                 if (element == -1) {
@@ -259,5 +257,9 @@ class FoodLunchFragment : Fragment() {
                 alertDialog.show()
             }
         }
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 1
     }
 }

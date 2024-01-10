@@ -15,8 +15,8 @@ class InputGoalFragment : Fragment() {
    private var _binding: FragmentInputGoalBinding? = null
    private val binding get() = _binding!!
 
-   var isTwoDigitDecimal = false
-   var isThreeDigit = false
+   private var isTwoDigitDecimal = false
+   private var isThreeDigit = false
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,

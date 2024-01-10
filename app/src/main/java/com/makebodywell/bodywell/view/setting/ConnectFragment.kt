@@ -20,7 +20,6 @@ class ConnectFragment : Fragment() {
    private var bluetoothAdapter: BluetoothAdapter? = null
    private var btListAdapter: BtListAdapter? = null
    private val btList = ArrayList<Bluetooth>()
-   private val enableBluetooth = 1
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +57,12 @@ class ConnectFragment : Fragment() {
             binding.tvBtStatus.visibility = View.VISIBLE
             binding.tvBtStatus.text = "블루투스가 비활성화되어 있습니다."
             val enableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableIntent, enableBluetooth)
+            startActivityForResult(enableIntent, BLUETOOTH_REQUEST_CODE)
          }
       }
+   }
+
+   companion object {
+      private const val BLUETOOTH_REQUEST_CODE = 1
    }
 }

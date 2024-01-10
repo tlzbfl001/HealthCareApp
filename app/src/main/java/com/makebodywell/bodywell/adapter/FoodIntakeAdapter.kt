@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
@@ -69,7 +71,8 @@ class FoodIntakeAdapter (
                 .setPositiveButton("확인") { _, _ ->
                     when (type) {
                         1 -> {
-                            dataManager!!.deleteFood(itemList[position].id)
+                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
+
                             itemList.removeAt(position)
                             notifyDataSetChanged()
 
@@ -81,7 +84,8 @@ class FoodIntakeAdapter (
                         }
 
                         2 -> {
-                            dataManager!!.deleteFood(itemList[position].id)
+                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
+
                             itemList.removeAt(position)
                             notifyDataSetChanged()
 
@@ -93,7 +97,7 @@ class FoodIntakeAdapter (
                         }
 
                         3 -> {
-                            dataManager!!.deleteFood(itemList[position].id)
+                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
 
@@ -105,7 +109,7 @@ class FoodIntakeAdapter (
                         }
 
                         4 -> {
-                            dataManager!!.deleteFood(itemList[position].id)
+                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
                             itemList.removeAt(position)
                             notifyDataSetChanged()
 

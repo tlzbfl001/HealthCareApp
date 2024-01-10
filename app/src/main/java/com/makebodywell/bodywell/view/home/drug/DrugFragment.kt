@@ -82,7 +82,7 @@ class DrugFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager?.updateDrugGoal(DailyData(drugGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+               dataManager!!.updateGoal("drugGoal",  et.text.toString().toInt(), calendarDate.toString())
             }
             recordView()
          }

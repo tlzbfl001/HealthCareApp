@@ -92,49 +92,12 @@ class LoginActivity : AppCompatActivity() {
 
       // 구글 로그인
       binding.clGoogle.setOnClickListener {
-         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.googleWebClientId))
-            .requestEmail()
-            .build()
-         gsc = GoogleSignIn.getClient(this, gso!!)
-
-         val signInIntent = gsc!!.signInIntent
-         startActivityForResult(signInIntent, 1000)
+         googleLogin()
       }
 
       // 애플 로그인
       binding.clApple.setOnClickListener {
-         // 인증 API 초기화
-         oauthProvider = OAuthProvider.newBuilder("apple.com")
-         oauthProvider.scopes = listOf("email", "name")
-         oauthProvider.addCustomParameter("locale", "ko")
-         firebaseAuth = FirebaseAuth.getInstance()
-
-         checkPending()
-      }
-   }
-
-   // 이미 받은 응답이 있는지 확인
-   private fun checkPending(){
-      val pending = firebaseAuth.pendingAuthResult
-      if (pending != null) {
-         pending.addOnSuccessListener { authResult ->
-            Log.d(TAG, "email:${authResult.user?.email}")
-            Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
-         }.addOnFailureListener { e ->
-            e.printStackTrace()
-         }
-      } else {
-         startAuth()
-      }
-   }
-
-   private fun startAuth(){
-      firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build()).addOnSuccessListener { authResult ->
-         Log.d(TAG, "email:${authResult.user?.email}")
-         Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
-      }.addOnFailureListener { e ->
-         e.printStackTrace()
+         appleLogin()
       }
    }
 
@@ -204,7 +167,6 @@ class LoginActivity : AppCompatActivity() {
       }
    }
 
-   // 네이버 로그인 처리
    private fun naverLogin() {
       val oAuthLoginCallback = object : OAuthLoginCallback {
          override fun onSuccess() {
@@ -261,6 +223,17 @@ class LoginActivity : AppCompatActivity() {
       NaverIdLoginSDK.authenticate(this@LoginActivity, oAuthLoginCallback)
    }
 
+   private fun googleLogin() {
+      gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+         .requestIdToken(getString(R.string.googleWebClientId))
+         .requestEmail()
+         .build()
+      gsc = GoogleSignIn.getClient(this, gso!!)
+
+      val signInIntent = gsc!!.signInIntent
+      startActivityForResult(signInIntent, 1000)
+   }
+
    // 구글 로그인 처리
    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
       super.onActivityResult(requestCode, resultCode, data)
@@ -300,6 +273,32 @@ class LoginActivity : AppCompatActivity() {
             }
          }catch (e: ApiException) {
             Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+         }
+      }
+   }
+
+   private fun appleLogin() {
+      // 인증 API 초기화
+      oauthProvider = OAuthProvider.newBuilder("apple.com")
+      oauthProvider.scopes = listOf("email", "name")
+      oauthProvider.addCustomParameter("locale", "ko")
+      firebaseAuth = FirebaseAuth.getInstance()
+
+      // 이미 받은 응답이 있는지 확인
+      val pending = firebaseAuth.pendingAuthResult
+      if (pending != null) {
+         pending.addOnSuccessListener { authResult ->
+            Log.d(TAG, "email:${authResult.user?.email}")
+            Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
+         }.addOnFailureListener { e ->
+            e.printStackTrace()
+         }
+      } else {
+         firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build()).addOnSuccessListener { authResult ->
+            Log.d(TAG, "email:${authResult.user?.email}")
+            Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
+         }.addOnFailureListener { e ->
             e.printStackTrace()
          }
       }

@@ -352,15 +352,15 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="6dp" >
+            android:paddingBottom="10dp" >
             <TextView
                 android:id="@+id/tvRunning"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:background="@drawable/oval_gray_border"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
                 android:elevation="3dp"
                 android:text="0회"
                 android:textSize="14dp"
@@ -371,12 +371,12 @@
                 app:layout_constraintTop_toTopOf="parent"/>
             <TextView
                 android:id="@+id/tvSoccer"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:background="@drawable/oval_gray_border"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
                 android:elevation="3dp"
                 android:text="0회"
                 android:textSize="14dp"
@@ -387,12 +387,12 @@
                 app:layout_constraintTop_toTopOf="parent"/>
             <TextView
                 android:id="@+id/tvYoga"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:background="@drawable/oval_gray_border"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
                 android:elevation="3dp"
                 android:text="0회"
                 android:textSize="14dp"
@@ -403,12 +403,12 @@
                 app:layout_constraintTop_toTopOf="parent"/>
             <TextView
                 android:id="@+id/tvBasketball"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:background="@drawable/oval_gray_border"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
                 android:elevation="3dp"
                 android:text="0회"
                 android:textSize="14dp"

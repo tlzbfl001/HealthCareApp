@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.ExerciseInputAdapter1
 import com.makebodywell.bodywell.adapter.ExerciseInputAdapter2
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_DELETE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_ITEM
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseInputBinding
 import com.makebodywell.bodywell.model.Exercise
@@ -103,18 +106,18 @@ class ExerciseInputFragment : Fragment() {
          }else {
             // 새로추가된 카테고리 아이템 DB 에 저장
             for(i in 0 until categoryAddList.size) {
-               dataManager!!.insertExerciseItem("category", categoryAddList[i])
+               dataManager!!.insertExercise(TABLE_EXERCISE_ITEM, "category", categoryAddList[i])
             }
 
             for(i in 0 until partAddList.size) {
-               dataManager!!.insertExerciseItem("part", partAddList[i])
+               dataManager!!.insertExercise(TABLE_EXERCISE_ITEM, "part", partAddList[i])
             }
 
             // 삭제된 아이템 삭제테이블에 저장 or 아이템테이블에서 삭제
             for(i in 0 until categoryDelList.size) {
                if(categoryDelList[i] == "유산소" || categoryDelList[i] == "무산소" || categoryDelList[i] == "근력운동" ||
                   categoryDelList[i] == "스포츠" || categoryDelList[i] == "일상생활" || categoryDelList[i] == "복합운동") {
-                  dataManager!!.insertExerciseDelete("category", categoryDelList[i])
+                  dataManager!!.insertExercise(TABLE_EXERCISE_DELETE, "category", categoryDelList[i])
                }else {
                   dataManager!!.deleteExerciseItem("category", categoryDelList[i])
                }
@@ -123,7 +126,7 @@ class ExerciseInputFragment : Fragment() {
             for(i in 0 until partDelList.size) {
                if(partDelList[i] == "전신" || partDelList[i] == "상체" || partDelList[i] == "하체" ||
                   partDelList[i] == "팔" || partDelList[i] == "다리" || partDelList[i] == "복근") {
-                  dataManager!!.insertExerciseDelete("part", partDelList[i])
+                  dataManager!!.insertExercise(TABLE_EXERCISE_DELETE, "part", partDelList[i])
                }else {
                   dataManager!!.deleteExerciseItem("part", partDelList[i])
                }

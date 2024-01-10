@@ -73,32 +73,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".view.init.LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="domainone.store"
-                    android:path="/redirect"
-                    android:scheme="https" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".view.init.LoginActivity"/>
         <activity android:name=".view.init.InitActivity" />
-        <activity android:name=".view.init.MainActivity" /> <!-- 카카오 로그인, 인가코드를 받기 위한 액티비티 -->
+        <activity android:name=".view.init.MainActivity" />
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="oauth"
                     android:scheme="@string/nativeAppKey2" />
@@ -119,5 +103,4 @@
             </intent-filter>
         </receiver>
     </application>
-
 </manifest>

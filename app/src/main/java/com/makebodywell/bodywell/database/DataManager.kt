@@ -22,7 +22,6 @@ import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugDate
-import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
@@ -30,7 +29,6 @@ import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
-import org.w3c.dom.Text
 
 class DataManager(private var context: Context?) {
    private var dbHelper: DBHelper? = null
@@ -83,34 +81,6 @@ class DataManager(private var context: Context?) {
          data.sugar= cursor.getDouble(9).toString()
          data.type = cursor.getInt(10)
          data.regDate = cursor.getString(11)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getFoodDates() : ArrayList<Food> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Food>()
-      val sql = "select distinct regDate from $TABLE_FOOD"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Food()
-         data.regDate = cursor.getString(0)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getFoodDates(start: String, end: String) : ArrayList<Food> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Food>()
-      val sql = "select distinct regDate from $TABLE_FOOD where regDate BETWEEN '$start' and '$end'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Food()
-         data.regDate = cursor.getString(0)
          list.add(data)
       }
       cursor.close()
@@ -183,26 +153,6 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getExercise() : ArrayList<Exercise> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Exercise> = ArrayList()
-      val sql = "select * from $TABLE_EXERCISE"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Exercise()
-         data.id=cursor.getInt(0)
-         data.category=cursor.getString(1)
-         data.name=cursor.getString(2)
-         data.workoutTime= cursor.getInt(3)
-         data.distance= cursor.getDouble(4)
-         data.calories= cursor.getInt(5)
-         data.regDate= cursor.getString(6)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getExercise(date: String) : ArrayList<Exercise> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Exercise>()
@@ -217,34 +167,6 @@ class DataManager(private var context: Context?) {
          data.distance= cursor.getDouble(4)
          data.calories= cursor.getInt(5)
          data.regDate= cursor.getString(6)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getExerciseDates() : ArrayList<Exercise> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Exercise>()
-      val sql = "select distinct regDate from $TABLE_EXERCISE"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Exercise()
-         data.regDate = cursor.getString(0)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getExerciseDates(start: String, end: String) : ArrayList<Exercise> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Exercise>()
-      val sql = "select distinct regDate from $TABLE_EXERCISE where regDate BETWEEN '$start' and '$end'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Exercise()
-         data.regDate = cursor.getString(0)
          list.add(data)
       }
       cursor.close()
@@ -348,6 +270,18 @@ class DataManager(private var context: Context?) {
          data.endDate = cursor.getString(7)
          data.isSet = cursor.getInt(8)
          list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getDrug(date: String) : ArrayList<String> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<String>()
+      val sql = "select name from $TABLE_DRUG where regDate = '$date'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         list.add(cursor.getString(0))
       }
       cursor.close()
       return list
@@ -479,6 +413,30 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun getDates(table: String) : ArrayList<String> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<String>()
+      val sql = "select distinct regDate from $table"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         list.add(cursor.getString(0))
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getDates(table: String, start: String, end: String) : ArrayList<String> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<String>()
+      val sql = "select distinct regDate from $table where regDate BETWEEN '$start' and '$end'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         list.add(cursor.getString(0))
+      }
+      cursor.close()
+      return list
+   }
+
    fun insertUser(data: User) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
@@ -543,21 +501,13 @@ class DataManager(private var context: Context?) {
       db.insert(TABLE_EXERCISE, null, values)
    }
 
-   fun insertExerciseItem(type: String, name: String) {
+   fun insertExercise(tableName: String, type: String, name: String) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("type", type)
       values.put("name", name)
-      db!!.insert(TABLE_EXERCISE_ITEM, null, values)
+      db!!.insert(tableName, null, values)
       db.close()
-   }
-
-   fun insertExerciseDelete(type: String, name: String) {
-      val db = dbHelper!!.writableDatabase
-      val values = ContentValues()
-      values.put("type", type)
-      values.put("name", name)
-      db!!.insert(TABLE_EXERCISE_DELETE, null, values)
    }
 
    fun insertBody(data: Body) {
@@ -652,27 +602,6 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateFoodGoal(data: DailyData){
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_DATA set foodGoal=${data.foodGoal} where regDate='${data.regDate}'"
-      db.execSQL(sql)
-      db.close()
-   }
-
-   fun updateWaterGoal(data: DailyData) {
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_DATA set waterGoal=${data.waterGoal} where regDate='${data.regDate}'"
-      db.execSQL(sql)
-      db.close()
-   }
-
-   fun updateExerciseGoal(data: DailyData) {
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_DATA set exerciseGoal=${data.exerciseGoal} where regDate='${data.regDate}'"
-      db.execSQL(sql)
-      db.close()
-   }
-
    fun updateExercise(data: Exercise) {
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_EXERCISE set workoutTime='${data.workoutTime}', calories=${data.calories} where id=${data.id}"
@@ -688,9 +617,9 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateBodyGoal(data: DailyData){
+   fun updateDrugCheck(data: DrugCheck){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_DATA set bodyGoal=${data.bodyGoal} where regDate='${data.regDate}'"
+      val sql = "update $TABLE_DRUG_CHECK set checked=${data.checked} where drugTimeId=${data.drugTimeId} and regDate='${data.regDate}'"
       db.execSQL(sql)
       db.close()
    }
@@ -702,20 +631,6 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateDrugGoal(data: DailyData){
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_DATA set drugGoal=${data.drugGoal} where regDate='${data.regDate}'"
-      db.execSQL(sql)
-      db.close()
-   }
-
-   fun updateDrugCheck(data: DrugCheck){
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DRUG_CHECK set checked=${data.checked} where drugTimeId=${data.drugTimeId} and regDate='${data.regDate}'"
-      db.execSQL(sql)
-      db.close()
-   }
-
    fun updateNote(data: Item){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_NOTE set title='${data.string1}', content='${data.string2}' where regDate='${data.string3}'"
@@ -723,23 +638,23 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun deleteFood(id: Int): Boolean {
+   fun updateGoal(column: String, goal: Int, regDate: String){
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_FOOD,"id=$id",null)
+      val sql = "update $TABLE_DAILY_DATA set $column=$goal where regDate='$regDate'"
+      db.execSQL(sql)
       db.close()
-      return (Integer.parseInt("$success") != -1)
    }
 
-   fun deleteImage(id: Int): Boolean {
+   fun updateBodyGoal(data: DailyData){
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_IMAGE,"id=$id",null)
+      val sql = "update $TABLE_DAILY_DATA set bodyGoal=${data.bodyGoal} where regDate='${data.regDate}'"
+      db.execSQL(sql)
       db.close()
-      return (Integer.parseInt("$success") != -1)
    }
 
-   fun deleteExercise(id: Int): Boolean {
+   fun deleteItem(table: String, column: String, id: Int): Boolean {
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_EXERCISE,"id=$id",null)
+      val success = db!!.delete(table, "$column=$id",null)
       db.close()
       return (Integer.parseInt("$success") != -1)
    }
@@ -751,58 +666,9 @@ class DataManager(private var context: Context?) {
       return (Integer.parseInt("$success") != -1)
    }
 
-   fun deleteDrug(id: Int): Boolean {
+   fun deleteTest(table: String): Boolean {
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_DRUG,"id=$id",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteDrugDate(id: Int): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_DRUG_DATE,"drugId=$id",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteDrugTime(id: Int): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_DRUG_TIME,"drugId=$id",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteDrugCheck(id: Int): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_DRUG_CHECK,"drugTimeId=$id",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteBody(): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_BODY,"",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteFood(): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_FOOD,"",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteWater(): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_WATER,"",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteExercise(): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_EXERCISE,"",null)
+      val success = db!!.delete(table,"",null)
       db.close()
       return (Integer.parseInt("$success") != -1)
    }

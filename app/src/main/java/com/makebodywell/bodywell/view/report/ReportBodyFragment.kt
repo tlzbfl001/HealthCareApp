@@ -25,8 +25,8 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.TestUtil.Companion.deleteData
-import com.makebodywell.bodywell.util.TestUtil.Companion.insertData
+import com.makebodywell.bodywell.util.Test.Companion.deleteData
+import com.makebodywell.bodywell.util.Test.Companion.insertData
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 

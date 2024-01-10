@@ -90,7 +90,7 @@ class FoodFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateFoodGoal(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), calendarDate.toString())
             }
 
             binding.pbFood.max = et.text.toString().toInt()
@@ -196,10 +196,10 @@ class FoodFragment : Fragment() {
       setupNutrients(getFood)
 
       binding.clBtn1.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
 
          binding.tvBtn1Title.setTextColor(Color.WHITE)
          binding.tvBtn1Desc.setTextColor(Color.WHITE)
@@ -216,10 +216,10 @@ class FoodFragment : Fragment() {
       }
 
       binding.clBtn2.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
 
          binding.tvBtn2Title.setTextColor(Color.WHITE)
          binding.tvBtn2Desc.setTextColor(Color.WHITE)
@@ -237,10 +237,10 @@ class FoodFragment : Fragment() {
       }
 
       binding.clBtn3.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
 
          binding.tvBtn3Title.setTextColor(Color.WHITE)
          binding.tvBtn3Desc.setTextColor(Color.WHITE)
@@ -258,10 +258,10 @@ class FoodFragment : Fragment() {
       }
 
       binding.clBtn4.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn2))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn3))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn4))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.foodBtn1))
+         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
+         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
+         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
+         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
 
          binding.tvBtn4Title.setTextColor(Color.WHITE)
          binding.tvBtn4Desc.setTextColor(Color.WHITE)

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
-import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
@@ -132,16 +131,13 @@ class MainFragment : Fragment() {
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
-      private val swipeThreshold = 100
-      private val swipeVelocityThreshold = 100
-
       override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
          var result = false
          try {
             val diffY = e2.y - e1.y
             val diffX = e2.x - e1.x
             if (abs(diffX) > abs(diffY)) {
-               if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
+               if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
@@ -297,5 +293,10 @@ class MainFragment : Fragment() {
       binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
       binding.tvBody.text = "$weight/$bodyGoal kg"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyData.drugGoal}회"
+   }
+
+   companion object {
+      private const val SWIPE_THRESHOLD = 100
+      private const val SWIPE_VELOCITY_THRESHOLD = 100
    }
 }

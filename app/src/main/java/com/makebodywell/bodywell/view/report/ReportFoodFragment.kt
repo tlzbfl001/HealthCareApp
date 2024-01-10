@@ -21,9 +21,9 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
-import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
@@ -142,7 +142,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getFoodDates()
+      val getDates = dataManager!!.getDates(TABLE_FOOD)
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -178,7 +178,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getFoodDates(weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -214,7 +214,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getFoodDates(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -242,7 +242,7 @@ class ReportFoodFragment : Fragment() {
       }
    }
 
-   private fun settingChart1(chart: CombinedChart, foodData: ArrayList<Food>) {
+   private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -255,9 +255,9 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      for(i in 0 until foodData.size){
-         val foodKcal = getFoodKcal(requireActivity(), foodData[i].regDate!!)
-         xVal += format2.format(format1.parse(foodData[i].regDate!!)!!)
+      for(i in 0 until getData.size){
+         val foodKcal = getFoodKcal(requireActivity(), getData[i])
+         xVal += format2.format(format1.parse(getData[i])!!)
          lineList += foodKcal.int5.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
             foodKcal.int1.toFloat(), foodKcal.int2.toFloat(), foodKcal.int3.toFloat(), foodKcal.int4.toFloat()
@@ -305,7 +305,7 @@ class ReportFoodFragment : Fragment() {
       chartCommon(chart, xVal)
    }
 
-   private fun settingChart2(chart: CombinedChart, foodData: ArrayList<Food>) {
+   private fun settingChart2(chart: CombinedChart, getData: ArrayList<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -318,9 +318,9 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      for(i in 0 until foodData.size){
-         val nutrition = getNutrition(requireActivity(), foodData[i].regDate!!)
-         xVal += format2.format(format1.parse(foodData[i].regDate!!))
+      for(i in 0 until getData.size){
+         val nutrition = getNutrition(requireActivity(), getData[i])
+         xVal += format2.format(format1.parse(getData[i])!!)
          lineList += nutrition.unit!!.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
             nutrition.carbohydrate!!.toFloat(), nutrition.protein!!.toFloat(), nutrition.fat!!.toFloat(), nutrition.sugar!!.toFloat()
