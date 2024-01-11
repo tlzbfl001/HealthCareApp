@@ -145,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
                }
             }
 
-            startActivity(Intent(this@LoginActivity, PermissionActivity::class.java))
+            startActivity(Intent(this@LoginActivity, InputActivity::class.java))
          }else { // 로그인
             lifecycleScope.launch {
                lifecycleScope.launch{
@@ -182,7 +182,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                      }
 
-                     startActivity(Intent(this@LoginActivity, PermissionActivity::class.java))
+                     startActivity(Intent(this@LoginActivity, InputActivity::class.java))
                   }else {
                      lifecycleScope.launch {
                         lifecycleScope.launch{
@@ -252,7 +252,7 @@ class LoginActivity : AppCompatActivity() {
                   }
                }
 
-               startActivity(Intent(this@LoginActivity, PermissionActivity::class.java))
+               startActivity(Intent(this@LoginActivity, InputActivity::class.java))
             }else { // 로그인
                lifecycleScope.launch {
                   lifecycleScope.launch{

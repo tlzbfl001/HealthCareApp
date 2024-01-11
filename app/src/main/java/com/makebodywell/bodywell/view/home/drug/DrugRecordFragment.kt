@@ -1,13 +1,18 @@
 package com.makebodywell.bodywell.view.home.drug
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.DrugAdapter2
@@ -41,22 +46,14 @@ class DrugRecordFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupList()
-
-      return binding.root
-   }
-
-   private fun initView() {
       binding.ivBack.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
       }
+
       binding.cvAdd.setOnClickListener {
          replaceFragment1(requireActivity(), DrugAddFragment())
       }
-   }
 
-   private fun setupList() {
       val getDrug = dataManager!!.getDrug()
       for(i in 0 until getDrug.size) {
          itemList.add(Drug(id = getDrug[i].id, type = getDrug[i].type, name = getDrug[i].name, amount = getDrug[i].amount, unit = getDrug[i].unit,
@@ -97,5 +94,7 @@ class DrugRecordFragment : Fragment() {
       })
 
       binding.recyclerView.adapter = adapter
+
+      return binding.root
    }
 }

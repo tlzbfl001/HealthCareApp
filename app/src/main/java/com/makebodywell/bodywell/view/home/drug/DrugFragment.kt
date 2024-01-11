@@ -1,8 +1,11 @@
 package com.makebodywell.bodywell.view.home.drug
 
+import android.Manifest
 import android.app.Dialog
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,8 +13,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.alpha
 import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +31,7 @@ import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -110,7 +117,11 @@ class DrugFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugRecordFragment())
+         if(requestPermission()) {
+            replaceFragment1(requireActivity(), DrugRecordFragment())
+         }else {
+            Toast.makeText(context, "권한이 없습니다.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       binding.cvFood.setOnClickListener {
@@ -191,5 +202,26 @@ class DrugFragment : Fragment() {
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.requestLayout()
       binding.recyclerView.adapter = adapter
+   }
+
+   private fun requestPermission(): Boolean {
+      var check = true
+      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM, Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE)
+            check = false
+         }
+      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), REQUEST_CODE)
+            check = false
+         }
+      }
+      return check
+   }
+
+   companion object {
+      private const val REQUEST_CODE = 1
    }
 }

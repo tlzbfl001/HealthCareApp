@@ -1,18 +1,14 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,8 +24,9 @@ import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.PermissionUtil
-import com.makebodywell.bodywell.view.setting.SettingFragment
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
 import kotlin.math.abs
 
 class FoodDinnerFragment : Fragment() {
@@ -88,8 +85,7 @@ class FoodDinnerFragment : Fragment() {
         }
 
         binding.clGallery.setOnClickListener {
-            val result = requestPermission()
-            if(result) {
+            if (requestPermission()) {
                 replaceFragment2(requireActivity(), GalleryFragment(), bundle)
             }
         }
@@ -213,59 +209,33 @@ class FoodDinnerFragment : Fragment() {
     }
 
     private fun requestPermission(): Boolean {
+        var check = true
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            for(permission in PermissionUtil.cameraPermission3) {
+            for(permission in CAMERA_PERMISSION_3) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermission3), permissionRequestCode)
-                    return false
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
+                    check = false
                 }
             }
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            for(permission in PermissionUtil.cameraPermission2) {
+            for(permission in CAMERA_PERMISSION_2) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermission2), permissionRequestCode)
-                    return false
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
+                    check = false
                 }
             }
         }else {
-            for(permission in PermissionUtil.cameraPermission1) {
+            for(permission in CAMERA_PERMISSION_1) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermission1), permissionRequestCode)
-                    return false
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
+                    check = false
                 }
             }
         }
-        return true
+        return check
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == permissionRequestCode && grantResults.isNotEmpty()) {
-            var result = true
-            for (element in grantResults) {
-                if (element == -1) {
-                    result = false
-                }
-            }
-
-            if(!result) {
-                val alertDialog = AlertDialog.Builder(requireActivity())
-                alertDialog.setTitle("권한 설정")
-                alertDialog.setMessage("권한을 모두 허가하지 않으셨습니다.\n[메뉴] → [앱 권한]에서 권한을 허가해주세요.")
-                alertDialog.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, _ ->
-                    val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
-                        Uri.parse("package:" + requireActivity().packageName)
-                    )
-                    startActivity(intent)
-                    dialogInterface.cancel()
-                })
-                alertDialog.setNegativeButton("취소", DialogInterface.OnClickListener { dialogInterface, _ ->
-                    dialogInterface.cancel()
-                })
-                alertDialog.show()
-            }else {
-                replaceFragment2(requireActivity(), GalleryFragment(), bundle)
-            }
-        }
+    companion object {
+        private const val REQUEST_CODE = 1
     }
 }

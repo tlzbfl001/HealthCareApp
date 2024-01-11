@@ -1,13 +1,10 @@
 package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -15,9 +12,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.makebodywell.bodywell.adapter.SectionPageAdapter
 import com.makebodywell.bodywell.databinding.ActivityInitBinding
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.permission1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.permission2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.permission3
 import kotlin.system.exitProcess
 
 class InitActivity : AppCompatActivity() {
