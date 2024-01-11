@@ -18,6 +18,10 @@ class SettingFragment : Fragment() {
    ): View {
       _binding = FragmentSettingBinding.inflate(layoutInflater)
 
+      binding.tvPerm.setOnClickListener {
+         replaceFragment1(requireActivity(), PermissionFragment())
+      }
+
       binding.tvConnect.setOnClickListener {
          replaceFragment1(requireActivity(), ConnectFragment())
       }
