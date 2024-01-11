@@ -13,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
@@ -21,9 +22,11 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
+import com.makebodywell.bodywell.CreateUserAppleMutation
 import com.makebodywell.bodywell.CreateUserGoogleMutation
 import com.makebodywell.bodywell.CreateUserKakaoMutation
 import com.makebodywell.bodywell.CreateUserNaverMutation
+import com.makebodywell.bodywell.LoginUserAppleMutation
 import com.makebodywell.bodywell.LoginUserGoogleMutation
 import com.makebodywell.bodywell.LoginUserKakaoMutation
 import com.makebodywell.bodywell.LoginUserNaverMutation
@@ -31,9 +34,11 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
 import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.type.CreateAppleOauthInput
 import com.makebodywell.bodywell.type.CreateGoogleOauthInput
 import com.makebodywell.bodywell.type.CreateKakaoOauthInput
 import com.makebodywell.bodywell.type.CreateNaverOauthInput
+import com.makebodywell.bodywell.type.LoginAppleOauthInput
 import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
 import com.makebodywell.bodywell.type.LoginNaverOauthInput
@@ -128,35 +133,29 @@ class LoginActivity : AppCompatActivity() {
 
    private fun kakaoApollo(token: OAuthToken) {
       UserApiClient.instance.me { user, error ->
-         // 사용자 가입여부 체크
-         val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
-
+         val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString()) // 사용자 가입여부 체크
          if(getUser.regDate == "") { // 회원 가입
             dataManager!!.insertUser(User(type = "kakao", idToken = token.idToken, email = user?.kakaoAccount?.email, name = user?.kakaoAccount?.name,
                nickname = user?.kakaoAccount?.profile?.nickname, profileImage = user?.kakaoAccount?.profile?.profileImageUrl, regDate = LocalDate.now().toString()))
 
             // 서버에 사용자 정보 저장
-            lifecycleScope.launch {
-               lifecycleScope.launch{
-                  val response = apolloClient!!.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
-                     idToken = token.idToken.toString()
-                  ))).execute()
-                  Log.d(TAG, "createUserKakao: ${response.data?.createUserKakao}")
-               }
+            lifecycleScope.launch{
+               val response = apolloClient!!.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
+                  idToken = token.idToken.toString()
+               ))).execute()
+               Log.d(TAG, "createUserKakao: ${response.data?.createUserKakao}")
             }
 
-            startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+            startActivity(Intent(this, InputActivity::class.java))
          }else { // 로그인
-            lifecycleScope.launch {
-               lifecycleScope.launch{
-                  val response = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
-                     idToken = token.idToken.toString()
-                  ))).execute()
-                  Log.d(TAG, "loginUserKakao: ${response.data?.loginUserKakao}")
-               }
+            lifecycleScope.launch{
+               val response = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
+                  idToken = token.idToken.toString()
+               ))).execute()
+               Log.d(TAG, "loginUserKakao: ${response.data?.loginUserKakao}")
             }
 
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
          }
       }
    }
@@ -167,30 +166,25 @@ class LoginActivity : AppCompatActivity() {
             NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                override fun onSuccess(result: NidProfileResponse) {
                   val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
-
                   if(getUser.regDate == "") {
                      dataManager!!.insertUser(User(type = "naver", accessToken = NaverIdLoginSDK.getAccessToken(), email = result.profile?.email, name = result.profile?.name,
                         nickname = result.profile?.nickname, gender = result.profile?.gender, birthYear = result.profile?.birthYear, birthDay = result.profile?.birthday,
                         profileImage = result.profile?.profileImage, regDate = LocalDate.now().toString()))
 
-                     lifecycleScope.launch {
-                        lifecycleScope.launch{
-                           val response = apolloClient!!.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
-                              accessToken = NaverIdLoginSDK.getAccessToken().toString()
-                           ))).execute()
-                           Log.d(TAG, "createUserNaver: ${response.data?.createUserNaver}")
-                        }
+                     lifecycleScope.launch{
+                        val response = apolloClient!!.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
+                           accessToken = NaverIdLoginSDK.getAccessToken().toString()
+                        ))).execute()
+                        Log.d(TAG, "createUserNaver: ${response.data?.createUserNaver}")
                      }
 
                      startActivity(Intent(this@LoginActivity, InputActivity::class.java))
                   }else {
-                     lifecycleScope.launch {
-                        lifecycleScope.launch{
-                           val response = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
-                              accessToken = NaverIdLoginSDK.getAccessToken().toString()
-                           ))).execute()
-                           Log.d(TAG, "loginUserNaver: ${response.data?.loginUserNaver}")
-                        }
+                     lifecycleScope.launch{
+                        val response = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
+                           accessToken = NaverIdLoginSDK.getAccessToken().toString()
+                        ))).execute()
+                        Log.d(TAG, "loginUserNaver: ${response.data?.loginUserNaver}")
                      }
 
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
@@ -213,8 +207,8 @@ class LoginActivity : AppCompatActivity() {
       }
 
       // SDK 객체 초기화
-      NaverIdLoginSDK.initialize(this@LoginActivity, getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(R.string.app_name))
-      NaverIdLoginSDK.authenticate(this@LoginActivity, oAuthLoginCallback)
+      NaverIdLoginSDK.initialize(this, getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(R.string.app_name))
+      NaverIdLoginSDK.authenticate(this, oAuthLoginCallback)
    }
 
    private fun googleLogin() {
@@ -238,32 +232,26 @@ class LoginActivity : AppCompatActivity() {
             gsa = GoogleSignIn.getLastSignedInAccount(this)
 
             val getUser = dataManager!!.getUser("google", gsa?.email.toString())
-
-            Log.d(TAG, "idToken: ${gsa?.idToken}")
             if(getUser.regDate == "") {
                dataManager!!.insertUser(User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString()))
 
-               lifecycleScope.launch {
-                  lifecycleScope.launch{
-                     val response = apolloClient!!.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
-                        idToken = gsa?.idToken.toString()
-                     ))).execute()
-                     Log.d(TAG, "CreateUserGoogle: ${response.data?.createUserGoogle}")
-                  }
+               lifecycleScope.launch{
+                  val response = apolloClient!!.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
+                     idToken = gsa?.idToken.toString()
+                  ))).execute()
+                  Log.d(TAG, "CreateUserGoogle: ${response.data?.createUserGoogle}")
                }
 
-               startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+               startActivity(Intent(this, InputActivity::class.java))
             }else { // 로그인
-               lifecycleScope.launch {
-                  lifecycleScope.launch{
-                     val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
-                        idToken = gsa?.idToken.toString()
-                     ))).execute()
-                     Log.d(TAG, "LoginUserGoogle: ${response.data?.loginUserGoogle}")
-                  }
+               lifecycleScope.launch{
+                  val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+                     idToken = gsa?.idToken.toString()
+                  ))).execute()
+                  Log.d(TAG, "LoginUserGoogle: ${response.data?.loginUserGoogle}")
                }
 
-               startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+               startActivity(Intent(this, MainActivity::class.java))
             }
          }catch (e: ApiException) {
             Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
@@ -281,20 +269,45 @@ class LoginActivity : AppCompatActivity() {
 
       // 이미 받은 응답이 있는지 확인
       val pending = firebaseAuth.pendingAuthResult
-      if (pending != null) {
+      if(pending != null) {
          pending.addOnSuccessListener { authResult ->
-            Log.d(TAG, "email:${authResult.user?.email}")
-            Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
+            appleApollo(authResult)
          }.addOnFailureListener { e ->
             e.printStackTrace()
          }
-      } else {
+      }else {
          firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build()).addOnSuccessListener { authResult ->
-            Log.d(TAG, "email:${authResult.user?.email}")
-            Log.d(TAG, "idToken:${(authResult.credential as OAuthCredential?)!!.idToken}")
+            appleApollo(authResult)
          }.addOnFailureListener { e ->
             e.printStackTrace()
          }
+      }
+   }
+
+   private fun appleApollo(authResult: AuthResult) {
+      val idToken = (authResult.credential as OAuthCredential?)!!.idToken.toString()
+      val getUser = dataManager!!.getUser("apple", authResult.user?.email.toString())
+      if(getUser.regDate == "") {
+         dataManager!!.insertUser(User(type = "apple", idToken = idToken,
+            email = authResult.user?.email.toString(), regDate = LocalDate.now().toString()))
+
+         lifecycleScope.launch{
+            val response = apolloClient!!.mutation(CreateUserAppleMutation(CreateAppleOauthInput(
+               idToken = idToken
+            ))).execute()
+            Log.d(TAG, "createUserApple: ${response.data?.createUserApple}")
+         }
+
+         startActivity(Intent(this, InputActivity::class.java))
+      }else { // 로그인
+         lifecycleScope.launch{
+            val response = apolloClient!!.mutation(LoginUserAppleMutation(LoginAppleOauthInput(
+               idToken = idToken
+            ))).execute()
+            Log.d(TAG, "loginUserApple: ${response.data?.loginUserApple}")
+         }
+
+         startActivity(Intent(this, MainActivity::class.java))
       }
    }
 
@@ -304,7 +317,7 @@ class LoginActivity : AppCompatActivity() {
    }
 
    override fun onBackPressed() {
-      if(System.currentTimeMillis() - backWait >=2000 ) {
+      if(System.currentTimeMillis() - backWait >= 2000 ) {
          backWait = System.currentTimeMillis()
          Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
       } else {
