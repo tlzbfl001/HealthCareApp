@@ -3,10 +3,6 @@ package com.makebodywell.bodywell.view.init
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.webkit.ConsoleMessage
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -34,7 +30,6 @@ import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
-import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.CreateGoogleOauthInput
 import com.makebodywell.bodywell.type.CreateKakaoOauthInput
@@ -50,7 +45,6 @@ import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.UUID
 import kotlin.system.exitProcess
 
 class LoginActivity : AppCompatActivity() {
@@ -151,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
                }
             }
 
-            startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+            startActivity(Intent(this@LoginActivity, PermissionActivity::class.java))
          }else { // 로그인
             lifecycleScope.launch {
                lifecycleScope.launch{
@@ -188,7 +182,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                      }
 
-                     startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+                     startActivity(Intent(this@LoginActivity, PermissionActivity::class.java))
                   }else {
                      lifecycleScope.launch {
                         lifecycleScope.launch{
@@ -258,7 +252,7 @@ class LoginActivity : AppCompatActivity() {
                   }
                }
 
-               startActivity(Intent(this@LoginActivity, InputActivity::class.java))
+               startActivity(Intent(this@LoginActivity, PermissionActivity::class.java))
             }else { // 로그인
                lifecycleScope.launch {
                   lifecycleScope.launch{

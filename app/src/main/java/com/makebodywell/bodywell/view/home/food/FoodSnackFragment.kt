@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -26,9 +27,10 @@ import com.makebodywell.bodywell.databinding.FragmentFoodSnackBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermissions3
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermission1
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermission2
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraPermission3
+import com.makebodywell.bodywell.view.setting.SettingFragment
 import kotlin.math.abs
 
 class FoodSnackFragment : Fragment() {
@@ -209,27 +211,27 @@ class FoodSnackFragment : Fragment() {
 
     private fun requestPermission(): Boolean {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            for(permission in cameraPermissions3) {
+            for(permission in cameraPermission3) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*cameraPermissions3),
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*cameraPermission3),
                         Companion.PERMISSION_REQUEST_CODE
                     )
                     return false
                 }
             }
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            for(permission in cameraPermissions2) {
+            for(permission in cameraPermission2) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*cameraPermissions2),
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*cameraPermission2),
                         Companion.PERMISSION_REQUEST_CODE
                     )
                     return false
                 }
             }
         }else {
-            for(permission in cameraPermissions1) {
+            for(permission in cameraPermission1) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*cameraPermissions1),
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*cameraPermission1),
                         Companion.PERMISSION_REQUEST_CODE
                     )
                     return false
@@ -248,10 +250,11 @@ class FoodSnackFragment : Fragment() {
                     result = false
                 }
             }
+
             if(!result) {
-                val alertDialog: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(requireActivity())
+                val alertDialog = AlertDialog.Builder(requireActivity())
                 alertDialog.setTitle("권한 설정")
-                alertDialog.setMessage("권한을 허가하지 않으셨습니다.\n[설정]에서 권한을 허가해주세요.")
+                alertDialog.setMessage("권한을 모두 허가하지 않으셨습니다.\n[메뉴] → [앱 권한]에서 권한을 허가해주세요.")
                 alertDialog.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, _ ->
                     val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
                         Uri.parse("package:" + requireActivity().packageName)
@@ -263,6 +266,8 @@ class FoodSnackFragment : Fragment() {
                     dialogInterface.cancel()
                 })
                 alertDialog.show()
+            }else {
+                replaceFragment2(requireActivity(), GalleryFragment(), bundle)
             }
         }
     }

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,6 +29,7 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil
+import com.makebodywell.bodywell.view.setting.SettingFragment
 import kotlin.math.abs
 
 class FoodDinnerFragment : Fragment() {
@@ -212,23 +214,23 @@ class FoodDinnerFragment : Fragment() {
 
     private fun requestPermission(): Boolean {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            for(permission in PermissionUtil.cameraPermissions3) {
+            for(permission in PermissionUtil.cameraPermission3) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions3), permissionRequestCode)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermission3), permissionRequestCode)
                     return false
                 }
             }
         }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            for(permission in PermissionUtil.cameraPermissions2) {
+            for(permission in PermissionUtil.cameraPermission2) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions2), permissionRequestCode)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermission2), permissionRequestCode)
                     return false
                 }
             }
         }else {
-            for(permission in PermissionUtil.cameraPermissions1) {
+            for(permission in PermissionUtil.cameraPermission1) {
                 if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermissions1), permissionRequestCode)
+                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.cameraPermission1), permissionRequestCode)
                     return false
                 }
             }
@@ -245,10 +247,11 @@ class FoodDinnerFragment : Fragment() {
                     result = false
                 }
             }
+
             if(!result) {
-                val alertDialog: androidx.appcompat.app.AlertDialog.Builder = androidx.appcompat.app.AlertDialog.Builder(requireActivity())
+                val alertDialog = AlertDialog.Builder(requireActivity())
                 alertDialog.setTitle("권한 설정")
-                alertDialog.setMessage("권한을 허가하지 않으셨습니다.\n[설정]에서 권한을 허가해주세요.")
+                alertDialog.setMessage("권한을 모두 허가하지 않으셨습니다.\n[메뉴] → [앱 권한]에서 권한을 허가해주세요.")
                 alertDialog.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, _ ->
                     val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
                         Uri.parse("package:" + requireActivity().packageName)
@@ -260,6 +263,8 @@ class FoodDinnerFragment : Fragment() {
                     dialogInterface.cancel()
                 })
                 alertDialog.show()
+            }else {
+                replaceFragment2(requireActivity(), GalleryFragment(), bundle)
             }
         }
     }

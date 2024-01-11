@@ -1,14 +1,10 @@
 package com.makebodywell.bodywell.view.init
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -19,9 +15,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.makebodywell.bodywell.adapter.SectionPageAdapter
 import com.makebodywell.bodywell.databinding.ActivityInitBinding
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.permissions1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.permissions2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.permissions3
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.permission1
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.permission2
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.permission3
 import kotlin.system.exitProcess
 
 class InitActivity : AppCompatActivity() {
@@ -36,71 +32,11 @@ class InitActivity : AppCompatActivity() {
    private var googleSignInOptions: GoogleSignInOptions? = null
    private var googleSignInAccount: GoogleSignInAccount? = null
 
-   private val permissionRequestCode = 1
-
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       _binding = ActivityInitBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      // 권한 요청
-      requestPermission()
-
-      // viewPager 설정
-      setupViewPager()
-   }
-
-   private fun requestPermission() {
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         for(permission in permissions3) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(this, arrayOf(*permissions3), permissionRequestCode)
-            }
-         }
-      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         for(permission in permissions2) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(this, arrayOf(*permissions2), permissionRequestCode)
-            }
-         }
-      }else {
-         for(permission in permissions1) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(this, arrayOf(*permissions1), permissionRequestCode)
-            }
-         }
-      }
-   }
-
-   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
-      super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-      if(requestCode == permissionRequestCode && grantResults.isNotEmpty()) {
-         var result = true
-         for (element in grantResults) {
-            if (element == -1) {
-               result = false
-            }
-         }
-         if(!result) {
-            val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
-            alertDialog.setTitle("권한 설정")
-            alertDialog.setMessage("권한을 허가하지 않으셨습니다.\n[설정]에서 권한을 허가해주세요.")
-            alertDialog.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, _ ->
-               val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
-                  Uri.parse("package:" + applicationContext.packageName)
-               )
-               startActivity(intent)
-               dialogInterface.cancel()
-            })
-            alertDialog.setNegativeButton("취소", DialogInterface.OnClickListener { dialogInterface, _ ->
-               dialogInterface.cancel()
-            })
-            alertDialog.show()
-         }
-      }
-   }
-
-   private fun setupViewPager() {
       adapter.addFragment(SlideFragment1(), "1")
       adapter.addFragment(SlideFragment2(), "2")
       adapter.addFragment(SlideFragment3(), "3")

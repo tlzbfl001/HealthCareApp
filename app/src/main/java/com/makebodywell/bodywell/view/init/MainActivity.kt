@@ -1,7 +1,6 @@
 package com.makebodywell.bodywell.view.init
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -9,7 +8,7 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.ActivityMainBinding
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.note.NoteFragment
-import com.makebodywell.bodywell.view.setting.MenuFragment
+import com.makebodywell.bodywell.view.setting.SettingFragment
 import com.makebodywell.bodywell.view.report.ReportBodyFragment
 import kotlin.system.exitProcess
 
@@ -33,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             R.id.menu1 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, MainFragment()).commit()
             R.id.menu2 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, ReportBodyFragment()).commit()
             R.id.menu3 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, NoteFragment()).commit()
-            R.id.menu4 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, MenuFragment()).commit()
+            R.id.menu4 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, SettingFragment()).commit()
          }
          true
       }

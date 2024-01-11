@@ -167,12 +167,13 @@
                   android:layout_marginTop="15dp"
                   app:tint="#000000"
                   app:layout_constraintTop_toBottomOf="@id/ivUser2"
-                  app:layout_constraintStart_toStartOf="parent"/>
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintBottom_toBottomOf="parent"/>
                <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_marginLeft="10dp"
-                  android:text="기본 알림"
+                  android:text="기능 알림"
                   android:textSize="14dp"
                   android:textColor="@color/black"
                   app:layout_constraintStart_toEndOf="@id/ivLouder"
@@ -427,7 +428,8 @@
                   android:layout_marginTop="15dp"
                   android:src="@drawable/delete"
                   app:layout_constraintTop_toBottomOf="@+id/ivLogout"
-                  app:layout_constraintStart_toStartOf="parent"/>
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintBottom_toBottomOf="parent"/>
                <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
