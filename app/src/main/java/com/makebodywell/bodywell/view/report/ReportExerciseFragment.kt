@@ -25,7 +25,6 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
@@ -134,9 +133,9 @@ class ReportExerciseFragment : Fragment() {
    private fun dailyView() {
       binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvDaily.setTextColor(Color.WHITE)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
@@ -159,11 +158,11 @@ class ReportExerciseFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvWeekly.setTextColor(Color.WHITE)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
@@ -187,9 +186,9 @@ class ReportExerciseFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvMonthly.setTextColor(Color.WHITE)

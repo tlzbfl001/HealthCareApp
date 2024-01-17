@@ -106,7 +106,7 @@ class FoodLunchFragment : Fragment() {
 
         binding.tvAdd.setOnClickListener {
             val getFoodData = foodRecordAdapter!!.getFoodData()
-            dataManager!!.updateFoodAmount(Food(id = getFoodData.id, amount = getFoodData.amount))
+            dataManager!!.updateFood(Food(id = getFoodData.id, unit = getFoodData.unit))
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())
@@ -195,7 +195,7 @@ class FoodLunchFragment : Fragment() {
             binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView1.adapter = foodRecordAdapter
 
-            foodFrequentlyAdapter = FoodRecord1Adapter(itemList)
+            foodFrequentlyAdapter = FoodRecord1Adapter(requireActivity(), itemList)
             binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView2.adapter = foodFrequentlyAdapter
         }

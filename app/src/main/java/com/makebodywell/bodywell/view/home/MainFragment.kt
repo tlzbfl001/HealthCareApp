@@ -54,15 +54,15 @@ class MainFragment : Fragment() {
    }
 
    private fun initView() {
-      binding.btnCalPrev.setOnClickListener {
-         selectedDate = selectedDate.minusWeeks(1)
-         setWeekView()
-      }
-
-      binding.btnCalNext.setOnClickListener {
-         selectedDate = selectedDate.plusWeeks(1)
-         setWeekView()
-      }
+//      binding.btnCalPrev.setOnClickListener {
+//         selectedDate = selectedDate.minusWeeks(1)
+//         setWeekView()
+//      }
+//
+//      binding.btnCalNext.setOnClickListener {
+//         selectedDate = selectedDate.plusWeeks(1)
+//         setWeekView()
+//      }
 
       binding.clFood.setOnClickListener {
          replaceFragment1(requireActivity(), FoodFragment())
@@ -113,7 +113,7 @@ class MainFragment : Fragment() {
 
    @SuppressLint("ClickableViewAccessibility")
    private fun setWeekView() {
-      binding.tvCalTitle.text = calendarTitle()
+//      binding.tvCalTitle.text = calendarTitle()
       days = weekArray(selectedDate)
       val adapter = CalendarAdapter1(days)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)

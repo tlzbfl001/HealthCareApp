@@ -62,6 +62,29 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun getFood(id: Int) : Food {
+      val db = dbHelper!!.readableDatabase
+      val data = Food()
+      val sql = "select * from $TABLE_FOOD where id = $id"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id=cursor.getInt(0)
+         data.name=cursor.getString(1)
+         data.unit=cursor.getInt(2)
+         data.amount= cursor.getInt(3)
+         data.kcal= cursor.getInt(4)
+         data.carbohydrate= cursor.getDouble(5)
+         data.protein= cursor.getDouble(6)
+         data.fat= cursor.getDouble(7)
+         data.salt= cursor.getDouble(8)
+         data.sugar= cursor.getDouble(9)
+         data.type = cursor.getInt(10)
+         data.regDate = cursor.getString(11)
+      }
+      cursor.close()
+      return data
+   }
+
    fun getFood(type: Int, date: String) : ArrayList<Food> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Food> = ArrayList()
@@ -71,14 +94,14 @@ class DataManager(private var context: Context?) {
          val data = Food()
          data.id=cursor.getInt(0)
          data.name=cursor.getString(1)
-         data.unit=cursor.getString(2)
+         data.unit=cursor.getInt(2)
          data.amount= cursor.getInt(3)
-         data.kcal= cursor.getInt(4).toString()
-         data.carbohydrate= cursor.getDouble(5).toString()
-         data.protein= cursor.getDouble(6).toString()
-         data.fat= cursor.getDouble(7).toString()
-         data.salt= cursor.getDouble(8).toString()
-         data.sugar= cursor.getDouble(9).toString()
+         data.kcal= cursor.getInt(4)
+         data.carbohydrate= cursor.getDouble(5)
+         data.protein= cursor.getDouble(6)
+         data.fat= cursor.getDouble(7)
+         data.salt= cursor.getDouble(8)
+         data.sugar= cursor.getDouble(9)
          data.type = cursor.getInt(10)
          data.regDate = cursor.getString(11)
          list.add(data)
@@ -588,9 +611,9 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_DAILY_DATA, null, values)
    }
 
-   fun updateFoodAmount(data: Food){
+   fun updateFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_FOOD set amount=${data.amount} where id='${data.id}'"
+      val sql = "update $TABLE_FOOD set unit=${data.unit} where id='${data.id}'"
       db.execSQL(sql)
       db.close()
    }

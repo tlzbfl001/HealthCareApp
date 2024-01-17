@@ -613,21 +613,23 @@
                             android:layout_height="28dp"
                            android:background="@drawable/circle_border_blue"
                            android:layout_marginRight="20dp"
-                           android:padding="5dp"
-                           android:src="@drawable/minus"
+                           android:padding="3dp"
+                           android:src="@drawable/baseline_minus"
                            app:layout_constraintBottom_toBottomOf="parent"
                            app:layout_constraintEnd_toStartOf="@id/ivPlus"
-                           app:layout_constraintTop_toTopOf="parent" />
+                           app:layout_constraintTop_toTopOf="parent"
+                           app:tint="#5A8EFF" />
                         <ImageView
                            android:id="@+id/ivPlus"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                           android:layout_width="28dp"
+                           android:layout_height="28dp"
                            android:background="@drawable/circle_border_blue"
-                           android:padding="5dp"
-                           android:src="@drawable/plus"
+                           android:padding="3dp"
+                           android:src="@drawable/baseline_add"
                            app:layout_constraintBottom_toBottomOf="parent"
                            app:layout_constraintEnd_toEndOf="parent"
-                           app:layout_constraintTop_toTopOf="parent" />
+                           app:layout_constraintTop_toTopOf="parent"
+                           app:tint="#5A8EFF" />
                      </androidx.constraintlayout.widget.ConstraintLayout>
                   </androidx.constraintlayout.widget.ConstraintLayout>
                   <FrameLayout

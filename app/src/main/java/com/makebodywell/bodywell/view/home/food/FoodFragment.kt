@@ -354,34 +354,34 @@ class FoodFragment : Fragment() {
       if(dataList.size % 3 == 0) {
          for(i in 0 until divide) {
             itemList.add(Item(
-               dataList[num].name!!, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit!!,
-               dataList[num + 1].name!!, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit!!,
-               dataList[num + 2].name!!, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit!!)
+               dataList[num].name, dataList[num].kcal * dataList[num].amount, dataList[num].unit.toString(),
+               dataList[num + 1].name, dataList[num + 1].kcal * dataList[num + 1].amount, dataList[num + 1].toString(),
+               dataList[num + 2].name, dataList[num + 2].kcal * dataList[num + 2].amount, dataList[num].toString())
             )
             num += 3
          }
       }else if(dataList.size % 3 == 1) {
          for(i in 0 until divide) {
             itemList.add(Item(
-               dataList[num].name!!, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit!!,
-               dataList[num + 1].name!!, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit!!,
-               dataList[num + 2].name!!, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit!!)
+               dataList[num].name, dataList[num].kcal * dataList[num].amount, dataList[num].unit.toString(),
+               dataList[num + 1].name, dataList[num + 1].kcal * dataList[num + 1].amount, dataList[num + 1].unit.toString(),
+               dataList[num + 2].name, dataList[num + 2].kcal * dataList[num + 2].amount, dataList[num].unit.toString())
             )
             num += 3
          }
-         itemList.add(Item(string1 = dataList[minus1].name!!, int1 = dataList[minus1].kcal!!.toInt() * dataList[minus1].amount, unit1 = dataList[minus1].unit!!))
+         itemList.add(Item(string1 = dataList[minus1].name, int1 = dataList[minus1].kcal * dataList[minus1].amount, unit1 = dataList[minus1].unit.toString()))
       }else if(dataList.size % 3 == 2) {
          for(i in 0 until divide) {
             itemList.add(Item(
-               dataList[num].name!!, dataList[num].kcal!!.toInt() * dataList[num].amount, dataList[num].unit!!,
-               dataList[num + 1].name!!, dataList[num + 1].kcal!!.toInt() * dataList[num + 1].amount, dataList[num + 1].unit!!,
-               dataList[num + 2].name!!, dataList[num + 2].kcal!!.toInt() * dataList[num + 2].amount, dataList[num].unit!!)
+               dataList[num].name, dataList[num].kcal * dataList[num].amount, dataList[num].unit.toString(),
+               dataList[num + 1].name, dataList[num + 1].kcal * dataList[num + 1].amount, dataList[num + 1].unit.toString(),
+               dataList[num + 2].name, dataList[num + 2].kcal * dataList[num + 2].amount, dataList[num].unit.toString())
             )
             num += 3
          }
          itemList.add(Item(
-            string1 = dataList[minus2].name!!, int1 = dataList[minus2].kcal!!.toInt() * dataList[minus2].amount, unit1 = dataList[minus2].unit!!,
-            string2 = dataList[minus1].name!!, int2 = dataList[minus1].kcal!!.toInt() * dataList[minus2].amount, unit2 = dataList[minus1].unit!!))
+            string1 = dataList[minus2].name, int1 = dataList[minus2].kcal * dataList[minus2].amount, unit1 = dataList[minus2].unit.toString(),
+            string2 = dataList[minus1].name, int2 = dataList[minus1].kcal * dataList[minus2].amount, unit2 = dataList[minus1].unit.toString()))
       }
 
       binding.viewpager.adapter = FoodTextAdapter(itemList)
@@ -396,9 +396,9 @@ class FoodFragment : Fragment() {
 
       if(dataList.size > 0) {
          for(i in 0 until dataList.size) {
-            carbohydrate += dataList[i].carbohydrate!!.toDouble()
-            protein += dataList[i].protein!!.toDouble()
-            fat += dataList[i].fat!!.toDouble()
+            carbohydrate += dataList[i].carbohydrate
+            protein += dataList[i].protein
+            fat += dataList[i].fat
          }
       }
 

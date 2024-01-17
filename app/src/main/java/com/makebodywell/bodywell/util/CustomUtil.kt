@@ -111,8 +111,7 @@ class CustomUtil {
             sugar += getFood4[i].sugar!!.toDouble() * getFood4[i].amount
          }
 
-         return Food(unit = (carbohydrate+protein+fat+sugar).toString(), carbohydrate = carbohydrate.toString(),
-            protein = protein.toString(), fat = fat.toString(), sugar = sugar.toString())
+         return Food(name = (carbohydrate+protein+fat+sugar).toString(), carbohydrate = carbohydrate, protein = protein, fat = fat, sugar = sugar)
       }
 
       fun getExerciseCalories(context: Context, date:String) : Int {

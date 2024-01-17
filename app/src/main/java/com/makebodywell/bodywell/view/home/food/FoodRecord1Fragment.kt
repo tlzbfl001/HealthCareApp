@@ -24,7 +24,6 @@ class FoodRecord1Fragment : Fragment() {
    private var bundle = Bundle()
 
    private var dataManager: DataManager? = null
-   private var adapter1 = FoodRecord1Adapter()
    private var adapter2 = SearchAdapter()
    private var dataList = ArrayList<Food>()
    private val itemList = ArrayList<Food>()
@@ -43,20 +42,11 @@ class FoodRecord1Fragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupList()
-      searchView()
-
-      return binding.root
-   }
-
-   private fun initView() {
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
-      bundle.putString("type", type)
 
-      binding.btnOut.setOnClickListener {
+      binding.clBack.setOnClickListener {
          when(type) {
             "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
             "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
@@ -72,9 +62,14 @@ class FoodRecord1Fragment : Fragment() {
       binding.tvBtn3.setOnClickListener {
          replaceFragment2(requireActivity(), FoodInputFragment(), bundle)
       }
+
+      listView()
+      searchView()
+
+      return binding.root
    }
 
-   private fun setupList() {
+   private fun listView() {
       when(type) {
          "1" -> dataList = dataManager!!.getFood(1, calendarDate)
          "2" -> dataList = dataManager!!.getFood(2, calendarDate)
@@ -83,17 +78,16 @@ class FoodRecord1Fragment : Fragment() {
       }
 
       if(dataList.size != 0) {
-         binding.cv2.visibility = View.VISIBLE
+         binding.rv1.visibility = View.VISIBLE
 
          for (i in 0 until dataList.size) {
-            itemList.add(Food(name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, kcal = dataList[i].kcal,
-               carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat, salt = dataList[i].salt,
-               sugar = dataList[i].sugar))
+            itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, kcal = dataList[i].kcal,
+               carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat, salt = dataList[i].salt, sugar = dataList[i].sugar))
          }
 
-         adapter1 = FoodRecord1Adapter(itemList)
-         binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.recyclerView1.adapter = adapter1
+         val adapter1 = FoodRecord1Adapter(requireActivity(), itemList)
+         binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         binding.rv1.adapter = adapter1
       }
    }
 
@@ -124,8 +118,8 @@ class FoodRecord1Fragment : Fragment() {
       })
 
       adapter2 = SearchAdapter()
-      binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.recyclerView2.adapter = adapter2
+      binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv2.adapter = adapter2
 
       adapter2.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, position: Int) {

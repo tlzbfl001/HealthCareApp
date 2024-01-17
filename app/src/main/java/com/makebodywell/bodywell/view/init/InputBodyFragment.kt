@@ -18,11 +18,6 @@ class InputBodyFragment : Fragment() {
    private var _binding: FragmentInputBodyBinding? = null
    private val binding get() = _binding!!
 
-   var isTwoDigitDecimal1 = false
-   var isThreeDigit1 = false
-   var isTwoDigitDecimal2 = false
-   var isThreeDigit2 = false
-
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -44,7 +39,7 @@ class InputBodyFragment : Fragment() {
       }
 
       binding.cvMan.setOnClickListener {
-         binding.cvMan.setCardBackgroundColor(Color.parseColor("#5A8EFF"))
+         binding.cvMan.setCardBackgroundColor(Color.parseColor("#9F98FF"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvMan.setTextColor(Color.WHITE)
          binding.cvWoman.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
@@ -56,72 +51,9 @@ class InputBodyFragment : Fragment() {
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvMan.setTextColor(Color.BLACK)
-         binding.cvWoman.setCardBackgroundColor(Color.parseColor("#FD7E9B"))
+         binding.cvWoman.setCardBackgroundColor(Color.parseColor("#9F98FF"))
          binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvWoman.setTextColor(Color.WHITE)
       }
-
-      // 소수점입력 설정
-      binding.etHeight.addTextChangedListener(object : TextWatcher {
-         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if(s.length < 3) {
-               isTwoDigitDecimal1 = false
-               isThreeDigit1 = false
-            }
-            if(!isTwoDigitDecimal1 && s.length == 3) {
-               val text = s[0].toString()+s[1].toString()+"."+s[2].toString()
-               binding.etHeight.setText(text)
-               binding.etHeight.setSelection(text.length)
-               isTwoDigitDecimal1 = true
-            }
-            if(isTwoDigitDecimal1 && s.length == 5) {
-               val text = s[0].toString()+s[1].toString()+s[4].toString()
-               binding.etHeight.setText(text)
-               binding.etHeight.setSelection(text.length)
-               isTwoDigitDecimal1 = false
-               isThreeDigit1 = true
-            }
-            if(isThreeDigit1 && s.length == 4) {
-               val text = s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
-               binding.etHeight.setText(text)
-               binding.etHeight.setSelection(text.length)
-               isThreeDigit1 = false
-            }
-         }
-
-         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-         override fun afterTextChanged(p0: Editable?) {}
-      })
-
-      binding.etWeight.addTextChangedListener(object : TextWatcher {
-         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if(s.length < 3) {
-               isTwoDigitDecimal2 = false
-               isThreeDigit2 = false
-            }
-            if(!isTwoDigitDecimal2 && s.length == 3) {
-               val text = s[0].toString()+s[1].toString()+"."+s[2].toString()
-               binding.etWeight.setText(text)
-               binding.etWeight.setSelection(text.length)
-               isTwoDigitDecimal2 = true
-            }
-            if(isTwoDigitDecimal2 && s.length == 5) {
-               val text = s[0].toString()+s[1].toString()+s[4].toString()
-               binding.etWeight.setText(text)
-               binding.etWeight.setSelection(text.length)
-               isTwoDigitDecimal2 = false
-               isThreeDigit2 = true
-            }
-            if(isThreeDigit2 && s.length == 4) {
-               val text = s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
-               binding.etWeight.setText(text)
-               binding.etWeight.setSelection(text.length)
-               isThreeDigit2 = false
-            }
-         }
-
-         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-         override fun afterTextChanged(p0: Editable?) {}
-      })
    }
 }

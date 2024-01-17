@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
-import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
@@ -41,7 +38,6 @@ class FoodBreakfastFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var photoAdapter: PhotoViewAdapter? = null
    private var foodRecordAdapter: FoodIntakeAdapter? = null
-   private var foodFrequentlyAdapter: FoodRecord1Adapter? = null
    private var dataList = ArrayList<Food>()
    private var itemList = ArrayList<Food>()
 
@@ -54,14 +50,6 @@ class FoodBreakfastFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupPhotoView()
-      setupList()
-
-      return binding.root
-   }
-
-   private fun initView() {
       calendarDate = arguments?.getString("calendarDate").toString()
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", "1")
@@ -70,15 +58,19 @@ class FoodBreakfastFragment : Fragment() {
          replaceFragment1(requireActivity(), FoodFragment())
       }
 
-      binding.cvLunch.setOnClickListener {
+      binding.tvInput.setOnClickListener {
+         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+      }
+
+      binding.tvLunch.setOnClickListener {
          replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
       }
 
-      binding.cvDinner.setOnClickListener {
+      binding.tvDinner.setOnClickListener {
          replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
       }
 
-      binding.cvSnack.setOnClickListener {
+      binding.tvSnack.setOnClickListener {
          replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
       }
 
@@ -88,33 +80,18 @@ class FoodBreakfastFragment : Fragment() {
          }
       }
 
-      binding.tvRecordNum.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecordListFragment(), bundle)
-      }
-
-      binding.tvSearch.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-      }
-
-      binding.tvBtn1.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-      }
-
-      binding.tvBtn2.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
-      }
-
-      binding.tvBtn3.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodInputFragment(), bundle)
-      }
-
-      binding.tvAdd.setOnClickListener {
+      binding.cvAdd.setOnClickListener {
          val getFoodData = foodRecordAdapter!!.getFoodData()
-         dataManager!!.updateFoodAmount(Food(id = getFoodData.id, amount = getFoodData.amount))
+         dataManager!!.updateFood(Food(id = getFoodData.id, unit = getFoodData.unit))
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment1(requireActivity(), FoodFragment())
       }
+
+      setupPhotoView()
+      setupList()
+
+      return binding.root
    }
 
    private fun setupPhotoView() {
@@ -185,9 +162,6 @@ class FoodBreakfastFragment : Fragment() {
       dataList = dataManager!!.getFood(1, calendarDate)
 
       if(dataList.size != 0) {
-         binding.clList.visibility = View.VISIBLE
-         binding.view.visibility = View.VISIBLE
-
          for (i in 0 until dataList.size) {
             itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount,
                kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
@@ -195,13 +169,8 @@ class FoodBreakfastFragment : Fragment() {
 
          // 섭취한 식단 설정
          foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, 1)
-         binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.recyclerView1.adapter = foodRecordAdapter
-
-         // 자주사용 리스트 설정
-         foodFrequentlyAdapter = FoodRecord1Adapter(itemList)
-         binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.recyclerView2.adapter = foodFrequentlyAdapter
+         binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         binding.rv.adapter = foodRecordAdapter
       }
    }
 

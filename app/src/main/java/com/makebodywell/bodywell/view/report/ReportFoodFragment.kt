@@ -136,9 +136,9 @@ class ReportFoodFragment : Fragment() {
    private fun dailyView() {
       binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvDaily.setTextColor(Color.WHITE)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
@@ -169,11 +169,11 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvWeekly.setTextColor(Color.WHITE)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
@@ -205,9 +205,9 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvMonthly.setTextColor(Color.WHITE)
@@ -321,9 +321,9 @@ class ReportFoodFragment : Fragment() {
       for(i in 0 until getData.size){
          val nutrition = getNutrition(requireActivity(), getData[i])
          xVal += format2.format(format1.parse(getData[i])!!)
-         lineList += nutrition.unit!!.toFloat()
+         lineList += nutrition.unit.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-            nutrition.carbohydrate!!.toFloat(), nutrition.protein!!.toFloat(), nutrition.fat!!.toFloat(), nutrition.sugar!!.toFloat()
+            nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat(), nutrition.sugar.toFloat()
          )))
       }
 

@@ -39,30 +39,33 @@ class FoodIntakeAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvName.text = itemList[position].name
-        holder.tvDesc.text = itemList[position].unit
-        holder.tvKcal.text = (itemList[position].kcal!!.toInt() * itemList[position].amount).toString()
-        holder.tvCount.text = itemList[position].amount.toString()
+        holder.tvKcal.text = "${itemList[position].kcal!!.toInt() * itemList[position].unit} kcal"
+        holder.tvCount.text = itemList[position].unit.toString()
+        holder.tvDesc.text = "${itemList[position].unit}개/${itemList[position].amount}g"
 
         // 섭취한 식단 카운트하기
-        var amount = itemList[position].amount
-        val kcal = itemList[position].kcal!!
+        var unit = itemList[position].unit
+        val kcal = itemList[position].kcal
+        val amount = itemList[position].amount
         foodData.id = itemList[position].id
-        foodData.amount = amount
+        foodData.unit = unit
 
         holder.ivMinus.setOnClickListener {
-            if (amount > 1) {
-                amount -= 1
-                holder.tvCount.text = amount.toString()
-                holder.tvKcal.text =(kcal.toInt() * amount).toString()
-                foodData.amount = amount
+            if (unit > 1) {
+                unit -= 1
+                holder.tvCount.text = unit.toString()
+                holder.tvKcal.text = "${kcal * unit} kcal"
+                holder.tvDesc.text = "${unit}개/${amount * unit}g"
+                foodData.unit = unit
             }
         }
 
         holder.ivPlus.setOnClickListener {
-            amount += 1
-            holder.tvCount.text = amount.toString()
-            holder.tvKcal.text = (kcal.toInt() * amount).toString()
-            foodData.amount = amount
+            unit += 1
+            holder.tvCount.text = unit.toString()
+            holder.tvKcal.text = "${kcal * unit} kcal"
+            holder.tvDesc.text = "${unit}개/${amount * unit}g"
+            foodData.unit = unit
         }
 
         holder.ivDelete.setOnClickListener {
@@ -75,12 +78,6 @@ class FoodIntakeAdapter (
 
                             itemList.removeAt(position)
                             notifyDataSetChanged()
-
-                            val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as FoodBreakfastFragment
-                            if (itemList.size == 0) {
-                                fragment.binding.clList.visibility = View.GONE
-                                fragment.binding.view.visibility = View.GONE
-                            }
                         }
 
                         2 -> {

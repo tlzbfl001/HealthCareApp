@@ -2,7 +2,6 @@ package com.makebodywell.bodywell.view.report
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,18 +22,14 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportDrugBinding
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -138,9 +133,9 @@ class ReportDrugFragment : Fragment() {
    private fun dailyView() {
       binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvDaily.setTextColor(Color.WHITE)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
@@ -158,11 +153,11 @@ class ReportDrugFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvWeekly.setTextColor(Color.WHITE)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
@@ -181,9 +176,9 @@ class ReportDrugFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
       binding.tvMonthly.setTextColor(Color.WHITE)
@@ -221,7 +216,7 @@ class ReportDrugFragment : Fragment() {
          val getDailyData = dataManager!!.getDailyData(getData[i])
          val count = dataManager!!.getDrugCheckCount(getData[i])
 
-         if(count != 0) {
+         if(getDailyData.regDate != "" && count != 0) {
             num++
 
             val pt = when(getDailyData.drugGoal) {

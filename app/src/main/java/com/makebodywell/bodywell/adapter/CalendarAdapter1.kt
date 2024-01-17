@@ -33,7 +33,7 @@ class CalendarAdapter1 (
       }
 
       if (!days.contains(null) && date!!.month != days[6]!!.month) {
-         holder.tvDate.setTextColor(Color.LTGRAY)
+         holder.tvDate.setTextColor(Color.WHITE)
       }
    }
 
