@@ -321,7 +321,7 @@ class ReportFoodFragment : Fragment() {
       for(i in 0 until getData.size){
          val nutrition = getNutrition(requireActivity(), getData[i])
          xVal += format2.format(format1.parse(getData[i])!!)
-         lineList += nutrition.unit.toFloat()
+         lineList += nutrition.name.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
             nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat(), nutrition.sugar.toFloat()
          )))

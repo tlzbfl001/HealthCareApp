@@ -112,7 +112,7 @@ class FoodDinnerFragment : Fragment() {
 
         binding.tvAdd.setOnClickListener {
             val getFoodData = foodRecordAdapter!!.getFoodData()
-            dataManager!!.updateFood(Food(id = getFoodData.id, unit = getFoodData.unit))
+            dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())
@@ -194,7 +194,7 @@ class FoodDinnerFragment : Fragment() {
             binding.view.visibility = View.VISIBLE
 
             for (i in 0 until dataList.size) {
-                itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount,
+                itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, count = dataList[i].count,
                     kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
             }
 
@@ -202,7 +202,7 @@ class FoodDinnerFragment : Fragment() {
             binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView1.adapter = foodRecordAdapter
 
-            foodFrequentlyAdapter = FoodRecord1Adapter(requireActivity(), itemList)
+            foodFrequentlyAdapter = FoodRecord1Adapter(itemList)
             binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView2.adapter = foodFrequentlyAdapter
         }

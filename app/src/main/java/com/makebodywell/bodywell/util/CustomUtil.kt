@@ -51,20 +51,20 @@ class CustomUtil {
          val getFood4 = dataManager.getFood(4, date)
 
          for(i in 0 until getFood1.size) {
-            sum += getFood1[i].kcal!!.toInt() * getFood1[i].amount
-            item.int1 = item.int1.plus(getFood1[i].kcal!!.toInt() * getFood1[i].amount)
+            sum += getFood1[i].kcal.toInt() * getFood1[i].count
+            item.int1 = item.int1.plus(getFood1[i].kcal.toInt() * getFood1[i].count)
          }
          for(i in 0 until getFood2.size) {
-            sum += getFood2[i].kcal!!.toInt() * getFood2[i].amount
-            item.int2 = item.int2.plus(getFood2[i].kcal!!.toInt() * getFood2[i].amount)
+            sum += getFood2[i].kcal.toInt() * getFood2[i].count
+            item.int2 = item.int2.plus(getFood2[i].kcal.toInt() * getFood2[i].count)
          }
          for(i in 0 until getFood3.size) {
-            sum += getFood3[i].kcal!!.toInt() * getFood3[i].amount
-            item.int3 = item.int3.plus(getFood3[i].kcal!!.toInt() * getFood3[i].amount)
+            sum += getFood3[i].kcal.toInt() * getFood3[i].count
+            item.int3 = item.int3.plus(getFood3[i].kcal.toInt() * getFood3[i].count)
          }
          for(i in 0 until getFood4.size) {
-            sum += getFood4[i].kcal!!.toInt() * getFood4[i].amount
-            item.int4 = item.int4.plus(getFood4[i].kcal!!.toInt() * getFood4[i].amount)
+            sum += getFood4[i].kcal.toInt() * getFood4[i].count
+            item.int4 = item.int4.plus(getFood4[i].kcal.toInt() * getFood4[i].count)
          }
 
          item.int5 = sum
@@ -87,31 +87,32 @@ class CustomUtil {
          var sugar = 0.0
 
          for(i in 0 until getFood1.size) {
-            carbohydrate += getFood1[i].carbohydrate!!.toDouble() * getFood1[i].amount
-            protein += getFood1[i].protein!!.toDouble() * getFood1[i].amount
-            fat += getFood1[i].fat!!.toDouble() * getFood1[i].amount
-            sugar += getFood1[i].sugar!!.toDouble() * getFood1[i].amount
+            carbohydrate += getFood1[i].carbohydrate.toDouble() * getFood1[i].count
+            protein += getFood1[i].protein.toDouble() * getFood1[i].count
+            fat += getFood1[i].fat.toDouble() * getFood1[i].count
+            sugar += getFood1[i].sugar.toDouble() * getFood1[i].count
          }
          for(i in 0 until getFood2.size) {
-            carbohydrate += getFood2[i].carbohydrate!!.toDouble() * getFood2[i].amount
-            protein += getFood2[i].protein!!.toDouble() * getFood2[i].amount
-            fat += getFood2[i].fat!!.toDouble() * getFood2[i].amount
-            sugar += getFood2[i].sugar!!.toDouble() * getFood2[i].amount
+            carbohydrate += getFood2[i].carbohydrate.toDouble() * getFood2[i].count
+            protein += getFood2[i].protein.toDouble() * getFood2[i].count
+            fat += getFood2[i].fat.toDouble() * getFood2[i].count
+            sugar += getFood2[i].sugar.toDouble() * getFood2[i].count
          }
          for(i in 0 until getFood3.size) {
-            carbohydrate += getFood3[i].carbohydrate!!.toDouble() * getFood3[i].amount
-            protein += getFood3[i].protein!!.toDouble() * getFood3[i].amount
-            fat += getFood3[i].fat!!.toDouble() * getFood3[i].amount
-            sugar += getFood3[i].sugar!!.toDouble() * getFood3[i].amount
+            carbohydrate += getFood3[i].carbohydrate.toDouble() * getFood3[i].count
+            protein += getFood3[i].protein.toDouble() * getFood3[i].count
+            fat += getFood3[i].fat.toDouble() * getFood3[i].count
+            sugar += getFood3[i].sugar.toDouble() * getFood3[i].count
          }
          for(i in 0 until getFood4.size) {
-            carbohydrate += getFood4[i].carbohydrate!!.toDouble() * getFood4[i].amount
-            protein += getFood4[i].protein!!.toDouble() * getFood4[i].amount
-            fat += getFood4[i].fat!!.toDouble() * getFood4[i].amount
-            sugar += getFood4[i].sugar!!.toDouble() * getFood4[i].amount
+            carbohydrate += getFood4[i].carbohydrate.toDouble() * getFood4[i].count
+            protein += getFood4[i].protein.toDouble() * getFood4[i].count
+            fat += getFood4[i].fat.toDouble() * getFood4[i].count
+            sugar += getFood4[i].sugar.toDouble() * getFood4[i].count
          }
 
-         return Food(name = (carbohydrate+protein+fat+sugar).toString(), carbohydrate = carbohydrate, protein = protein, fat = fat, sugar = sugar)
+         return Food(name = (carbohydrate+protein+fat+sugar).toString(), carbohydrate = carbohydrate.toString(), protein = protein.toString(),
+            fat = fat.toString(), sugar = sugar.toString())
       }
 
       fun getExerciseCalories(context: Context, date:String) : Int {

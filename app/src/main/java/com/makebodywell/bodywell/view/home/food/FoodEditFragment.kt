@@ -1,35 +1,42 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.PermissionUtil
-import java.time.LocalDate
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
 
 class FoodEditFragment : Fragment() {
    private var _binding: FragmentFoodEditBinding? = null
    private val binding get() = _binding!!
 
+   private var bundle = Bundle()
+
    private var dataManager: DataManager? = null
-   private val getFood = Food()
+   private var getFood = Food()
+
+   private var calendarDate = ""
+   private var type = ""
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -40,29 +47,35 @@ class FoodEditFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getFood = dataManager!!.getFood(arguments?.getString("id")!!.toInt())
+      calendarDate = arguments?.getString("calendarDate").toString()
+      type = arguments?.getString("type").toString()
+      bundle.putString("calendarDate", calendarDate)
+      bundle.putString("type", type)
 
+      getFood = dataManager!!.getFood(arguments?.getString("id")!!.toInt())
       binding.tvName.text = getFood.name
-      binding.tvCount.text = getFood.unit.toString()
-      binding.tvAmount.text = getFood.amount.toString()
-      binding.tvKcal.text = getFood.kcal.toString()
-      binding.tvCar.text = getFood.carbohydrate.toString()
-      binding.tvProtein.text = getFood.protein.toString()
-      binding.tvFat.text = getFood.fat.toString()
-      binding.tvSalt.text = getFood.salt.toString()
-      binding.tvSugar.text = getFood.sugar.toString()
+      binding.tvCount.text = getFood.count.toString()
+      binding.tvAmount.text = getFood.amount
+      binding.tvKcal.text = getFood.kcal
+      binding.tvCar.text = getFood.carbohydrate
+      binding.tvProtein.text = getFood.protein
+      binding.tvFat.text = getFood.fat
+      binding.tvSalt.text = getFood.salt
+      binding.tvSugar.text = getFood.sugar
 
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodRecord1Fragment())
+         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
-      binding.ivPhoto.setOnClickListener {
+      binding.clPhoto.setOnClickListener {
          if (requestPermission()) {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = MediaStore.Images.Media.CONTENT_TYPE
             startActivityForResult(intent, STORAGE_REQUEST_CODE)
          }
       }
+
+      setupPhotoView()
 
       return binding.root
    }
@@ -73,37 +86,83 @@ class FoodEditFragment : Fragment() {
          when(requestCode){
             STORAGE_REQUEST_CODE -> {
                val uri = data?.data
-               val image = Image(imageUri = uri.toString(), type = getFood.type.toString(), regDate = LocalDate.now().toString())
+               val image = Image(imageUri = uri.toString(), type = type.toInt(), foodId = getFood.id, regDate = calendarDate)
                dataManager?.insertImage(image)
+               setupPhotoView()
             }
          }
       }
    }
 
+   private fun setupPhotoView() {
+      val imageList: ArrayList<Image> = ArrayList()
+
+      val getData = dataManager!!.getImage(type.toInt(), calendarDate)
+      for(i in 0 until getData.size) {
+         imageList.add(Image(id = getData[i].id, imageUri = Uri.parse(getData[i].imageUri).toString()))
+      }
+
+      if(getData.size > 0) {
+         binding.ivView.visibility = View.GONE
+         binding.viewPager.visibility = View.VISIBLE
+
+         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+
+         adapter.setOnLongClickListener(object : PhotoSlideAdapter2.OnLongClickListener {
+            override fun onLongClick(pos: Int) {
+               val dialog = AlertDialog.Builder(context)
+                  .setMessage("삭제하시겠습니까?")
+                  .setPositiveButton("확인") { _, _ ->
+                     dataManager!!.deleteItem(TABLE_IMAGE, "id", imageList[pos].id)
+                     imageList.removeAt(pos)
+
+                     if(imageList.size == 0) {
+                        binding.ivView.visibility = View.VISIBLE
+                        binding.viewPager.visibility = View.GONE
+                     }
+
+                     adapter.notifyDataSetChanged()
+                     binding.viewPager.adapter = adapter
+
+                     Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                  }
+                  .setNegativeButton("취소", null)
+                  .create()
+               dialog.show()
+            }
+         })
+
+         binding.viewPager.adapter = adapter
+         binding.viewPager.setPadding(0, 0, 0, 0)
+      }
+   }
+
    private fun requestPermission(): Boolean {
       var check = true
+
       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         for(permission in PermissionUtil.CAMERA_PERMISSION_3) {
+         for(permission in CAMERA_PERMISSION_3) {
             if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.CAMERA_PERMISSION_3), REQUEST_CODE)
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
                check = false
             }
          }
       }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         for(permission in PermissionUtil.CAMERA_PERMISSION_2) {
+         for(permission in CAMERA_PERMISSION_2) {
             if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.CAMERA_PERMISSION_2), REQUEST_CODE)
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
                check = false
             }
          }
       }else {
-         for(permission in PermissionUtil.CAMERA_PERMISSION_1) {
+         for(permission in CAMERA_PERMISSION_1) {
             if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*PermissionUtil.CAMERA_PERMISSION_1), REQUEST_CODE)
+               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
                check = false
             }
          }
       }
+
       return check
    }
 

@@ -75,9 +75,7 @@ class FoodRecord2Fragment : Fragment() {
 
       if(dataList.size != 0) {
          for (i in 0 until dataList.size) {
-            itemList.add(Food(name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, kcal = dataList[i].kcal,
-               carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat, salt = dataList[i].salt,
-               sugar = dataList[i].sugar, star = R.drawable.ic_star_rate))
+            itemList.add(Food(id = dataList[i].id, name = dataList[i].name, star = R.drawable.ic_star_rate))
          }
 
          adapter = FoodRecord2Adapter(itemList)

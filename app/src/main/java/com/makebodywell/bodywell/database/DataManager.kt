@@ -70,16 +70,17 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(1)
-         data.unit=cursor.getInt(2)
-         data.amount= cursor.getInt(3)
-         data.kcal= cursor.getInt(4)
-         data.carbohydrate= cursor.getDouble(5)
-         data.protein= cursor.getDouble(6)
-         data.fat= cursor.getDouble(7)
-         data.salt= cursor.getDouble(8)
-         data.sugar= cursor.getDouble(9)
-         data.type = cursor.getInt(10)
-         data.regDate = cursor.getString(11)
+         data.unit=cursor.getString(2)
+         data.amount= cursor.getInt(3).toString()
+         data.count= cursor.getInt(4)
+         data.kcal= cursor.getInt(5).toString()
+         data.carbohydrate= cursor.getDouble(6).toString()
+         data.protein= cursor.getDouble(7).toString()
+         data.fat= cursor.getDouble(8).toString()
+         data.salt= cursor.getDouble(9).toString()
+         data.sugar= cursor.getDouble(10).toString()
+         data.type = cursor.getInt(11)
+         data.regDate = cursor.getString(12)
       }
       cursor.close()
       return data
@@ -94,16 +95,17 @@ class DataManager(private var context: Context?) {
          val data = Food()
          data.id=cursor.getInt(0)
          data.name=cursor.getString(1)
-         data.unit=cursor.getInt(2)
-         data.amount= cursor.getInt(3)
-         data.kcal= cursor.getInt(4)
-         data.carbohydrate= cursor.getDouble(5)
-         data.protein= cursor.getDouble(6)
-         data.fat= cursor.getDouble(7)
-         data.salt= cursor.getDouble(8)
-         data.sugar= cursor.getDouble(9)
-         data.type = cursor.getInt(10)
-         data.regDate = cursor.getString(11)
+         data.unit=cursor.getString(2)
+         data.amount= cursor.getInt(3).toString()
+         data.count= cursor.getInt(4)
+         data.kcal= cursor.getInt(5).toString()
+         data.carbohydrate= cursor.getDouble(6).toString()
+         data.protein= cursor.getDouble(7).toString()
+         data.fat= cursor.getDouble(8).toString()
+         data.salt= cursor.getDouble(9).toString()
+         data.sugar= cursor.getDouble(10).toString()
+         data.type = cursor.getInt(11)
+         data.regDate = cursor.getString(12)
          list.add(data)
       }
       cursor.close()
@@ -113,14 +115,13 @@ class DataManager(private var context: Context?) {
    fun getImage(type: Int, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Image> = ArrayList()
-      val sql = "select * from $TABLE_IMAGE where type = $type and regDate = '$date'"
+      val sql = "select id, imageUri, regDate from $TABLE_IMAGE where type = $type and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Image()
-         data.id=cursor.getInt(0)
-         data.imageUri=cursor.getString(1)
-         data.type=cursor.getString(2)
-         data.regDate = cursor.getString(3)
+         data.id = cursor.getInt(0)
+         data.imageUri = cursor.getString(1)
+         data.regDate = cursor.getString(2)
          list.add(data)
       }
       cursor.close()
@@ -151,9 +152,9 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Water()
-         data.id=cursor.getInt(0)
-         data.water=cursor.getInt(1)
-         data.volume=cursor.getInt(2)
+         data.id = cursor.getInt(0)
+         data.water = cursor.getInt(1)
+         data.volume = cursor.getInt(2)
          data.regDate = cursor.getString(3)
          list.add(data)
       }
@@ -481,8 +482,9 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("name", data?.name)
-      values.put("unit", data?.unit)
+      values.put("unit", data?.count)
       values.put("amount", data?.amount)
+      values.put("count", data?.count)
       values.put("kcal", data?.kcal)
       values.put("carbohydrate", data?.carbohydrate)
       values.put("protein", data?.protein)
@@ -499,6 +501,7 @@ class DataManager(private var context: Context?) {
       val values = ContentValues()
       values.put("imageUri", data?.imageUri)
       values.put("type", data?.type)
+      values.put("foodId", data?.foodId)
       values.put("regDate", data?.regDate)
       db!!.insert(TABLE_IMAGE, null, values)
    }
@@ -613,7 +616,7 @@ class DataManager(private var context: Context?) {
 
    fun updateFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_FOOD set unit=${data.unit} where id='${data.id}'"
+      val sql = "update $TABLE_FOOD set count=${data.count} where id='${data.id}'"
       db.execSQL(sql)
       db.close()
    }

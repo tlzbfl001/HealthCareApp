@@ -82,7 +82,7 @@ class FoodBreakfastFragment : Fragment() {
 
       binding.cvAdd.setOnClickListener {
          val getFoodData = foodRecordAdapter!!.getFoodData()
-         dataManager!!.updateFood(Food(id = getFoodData.id, unit = getFoodData.unit))
+         dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment1(requireActivity(), FoodFragment())
@@ -113,7 +113,7 @@ class FoodBreakfastFragment : Fragment() {
 
          val transformer = CompositePageTransformer()
          val defaultTranslationX = 0.50f
-         val defaultTranslationFactor = 1.2f
+         val defaultTranslationFactor = 1.18f
          val scaleFactor = 0.14f
          val defaultScale = 1f
 
@@ -163,7 +163,7 @@ class FoodBreakfastFragment : Fragment() {
 
       if(dataList.size != 0) {
          for (i in 0 until dataList.size) {
-            itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount,
+            itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, count = dataList[i].count,
                kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
          }
 
@@ -198,6 +198,7 @@ class FoodBreakfastFragment : Fragment() {
             }
          }
       }
+
       return check
    }
 

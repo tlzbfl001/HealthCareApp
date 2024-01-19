@@ -53,14 +53,6 @@ class ExerciseFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupGoal()
-      dailyView()
-
-      return binding.root
-   }
-
-   private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
       // 목표 설정
@@ -142,6 +134,11 @@ class ExerciseFragment : Fragment() {
       binding.clRecord.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseListFragment())
       }
+
+      setupGoal()
+      dailyView()
+
+      return binding.root
    }
 
    private fun setupGoal() {

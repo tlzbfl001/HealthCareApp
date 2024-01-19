@@ -9,11 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
 import com.makebodywell.bodywell.view.home.food.FoodDinnerFragment
 import com.makebodywell.bodywell.view.home.food.FoodLunchFragment
 import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
@@ -39,33 +37,33 @@ class FoodIntakeAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvName.text = itemList[position].name
-        holder.tvKcal.text = "${itemList[position].kcal!!.toInt() * itemList[position].unit} kcal"
-        holder.tvCount.text = itemList[position].unit.toString()
-        holder.tvDesc.text = "${itemList[position].unit}개/${itemList[position].amount}g"
+        holder.tvKcal.text = "${itemList[position].kcal!!.toInt() * itemList[position].count} kcal"
+        holder.tvCount.text = itemList[position].count.toString()
+        holder.tvDesc.text = "${itemList[position].count}개/${itemList[position].amount}${itemList[position].count}"
 
         // 섭취한 식단 카운트하기
-        var unit = itemList[position].unit
-        val kcal = itemList[position].kcal
-        val amount = itemList[position].amount
+        var count = itemList[position].count
+        val kcal = itemList[position].kcal.toInt()
+        val amount = itemList[position].amount.toInt()
         foodData.id = itemList[position].id
-        foodData.unit = unit
+        foodData.count = count
 
         holder.ivMinus.setOnClickListener {
-            if (unit > 1) {
-                unit -= 1
-                holder.tvCount.text = unit.toString()
-                holder.tvKcal.text = "${kcal * unit} kcal"
-                holder.tvDesc.text = "${unit}개/${amount * unit}g"
-                foodData.unit = unit
+            if (count > 1) {
+                count -= 1
+                holder.tvCount.text = count.toString()
+                holder.tvKcal.text = "${kcal * count} kcal"
+                holder.tvDesc.text = "${count}개/${amount * count}g"
+                foodData.count = count
             }
         }
 
         holder.ivPlus.setOnClickListener {
-            unit += 1
-            holder.tvCount.text = unit.toString()
-            holder.tvKcal.text = "${kcal * unit} kcal"
-            holder.tvDesc.text = "${unit}개/${amount * unit}g"
-            foodData.unit = unit
+            count += 1
+            holder.tvCount.text = count.toString()
+            holder.tvKcal.text = "${kcal * count} kcal"
+            holder.tvDesc.text = "${count}개/${amount * count}g"
+            foodData.count = count
         }
 
         holder.ivDelete.setOnClickListener {

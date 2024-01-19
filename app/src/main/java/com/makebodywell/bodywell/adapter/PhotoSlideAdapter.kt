@@ -10,7 +10,7 @@ import androidx.viewpager.widget.PagerAdapter
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.Image
 
-class PhotoSlideAdapter (
+class PhotoSlideAdapter(
    private val context: Context,
    private val itemList: ArrayList<Image>
 ) : PagerAdapter() {

@@ -23,7 +23,6 @@ import java.time.LocalDate
 
 class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    private var dataManager: DataManager? = null
-   private val itemList = ArrayList<Image>()
 
    private var btnCalPrev : ImageView? = null
    private var tvCalTitle : TextView? = null
@@ -48,12 +47,6 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
 
       selectedDate = LocalDate.now()
 
-      // 캘린더 뷰
-      setMonthView()
-
-      // 이미지 뷰
-      setImageView()
-
       btnCalPrev?.setOnClickListener {
          selectedDate = selectedDate.minusMonths(1)
          setMonthView()
@@ -65,6 +58,12 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
          setMonthView()
          setImageView()
       }
+
+      // 캘린더 뷰
+      setMonthView()
+
+      // 이미지 뷰
+      setImageView()
    }
 
    private fun setMonthView() {
@@ -77,7 +76,7 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    }
 
    private fun setImageView() {
-      itemList.clear()
+      val itemList = ArrayList<Image>()
 
       // 데이터 가져오기
       val getImage1 = dataManager!!.getImage(1, selectedDate.toString())

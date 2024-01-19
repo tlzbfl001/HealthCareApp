@@ -1,23 +1,21 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.app.Dialog
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
-import androidx.viewpager2.widget.ViewPager2
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodTextAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
@@ -26,8 +24,8 @@ import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -55,6 +53,7 @@ class FoodFragment : Fragment() {
    private var getDailyData = DailyData()
 
    private var sum = 0
+   private var isExpand = false
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -107,7 +106,7 @@ class FoodFragment : Fragment() {
          }
       }
 
-      binding.cvGoal.setOnClickListener {
+      binding.clGoal.setOnClickListener {
          dialog.show()
       }
 
@@ -120,6 +119,7 @@ class FoodFragment : Fragment() {
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
          dailyView()
+         setupList()
       }
 
       binding.ivNext.setOnClickListener {
@@ -127,6 +127,7 @@ class FoodFragment : Fragment() {
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
          dailyView()
+         setupList()
       }
 
       binding.cvWater.setOnClickListener {
@@ -153,6 +154,17 @@ class FoodFragment : Fragment() {
          bundle.putString("calendarDate", calendarDate.toString())
          replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
       }
+
+      binding.clExpand1.setOnClickListener {
+         if (isExpand) {
+            binding.clView1.visibility = View.GONE
+            binding.ivExpand1.setImageResource(R.drawable.arrow_down)
+         } else {
+            binding.clView1.visibility = View.VISIBLE
+            binding.ivExpand1.setImageResource(R.drawable.arrow_up)
+         }
+         isExpand = !isExpand
+      }
    }
 
    private fun setupGoal() {
@@ -162,7 +174,7 @@ class FoodFragment : Fragment() {
 
       // 목표 초기화
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-      sum = getFoodKcal(requireActivity(), calendarDate.toString()).int1!!
+      sum = getFoodKcal(requireActivity(), calendarDate.toString()).int1
 
       if(getDailyData.foodGoal > 0 && sum > 0) {
          binding.pbFood.max = getDailyData.foodGoal
@@ -189,94 +201,10 @@ class FoodFragment : Fragment() {
       // 이미지뷰 설정
       setupPhotoList(1, calendarDate.toString())
 
-      // 텍스트리스트 설정
-      setupTextList(getFood)
-
       // 영양성분 설정
       setupNutrients(getFood)
 
-      binding.clBtn1.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
-
-         binding.tvBtn1Title.setTextColor(Color.WHITE)
-         binding.tvBtn1Desc.setTextColor(Color.WHITE)
-         binding.tvBtn2Title.setTextColor(Color.BLACK)
-         binding.tvBtn2Desc.setTextColor(Color.BLACK)
-         binding.tvBtn3Title.setTextColor(Color.BLACK)
-         binding.tvBtn3Desc.setTextColor(Color.BLACK)
-         binding.tvBtn4Title.setTextColor(Color.BLACK)
-         binding.tvBtn4Desc.setTextColor(Color.BLACK)
-
-         setupPhotoList(1, calendarDate.toString())
-         setupTextList(getFood)
-         setupNutrients(getFood)
-      }
-
-      binding.clBtn2.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
-
-         binding.tvBtn2Title.setTextColor(Color.WHITE)
-         binding.tvBtn2Desc.setTextColor(Color.WHITE)
-         binding.tvBtn1Title.setTextColor(Color.BLACK)
-         binding.tvBtn1Desc.setTextColor(Color.BLACK)
-         binding.tvBtn3Title.setTextColor(Color.BLACK)
-         binding.tvBtn3Desc.setTextColor(Color.BLACK)
-         binding.tvBtn4Title.setTextColor(Color.BLACK)
-         binding.tvBtn4Desc.setTextColor(Color.BLACK)
-
-         setupPhotoList(2, calendarDate.toString())
-         val getFood = dataManager!!.getFood(2, calendarDate.toString())
-         setupTextList(getFood)
-         setupNutrients(getFood)
-      }
-
-      binding.clBtn3.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
-
-         binding.tvBtn3Title.setTextColor(Color.WHITE)
-         binding.tvBtn3Desc.setTextColor(Color.WHITE)
-         binding.tvBtn1Title.setTextColor(Color.BLACK)
-         binding.tvBtn1Desc.setTextColor(Color.BLACK)
-         binding.tvBtn2Title.setTextColor(Color.BLACK)
-         binding.tvBtn2Desc.setTextColor(Color.BLACK)
-         binding.tvBtn4Title.setTextColor(Color.BLACK)
-         binding.tvBtn4Desc.setTextColor(Color.BLACK)
-
-         setupPhotoList(3, calendarDate.toString())
-         val getFood = dataManager!!.getFood(3, calendarDate.toString())
-         setupTextList(getFood)
-         setupNutrients(getFood)
-      }
-
-      binding.clBtn4.setOnClickListener {
-         binding.clBtn1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFC3C3"))
-         binding.clBtn2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFD9D9"))
-         binding.clBtn3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFEFEF"))
-         binding.clBtn4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#EF7979"))
-
-         binding.tvBtn4Title.setTextColor(Color.WHITE)
-         binding.tvBtn4Desc.setTextColor(Color.WHITE)
-         binding.tvBtn1Title.setTextColor(Color.BLACK)
-         binding.tvBtn1Desc.setTextColor(Color.BLACK)
-         binding.tvBtn2Title.setTextColor(Color.BLACK)
-         binding.tvBtn2Desc.setTextColor(Color.BLACK)
-         binding.tvBtn3Title.setTextColor(Color.BLACK)
-         binding.tvBtn3Desc.setTextColor(Color.BLACK)
-
-         setupPhotoList(4, calendarDate.toString())
-         val getFood = dataManager!!.getFood(4, calendarDate.toString())
-         setupTextList(getFood)
-         setupNutrients(getFood)
-      }
+      setupList()
    }
 
    private fun setupPhotoList(type: Int, date: String) {
@@ -296,7 +224,7 @@ class FoodFragment : Fragment() {
 
          val transformer = CompositePageTransformer()
          val defaultTranslationX = 0.50f
-         val defaultTranslationFactor = 1.2f
+         val defaultTranslationFactor = 1.18f
          val scaleFactor = 0.14f
          val defaultScale = 1f
 
@@ -332,61 +260,16 @@ class FoodFragment : Fragment() {
          }
          binding.viewPager.setPageTransformer(transformer)
 
-         binding.cvLeft.setOnClickListener {
+         binding.ivLeft.setOnClickListener {
             val current = binding.viewPager.currentItem
             binding.viewPager.setCurrentItem(current-1, true)
          }
 
-         binding.cvRight.setOnClickListener {
+         binding.ivRight.setOnClickListener {
             val current = binding.viewPager.currentItem
             binding.viewPager.setCurrentItem(current+1, true)
          }
       }
-   }
-
-   private fun setupTextList(dataList: ArrayList<Food>) {
-      val itemList = ArrayList<Item>()
-      val divide = dataList.size / 3
-      val minus1 = dataList.size - 1
-      val minus2 = dataList.size - 2
-      var num = 0
-
-      if(dataList.size % 3 == 0) {
-         for(i in 0 until divide) {
-            itemList.add(Item(
-               dataList[num].name, dataList[num].kcal * dataList[num].amount, dataList[num].unit.toString(),
-               dataList[num + 1].name, dataList[num + 1].kcal * dataList[num + 1].amount, dataList[num + 1].toString(),
-               dataList[num + 2].name, dataList[num + 2].kcal * dataList[num + 2].amount, dataList[num].toString())
-            )
-            num += 3
-         }
-      }else if(dataList.size % 3 == 1) {
-         for(i in 0 until divide) {
-            itemList.add(Item(
-               dataList[num].name, dataList[num].kcal * dataList[num].amount, dataList[num].unit.toString(),
-               dataList[num + 1].name, dataList[num + 1].kcal * dataList[num + 1].amount, dataList[num + 1].unit.toString(),
-               dataList[num + 2].name, dataList[num + 2].kcal * dataList[num + 2].amount, dataList[num].unit.toString())
-            )
-            num += 3
-         }
-         itemList.add(Item(string1 = dataList[minus1].name, int1 = dataList[minus1].kcal * dataList[minus1].amount, unit1 = dataList[minus1].unit.toString()))
-      }else if(dataList.size % 3 == 2) {
-         for(i in 0 until divide) {
-            itemList.add(Item(
-               dataList[num].name, dataList[num].kcal * dataList[num].amount, dataList[num].unit.toString(),
-               dataList[num + 1].name, dataList[num + 1].kcal * dataList[num + 1].amount, dataList[num + 1].unit.toString(),
-               dataList[num + 2].name, dataList[num + 2].kcal * dataList[num + 2].amount, dataList[num].unit.toString())
-            )
-            num += 3
-         }
-         itemList.add(Item(
-            string1 = dataList[minus2].name, int1 = dataList[minus2].kcal * dataList[minus2].amount, unit1 = dataList[minus2].unit.toString(),
-            string2 = dataList[minus1].name, int2 = dataList[minus1].kcal * dataList[minus2].amount, unit2 = dataList[minus1].unit.toString()))
-      }
-
-      binding.viewpager.adapter = FoodTextAdapter(itemList)
-      binding.viewpager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-      binding.indicator.setViewPager(binding.viewpager)
    }
 
    private fun setupNutrients(dataList: ArrayList<Food>) {
@@ -396,9 +279,9 @@ class FoodFragment : Fragment() {
 
       if(dataList.size > 0) {
          for(i in 0 until dataList.size) {
-            carbohydrate += dataList[i].carbohydrate
-            protein += dataList[i].protein
-            fat += dataList[i].fat
+            carbohydrate += dataList[i].carbohydrate.toDouble()
+            protein += dataList[i].protein.toDouble()
+            fat += dataList[i].fat.toDouble()
          }
       }
 
@@ -412,5 +295,80 @@ class FoodFragment : Fragment() {
       binding.tvCar.text = carbohydrate.toString() + "g"
       binding.tvProtein.text = protein.toString() + "g"
       binding.tvFat.text = fat.toString() + "g"
+   }
+
+   private fun setupList() {
+      val itemList1 = ArrayList<Food>()
+      val itemList2 = ArrayList<Food>()
+      val itemList3 = ArrayList<Food>()
+      val itemList4 = ArrayList<Food>()
+
+      val getFood1 = dataManager!!.getFood(1, calendarDate.toString())
+      val getFood2 = dataManager!!.getFood(2, calendarDate.toString())
+      val getFood3 = dataManager!!.getFood(3, calendarDate.toString())
+      val getFood4 = dataManager!!.getFood(4, calendarDate.toString())
+
+      Log.d(TAG, "setupList: $getFood1")
+
+      var total1 = 0
+      for(i in 0 until getFood1.size) {
+         total1 += getFood1[i].kcal.toInt() * getFood1[i].count
+         itemList1.add(
+            Food(id = getFood1[i].id, name = getFood1[i].name, unit = getFood1[i].unit, amount = getFood1[i].amount, count = getFood1[i].count,
+               kcal = getFood1[i].kcal, carbohydrate = getFood1[i].carbohydrate, protein = getFood1[i].protein, fat = getFood1[i].fat,
+               salt = getFood1[i].salt, sugar = getFood1[i].sugar, type = getFood1[i].type, regDate = getFood1[i].regDate)
+         )
+      }
+
+      var total2 = 0
+      for(i in 0 until getFood2.size) {
+         total2 += getFood2[i].kcal.toInt() * getFood2[i].count
+         itemList2.add(
+            Food(id = getFood2[i].id, name = getFood2[i].name, unit = getFood2[i].unit, amount = getFood2[i].amount, count = getFood2[i].count,
+               kcal = getFood2[i].kcal, carbohydrate = getFood2[i].carbohydrate, protein = getFood2[i].protein, fat = getFood2[i].fat,
+               salt = getFood2[i].salt, sugar = getFood2[i].sugar, type = getFood2[i].type, regDate = getFood2[i].regDate)
+         )
+      }
+
+      var total3 = 0
+      for(i in 0 until getFood3.size) {
+         total3 += getFood3[i].kcal.toInt() * getFood3[i].count
+         itemList3.add(
+            Food(id = getFood3[i].id, name = getFood3[i].name, unit = getFood3[i].unit, amount = getFood3[i].amount, count = getFood3[i].count,
+               kcal = getFood3[i].kcal, carbohydrate = getFood3[i].carbohydrate, protein = getFood3[i].protein, fat = getFood3[i].fat,
+               salt = getFood3[i].salt, sugar = getFood3[i].sugar, type = getFood3[i].type, regDate = getFood3[i].regDate)
+         )
+      }
+
+      var total4 = 0
+      for(i in 0 until getFood4.size) {
+         total4 += getFood4[i].kcal.toInt() * getFood4[i].count
+         itemList4.add(
+            Food(id = getFood4[i].id, name = getFood4[i].name, unit = getFood4[i].unit, amount = getFood4[i].amount, count = getFood4[i].count,
+               kcal = getFood4[i].kcal, carbohydrate = getFood4[i].carbohydrate, protein = getFood4[i].protein, fat = getFood4[i].fat,
+               salt = getFood4[i].salt, sugar = getFood4[i].sugar, type = getFood4[i].type, regDate = getFood4[i].regDate)
+         )
+      }
+
+      binding.tvTotal1.text = "$total1 kcal"
+      binding.tvTotal2.text = "$total2 kcal"
+      binding.tvTotal3.text = "$total3 kcal"
+      binding.tvTotal4.text = "$total4 kcal"
+
+      val adapter1 = FoodTextAdapter(itemList1)
+      binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv1.adapter = adapter1
+
+      val adapter2 = FoodTextAdapter(itemList2)
+      binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv2.adapter = adapter2
+
+      val adapter3 = FoodTextAdapter(itemList3)
+      binding.rv3.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv3.adapter = adapter3
+
+      val adapter4 = FoodTextAdapter(itemList4)
+      binding.rv4.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv4.adapter = adapter4
    }
 }

@@ -45,7 +45,7 @@
             android:id="@+id/clCamera"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/rec_border_right"
+            android:background="@drawable/rec_border_top_right"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clGallery"
             app:layout_constraintStart_toStartOf="parent"

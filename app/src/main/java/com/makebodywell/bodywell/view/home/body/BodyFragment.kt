@@ -40,7 +40,7 @@ class BodyFragment : Fragment() {
    private var getDailyData = DailyData()
    private var getBody = Body()
 
-   private var isExpend = false
+   private var isExpand = false
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -154,39 +154,39 @@ class BodyFragment : Fragment() {
       }
 
       binding.ivBmiButton.setOnClickListener {
-         if (isExpend) {
+         if (isExpand) {
             binding.clBmiExpend.visibility = View.GONE
          } else {
             binding.clBmiExpend.visibility = View.VISIBLE
          }
-         isExpend = !isExpend
+         isExpand = !isExpand
       }
 
       binding.ivFatButton.setOnClickListener {
-         if (isExpend) {
+         if (isExpand) {
             binding.clFatExpend.visibility = View.GONE
          } else {
             binding.clFatExpend.visibility = View.VISIBLE
          }
-         isExpend = !isExpend
+         isExpand = !isExpand
       }
 
       binding.ivMuscleButton.setOnClickListener {
-         if (isExpend) {
+         if (isExpand) {
             binding.clMuscleExpend.visibility = View.GONE
          } else {
             binding.clMuscleExpend.visibility = View.VISIBLE
          }
-         isExpend = !isExpend
+         isExpand = !isExpand
       }
 
       binding.ivBmrButton.setOnClickListener {
-         if (isExpend) {
+         if (isExpand) {
             binding.tvBmrExpend.visibility = View.GONE
          } else {
             binding.tvBmrExpend.visibility = View.VISIBLE
          }
-         isExpend = !isExpend
+         isExpand = !isExpand
       }
    }
 

@@ -24,7 +24,6 @@ class FoodRecord1Fragment : Fragment() {
    private var bundle = Bundle()
 
    private var dataManager: DataManager? = null
-   private var adapter2 = SearchAdapter()
    private var dataList = ArrayList<Food>()
    private val itemList = ArrayList<Food>()
    private val searchList = ArrayList<String>()
@@ -45,6 +44,7 @@ class FoodRecord1Fragment : Fragment() {
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
+      bundle.putString("type", type)
 
       binding.clBack.setOnClickListener {
          when(type) {
@@ -81,17 +81,25 @@ class FoodRecord1Fragment : Fragment() {
          binding.rv1.visibility = View.VISIBLE
 
          for (i in 0 until dataList.size) {
-            itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, kcal = dataList[i].kcal,
-               carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat, salt = dataList[i].salt, sugar = dataList[i].sugar))
+            itemList.add(Food(id = dataList[i].id, name = dataList[i].name))
          }
 
-         val adapter1 = FoodRecord1Adapter(requireActivity(), itemList)
+         val adapter = FoodRecord1Adapter(itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.rv1.adapter = adapter1
+
+         adapter.setOnItemClickListener(object : FoodRecord1Adapter.OnItemClickListener {
+            override fun onItemClick(pos: Int) {
+               bundle.putString("id", itemList[pos].id.toString())
+               replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
+            }
+         })
+
+         binding.rv1.adapter = adapter
       }
    }
 
    private fun searchView() {
+      var adapter = SearchAdapter()
       val strings = arrayListOf("Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "가나", "한국", "가나다", "가다", "중국", "미국", "유럽")
 
       for(i in 0 until strings.size) {
@@ -104,24 +112,24 @@ class FoodRecord1Fragment : Fragment() {
          override fun afterTextChanged(p0: Editable?) {
             searchList.clear()
             if(binding.etSearch.text.toString() == "") {
-               adapter2.clearItems()
+               adapter.clearItems()
             }else {
                // 검색 단어를 포함하는지 확인
                for(i in 0 until strings.size) {
                   if(originalList[i].lowercase().contains(binding.etSearch.text.toString().lowercase())) {
                      searchList.add(originalList[i])
                   }
-                  adapter2.setItems(searchList)
+                  adapter.setItems(searchList)
                }
             }
          }
       })
 
-      adapter2 = SearchAdapter()
+      adapter = SearchAdapter()
       binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.rv2.adapter = adapter2
+      binding.rv2.adapter = adapter
 
-      adapter2.setItemClickListener(object: SearchAdapter.OnItemClickListener{
+      adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, position: Int) {
             Log.d(TAG, "position: ${searchList[position]}")
          }

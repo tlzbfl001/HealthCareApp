@@ -30,7 +30,7 @@
                 android:id="@+id/tvCancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rec_border_right"
+                android:background="@drawable/rec_border_top_right"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:text="취소"

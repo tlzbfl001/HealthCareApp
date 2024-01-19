@@ -88,7 +88,7 @@ class GalleryFragment : Fragment() {
                     if(data?.extras?.get("data") != null){
                         val img = data.extras?.get("data") as Bitmap
                         val uri = saveFile(randomFileName(), "image/jpeg", img)
-                        val image = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+                        val image = Image(imageUri = uri.toString(), regDate = LocalDate.now().toString())
                         dataManager?.insertImage(image)
                         listView()
                     }else {
@@ -97,7 +97,7 @@ class GalleryFragment : Fragment() {
                 }
                 STORAGE_REQUEST_CODE -> {
                     val uri = data?.data
-                    val image = Image(imageUri = uri.toString(), type = type, regDate = LocalDate.now().toString())
+                    val image = Image(imageUri = uri.toString(), regDate = LocalDate.now().toString())
                     dataManager?.insertImage(image)
                     listView()
                 }
@@ -128,7 +128,7 @@ class GalleryFragment : Fragment() {
                 fos.close()
                 cv.clear()
 
-                cv.put(MediaStore.Images.Media.IS_PENDING, 0) // IS_PENDING 을 초기화
+                cv.put(MediaStore.Images.Media.IS_PENDING, 0)
                 requireActivity().contentResolver.update(uri, cv, null, null)
             }
         } catch(e: FileNotFoundException) {
