@@ -8,166 +8,141 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvAdd">
-        <androidx.constraintlayout.widget.ConstraintLayout
+        app:layout_constraintBottom_toTopOf="@id/cl2">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="30dp"
-                android:paddingLeft="25dp"
-                android:paddingRight="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-                <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/arrow_left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="30dp"
+                    android:paddingLeft="25dp"
+                    android:paddingBottom="10dp"
+                    android:paddingRight="10dp"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="나의 하루 식단 기록"
-                android:textSize="20dp"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@id/clBack"
-                app:layout_constraintStart_toStartOf="@id/clBack"
-                app:layout_constraintEnd_toEndOf="parent"/>
-            <TextView
-                android:id="@+id/tvRecordNum"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:visibility="gone"
-                android:background="@drawable/oval"
-                android:backgroundTint="#EE6685"
-                android:textAlignment="center"
-                android:layout_marginRight="30dp"
-                android:text="6"
-                android:textSize="16dp"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="@id/clBack"
-                app:layout_constraintEnd_toEndOf="parent"/>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvBreakfast"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="15dp"
-                app:cardBackgroundColor="#EEEEEE"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="10dp"
-                app:layout_constraintTop_toBottomOf="@id/clBack"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/cvLunch">
+                    app:layout_constraintStart_toStartOf="parent">
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/arrow_back"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="30dp"
+                    android:text="나의 하루 식단 기록"
+                    android:textSize="20dp"
+                    android:textColor="@color/black"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/clBack"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+                <TextView
+                    android:id="@+id/tvInput"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:background="@drawable/oval"
+                    android:backgroundTint="#787878"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="30dp"
+                    android:text="입력"
+                    android:textSize="15dp"
+                    android:textColor="@color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
                 <TextView
                     android:id="@+id/tvBreakfast"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:background="@drawable/rec_25_border_gray"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="15dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="아침"
                     android:textSize="16dp"
-                    android:textColor="#CCCCCC"/>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvLunch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="20dp"
-                app:cardBackgroundColor="#6A6A6A"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="10dp"
-                app:layout_constraintTop_toTopOf="@id/cvBreakfast"
-                app:layout_constraintBottom_toBottomOf="@id/cvBreakfast"
-                app:layout_constraintStart_toEndOf="@id/cvBreakfast"
-                app:layout_constraintEnd_toStartOf="@id/cvDinner">
-                <TextView
+                    android:textColor="@color/black"
+                    android:textAlignment="center"
+                    app:layout_constraintTop_toBottomOf="@id/tvInput"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/tvLunch"/>
+                <androidx.cardview.widget.CardView
                     android:id="@+id/tvLunch"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
-                    android:text="점심"
-                    android:textSize="16dp"
-                    android:textColor="@color/white"/>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvDinner"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="20dp"
-                app:cardBackgroundColor="#EEEEEE"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="10dp"
-                app:layout_constraintTop_toTopOf="@id/cvLunch"
-                app:layout_constraintBottom_toBottomOf="@id/cvLunch"
-                app:layout_constraintStart_toEndOf="@id/cvLunch"
-                app:layout_constraintEnd_toStartOf="@id/cvSnack">
+                    android:layout_marginRight="15dp"
+                    app:cardBackgroundColor="#F97D7D"
+                    app:cardCornerRadius="25dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintTop_toTopOf="@id/tvBreakfast"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBreakfast"
+                    app:layout_constraintStart_toEndOf="@id/tvBreakfast"
+                    app:layout_constraintEnd_toStartOf="@id/tvDinner">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="점심"
+                        android:textSize="16dp"
+                        android:textColor="@color/white"/>
+                </androidx.cardview.widget.CardView>
                 <TextView
                     android:id="@+id/tvDinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:background="@drawable/rec_25_border_gray"
+                    android:layout_marginRight="15dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="저녁"
                     android:textSize="16dp"
-                    android:textColor="#cccccc"/>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvSnack"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="30dp"
-                app:cardBackgroundColor="#EEEEEE"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="10dp"
-                app:layout_constraintTop_toTopOf="@id/cvDinner"
-                app:layout_constraintBottom_toBottomOf="@id/cvDinner"
-                app:layout_constraintStart_toEndOf="@id/cvDinner"
-                app:layout_constraintEnd_toEndOf="parent">
+                    android:textColor="@color/black"
+                    android:textAlignment="center"
+                    app:layout_constraintTop_toTopOf="@id/tvBreakfast"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBreakfast"
+                    app:layout_constraintStart_toEndOf="@id/tvLunch"
+                    app:layout_constraintEnd_toStartOf="@id/tvSnack"/>
                 <TextView
                     android:id="@+id/tvSnack"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:background="@drawable/rec_25_border_gray"
+                    android:layout_marginRight="35dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="간식"
                     android:textSize="16dp"
-                    android:textColor="#cccccc"/>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvBox1"
-                android:layout_width="match_parent"
-                android:layout_height="177dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                app:cardBackgroundColor="#F9F9F9"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="5dp"
-                app:layout_constraintTop_toBottomOf="@id/cvBreakfast"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                    android:textColor="@color/black"
+                    android:textAlignment="center"
+                    app:layout_constraintTop_toTopOf="@id/tvBreakfast"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBreakfast"
+                    app:layout_constraintStart_toEndOf="@id/tvDinner"
+                    app:layout_constraintEnd_toEndOf="parent"/>
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cl1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="190dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvBreakfast"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/cvLeft"
                         android:layout_width="wrap_content"
@@ -177,12 +152,11 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
                         <ImageView
-                            android:layout_width="10dp"
-                            android:layout_height="19dp"
+                            android:layout_width="15dp"
+                            android:layout_height="25dp"
                             android:src="@drawable/arrow_left_round"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="5dp"
-                            app:tint="#CACACA"
+                            android:layout_marginRight="3dp"
+                            app:tint="#E3E4E5"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -194,32 +168,12 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="12dp"
                         android:layout_marginBottom="12dp"
-                        android:paddingLeft="45dp"
-                        android:paddingRight="45dp"
+                        android:paddingLeft="40dp"
+                        android:paddingRight="40dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/cvRight"
                         app:layout_constraintStart_toEndOf="@id/cvLeft"
                         app:layout_constraintTop_toTopOf="parent" />
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/clGallery"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="@id/viewPager"
-                        app:layout_constraintStart_toStartOf="@id/viewPager"
-                        app:layout_constraintEnd_toEndOf="@id/viewPager"
-                        app:layout_constraintBottom_toBottomOf="@id/viewPager">
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:background="@drawable/oval"
-                            android:backgroundTint="#CCAAAAAA"
-                            android:src="@drawable/baseline_add"
-                            android:layout_margin="10dp"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"/>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/cvRight"
                         android:layout_width="wrap_content"
@@ -229,11 +183,10 @@
                         app:layout_constraintStart_toEndOf="@id/viewPager"
                         app:layout_constraintTop_toTopOf="parent">
                         <ImageView
-                            android:layout_width="10dp"
-                            android:layout_height="19dp"
+                            android:layout_width="15dp"
+                            android:layout_height="25dp"
                             android:src="@drawable/arrow_right_round"
                             android:layout_marginLeft="3dp"
-                            android:layout_marginRight="10dp"
                             app:tint="#CACACA"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -241,148 +194,83 @@
                             app:layout_constraintStart_toStartOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-            <TextView
-                android:id="@+id/tvTitle1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginLeft="25dp"
-                android:text="섭취한 식단"
-                android:textSize="16dp"
-                android:textColor="#777777"
-                app:layout_constraintTop_toBottomOf="@id/cvBox1"
-                app:layout_constraintStart_toStartOf="parent"/>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/clList"
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"
-                app:cardBackgroundColor="#FFEDED"
-                app:cardCornerRadius="0dp"
-                app:cardElevation="4dp"
-                app:layout_constraintTop_toBottomOf="@id/tvTitle1"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rec_top_radius_35"
+                android:backgroundTint="#FFFAFA"
+                app:layout_constraintTop_toBottomOf="@id/cl1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tvSearch" >
+                app:layout_constraintBottom_toBottomOf="parent">
+                <TextView
+                    android:id="@+id/tvTitle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="25dp"
+                    android:text="섭취 음식"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView1"
+                    android:id="@+id/rv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"/>
-            </androidx.cardview.widget.CardView>
-            <TextView
-                android:id="@+id/tvSearch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rec_food_search"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:paddingLeft="13dp"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
-                android:drawableLeft="@drawable/search"
-                android:drawablePadding="15dp"
-                android:text="음식 찾기"
-                android:textSize="14dp"
-                android:textColor="#B4B4B5"
-                app:layout_constraintTop_toBottomOf="@id/clList"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-            <TextView
-                android:id="@+id/tvBtn1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="@drawable/rec_15"
-                android:backgroundTint="#3C3C3C"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="15dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="자주 사용"
-                android:textSize="14dp"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tvSearch"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tvBtn2"
-                app:layout_constraintHorizontal_weight="1"/>
-            <TextView
-                android:id="@+id/tvBtn2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="@drawable/rec_25_border_gray"
-                android:layout_marginRight="15dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="최근 입력"
-                android:textSize="14dp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toTopOf="@id/tvBtn1"
-                app:layout_constraintBottom_toBottomOf="@id/tvBtn1"
-                app:layout_constraintStart_toEndOf="@id/tvBtn1"
-                app:layout_constraintEnd_toStartOf="@id/tvBtn3"
-                app:layout_constraintHorizontal_weight="1"/>
-            <TextView
-                android:id="@+id/tvBtn3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="@drawable/rec_25_border_gray"
-                android:layout_marginRight="25dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="직접 추가"
-                android:textSize="14dp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toTopOf="@id/tvBtn2"
-                app:layout_constraintBottom_toBottomOf="@id/tvBtn2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tvBtn2"
-                app:layout_constraintHorizontal_weight="1"/>
-            <View
-                android:id="@+id/view"
-                android:layout_width="match_parent"
-                android:layout_height="0.8dp"
-                android:visibility="gone"
-                android:background="@color/black"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
-                app:layout_constraintTop_toBottomOf="@id/tvBtn1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginBottom="25dp"
-                app:layout_constraintTop_toBottomOf="@id/view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvTitle1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-    <TextView
-        android:id="@+id/tvAdd"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl2"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#888888"
-        android:gravity="center"
-        android:text="저장"
-        android:textColor="@color/white"
-        android:textSize="20dp"
+        android:layout_height="wrap_content"
+        android:background="#FFFAFA"
+        app:layout_constraintTop_toBottomOf="@id/scrollView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvAdd"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="25dp"
+            app:cardBackgroundColor="#9F98FF"
+            app:cardCornerRadius="30dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+                <TextView
+                    android:id="@+id/tvStart"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="저장"
+                    android:textColor="@color/white"
+                    android:textSize="18dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,32 +1,23 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.net.Uri
 import android.widget.Toast
-
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
-import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
 import kotlin.math.abs
 
 class FoodDinnerFragment : Fragment() {
@@ -34,18 +25,13 @@ class FoodDinnerFragment : Fragment() {
     val binding get() = _binding!!
 
     private var bundle = Bundle()
+
     private var calendarDate = ""
+    private var type = 3
 
     private var dataManager: DataManager? = null
-
     private var photoAdapter: PhotoViewAdapter? = null
     private var foodRecordAdapter: FoodIntakeAdapter? = null
-    private var foodFrequentlyAdapter: FoodRecord1Adapter? = null
-
-    private var dataList = ArrayList<Food>()
-    private var itemList = ArrayList<Food>()
-
-    private val permissionRequestCode = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,73 +42,48 @@ class FoodDinnerFragment : Fragment() {
         dataManager = DataManager(activity)
         dataManager!!.open()
 
-        initView()
-        setupPhotoView()
-        setupList()
-
-        return binding.root
-    }
-
-    private fun initView() {
         calendarDate = arguments?.getString("calendarDate").toString()
         bundle.putString("calendarDate", calendarDate)
-        bundle.putString("type", "3")
+        bundle.putString("type", "$type")
 
         binding.clBack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodFragment())
         }
 
-        binding.cvBreakfast.setOnClickListener {
+        binding.tvInput.setOnClickListener {
+            replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+        }
+
+        binding.tvBreakfast.setOnClickListener {
             replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
         }
 
-        binding.cvLunch.setOnClickListener {
+        binding.tvLunch.setOnClickListener {
             replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
         }
 
-        binding.cvSnack.setOnClickListener {
+        binding.tvSnack.setOnClickListener {
             replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
         }
 
-        binding.clGallery.setOnClickListener {
-            if (requestPermission()) {
-                replaceFragment2(requireActivity(), GalleryFragment(), bundle)
-            }
-        }
-
-        binding.tvRecordNum.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodRecordListFragment(), bundle)
-        }
-
-        binding.tvSearch.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-        }
-
-        binding.tvBtn1.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-        }
-
-        binding.tvBtn2.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
-        }
-
-        binding.tvBtn3.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodInputFragment(), bundle)
-        }
-
-        binding.tvAdd.setOnClickListener {
+        binding.cvAdd.setOnClickListener {
             val getFoodData = foodRecordAdapter!!.getFoodData()
             dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())
         }
+
+        photoView()
+        listView()
+
+        return binding.root
     }
 
-    private fun setupPhotoView() {
+    private fun photoView() {
         val imageList: ArrayList<Uri> = ArrayList()
 
-        val getFoodImage = dataManager!!.getImage(3, calendarDate)
+        val getFoodImage = dataManager!!.getImage(type, calendarDate)
         for(i in 0 until getFoodImage.size) {
             imageList.add(Uri.parse(getFoodImage[i].imageUri))
         }
@@ -138,7 +99,7 @@ class FoodDinnerFragment : Fragment() {
 
             val transformer = CompositePageTransformer()
             val defaultTranslationX = 0.50f
-            val defaultTranslationFactor = 1.2f
+            val defaultTranslationFactor = 1.17f
             val scaleFactor = 0.14f
             val defaultScale = 1f
 
@@ -175,67 +136,29 @@ class FoodDinnerFragment : Fragment() {
             binding.viewPager.setPageTransformer(transformer)
 
             binding.cvLeft.setOnClickListener {
-                var current = binding.viewPager.currentItem
-                binding.viewPager.setCurrentItem(current-1, true)
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
             }
 
             binding.cvRight.setOnClickListener {
-                var current = binding.viewPager.currentItem
-                binding.viewPager.setCurrentItem(current+1, true)
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
             }
         }
     }
 
-    private fun setupList() {
-        dataList = dataManager!!.getFood(3, calendarDate)
+    private fun listView() {
+        val itemList = ArrayList<Food>()
+        val dataList = dataManager!!.getFood(type, calendarDate)
 
         if(dataList.size != 0) {
-            binding.clList.visibility = View.VISIBLE
-            binding.view.visibility = View.VISIBLE
-
             for (i in 0 until dataList.size) {
                 itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, count = dataList[i].count,
                     kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
             }
 
-            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, 3)
-            binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            binding.recyclerView1.adapter = foodRecordAdapter
-
-            foodFrequentlyAdapter = FoodRecord1Adapter(itemList)
-            binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            binding.recyclerView2.adapter = foodFrequentlyAdapter
+            // 섭취한 식단 설정
+            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList)
+            binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+            binding.rv.adapter = foodRecordAdapter
         }
-    }
-
-    private fun requestPermission(): Boolean {
-        var check = true
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            for(permission in CAMERA_PERMISSION_3) {
-                if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
-                    check = false
-                }
-            }
-        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            for(permission in CAMERA_PERMISSION_2) {
-                if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
-                    check = false
-                }
-            }
-        }else {
-            for(permission in CAMERA_PERMISSION_1) {
-                if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
-                    check = false
-                }
-            }
-        }
-        return check
-    }
-
-    companion object {
-        private const val REQUEST_CODE = 1
     }
 }

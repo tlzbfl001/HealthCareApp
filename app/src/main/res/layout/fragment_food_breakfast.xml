@@ -136,7 +136,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl1"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="190dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -155,8 +155,7 @@
                       android:layout_width="15dp"
                       android:layout_height="25dp"
                       android:src="@drawable/arrow_left_round"
-                      android:layout_marginLeft="10dp"
-                      android:layout_marginRight="5dp"
+                      android:layout_marginRight="3dp"
                       app:tint="#E3E4E5"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -176,28 +175,6 @@
                    app:layout_constraintStart_toEndOf="@id/cvLeft"
                    app:layout_constraintTop_toTopOf="parent" />
                <androidx.constraintlayout.widget.ConstraintLayout
-                   android:id="@+id/clGallery"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:visibility="gone"
-                   app:layout_constraintTop_toTopOf="@id/viewPager"
-                   app:layout_constraintStart_toStartOf="@id/viewPager"
-                   app:layout_constraintEnd_toEndOf="@id/viewPager"
-                   app:layout_constraintBottom_toBottomOf="@id/viewPager">
-                  <ImageView
-                      android:layout_width="22dp"
-                      android:layout_height="22dp"
-                      android:background="@drawable/oval"
-                      android:backgroundTint="#CCAAAAAA"
-                      android:src="@drawable/baseline_add"
-                      android:layout_margin="10dp"
-                      app:tint="@color/white"
-                      app:layout_constraintTop_toTopOf="parent"
-                      app:layout_constraintStart_toStartOf="parent"
-                      app:layout_constraintEnd_toEndOf="parent"
-                      app:layout_constraintBottom_toBottomOf="parent"/>
-               </androidx.constraintlayout.widget.ConstraintLayout>
-               <androidx.constraintlayout.widget.ConstraintLayout
                    android:id="@+id/cvRight"
                    android:layout_width="wrap_content"
                    android:layout_height="0dp"
@@ -209,8 +186,7 @@
                       android:layout_width="15dp"
                       android:layout_height="25dp"
                       android:src="@drawable/arrow_right_round"
-                      android:layout_marginLeft="5dp"
-                      android:layout_marginRight="10dp"
+                      android:layout_marginLeft="3dp"
                       app:tint="#CACACA"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"

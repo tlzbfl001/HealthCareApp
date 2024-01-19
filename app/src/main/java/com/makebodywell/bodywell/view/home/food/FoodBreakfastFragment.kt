@@ -1,15 +1,11 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,15 +13,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
 import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
+import java.util.stream.Collectors
 import kotlin.math.abs
+
 
 class FoodBreakfastFragment : Fragment() {
    private var _binding: FragmentFoodBreakfastBinding? = null
@@ -33,13 +31,13 @@ class FoodBreakfastFragment : Fragment() {
 
    private var bundle = Bundle()
 
-   private var calendarDate = ""
-
    private var dataManager: DataManager? = null
    private var photoAdapter: PhotoViewAdapter? = null
-   private var foodRecordAdapter: FoodIntakeAdapter? = null
-   private var dataList = ArrayList<Food>()
-   private var itemList = ArrayList<Food>()
+   private var adapter: FoodIntakeAdapter? = null
+   private var imageData: ArrayList<Image>? = null
+
+   private var calendarDate = ""
+   private var type = 1
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +50,7 @@ class FoodBreakfastFragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       bundle.putString("calendarDate", calendarDate)
-      bundle.putString("type", "1")
+      bundle.putString("type", "$type")
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), FoodFragment())
@@ -74,36 +72,27 @@ class FoodBreakfastFragment : Fragment() {
          replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
       }
 
-      binding.clGallery.setOnClickListener {
-         if (requestPermission()) {
-            replaceFragment2(requireActivity(), GalleryFragment(), bundle)
-         }
-      }
-
       binding.cvAdd.setOnClickListener {
-         val getFoodData = foodRecordAdapter!!.getFoodData()
+         val getFoodData = adapter!!.getFoodData()
          dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment1(requireActivity(), FoodFragment())
       }
 
-      setupPhotoView()
-      setupList()
+      photoView()
+
+      // 섭취한 식단 설정
+      listView()
 
       return binding.root
    }
 
-   private fun setupPhotoView() {
-      val imageList: ArrayList<Uri> = ArrayList()
+   private fun photoView() {
+      imageData = dataManager!!.getImage(type, calendarDate)
 
-      val getFoodImage = dataManager!!.getImage(1, calendarDate)
-      for(i in 0 until getFoodImage.size) {
-         imageList.add(Uri.parse(getFoodImage[i].imageUri))
-      }
-
-      if(getFoodImage.size > 0) {
-         photoAdapter = PhotoViewAdapter(getFoodImage)
+      if(imageData!!.size > 0) {
+         photoAdapter = PhotoViewAdapter(imageData!!)
 
          binding.viewPager.adapter = photoAdapter
          binding.viewPager.offscreenPageLimit = 5
@@ -113,7 +102,7 @@ class FoodBreakfastFragment : Fragment() {
 
          val transformer = CompositePageTransformer()
          val defaultTranslationX = 0.50f
-         val defaultTranslationFactor = 1.18f
+         val defaultTranslationFactor = 1.17f
          val scaleFactor = 0.14f
          val defaultScale = 1f
 
@@ -152,57 +141,46 @@ class FoodBreakfastFragment : Fragment() {
          binding.cvLeft.setOnClickListener {
             binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
          }
+
          binding.cvRight.setOnClickListener {
             binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
          }
       }
    }
 
-   private fun setupList() {
-      dataList = dataManager!!.getFood(1, calendarDate)
-
+   private fun listView() {
+      val dataList = dataManager!!.getFood(type, calendarDate)
       if(dataList.size != 0) {
-         for (i in 0 until dataList.size) {
-            itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, count = dataList[i].count,
-               kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
-         }
-
-         // 섭취한 식단 설정
-         foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList, 1)
+         adapter = FoodIntakeAdapter(requireActivity(), dataList)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.rv.adapter = foodRecordAdapter
+
+         adapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+            override fun onItemClick(pos: Int) {
+               val dialog = AlertDialog.Builder(context)
+                  .setMessage("정말 삭제하시겠습니까?")
+                  .setPositiveButton("확인") { _, _ ->
+                     dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_IMAGE, "foodId", dataList[pos].id)
+
+                     imageData!!.stream().filter { x -> x.foodId == dataList[pos].id }
+                        .collect(Collectors.toList()).forEach { x ->
+                           imageData!!.remove(x)
+                     }
+
+                     dataList.removeAt(pos)
+
+                     adapter!!.notifyDataSetChanged()
+                     photoAdapter!!.notifyDataSetChanged()
+
+                     Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                  }
+                  .setNegativeButton("취소", null)
+                  .create()
+               dialog.show()
+            }
+         })
+
+         binding.rv.adapter = adapter
       }
-   }
-
-   private fun requestPermission(): Boolean {
-      var check = true
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         for(permission in CAMERA_PERMISSION_3) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
-               check = false
-            }
-         }
-      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         for(permission in CAMERA_PERMISSION_2) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
-               check = false
-            }
-         }
-      }else {
-         for(permission in CAMERA_PERMISSION_1) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
-               check = false
-            }
-         }
-      }
-
-      return check
-   }
-
-   companion object {
-      private const val REQUEST_CODE = 1
    }
 }

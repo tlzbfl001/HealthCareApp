@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.adapter
 
-import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,19 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.view.home.food.FoodDinnerFragment
-import com.makebodywell.bodywell.view.home.food.FoodLunchFragment
-import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
-import com.makebodywell.bodywell.view.init.MainActivity
 
 class FoodIntakeAdapter (
     private val context: Context,
-    private var itemList: ArrayList<Food> = ArrayList(),
-    private val type: Int
+    private var itemList: ArrayList<Food> = ArrayList()
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
+    private var onItemClickListener: OnItemClickListener? = null
     private var dataManager: DataManager? = null
     private var foodData = Food()
 
@@ -39,7 +33,7 @@ class FoodIntakeAdapter (
         holder.tvName.text = itemList[position].name
         holder.tvKcal.text = "${itemList[position].kcal!!.toInt() * itemList[position].count} kcal"
         holder.tvCount.text = itemList[position].count.toString()
-        holder.tvDesc.text = "${itemList[position].count}개/${itemList[position].amount}${itemList[position].count}"
+        holder.tvDesc.text = "${itemList[position].count}개/${itemList[position].amount}${itemList[position].unit}"
 
         // 섭취한 식단 카운트하기
         var count = itemList[position].count
@@ -67,58 +61,18 @@ class FoodIntakeAdapter (
         }
 
         holder.ivDelete.setOnClickListener {
-            val dialog = AlertDialog.Builder(context)
-                .setMessage("삭제하시겠습니까?")
-                .setPositiveButton("확인") { _, _ ->
-                    when (type) {
-                        1 -> {
-                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
-
-                            itemList.removeAt(position)
-                            notifyDataSetChanged()
-                        }
-
-                        2 -> {
-                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
-
-                            itemList.removeAt(position)
-                            notifyDataSetChanged()
-
-                            val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as FoodLunchFragment
-                            if (itemList.size == 0) {
-                                fragment.binding.clList.visibility = View.GONE
-                                fragment.binding.view.visibility = View.GONE
-                            }
-                        }
-
-                        3 -> {
-                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
-                            itemList.removeAt(position)
-                            notifyDataSetChanged()
-
-                            val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as FoodDinnerFragment
-                            if (itemList.size == 0) {
-                                fragment.binding.clList.visibility = View.GONE
-                                fragment.binding.view.visibility = View.GONE
-                            }
-                        }
-
-                        4 -> {
-                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
-                            itemList.removeAt(position)
-                            notifyDataSetChanged()
-
-                            val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as FoodSnackFragment
-                            if (itemList.size == 0) {
-                                fragment.binding.clList.visibility = View.GONE
-                                fragment.binding.view.visibility = View.GONE
-                            }
-                        }
-                    }
-                }
-                .setNegativeButton("취소", null)
-                .create()
-            dialog.show()
+            onItemClickListener!!.onItemClick(position)
+//            val dialog = AlertDialog.Builder(context)
+//                .setMessage("삭제하시겠습니까?")
+//                .setPositiveButton("확인") { _, _ ->
+//                    dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
+//                    dataManager!!.deleteItem(TABLE_IMAGE, "foodId", itemList[position].id)
+//                    itemList.removeAt(position)
+//                    notifyDataSetChanged()
+//                }
+//                .setNegativeButton("취소", null)
+//                .create()
+//            dialog.show()
         }
     }
 
@@ -128,6 +82,14 @@ class FoodIntakeAdapter (
 
     fun getFoodData(): Food {
         return foodData
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(pos: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener?) {
+        onItemClickListener = listener
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

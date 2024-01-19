@@ -7,13 +7,13 @@
    <androidx.cardview.widget.CardView
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_margin="0.6dp"
-      app:cardCornerRadius="7dp">
+      android:layout_margin="1dp"
+      app:cardCornerRadius="8dp">
       <ImageView
          android:id="@+id/imageView"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
          android:scaleType="fitXY"
-         android:src="#ccc"/>
+         android:src="@color/white"/>
    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

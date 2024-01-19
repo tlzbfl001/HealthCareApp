@@ -1,35 +1,27 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodTextAdapter
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
-import com.makebodywell.bodywell.adapter.PhotoViewAdapter
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -40,7 +32,6 @@ import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
-import kotlin.math.abs
 import kotlin.math.round
 
 class FoodFragment : Fragment() {
@@ -52,12 +43,17 @@ class FoodFragment : Fragment() {
    private var calendarDate: LocalDate? = null
 
    private var dataManager: DataManager? = null
-   private var adapter: PhotoViewAdapter? = null
-   private var imageList: ArrayList<Image> = ArrayList()
+   private val itemList1 = ArrayList<Food>()
+   private val itemList2 = ArrayList<Food>()
+   private val itemList3 = ArrayList<Food>()
+   private val itemList4 = ArrayList<Food>()
    private var getDailyData = DailyData()
 
    private var sum = 0
-   private var isExpand = false
+   private var isExpand1 = false
+   private var isExpand2 = false
+   private var isExpand3 = false
+   private var isExpand4 = false
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -152,14 +148,55 @@ class FoodFragment : Fragment() {
       }
 
       binding.clExpand1.setOnClickListener {
-         if (isExpand) {
-            binding.clView1.visibility = View.GONE
-            binding.ivExpand1.setImageResource(R.drawable.arrow_down)
-         } else {
-            binding.clView1.visibility = View.VISIBLE
-            binding.ivExpand1.setImageResource(R.drawable.arrow_up)
+         if(itemList1.size > 0) {
+            if (isExpand1) {
+               binding.clView1.visibility = View.GONE
+               binding.ivExpand1.setImageResource(R.drawable.arrow_down)
+            } else {
+               binding.clView1.visibility = View.VISIBLE
+               binding.ivExpand1.setImageResource(R.drawable.arrow_up)
+            }
+            isExpand1 = !isExpand1
          }
-         isExpand = !isExpand
+      }
+
+      binding.clExpand2.setOnClickListener {
+         if(itemList2.size > 0) {
+            if (isExpand2) {
+               binding.clView2.visibility = View.GONE
+               binding.ivExpand2.setImageResource(R.drawable.arrow_down)
+            } else {
+               binding.clView2.visibility = View.VISIBLE
+               binding.ivExpand2.setImageResource(R.drawable.arrow_up)
+            }
+            isExpand2 = !isExpand2
+         }
+      }
+
+      binding.clExpand3.setOnClickListener {
+         if(itemList3.size > 0) {
+            if (isExpand3) {
+               binding.clView3.visibility = View.GONE
+               binding.ivExpand3.setImageResource(R.drawable.arrow_down)
+            } else {
+               binding.clView3.visibility = View.VISIBLE
+               binding.ivExpand3.setImageResource(R.drawable.arrow_up)
+            }
+            isExpand3 = !isExpand3
+         }
+      }
+
+      binding.clExpand4.setOnClickListener {
+         if(itemList4.size > 0) {
+            if (isExpand4) {
+               binding.clView4.visibility = View.GONE
+               binding.ivExpand4.setImageResource(R.drawable.arrow_down)
+            } else {
+               binding.clView4.visibility = View.VISIBLE
+               binding.ivExpand4.setImageResource(R.drawable.arrow_up)
+            }
+            isExpand4 = !isExpand4
+         }
       }
 
       setupGoal()
@@ -278,17 +315,15 @@ class FoodFragment : Fragment() {
    }
 
    private fun listView() {
-      val itemList1 = ArrayList<Food>()
-      val itemList2 = ArrayList<Food>()
-      val itemList3 = ArrayList<Food>()
-      val itemList4 = ArrayList<Food>()
+      itemList1.clear()
+      itemList2.clear()
+      itemList3.clear()
+      itemList4.clear()
 
       val getFood1 = dataManager!!.getFood(1, calendarDate.toString())
       val getFood2 = dataManager!!.getFood(2, calendarDate.toString())
       val getFood3 = dataManager!!.getFood(3, calendarDate.toString())
       val getFood4 = dataManager!!.getFood(4, calendarDate.toString())
-
-      Log.d(TAG, "setupList: $getFood1")
 
       var total1 = 0
       for(i in 0 until getFood1.size) {

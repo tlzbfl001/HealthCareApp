@@ -115,13 +115,15 @@ class DataManager(private var context: Context?) {
    fun getImage(type: Int, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Image> = ArrayList()
-      val sql = "select id, imageUri, regDate from $TABLE_IMAGE where type = $type and regDate = '$date'"
+      val sql = "select * from $TABLE_IMAGE where type = $type and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Image()
          data.id = cursor.getInt(0)
          data.imageUri = cursor.getString(1)
-         data.regDate = cursor.getString(2)
+         data.type = cursor.getInt(2)
+         data.foodId = cursor.getInt(3)
+         data.regDate = cursor.getString(4)
          list.add(data)
       }
       cursor.close()

@@ -67,7 +67,7 @@
           android:layout_height="wrap_content"
           android:layout_marginLeft="25dp"
           android:layout_marginTop="17dp"
-          android:layout_marginBottom="17dp">
+          android:layout_marginBottom="10dp">
          <androidx.cardview.widget.CardView
              android:id="@+id/cvFood"
              android:layout_width="65dp"
@@ -206,7 +206,7 @@
                    android:id="@+id/tvSetting"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:layout_marginTop="3dp"
+                   android:layout_marginTop="7dp"
                    android:layout_marginRight="25dp"
                    android:paddingLeft="5dp"
                    android:text="목표설정"
@@ -658,6 +658,7 @@
                       app:layout_constraintBottom_toTopOf="@id/view3"
                       app:layout_constraintEnd_toEndOf="parent">
                      <ImageView
+                         android:id="@+id/ivExpand2"
                          android:layout_width="20dp"
                          android:layout_height="10dp"
                          android:src="@drawable/arrow_down"
@@ -753,6 +754,7 @@
                       app:layout_constraintBottom_toTopOf="@id/view5"
                       app:layout_constraintEnd_toEndOf="parent">
                      <ImageView
+                         android:id="@+id/ivExpand3"
                          android:layout_width="20dp"
                          android:layout_height="10dp"
                          android:src="@drawable/arrow_down"
@@ -771,6 +773,7 @@
                       app:layout_constraintStart_toStartOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"/>
                   <androidx.constraintlayout.widget.ConstraintLayout
+                      android:id="@+id/clView3"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:visibility="gone"
@@ -849,6 +852,7 @@
                       app:layout_constraintBottom_toTopOf="@id/view7"
                       app:layout_constraintEnd_toEndOf="parent">
                      <ImageView
+                         android:id="@+id/ivExpand4"
                          android:layout_width="20dp"
                          android:layout_height="10dp"
                          android:src="@drawable/arrow_down"
@@ -867,6 +871,7 @@
                       app:layout_constraintStart_toStartOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"/>
                   <androidx.constraintlayout.widget.ConstraintLayout
+                      android:id="@+id/clView4"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:visibility="gone"
