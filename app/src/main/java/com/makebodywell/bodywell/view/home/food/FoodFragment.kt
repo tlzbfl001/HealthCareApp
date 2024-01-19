@@ -1,8 +1,10 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodTextAdapter
+import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
+import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
@@ -64,14 +68,6 @@ class FoodFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupGoal()
-      dailyView()
-
-      return binding.root
-   }
-
-   private fun initView() {
       calendarDate = LocalDate.now()
       binding.tvDate.text = dateFormat(calendarDate)
 
@@ -119,7 +115,7 @@ class FoodFragment : Fragment() {
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
          dailyView()
-         setupList()
+         listView()
       }
 
       binding.ivNext.setOnClickListener {
@@ -127,7 +123,7 @@ class FoodFragment : Fragment() {
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
          dailyView()
-         setupList()
+         listView()
       }
 
       binding.cvWater.setOnClickListener {
@@ -165,6 +161,11 @@ class FoodFragment : Fragment() {
          }
          isExpand = !isExpand
       }
+
+      setupGoal()
+      dailyView()
+
+      return binding.root
    }
 
    private fun setupGoal() {
@@ -199,80 +200,59 @@ class FoodFragment : Fragment() {
       val getFood = dataManager!!.getFood(1, calendarDate.toString())
 
       // 이미지뷰 설정
-      setupPhotoList(1, calendarDate.toString())
+      photoView()
 
       // 영양성분 설정
-      setupNutrients(getFood)
+      nutritionView(getFood)
 
-      setupList()
+      // 리스트뷰 설정
+      listView()
    }
 
-   private fun setupPhotoList(type: Int, date: String) {
-      imageList.clear()
-      adapter?.notifyDataSetChanged()
+   private fun photoView() {
+      val imageList: ArrayList<Image> = ArrayList()
 
-      imageList = dataManager!!.getImage(type, date)
+      val getData1 = dataManager!!.getImage(1, calendarDate.toString())
+      val getData2 = dataManager!!.getImage(2, calendarDate.toString())
+      val getData3 = dataManager!!.getImage(3, calendarDate.toString())
+      val getData4 = dataManager!!.getImage(4, calendarDate.toString())
 
-      if(imageList.size > 0) {
-         adapter = PhotoViewAdapter(imageList)
+      for(i in 0 until getData1.size) {
+         imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
+      }
 
-         binding.viewPager.adapter = adapter
-         binding.viewPager.offscreenPageLimit = 5
-         binding.viewPager.clipToPadding = false
-         binding.viewPager.clipChildren = false
-         binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+      for(i in 0 until getData2.size) {
+         imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
+      }
 
-         val transformer = CompositePageTransformer()
-         val defaultTranslationX = 0.50f
-         val defaultTranslationFactor = 1.18f
-         val scaleFactor = 0.14f
-         val defaultScale = 1f
+      for(i in 0 until getData3.size) {
+         imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
+      }
 
-         transformer.addTransformer{ view: View, position: Float ->
-            view.apply {
-               ViewCompat.setElevation(view, -abs(position))
-               val scaleFactor1 = scaleFactor * position + defaultScale
-               val scaleFactor2 = -scaleFactor * position + defaultScale
-               when {
-                  position < -2 -> {
-                     translationX = width * position
-                  }
-                  position < 0f -> {
-                     scaleX = scaleFactor1
-                     scaleY = scaleFactor1
-                     translationX = -(width / defaultTranslationFactor) * position
-                  }
-                  position == 0f -> {
-                     translationX = defaultTranslationX
-                     scaleX = defaultScale
-                     scaleY = defaultScale
-                  }
-                  position > 0 && position <= 2 -> {
-                     scaleX = scaleFactor2
-                     scaleY = scaleFactor2
-                     translationX = -(width / defaultTranslationFactor) * position
-                  }
-                  position > 2 -> {
-                     translationX = 0f
-                  }
-               }
-            }
-         }
-         binding.viewPager.setPageTransformer(transformer)
+      for(i in 0 until getData4.size) {
+         imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
+      }
 
-         binding.ivLeft.setOnClickListener {
-            val current = binding.viewPager.currentItem
+      val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+      binding.viewPager.adapter = adapter
+      binding.viewPager.setPadding(0, 0, 0, 0)
+
+      binding.clLeft.setOnClickListener {
+         val current = binding.viewPager.currentItem
+         if(current == 0) {
+            binding.viewPager.setCurrentItem(0, true)
+         }else {
             binding.viewPager.setCurrentItem(current-1, true)
          }
+      }
 
-         binding.ivRight.setOnClickListener {
-            val current = binding.viewPager.currentItem
-            binding.viewPager.setCurrentItem(current+1, true)
-         }
+      binding.clRight.setOnClickListener {
+         val current = binding.viewPager.currentItem
+         binding.viewPager.setCurrentItem(current+1, true)
       }
    }
 
-   private fun setupNutrients(dataList: ArrayList<Food>) {
+   private fun nutritionView(dataList: ArrayList<Food>) {
       var carbohydrate = 0.0
       var protein = 0.0
       var fat = 0.0
@@ -297,7 +277,7 @@ class FoodFragment : Fragment() {
       binding.tvFat.text = fat.toString() + "g"
    }
 
-   private fun setupList() {
+   private fun listView() {
       val itemList1 = ArrayList<Food>()
       val itemList2 = ArrayList<Food>()
       val itemList3 = ArrayList<Food>()
