@@ -62,17 +62,6 @@ class FoodIntakeAdapter (
 
         holder.ivDelete.setOnClickListener {
             onItemClickListener!!.onItemClick(position)
-//            val dialog = AlertDialog.Builder(context)
-//                .setMessage("삭제하시겠습니까?")
-//                .setPositiveButton("확인") { _, _ ->
-//                    dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
-//                    dataManager!!.deleteItem(TABLE_IMAGE, "foodId", itemList[position].id)
-//                    itemList.removeAt(position)
-//                    notifyDataSetChanged()
-//                }
-//                .setNegativeButton("취소", null)
-//                .create()
-//            dialog.show()
         }
     }
 

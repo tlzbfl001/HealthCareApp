@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -34,8 +33,10 @@ class FoodEditFragment : Fragment() {
 
    private var dataManager: DataManager? = null
    private var getFood = Food()
+   private var imageList = ArrayList<Image>()
 
    private var calendarDate = ""
+   private var id = ""
    private var type = ""
 
    override fun onCreateView(
@@ -49,6 +50,7 @@ class FoodEditFragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
+      id = arguments?.getString("id").toString()
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
@@ -75,7 +77,22 @@ class FoodEditFragment : Fragment() {
          }
       }
 
-      setupPhotoView()
+      binding.cvSave.setOnClickListener {
+         dataManager!!.deleteItem(TABLE_IMAGE, "foodId", id.toInt())
+         for(i in 0 until imageList.size) {
+            dataManager?.insertImage(imageList[i])
+         }
+
+         Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+      }
+
+      val getData = dataManager!!.getImage(id.toInt())
+      for(i in 0 until getData.size) {
+         imageList.add(getData[i])
+      }
+
+      setupPhotoView(imageList)
 
       return binding.root
    }
@@ -87,33 +104,26 @@ class FoodEditFragment : Fragment() {
             STORAGE_REQUEST_CODE -> {
                val uri = data?.data
                val image = Image(imageUri = uri.toString(), type = type.toInt(), foodId = getFood.id, regDate = calendarDate)
-               dataManager?.insertImage(image)
-               setupPhotoView()
+               imageList.add(image)
+               setupPhotoView(imageList)
             }
          }
       }
    }
 
-   private fun setupPhotoView() {
-      val imageList: ArrayList<Image> = ArrayList()
-
-      val getData = dataManager!!.getImage(type.toInt(), calendarDate)
-      for(i in 0 until getData.size) {
-         imageList.add(Image(id = getData[i].id, imageUri = Uri.parse(getData[i].imageUri).toString()))
-      }
-
-      if(getData.size > 0) {
+   private fun setupPhotoView(imageList: ArrayList<Image>) {
+      if(imageList.size > 0) {
          binding.ivView.visibility = View.GONE
          binding.viewPager.visibility = View.VISIBLE
 
          val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+         binding.viewPager.setPadding(0, 0, 0, 0)
 
          adapter.setOnLongClickListener(object : PhotoSlideAdapter2.OnLongClickListener {
             override fun onLongClick(pos: Int) {
                val dialog = AlertDialog.Builder(context)
                   .setMessage("삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
-                     dataManager!!.deleteItem(TABLE_IMAGE, "id", imageList[pos].id)
                      imageList.removeAt(pos)
 
                      if(imageList.size == 0) {
@@ -133,7 +143,6 @@ class FoodEditFragment : Fragment() {
          })
 
          binding.viewPager.adapter = adapter
-         binding.viewPager.setPadding(0, 0, 0, 0)
       }
    }
 
