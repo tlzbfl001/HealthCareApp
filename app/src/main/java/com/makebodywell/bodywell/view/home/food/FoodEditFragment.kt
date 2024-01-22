@@ -55,8 +55,10 @@ class FoodEditFragment : Fragment() {
       bundle.putString("type", type)
 
       getFood = dataManager!!.getFood(arguments?.getString("id")!!.toInt())
+      var count = getFood.count
+
       binding.tvName.text = getFood.name
-      binding.tvCount.text = getFood.count.toString()
+      binding.tvCount.text = count.toString()
       binding.tvAmount.text = getFood.amount
       binding.tvKcal.text = getFood.kcal
       binding.tvCar.text = getFood.carbohydrate
@@ -75,6 +77,18 @@ class FoodEditFragment : Fragment() {
             intent.type = MediaStore.Images.Media.CONTENT_TYPE
             startActivityForResult(intent, STORAGE_REQUEST_CODE)
          }
+      }
+
+      binding.ivMinus.setOnClickListener {
+         if(count > 0) {
+            count--
+            binding.tvCount.text = count.toString()
+         }
+      }
+
+      binding.ivPlus.setOnClickListener {
+         count++
+         binding.tvCount.text = count.toString()
       }
 
       binding.cvSave.setOnClickListener {

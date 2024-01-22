@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-   xmlns:app="http://schemas.android.com/apk/res-auto"
-   android:layout_width="match_parent"
-   android:layout_height="match_parent"
-   android:orientation="vertical"
-   android:background="@color/white">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/clBack"
        android:layout_width="wrap_content"
@@ -58,6 +58,7 @@
        android:id="@+id/horizontalScroll"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
+       android:scrollbars="none"
        app:layout_constraintTop_toBottomOf="@id/clBack"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toEndOf="parent">
@@ -79,8 +80,7 @@
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintBottom_toBottomOf="parent"
              app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toStartOf="@id/cvWater"
-             app:layout_constraintHorizontal_weight="3">
+             app:layout_constraintEnd_toStartOf="@id/cvWater">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -174,13 +174,13 @@
       </androidx.constraintlayout.widget.ConstraintLayout>
    </HorizontalScrollView>
    <ScrollView
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:fillViewport="true"
-      app:layout_constraintTop_toBottomOf="@id/horizontalScroll"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent">
+       android:layout_width="match_parent"
+       android:layout_height="0dp"
+       android:fillViewport="true"
+       app:layout_constraintTop_toBottomOf="@id/horizontalScroll"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintBottom_toBottomOf="parent">
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent"
@@ -269,7 +269,7 @@
                 android:id="@+id/tv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="18dp"
                 android:text="목표칼로리"
                 android:textSize="18dp"
                 android:textColor="@color/black"
@@ -319,21 +319,24 @@
                 app:layout_constraintTop_toBottomOf="@id/tv3"
                 app:layout_constraintStart_toStartOf="@id/tv3"/>
          </androidx.constraintlayout.widget.ConstraintLayout>
+         <View
+             android:id="@+id/viewBottom"
+             android:layout_width="match_parent"
+             android:layout_height="60dp"
+             android:background="@drawable/oval_water_bottom"
+             android:backgroundTint="#FFFAFA"
+             android:layout_marginTop="18dp"/>
          <androidx.constraintlayout.widget.ConstraintLayout
              android:id="@+id/cl3"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
-             android:layout_marginTop="15dp"
              android:background="#FFFAFA"
-             app:layout_constraintTop_toBottomOf="@id/tvGoal"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintBottom_toBottomOf="parent"
-             app:layout_constraintEnd_toEndOf="parent">
+             android:layout_marginTop="-30dp">
             <TextView
                 android:id="@+id/tv4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="하루 식단"
                 android:textColor="@color/black"
@@ -373,15 +376,15 @@
                 android:id="@+id/cv1"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-               android:layout_marginTop="15dp"
-               android:layout_marginLeft="25dp"
-               android:layout_marginRight="25dp"
-               app:cardCornerRadius="15dp"
-               app:cardElevation="0dp"
-               app:layout_constraintTop_toBottomOf="@id/tv4"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintBottom_toTopOf="@id/cv2"
-               app:layout_constraintEnd_toEndOf="parent">
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tv4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/cv2"
+                app:layout_constraintEnd_toEndOf="parent">
                <androidx.constraintlayout.widget.ConstraintLayout
                    android:layout_width="match_parent"
                    android:layout_height="match_parent">
@@ -437,14 +440,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-               android:layout_marginLeft="25dp"
-               android:layout_marginRight="25dp"
-               app:cardBackgroundColor="#FB7C7C"
-               app:cardCornerRadius="30dp"
-               app:cardElevation="0dp"
-               app:layout_constraintTop_toBottomOf="@id/cv1"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintEnd_toEndOf="parent">
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                app:cardBackgroundColor="#FB7C7C"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/cv1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
                <androidx.constraintlayout.widget.ConstraintLayout
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
@@ -459,38 +462,38 @@
                       android:textColor="@color/white"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintEnd_toStartOf="@id/tvProteinPct"
-                     app:layout_constraintStart_toStartOf="parent"/>
+                      app:layout_constraintStart_toStartOf="parent"/>
                   <TextView
-                     android:id="@+id/tvCar"
+                      android:id="@+id/tvCar"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                     android:text="0 g"
+                      android:text="0 g"
                       android:textSize="17dp"
                       android:textColor="@color/white"
-                     app:layout_constraintTop_toBottomOf="@id/tvCalPct"
-                     app:layout_constraintStart_toStartOf="@id/tvCalPct"
-                     app:layout_constraintEnd_toEndOf="@id/tvCalPct"
-                     app:layout_constraintBottom_toBottomOf="parent"/>
+                      app:layout_constraintTop_toBottomOf="@id/tvCalPct"
+                      app:layout_constraintStart_toStartOf="@id/tvCalPct"
+                      app:layout_constraintEnd_toEndOf="@id/tvCalPct"
+                      app:layout_constraintBottom_toBottomOf="parent"/>
                   <TextView
                       android:id="@+id/tvProteinPct"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                     android:text="단백질 0%"
+                      android:text="단백질 0%"
                       android:textSize="14dp"
                       android:textColor="@color/white"
-                     app:layout_constraintStart_toEndOf="@id/tvCalPct"
+                      app:layout_constraintStart_toEndOf="@id/tvCalPct"
                       app:layout_constraintEnd_toStartOf="@id/tvFatPct"
-                     app:layout_constraintTop_toTopOf="parent"/>
+                      app:layout_constraintTop_toTopOf="parent"/>
                   <TextView
                       android:id="@+id/tvProtein"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                     android:text="0 g"
+                      android:text="0 g"
                       android:textSize="17dp"
                       android:textColor="@color/white"
-                     app:layout_constraintTop_toBottomOf="@id/tvProteinPct"
-                     app:layout_constraintStart_toStartOf="@id/tvProteinPct"
-                     app:layout_constraintEnd_toEndOf="@id/tvProteinPct"
+                      app:layout_constraintTop_toBottomOf="@id/tvProteinPct"
+                      app:layout_constraintStart_toStartOf="@id/tvProteinPct"
+                      app:layout_constraintEnd_toEndOf="@id/tvProteinPct"
                       app:layout_constraintBottom_toBottomOf="parent"/>
                   <TextView
                       android:id="@+id/tvFatPct"
@@ -499,20 +502,20 @@
                       android:text="지방0%"
                       android:textSize="14dp"
                       android:textColor="@color/white"
-                     app:layout_constraintStart_toEndOf="@id/tvProteinPct"
-                     app:layout_constraintTop_toTopOf="parent"
-                     app:layout_constraintEnd_toEndOf="parent"/>
+                      app:layout_constraintStart_toEndOf="@id/tvProteinPct"
+                      app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintEnd_toEndOf="parent"/>
                   <TextView
                       android:id="@+id/tvFat"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                     android:text="0 g"
+                      android:text="0 g"
                       android:textSize="17dp"
                       android:textColor="@color/white"
-                     app:layout_constraintStart_toStartOf="@id/tvFatPct"
-                     app:layout_constraintTop_toBottomOf="@id/tvFatPct"
-                     app:layout_constraintEnd_toEndOf="@id/tvFatPct"
-                     app:layout_constraintBottom_toBottomOf="parent"/>
+                      app:layout_constraintStart_toStartOf="@id/tvFatPct"
+                      app:layout_constraintTop_toBottomOf="@id/tvFatPct"
+                      app:layout_constraintEnd_toEndOf="@id/tvFatPct"
+                      app:layout_constraintBottom_toBottomOf="parent"/>
                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
@@ -536,24 +539,24 @@
                       android:id="@+id/tvBreakfast"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                     android:text="아침"
+                      android:text="아침"
                       android:textSize="17dp"
-                     android:textColor="@color/black"
-                     android:textStyle="bold"
-                     app:layout_constraintTop_toTopOf="@id/clExpand1"
-                     app:layout_constraintBottom_toBottomOf="@id/clExpand1"
-                     app:layout_constraintStart_toStartOf="parent"/>
+                      android:textColor="@color/black"
+                      android:textStyle="bold"
+                      app:layout_constraintTop_toTopOf="@id/clExpand1"
+                      app:layout_constraintBottom_toBottomOf="@id/clExpand1"
+                      app:layout_constraintStart_toStartOf="parent"/>
                   <TextView
                       android:id="@+id/tvTotal1"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:layout_marginLeft="20dp"
-                     android:text="0 kcal"
+                      android:text="0 kcal"
                       android:textSize="17dp"
                       android:textColor="@color/black"
-                     app:layout_constraintStart_toEndOf="@id/tvBreakfast"
-                     app:layout_constraintTop_toTopOf="@id/tvBreakfast"
-                     app:layout_constraintBottom_toBottomOf="@id/tvBreakfast"/>
+                      app:layout_constraintStart_toEndOf="@id/tvBreakfast"
+                      app:layout_constraintTop_toTopOf="@id/tvBreakfast"
+                      app:layout_constraintBottom_toBottomOf="@id/tvBreakfast"/>
                   <androidx.constraintlayout.widget.ConstraintLayout
                       android:id="@+id/clExpand1"
                       android:layout_width="wrap_content"

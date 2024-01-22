@@ -38,17 +38,16 @@ class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
-
-   private var calendarDate: LocalDate? = null
-
    private var dataManager: DataManager? = null
+   private var getDailyData = DailyData()
    private val itemList1 = ArrayList<Food>()
    private val itemList2 = ArrayList<Food>()
    private val itemList3 = ArrayList<Food>()
    private val itemList4 = ArrayList<Food>()
-   private var getDailyData = DailyData()
 
+   private var bundle = Bundle()
+
+   private var calendarDate: LocalDate? = null
    private var sum = 0
    private var isExpand1 = false
    private var isExpand2 = false
@@ -109,17 +108,15 @@ class FoodFragment : Fragment() {
       binding.ivPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
+
          dailyView()
-         listView()
       }
 
       binding.ivNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
+
          dailyView()
-         listView()
       }
 
       binding.cvWater.setOnClickListener {
@@ -199,10 +196,25 @@ class FoodFragment : Fragment() {
          }
       }
 
-      setupGoal()
       dailyView()
 
       return binding.root
+   }
+
+   private fun dailyView() {
+      val getFood = dataManager!!.getFood(1, calendarDate.toString())
+
+      // 목표 설정
+      setupGoal()
+
+      // 이미지뷰 설정
+      photoView()
+
+      // 영양성분 설정
+      nutritionView(getFood)
+
+      // 리스트뷰 설정
+      listView()
    }
 
    private fun setupGoal() {
@@ -231,19 +243,6 @@ class FoodFragment : Fragment() {
       }else {
          binding.tvRemain.text = "0 kcal"
       }
-   }
-
-   private fun dailyView() {
-      val getFood = dataManager!!.getFood(1, calendarDate.toString())
-
-      // 이미지뷰 설정
-      photoView()
-
-      // 영양성분 설정
-      nutritionView(getFood)
-
-      // 리스트뷰 설정
-      listView()
    }
 
    private fun photoView() {

@@ -100,7 +100,7 @@ class WaterFragment : Fragment() {
             binding.tvIntake.text = "${count}잔/${count * volume}ml"
             binding.tvVolume.text = "${volume}ml"
             binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
-            binding.tvWaterUnit.text = (count * volume).toString()
+            binding.tvUnit.text = (count * volume).toString()
 
             val remain = goal - count
             if(remain > 0) {
@@ -113,7 +113,7 @@ class WaterFragment : Fragment() {
          }
       }
 
-      binding.cvGoal.setOnClickListener {
+      binding.clGoal.setOnClickListener {
          dialog.show()
       }
 
@@ -208,13 +208,13 @@ class WaterFragment : Fragment() {
 
    private fun dailyView() {
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
-      binding.recyclerView.layoutManager = layoutManager
+      binding.rv.layoutManager = layoutManager
 
-      binding.tvWaterCount.text = count.toString()
-      binding.tvWaterUnit.text = (count * volume).toString()
+      binding.tvCount.text = "${count}잔"
+      binding.tvUnit.text = "(${count * volume} ml)"
 
       adapter = WaterAdapter(count)
-      binding.recyclerView.adapter = adapter
+      binding.rv.adapter = adapter
 
       binding.ivMinus.setOnClickListener {
          if(count > 0) {
@@ -229,8 +229,8 @@ class WaterFragment : Fragment() {
             binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
          }
 
-         binding.tvWaterCount.text = count.toString()
-         binding.tvWaterUnit.text = (count * volume).toString()
+         binding.tvCount.text = "${count}잔"
+         binding.tvUnit.text = "(${count * volume} ml)"
          binding.tvIntake.text = "${count}잔/${count * volume}ml"
 
          val remain = goal - count
@@ -241,7 +241,7 @@ class WaterFragment : Fragment() {
          }
 
          adapter = WaterAdapter(count)
-         binding.recyclerView.adapter = adapter
+         binding.rv.adapter = adapter
 
          getWater = dataManager!!.getWater(calendarDate.toString())
          if(getWater.regDate == "") {
@@ -258,8 +258,8 @@ class WaterFragment : Fragment() {
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.max = goal
          binding.pbWater.progress = count
-         binding.tvWaterCount.text = count.toString()
-         binding.tvWaterUnit.text = (count * volume).toString()
+         binding.tvCount.text = "${count}잔"
+         binding.tvUnit.text = "(${count * volume} ml)"
          binding.tvIntake.text = "${count}잔/${count * volume}ml"
 
          val remain = goal - count
@@ -270,7 +270,7 @@ class WaterFragment : Fragment() {
          }
 
          adapter = WaterAdapter(count)
-         binding.recyclerView.adapter = adapter
+         binding.rv.adapter = adapter
 
          getWater = dataManager!!.getWater(calendarDate.toString())
          if(getWater.regDate == "") {

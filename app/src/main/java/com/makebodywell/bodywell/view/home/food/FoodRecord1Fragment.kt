@@ -43,6 +43,7 @@ class FoodRecord1Fragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
+
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 

@@ -49,7 +49,7 @@ class FoodRecord2Fragment : Fragment() {
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
-      binding.btnOut.setOnClickListener {
+      binding.clBack.setOnClickListener {
          when(type) {
             "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
             "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
@@ -79,8 +79,8 @@ class FoodRecord2Fragment : Fragment() {
          }
 
          adapter = FoodRecord2Adapter(itemList)
-         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.recyclerView.adapter = adapter
+         binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         binding.rv.adapter = adapter
       }
    }
 }

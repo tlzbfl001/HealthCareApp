@@ -165,7 +165,7 @@ class FoodBreakfastFragment : Fragment() {
                      imageData!!.stream().filter { x -> x.foodId == dataList[pos].id }
                         .collect(Collectors.toList()).forEach { x ->
                            imageData!!.remove(x)
-                     }
+                        }
 
                      dataList.removeAt(pos)
 
