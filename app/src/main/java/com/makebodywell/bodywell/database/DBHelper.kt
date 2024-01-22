@@ -12,10 +12,6 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
-      const val TABLE_EXERCISE_CATEGORY = "exerciseCategory"
-      const val TABLE_EXERCISE_PART = "exercisePart"
-      const val TABLE_EXERCISE_ITEM = "exerciseItem"
-      const val TABLE_EXERCISE_DELETE = "exerciseDelete"
       const val TABLE_BODY = "body"
       const val TABLE_DRUG = "drug"
       const val TABLE_DRUG_DATE = "drugDate"
@@ -32,26 +28,14 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL(user)
 
       val food = "create table $TABLE_FOOD(id integer primary key autoincrement, name text, unit integer, amount integer, count integer, kcal integer," +
-         "carbohydrate real, protein real, fat real, salt real, sugar real, type integer, regDate text);"
+              "carbohydrate real, protein real, fat real, salt real, sugar real, type integer, regDate text);"
       db.execSQL(food)
 
       val water = "create table $TABLE_WATER(id integer primary key autoincrement, water integer, volume integer, regDate text);"
       db.execSQL(water)
 
-      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, category text, name text, workoutTime text, distance real, calories integer, regDate text);"
+      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, name text, intensity text, workoutTime text, calories integer, regDate text);"
       db.execSQL(exercise)
-
-      val exerciseCategory = "create table $TABLE_EXERCISE_CATEGORY(id integer primary key autoincrement, name text, dataId integer);"
-      db.execSQL(exerciseCategory)
-
-      val exercisePart = "create table $TABLE_EXERCISE_PART(id integer primary key autoincrement, name text, dataId integer);"
-      db.execSQL(exercisePart)
-
-      val exerciseItem = "create table $TABLE_EXERCISE_ITEM(id integer primary key autoincrement, type text, name text);"
-      db.execSQL(exerciseItem)
-
-      val exerciseDelete = "create table $TABLE_EXERCISE_DELETE(id integer primary key autoincrement, type text, name text);"
-      db.execSQL(exerciseDelete)
 
       val body = "create table $TABLE_BODY(id integer primary key autoincrement, height real, weight real, age integer, " +
               "gender text, exerciseLevel integer, fat real, muscle real, bmi real, bmr real, regDate text);"
@@ -87,10 +71,6 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $TABLE_FOOD")
       db.execSQL("drop table if exists $TABLE_WATER")
       db.execSQL("drop table if exists $TABLE_EXERCISE")
-      db.execSQL("drop table if exists $TABLE_EXERCISE_CATEGORY")
-      db.execSQL("drop table if exists $TABLE_EXERCISE_PART")
-      db.execSQL("drop table if exists $TABLE_EXERCISE_ITEM")
-      db.execSQL("drop table if exists $TABLE_EXERCISE_DELETE")
       db.execSQL("drop table if exists $TABLE_BODY")
       db.execSQL("drop table if exists $TABLE_DRUG")
       db.execSQL("drop table if exists $TABLE_DRUG_DATE")

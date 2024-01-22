@@ -10,8 +10,6 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_DATE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_DELETE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE_ITEM
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
@@ -205,37 +203,12 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val data = Exercise()
          data.id=cursor.getInt(0)
-         data.category=cursor.getString(1)
-         data.name=cursor.getString(2)
+         data.name=cursor.getString(1)
+         data.intensity=cursor.getString(2)
          data.workoutTime= cursor.getInt(3)
-         data.distance= cursor.getDouble(4)
-         data.calories= cursor.getInt(5)
-         data.regDate= cursor.getString(6)
+         data.calories= cursor.getInt(4)
+         data.regDate= cursor.getString(5)
          list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getExerciseItem(type: String?) : ArrayList<String> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<String> = ArrayList()
-      val sql = "select name from $TABLE_EXERCISE_ITEM where type='$type'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         list.add(cursor.getString(0))
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getExerciseDelete(type: String?) : ArrayList<String> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<String> = ArrayList()
-      val sql = "select name from $TABLE_EXERCISE_DELETE where type='$type'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         list.add(cursor.getString(0))
       }
       cursor.close()
       return list
@@ -538,22 +511,12 @@ class DataManager(private var context: Context?) {
    fun insertExercise(data: Exercise) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
-      values.put("category", data.category)
       values.put("name", data.name)
+      values.put("intensity", data.intensity)
       values.put("workoutTime", data.workoutTime)
-      values.put("distance", data.distance)
       values.put("calories", data.calories)
       values.put("regDate", data.regDate)
       db.insert(TABLE_EXERCISE, null, values)
-   }
-
-   fun insertExercise(tableName: String, type: String, name: String) {
-      val db = dbHelper!!.writableDatabase
-      val values = ContentValues()
-      values.put("type", type)
-      values.put("name", name)
-      db!!.insert(tableName, null, values)
-      db.close()
    }
 
    fun insertBody(data: Body) {
@@ -650,7 +613,8 @@ class DataManager(private var context: Context?) {
 
    fun updateExercise(data: Exercise) {
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_EXERCISE set workoutTime='${data.workoutTime}', calories=${data.calories} where id=${data.id}"
+      val sql = "update $TABLE_EXERCISE set name='${data.name}', intensity='${data.intensity}', workoutTime='${data.workoutTime}', " +
+              "calories=${data.calories} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
@@ -701,13 +665,6 @@ class DataManager(private var context: Context?) {
    fun deleteItem(table: String, column: String, id: Int): Boolean {
       val db = dbHelper!!.writableDatabase
       val success = db!!.delete(table, "$column=$id",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteExerciseItem(type: String, name: String?): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(TABLE_EXERCISE_ITEM,"type='$type' and name='$name'",null)
       db.close()
       return (Integer.parseInt("$success") != -1)
    }
