@@ -1,12 +1,10 @@
 package com.makebodywell.bodywell.view.home.exercise
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodRecord2Adapter
@@ -21,6 +19,7 @@ class ExerciseRecord2Fragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
+   private val itemList = ArrayList<Food>()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -31,28 +30,17 @@ class ExerciseRecord2Fragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupList()
-
-      return binding.root
-   }
-
-   private fun initView() {
-      binding.ivX.setOnClickListener {
+      binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseListFragment())
       }
 
-      binding.cv1.setOnClickListener {
+      binding.tvBtn1.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
-      binding.cv3.setOnClickListener {
+      binding.tvBtn3.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseInputFragment())
       }
-   }
-
-   private fun setupList() {
-      val itemList = ArrayList<Food>()
 
       val getExercise = dataManager!!.getExercise(LocalDate.now().toString())
 
@@ -61,7 +49,9 @@ class ExerciseRecord2Fragment : Fragment() {
       }
 
       val adapter = FoodRecord2Adapter(itemList)
-      binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.recyclerView.adapter = adapter
+      binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv.adapter = adapter
+
+      return binding.root
    }
 }

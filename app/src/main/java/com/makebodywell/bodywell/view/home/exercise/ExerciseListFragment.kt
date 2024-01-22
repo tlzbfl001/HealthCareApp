@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.ExerciseListAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
-import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
 import java.time.LocalDate
 
 class ExerciseListFragment : Fragment() {
@@ -28,46 +28,20 @@ class ExerciseListFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupList()
-
-      return binding.root
-   }
-
-   private fun initView() {
-      binding.ivBack.setOnClickListener {
+      binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseFragment())
       }
 
-      binding.tvSearch.setOnClickListener {
+      binding.tvInput.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
-
-      binding.cv1.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
-      }
-
-      binding.cv2.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
-      }
-
-      binding.cv3.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseInputFragment())
-      }
-   }
-
-   private fun setupList() {
-      val itemList = ArrayList<Exercise>()
 
       val getExercise = dataManager!!.getExercise(LocalDate.now().toString())
 
-      for(i in 0 until getExercise.size) {
-         itemList.add(Exercise(id = getExercise[i].id, category = getExercise[i].category, name = getExercise[i].name,
-            workoutTime = getExercise[i].workoutTime, distance = getExercise[i].distance, calories = getExercise[i].calories))
-      }
-
-      val adapter = ExerciseListAdapter(requireActivity(), itemList)
+      val adapter = ExerciseListAdapter(requireActivity(), getExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
+
+      return binding.root
    }
 }

@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.ExerciseAdapter
@@ -89,7 +90,7 @@ class ExerciseFragment : Fragment() {
          }
       }
 
-      binding.cvGoal.setOnClickListener {
+      binding.clGoal.setOnClickListener {
          dialog.show()
       }
 
@@ -171,18 +172,10 @@ class ExerciseFragment : Fragment() {
    }
 
    private fun dailyView() {
-      val itemList = ArrayList<Exercise>()
-
       val getExercise = dataManager!!.getExercise(calendarDate.toString())
 
-      for(i in 0 until getExercise.size) {
-         itemList.add(Exercise(category = getExercise[i].category, name = getExercise[i].name, workoutTime = getExercise[i].workoutTime,
-            distance = getExercise[i].distance, calories = getExercise[i].calories))
-      }
-
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
-      binding.recyclerView.layoutManager = layoutManager
-      adapter = ExerciseAdapter(itemList)
-      binding.recyclerView.adapter = adapter
+      adapter = ExerciseAdapter(getExercise)
+      binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+      binding.rv.adapter = adapter
    }
 }
