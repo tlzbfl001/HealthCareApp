@@ -31,13 +31,11 @@ class ExerciseListAdapter (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.tvCategory.text = itemList[position].category
       holder.tvName.text = itemList[position].name
-      holder.tvWorkoutTime.text = itemList[position].workoutTime.toString()
-      holder.tvDistance.text = itemList[position].distance.toString()
-      holder.tvKcal.text = itemList[position].calories.toString()
+      holder.tvTime.text = "${itemList[position].workoutTime}분"
+      holder.tvKcal.text = "${itemList[position].calories} kcal"
 
-      holder.clDelete.setOnClickListener {
+      holder.ivDelete.setOnClickListener {
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
@@ -59,11 +57,9 @@ class ExerciseListAdapter (
    }
 
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-      val tvCategory: TextView = itemView.findViewById(R.id.tvCategory)
       val tvName: TextView = itemView.findViewById(R.id.tvName)
-      val tvWorkoutTime: TextView = itemView.findViewById(R.id.tvWorkoutTime)
-      val tvDistance: TextView = itemView.findViewById(R.id.tvDistance)
+      val tvTime: TextView = itemView.findViewById(R.id.tvTime)
       val tvKcal: TextView = itemView.findViewById(R.id.tvKcal)
-      val clDelete: ConstraintLayout = itemView.findViewById(R.id.clDelete)
+      val ivDelete: ConstraintLayout = itemView.findViewById(R.id.ivDelete)
    }
 }

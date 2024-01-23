@@ -31,12 +31,6 @@ class SleepFragment : Fragment() {
    ): View {
       _binding = FragmentSleepBinding.inflate(layoutInflater)
 
-      initView()
-
-      return binding.root
-   }
-
-   private fun initView() {
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_sleep_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -44,30 +38,39 @@ class SleepFragment : Fragment() {
       btnSave.setOnClickListener {
          dialog.dismiss()
       }
-      binding.cvGoal.setOnClickListener {
+
+      binding.clGoal.setOnClickListener {
          dialog.show()
       }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
+
       binding.cvFood.setOnClickListener {
          replaceFragment1(requireActivity(), FoodFragment())
       }
+
       binding.cvWater.setOnClickListener {
          replaceFragment1(requireActivity(), WaterFragment())
       }
+
       binding.cvExercise.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseFragment())
       }
+
       binding.cvBody.setOnClickListener {
          replaceFragment1(requireActivity(), BodyFragment())
       }
+
       binding.cvDrug.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
       }
+
       binding.clRecord.setOnClickListener {
          replaceFragment1(requireActivity(), SleepRecordFragment())
       }
+
+      return binding.root
    }
 }

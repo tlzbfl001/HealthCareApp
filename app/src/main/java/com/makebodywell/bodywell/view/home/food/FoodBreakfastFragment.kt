@@ -24,7 +24,6 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.util.stream.Collectors
 import kotlin.math.abs
 
-
 class FoodBreakfastFragment : Fragment() {
    private var _binding: FragmentFoodBreakfastBinding? = null
    val binding get() = _binding!!
@@ -72,7 +71,7 @@ class FoodBreakfastFragment : Fragment() {
          replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
       }
 
-      binding.cvAdd.setOnClickListener {
+      binding.cvSave.setOnClickListener {
          val getFoodData = adapter!!.getFoodData()
          dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
 
@@ -170,7 +169,10 @@ class FoodBreakfastFragment : Fragment() {
                      dataList.removeAt(pos)
 
                      adapter!!.notifyDataSetChanged()
-                     photoAdapter!!.notifyDataSetChanged()
+
+                     if (imageData!!.size > 0) {
+                        photoAdapter!!.notifyDataSetChanged()
+                     }
 
                      Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                   }

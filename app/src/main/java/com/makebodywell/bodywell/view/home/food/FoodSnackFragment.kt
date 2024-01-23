@@ -66,7 +66,7 @@ class FoodSnackFragment : Fragment() {
             replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
         }
 
-        binding.cvAdd.setOnClickListener {
+        binding.cvSave.setOnClickListener {
             val getFoodData = foodRecordAdapter!!.getFoodData()
             dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
 

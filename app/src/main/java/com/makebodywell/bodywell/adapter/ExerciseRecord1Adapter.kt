@@ -19,7 +19,6 @@ class ExerciseRecord1Adapter (
     private val context: FragmentActivity,
     private val itemList: ArrayList<Exercise>
 ) : RecyclerView.Adapter<ExerciseRecord1Adapter.ViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_record1, parent, false)
         return ViewHolder(view)
@@ -33,6 +32,7 @@ class ExerciseRecord1Adapter (
             val exercise = Exercise(id = itemList[position].id, name = itemList[position].name, workoutTime = itemList[position].workoutTime,
                 calories = itemList[position].calories)
             bundle.putParcelable("exercise", exercise)
+
             replaceFragment2(context, ExerciseDetailFragment(), bundle)
         }
     }

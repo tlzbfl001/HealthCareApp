@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.BtListAdapter
 import com.makebodywell.bodywell.databinding.FragmentConnectBinding
 import com.makebodywell.bodywell.model.Bluetooth
-import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.BT_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.BT_PERMISSION_2
 

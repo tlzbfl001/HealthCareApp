@@ -10,7 +10,6 @@ import com.makebodywell.bodywell.adapter.ExerciseListAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
 import java.time.LocalDate
 
 class ExerciseListFragment : Fragment() {

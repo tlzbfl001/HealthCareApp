@@ -7,38 +7,30 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.alpha
-import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugBinding
 import com.makebodywell.bodywell.model.DailyData
-import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import okhttp3.internal.notifyAll
 import java.time.LocalDate
 
 class DrugFragment : Fragment() {
@@ -96,7 +88,7 @@ class DrugFragment : Fragment() {
          dialog.dismiss()
       }
 
-      binding.cvGoal.setOnClickListener {
+      binding.clGoal.setOnClickListener {
          dialog.show()
       }
 
@@ -119,8 +111,6 @@ class DrugFragment : Fragment() {
       binding.clRecord.setOnClickListener {
          if(requestPermission()) {
             replaceFragment1(requireActivity(), DrugRecordFragment())
-         }else {
-            Toast.makeText(context, "권한이 없습니다.", Toast.LENGTH_SHORT).show()
          }
       }
 

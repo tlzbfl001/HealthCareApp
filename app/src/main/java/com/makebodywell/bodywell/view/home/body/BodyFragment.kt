@@ -99,7 +99,7 @@ class BodyFragment : Fragment() {
          dialog.dismiss()
       }
 
-      binding.cvGoal.setOnClickListener {
+      binding.clGoal.setOnClickListener {
          dialog.show()
       }
 
@@ -153,7 +153,7 @@ class BodyFragment : Fragment() {
          }
       }
 
-      binding.ivBmiButton.setOnClickListener {
+      binding.clBmi.setOnClickListener {
          if (isExpand) {
             binding.clBmiExpend.visibility = View.GONE
          } else {
@@ -162,7 +162,7 @@ class BodyFragment : Fragment() {
          isExpand = !isExpand
       }
 
-      binding.ivFatButton.setOnClickListener {
+      binding.clFat.setOnClickListener {
          if (isExpand) {
             binding.clFatExpend.visibility = View.GONE
          } else {
@@ -171,7 +171,7 @@ class BodyFragment : Fragment() {
          isExpand = !isExpand
       }
 
-      binding.ivMuscleButton.setOnClickListener {
+      binding.clMuscle.setOnClickListener {
          if (isExpand) {
             binding.clMuscleExpend.visibility = View.GONE
          } else {
@@ -180,7 +180,7 @@ class BodyFragment : Fragment() {
          isExpand = !isExpand
       }
 
-      binding.ivBmrButton.setOnClickListener {
+      binding.clBmr.setOnClickListener {
          if (isExpand) {
             binding.tvBmrExpend.visibility = View.GONE
          } else {
@@ -300,7 +300,7 @@ class BodyFragment : Fragment() {
       val format2 = String.format("%.1f", getBody.fat)
       val fat = format2.replace(".", "").toInt()
       when{
-         fat < 101 -> {
+         fat < 141 -> {
             binding.fatIndicator1.progress = fat
             binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
@@ -308,7 +308,7 @@ class BodyFragment : Fragment() {
             binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
             binding.tvFatStatus.text = "너무낮은수준"
          }
-         fat < 201 -> {
+         fat < 211 -> {
             binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator2.progress = fat
             binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)

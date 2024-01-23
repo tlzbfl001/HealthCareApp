@@ -33,8 +33,6 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
-    <uses-permission android:name="android.permission.health.WRITE_STEPS" />
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
@@ -53,20 +51,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <activity
-            android:name=".view.init.PermissionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.HealthConnectTestActivity"
+            android:name=".view.HealthConnectActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
             </intent-filter>
-
-            <meta-data
-                android:name="health_permissions"
+            <meta-data android:name="health_permissions"
                 android:resource="@array/health_permissions" />
         </activity>
-        <activity android:name=".view.init.StartActivity" />
         <activity android:name=".view.init.InputActivity" />
         <activity
             android:name=".view.init.SplashActivity"

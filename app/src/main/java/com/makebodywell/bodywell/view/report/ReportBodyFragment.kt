@@ -53,15 +53,15 @@ class ReportBodyFragment : Fragment() {
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
-      binding.pbFood.setOnClickListener {
+      binding.clMenu2.setOnClickListener {
          replaceFragment1(requireActivity(), ReportFoodFragment())
       }
 
-      binding.pbExercise.setOnClickListener {
+      binding.clMenu3.setOnClickListener {
          replaceFragment1(requireActivity(), ReportExerciseFragment())
       }
 
-      binding.pbDrug.setOnClickListener {
+      binding.clMenu4.setOnClickListener {
          replaceFragment1(requireActivity(), ReportDrugFragment())
       }
 
@@ -120,7 +120,6 @@ class ReportBodyFragment : Fragment() {
          monthlyView()
       }
 
-      buttonUI()
       dailyView()
       test()
 
@@ -128,11 +127,11 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun dailyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
@@ -209,11 +208,11 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvWeekly.setTextColor(Color.WHITE)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
@@ -291,11 +290,11 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
@@ -445,22 +444,11 @@ class ReportBodyFragment : Fragment() {
       }
    }
 
-   private fun buttonUI() {
-      binding.pbBody.max = 100
-      binding.pbBody.progress = 50
-      binding.pbFood.max = 100
-      binding.pbFood.progress = 50
-      binding.pbExercise.max = 100
-      binding.pbExercise.progress = 50
-      binding.pbDrug.max = 100
-      binding.pbDrug.progress = 50
-   }
-
    private fun test() {
-      binding.ivLogo.setOnClickListener {
+      binding.tvWeight.setOnClickListener {
          deleteData(requireActivity())
       }
-      binding.tvReport.setOnClickListener {
+      binding.tvBmi.setOnClickListener {
          insertData(requireActivity())
       }
    }

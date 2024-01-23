@@ -38,11 +38,11 @@ class DrugRecordFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      binding.ivBack.setOnClickListener {
+      binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      binding.cvAdd.setOnClickListener {
+      binding.tvAdd.setOnClickListener {
          replaceFragment1(requireActivity(), DrugAddFragment())
       }
 

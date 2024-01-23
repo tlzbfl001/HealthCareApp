@@ -37,7 +37,7 @@
          app:layout_constraintTop_toTopOf="parent" />
       <androidx.cardview.widget.CardView
          android:id="@+id/cvStart"
-         android:layout_width="300dp"
+         android:layout_width="250dp"
          android:layout_height="wrap_content"
          android:layout_marginLeft="30dp"
          android:layout_marginRight="30dp"
@@ -52,13 +52,13 @@
             android:layout_height="match_parent"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:paddingRight="25dp">
+            android:paddingRight="20dp">
             <TextView
                android:id="@+id/tvStart"
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:gravity="center"
-               android:paddingLeft="55dp"
+               android:paddingLeft="45dp"
                android:text="시작"
                android:textColor="@color/white"
                android:textSize="18dp"

@@ -60,15 +60,15 @@ class ReportFoodFragment : Fragment() {
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
-      binding.pbBody.setOnClickListener {
+      binding.clMenu1.setOnClickListener {
          replaceFragment1(requireActivity(), ReportBodyFragment())
       }
 
-      binding.pbExercise.setOnClickListener {
+      binding.clMenu3.setOnClickListener {
          replaceFragment1(requireActivity(), ReportExerciseFragment())
       }
 
-      binding.pbDrug.setOnClickListener {
+      binding.clMenu4.setOnClickListener {
          replaceFragment1(requireActivity(), ReportDrugFragment())
       }
 
@@ -127,18 +127,17 @@ class ReportFoodFragment : Fragment() {
          monthlyView()
       }
 
-      buttonUI()
       dailyView()
 
       return binding.root
    }
 
    private fun dailyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
@@ -169,11 +168,11 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvWeekly.setTextColor(Color.WHITE)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
@@ -205,11 +204,11 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      binding.tvDaily.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
-      binding.tvWeekly.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvWeekly.setTextColor(Color.BLACK)
-      binding.tvMonthly.setBackgroundResource(R.drawable.rec_12_blue)
+      binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
@@ -282,10 +281,10 @@ class ReportFoodFragment : Fragment() {
       data.setData(lineData)
 
       val barColor = ArrayList<Int>()
-      barColor.add(Color.parseColor("#FFC6D7"))
-      barColor.add(Color.parseColor("#BFA1AC"))
       barColor.add(Color.parseColor("#FE9A9A"))
-      barColor.add(Color.parseColor("#FFAD0D"))
+      barColor.add(Color.parseColor("#FFE500"))
+      barColor.add(Color.parseColor("#ABE764"))
+      barColor.add(Color.parseColor("#FFC6D7"))
 
       val barDataSet = BarDataSet(barEntries, "")
       barDataSet.colors = barColor
@@ -404,7 +403,7 @@ class ReportFoodFragment : Fragment() {
       data.setData(lineData)
 
       val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.color = Color.parseColor("#4477E6")
+      barDataSet.color = Color.parseColor("#6F89BF")
       barDataSet.valueTextSize = 0f
 
       val barData = BarData(barDataSet)
@@ -449,17 +448,6 @@ class ReportFoodFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
-   }
-
-   private fun buttonUI() {
-      binding.pbBody.max = 100
-      binding.pbBody.progress = 50
-      binding.pbFood.max = 100
-      binding.pbFood.progress = 50
-      binding.pbExercise.max = 100
-      binding.pbExercise.progress = 50
-      binding.pbDrug.max = 100
-      binding.pbDrug.progress = 50
    }
 
    class MyValueFormatter : IValueFormatter {

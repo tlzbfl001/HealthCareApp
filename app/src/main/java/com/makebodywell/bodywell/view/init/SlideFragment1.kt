@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.makebodywell.bodywell.databinding.FragmentSlide1Binding
+import com.makebodywell.bodywell.view.HealthConnectActivity
 
 class SlideFragment1 : Fragment() {
    private var _binding: FragmentSlide1Binding? = null

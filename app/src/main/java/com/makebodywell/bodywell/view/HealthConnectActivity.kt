@@ -8,33 +8,26 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthDataRequestPermissions
 import androidx.health.connect.client.permission.Permission
 import androidx.health.connect.client.records.*
-import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.*
 
-class HealthConnectTestActivity : AppCompatActivity() {
-
-   private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(this) }
-
+class HealthConnectActivity : AppCompatActivity() {
    private var textView: TextView? = null
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
-      setContentView(R.layout.activity_health_connect_test)
+      setContentView(R.layout.activity_health_connect)
 
       textView = findViewById(R.id.textView)
 
       val permissions = setOf(
-         Permission.createReadPermission(Steps::class),
-         Permission.createWritePermission(Steps::class)
+         Permission.createReadPermission(StepsRecord::class),
+         Permission.createWritePermission(StepsRecord::class)
       )
 
       // 권한 요청
@@ -48,16 +41,15 @@ class HealthConnectTestActivity : AppCompatActivity() {
 
       fun checkPermissionsAndRun(client: HealthConnectClient) {
          lifecycleScope.launch {
-            val granted = client.permissionController.getGrantedPermissions(permissions)
-            if (granted.containsAll(permissions)) {
-               readStepsByTimeRange(healthConnectClient)
+            if (HealthConnectClient.isAvailable(applicationContext)) {
+               readStepsByTimeRange(client)
             } else {
                requestPermissions.launch(permissions)
             }
          }
       }
 
-      checkPermissionsAndRun(healthConnectClient)
+      checkPermissionsAndRun(HealthConnectClient.getOrCreate(this))
    }
 
    private suspend fun readStepsByTimeRange(healthConnectClient: HealthConnectClient) {
@@ -65,7 +57,7 @@ class HealthConnectTestActivity : AppCompatActivity() {
          var count = 0
          val response = healthConnectClient.readRecords(
             ReadRecordsRequest(
-               Steps::class,
+               StepsRecord::class,
                timeRangeFilter = TimeRangeFilter.between(
                   LocalDateTime.now().with(LocalTime.of(0, 0, 0)),
                   LocalDateTime.now()

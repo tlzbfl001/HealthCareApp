@@ -20,15 +20,17 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    private var dataManager: DataManager? = null
 
-   private var btnCalPrev : ImageView? = null
-   private var tvCalTitle : TextView? = null
-   private var btnCalNext : ImageView? = null
-   private var clStatus : ConstraintLayout? = null
-   private var recyclerView: RecyclerView? = null
+   private var tvYear : TextView? = null
+   private var tvMonth : TextView? = null
+   private var ivPrev : ImageView? = null
+   private var ivNext : ImageView? = null
+   private var tvStatus : TextView? = null
+   private var rv: RecyclerView? = null
    private var viewPager: ViewPager? = null
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,22 +40,23 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
       dataManager = DataManager(context)
       dataManager!!.open()
 
-      btnCalPrev = findViewById(R.id.btnCalPrev)
-      tvCalTitle = findViewById(R.id.tvCalTitle)
-      btnCalNext = findViewById(R.id.btnCalNext)
-      clStatus = findViewById(R.id.clStatus)
-      recyclerView = findViewById(R.id.recyclerView)
+      tvYear = findViewById(R.id.tvYear)
+      tvMonth = findViewById(R.id.tvMonth)
+      ivPrev = findViewById(R.id.ivPrev)
+      ivNext = findViewById(R.id.ivNext)
+      tvStatus = findViewById(R.id.tvStatus)
+      rv = findViewById(R.id.rv)
       viewPager = findViewById(R.id.viewPager)
 
       selectedDate = LocalDate.now()
 
-      btnCalPrev?.setOnClickListener {
+      ivPrev?.setOnClickListener {
          selectedDate = selectedDate.minusMonths(1)
          setMonthView()
          setImageView()
       }
 
-      btnCalNext?.setOnClickListener {
+      ivNext?.setOnClickListener {
          selectedDate = selectedDate.plusMonths(1)
          setMonthView()
          setImageView()
@@ -67,12 +70,13 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    }
 
    private fun setMonthView() {
-      tvCalTitle?.text = calendarTitle()
+      tvYear?.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
+      tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("MM"))
       val days = monthArray()
       val adapter = CalendarAdapter2(context, days, this)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
-      recyclerView?.layoutManager = layoutManager
-      recyclerView?.adapter = adapter
+      rv?.layoutManager = layoutManager
+      rv?.adapter = adapter
    }
 
    private fun setImageView() {
@@ -100,14 +104,14 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
 
       if (itemList.size > 0) {
          viewPager?.visibility = View.VISIBLE
-         clStatus?.visibility = View.GONE
+         tvStatus?.visibility = View.GONE
 
          val adapter = PhotoSlideAdapter(context, itemList)
          viewPager?.adapter = adapter
          viewPager?.setPadding(0, 0, 280, 0)
       }else {
          viewPager?.visibility = View.GONE
-         clStatus?.visibility = View.VISIBLE
+         tvStatus?.visibility = View.VISIBLE
       }
    }
 

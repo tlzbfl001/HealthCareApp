@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
@@ -17,7 +16,6 @@ import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.model.DrugTime
-import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.DrugUtil.Companion.clearDrugData
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugCount

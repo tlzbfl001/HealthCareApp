@@ -72,7 +72,7 @@ class BodyRecordFragment : Fragment() {
          }
       }
 
-      binding.ivBack.setOnClickListener {
+      binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), BodyFragment())
       }
 
@@ -114,7 +114,7 @@ class BodyRecordFragment : Fragment() {
          }
       }
 
-      binding.tvSave.setOnClickListener {
+      binding.cvSave.setOnClickListener {
          var height = binding.etHeight.text.toString()
          var weight = binding.etWeight.text.toString()
          var age = binding.etAge.text.toString()
