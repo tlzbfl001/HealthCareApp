@@ -68,10 +68,11 @@
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintEnd_toEndOf="parent"/>
             <TextView
+               android:id="@+id/tvTotal"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:text="0h 0m"
-               android:textSize="18dp"
+               android:textSize="20dp"
                android:textColor="@color/white"
                android:textStyle="bold"
                app:layout_constraintTop_toTopOf="@id/picker"
@@ -107,7 +108,7 @@
              app:layout_constraintBottom_toTopOf="@id/clBedtime"
              app:layout_constraintVertical_chainStyle="packed"/>
          <TextView
-             android:id="@+id/tvWakeup"
+             android:id="@+id/tvWake"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:text="기상 시간"
@@ -140,29 +141,20 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tvBedtime" />
+                app:layout_constraintBottom_toTopOf="@id/tvBedtime"
+                app:layout_constraintVertical_chainStyle="packed" />
             <TextView
                 android:id="@+id/tvBedtime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="0 : 0"
                 android:textSize="30dp"
                 android:textColor="@color/white"
                 app:layout_constraintTop_toBottomOf="@id/tv1"
                 app:layout_constraintStart_toStartOf="@id/tv1"
                 app:layout_constraintEnd_toEndOf="@id/tv1"
-                app:layout_constraintBottom_toTopOf="@id/tvPm" />
-            <TextView
-                android:id="@+id/tvPm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PM"
-                android:textSize="20dp"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tvBedtime"
-                app:layout_constraintStart_toStartOf="@id/tv1"
-                app:layout_constraintEnd_toEndOf="@id/tv1"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
              android:id="@+id/clWake"
@@ -186,41 +178,32 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tvWake"/>
+                app:layout_constraintBottom_toTopOf="@id/tvWakeupTime"
+                app:layout_constraintVertical_chainStyle="packed"/>
             <TextView
-                android:id="@+id/tvWake"
+                android:id="@+id/tvWakeupTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="0 : 0"
                 android:textSize="30dp"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/tv2"
                 app:layout_constraintStart_toStartOf="@id/tv2"
                 app:layout_constraintEnd_toEndOf="@id/tv2"
-                app:layout_constraintBottom_toTopOf="@id/tvAm" />
-            <TextView
-                android:id="@+id/tvAm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="AM"
-                android:textSize="20dp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/tvWake"
-                app:layout_constraintStart_toStartOf="@id/tv2"
-                app:layout_constraintEnd_toEndOf="@id/tv2"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
          </androidx.constraintlayout.widget.ConstraintLayout>
          <View
              android:id="@+id/view"
              android:layout_width="match_parent"
-             android:layout_height="60dp"
+             android:layout_height="40dp"
              app:layout_constraintBottom_toTopOf="@id/cvSave"/>
          <androidx.cardview.widget.CardView
              android:id="@+id/cvSave"
              android:layout_width="250dp"
              android:layout_height="wrap_content"
              android:layout_gravity="center"
-             android:layout_marginBottom="60dp"
+             android:layout_marginBottom="50dp"
              app:cardBackgroundColor="#9F98FF"
              app:cardCornerRadius="30dp"
              app:layout_constraintEnd_toEndOf="parent"

@@ -96,13 +96,13 @@ class DrugFragment : Fragment() {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.ivPrev.setOnClickListener {
+      binding.clPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          recordView()
       }
 
-      binding.ivNext.setOnClickListener {
+      binding.clNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          recordView()

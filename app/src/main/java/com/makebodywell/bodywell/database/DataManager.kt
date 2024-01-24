@@ -13,6 +13,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_WATER
 import com.makebodywell.bodywell.model.Body
@@ -25,6 +26,7 @@ import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
 
@@ -412,6 +414,24 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun getSleep(date: String) : Sleep {
+      val db = dbHelper!!.readableDatabase
+      val data = Sleep()
+      val sql = "select * from $TABLE_SLEEP where regDate = '$date'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id = cursor.getInt(0)
+         data.sleepHour = cursor.getInt(1)
+         data.sleepMinute = cursor.getInt(2)
+         data.bedHour = cursor.getInt(3)
+         data.bedMinute = cursor.getInt(4)
+         data.wakeHour = cursor.getInt(5)
+         data.wakeMinute = cursor.getInt(6)
+      }
+      cursor.close()
+      return data
+   }
+
    fun getDailyData(date: String) : DailyData {
       val db = dbHelper!!.readableDatabase
       val data = DailyData()
@@ -422,9 +442,9 @@ class DataManager(private var context: Context?) {
          data.waterGoal = cursor.getInt(2)
          data.exerciseGoal = cursor.getInt(3)
          data.bodyGoal = cursor.getDouble(4)
-         data.sleepGoal = cursor.getInt(5)
-         data.drugGoal = cursor.getInt(6)
-         data.regDate = cursor.getString(7)
+         data.sleepHourGoal = cursor.getInt(5)
+         data.sleepMinuteGoal = cursor.getInt(6)
+         data.drugGoal = cursor.getInt(7)
       }
       cursor.close()
       return data
@@ -584,6 +604,19 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_NOTE, null, values)
    }
 
+   fun insertSleep(data: Sleep) {
+      val db = dbHelper!!.writableDatabase
+      val values = ContentValues()
+      values.put("sleepHour", data.sleepHour)
+      values.put("sleepMinute", data.sleepMinute)
+      values.put("bedHour", data.bedHour)
+      values.put("bedMinute", data.bedMinute)
+      values.put("wakeHour", data.wakeHour)
+      values.put("wakeMinute", data.wakeMinute)
+      values.put("regDate", data.regDate)
+      db!!.insert(TABLE_SLEEP, null, values)
+   }
+
    fun insertDailyData(data: DailyData) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
@@ -591,7 +624,8 @@ class DataManager(private var context: Context?) {
       values.put("waterGoal", data.waterGoal)
       values.put("exerciseGoal", data.exerciseGoal)
       values.put("bodyGoal", data.bodyGoal)
-      values.put("sleepGoal", data.sleepGoal)
+      values.put("sleepHourGoal", data.sleepHourGoal)
+      values.put("sleepMinuteGoal", data.sleepMinuteGoal)
       values.put("drugGoal", data.drugGoal)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_DAILY_DATA, null, values)
@@ -644,6 +678,14 @@ class DataManager(private var context: Context?) {
    fun updateNote(data: Item){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_NOTE set title='${data.string1}', content='${data.string2}' where regDate='${data.string3}'"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateSleep(data: Sleep){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $TABLE_SLEEP set sleepHour=${data.sleepHour}, sleepMinute=${data.sleepMinute}, bedHour=${data.bedHour}, bedMinute=${data.bedMinute}," +
+              "wakeHour=${data.wakeHour}, wakeMinute=${data.wakeMinute} where regDate='${data.regDate}'"
       db.execSQL(sql)
       db.close()
    }

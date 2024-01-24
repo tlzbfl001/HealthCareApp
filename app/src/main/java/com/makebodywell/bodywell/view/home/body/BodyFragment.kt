@@ -107,14 +107,14 @@ class BodyFragment : Fragment() {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.ivPrev.setOnClickListener {
+      binding.clPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()
          dailyView()
       }
 
-      binding.ivNext.setOnClickListener {
+      binding.clNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
          setupGoal()

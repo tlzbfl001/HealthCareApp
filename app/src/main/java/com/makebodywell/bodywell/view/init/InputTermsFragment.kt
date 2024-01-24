@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
@@ -20,6 +22,7 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
 class InputTermsFragment : Fragment() {
    private var _binding: FragmentInputTermsBinding? = null
    private val binding get() = _binding!!
+
    private var isAll = true
 
    override fun onCreateView(
@@ -30,10 +33,6 @@ class InputTermsFragment : Fragment() {
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(activity, LoginActivity::class.java))
-      }
-
-      binding.cvContinue.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputInfoFragment())
       }
 
       binding.cbAll.setOnCheckedChangeListener { _, isChecked ->
@@ -101,6 +100,14 @@ class InputTermsFragment : Fragment() {
 
       binding.tvView4.setOnClickListener {
          showBottomDialog("마케팅 수신 동의", 4)
+      }
+
+      binding.cvContinue.setOnClickListener {
+         if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
+            replaceInputFragment(requireActivity(), InputInfoFragment())
+         }else {
+            Toast.makeText(requireActivity(), "필수 이용약관에 모두 체크해주세요.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       return binding.root

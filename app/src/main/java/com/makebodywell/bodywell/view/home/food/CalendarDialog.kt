@@ -71,7 +71,7 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
 
    private fun setMonthView() {
       tvYear?.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
-      tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("MM"))
+      tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
       val days = monthArray()
       val adapter = CalendarAdapter2(context, days, this)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)

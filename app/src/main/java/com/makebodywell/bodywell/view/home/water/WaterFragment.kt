@@ -117,7 +117,7 @@ class WaterFragment : Fragment() {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
-      binding.ivPrev.setOnClickListener {
+      binding.clPrev.setOnClickListener {
          if(getWater.regDate != "") {
             dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
          }
@@ -128,7 +128,7 @@ class WaterFragment : Fragment() {
          dailyView()
       }
 
-      binding.ivNext.setOnClickListener {
+      binding.clNext.setOnClickListener {
          if(getWater.regDate != "") {
             dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
          }

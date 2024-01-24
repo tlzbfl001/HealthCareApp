@@ -9,11 +9,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.model.DrugTime
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
@@ -109,16 +111,11 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         }
 
-        // 설정된 날짜가 오늘보다 크면 설정된 날짜로 알람 설정
         if(today < LocalDate.parse(startDate)) {
-            val format1 = SimpleDateFormat("yyyy-MM-dd")
-            val format2 = SimpleDateFormat("yyyyMMdd")
-            val formatDate = format2.format(format1.parse(startDate)!!)
-
             val cal = Calendar.getInstance()
-            cal.set(Calendar.YEAR, Integer.parseInt(formatDate.substring(0, 4)))
-            cal.set(Calendar.MONTH, Integer.parseInt(formatDate.substring(4,6)) - 1)
-            cal.set(Calendar.DATE, Integer.parseInt(formatDate.substring(6,8)))
+            cal.set(Calendar.YEAR, Integer.parseInt(startDate.substring(0, 4)))
+            cal.set(Calendar.MONTH, Integer.parseInt(startDate.substring(5,7)) - 1)
+            cal.set(Calendar.DATE, Integer.parseInt(startDate.substring(8,10)))
             cal.set(Calendar.HOUR_OF_DAY, timeList[0].hour)
             cal.set(Calendar.MINUTE, timeList[0].minute)
             cal.set(Calendar.SECOND, 0)

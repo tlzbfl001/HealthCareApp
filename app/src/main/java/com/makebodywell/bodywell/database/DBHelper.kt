@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 12
+      const val DATABASE_VERSION = 14
       const val TABLE_USER = "user"
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
@@ -18,6 +18,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_DRUG_TIME = "drugTime"
       const val TABLE_DRUG_CHECK = "drugCheck"
       const val TABLE_NOTE = "note"
+      const val TABLE_SLEEP = "sleep"
       const val TABLE_DAILY_DATA = "dailyData"
       const val TABLE_IMAGE = "image"
    }
@@ -58,8 +59,12 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, title text, content integer, regDate text);"
       db.execSQL(note)
 
-      val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, foodGoal integer, waterGoal integer, " +
-              "exerciseGoal integer, bodyGoal real, sleepGoal integer, drugGoal integer, regDate text);"
+      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, sleepHour integer, sleepMinute integer, bedHour integer, bedMinute integer, " +
+              "wakeHour integer, wakeMinute integer, regDate text);"
+      db.execSQL(sleep)
+
+      val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, foodGoal integer, waterGoal integer, exerciseGoal integer," +
+              "bodyGoal real, sleepHourGoal integer, sleepMinuteGoal integer, drugGoal integer, regDate text);"
       db.execSQL(dailyData)
 
       val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, imageUri text, type integer, foodId integer, regDate text);"
@@ -77,6 +82,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $TABLE_DRUG_TIME")
       db.execSQL("drop table if exists $TABLE_DRUG_CHECK")
       db.execSQL("drop table if exists $TABLE_NOTE")
+      db.execSQL("drop table if exists $TABLE_SLEEP")
       db.execSQL("drop table if exists $TABLE_DAILY_DATA")
       db.execSQL("drop table if exists $TABLE_IMAGE")
       onCreate(db)
