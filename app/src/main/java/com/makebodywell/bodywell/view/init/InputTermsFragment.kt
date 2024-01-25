@@ -106,7 +106,7 @@ class InputTermsFragment : Fragment() {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
             replaceInputFragment(requireActivity(), InputInfoFragment())
          }else {
-            Toast.makeText(requireActivity(), "필수 이용약관에 모두 체크해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
          }
       }
 

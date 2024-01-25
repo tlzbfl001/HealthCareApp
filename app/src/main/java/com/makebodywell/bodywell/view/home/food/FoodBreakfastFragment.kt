@@ -74,7 +74,7 @@ class FoodBreakfastFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val getFoodData = adapter!!.getFoodData()
-         dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
+         dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment1(requireActivity(), FoodFragment())
@@ -160,7 +160,7 @@ class FoodBreakfastFragment : Fragment() {
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
                      dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
-                     dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "foodId", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", dataList[pos].id)
 
                      imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
                         .collect(Collectors.toList()).forEach { x ->

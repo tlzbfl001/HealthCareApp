@@ -14,6 +14,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_TOKEN
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_WATER
 import com.makebodywell.bodywell.model.Body
@@ -27,8 +28,10 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Sleep
+import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
+import java.time.LocalDate
 
 class DataManager(private var context: Context?) {
    private var dbHelper: DBHelper? = null
@@ -48,15 +51,46 @@ class DataManager(private var context: Context?) {
          data.id=cursor.getInt(0)
          data.type=cursor.getString(1)
          data.idToken=cursor.getString(2)
-         data.accessToken = cursor.getString(3)
-         data.email = cursor.getString(4)
-         data.name = cursor.getString(5)
-         data.nickname = cursor.getString(6)
-         data.gender = cursor.getString(7)
-         data.birthYear = cursor.getString(8)
-         data.birthDay = cursor.getString(9)
-         data.profileImage = cursor.getString(10)
-         data.regDate = cursor.getString(11)
+         data.email = cursor.getString(3)
+         data.name = cursor.getString(4)
+         data.nickname = cursor.getString(5)
+         data.gender = cursor.getString(6)
+         data.birthDay = cursor.getString(7)
+         data.profileImage = cursor.getString(8)
+         data.height = cursor.getDouble(9).toString()
+         data.weight = cursor.getDouble(10).toString()
+         data.weightGoal = cursor.getDouble(11).toString()
+         data.kcalGoal = cursor.getInt(12).toString()
+         data.waterGoal = cursor.getInt(13).toString()
+         data.waterUnit = cursor.getInt(14).toString()
+         data.regDate = cursor.getString(15)
+      }
+      cursor.close()
+      return data
+   }
+
+   fun getUser() : User {
+      val db = dbHelper!!.readableDatabase
+      val data = User()
+      val sql = "select * from $TABLE_USER order by id desc limit 1"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id=cursor.getInt(0)
+         data.type=cursor.getString(1)
+         data.idToken=cursor.getString(2)
+         data.email = cursor.getString(3)
+         data.name = cursor.getString(4)
+         data.nickname = cursor.getString(5)
+         data.gender = cursor.getString(6)
+         data.birthDay = cursor.getString(7)
+         data.profileImage = cursor.getString(8)
+         data.height = cursor.getDouble(9).toString()
+         data.weight = cursor.getDouble(10).toString()
+         data.weightGoal = cursor.getDouble(11).toString()
+         data.kcalGoal = cursor.getInt(12).toString()
+         data.waterGoal = cursor.getInt(13).toString()
+         data.waterUnit = cursor.getInt(14).toString()
+         data.regDate = cursor.getString(15)
       }
       cursor.close()
       return data
@@ -65,7 +99,7 @@ class DataManager(private var context: Context?) {
    fun getFood(id: Int) : Food {
       val db = dbHelper!!.readableDatabase
       val data = Food()
-      val sql = "select * from $TABLE_FOOD where id = $id"
+      val sql = "select id from $TABLE_FOOD where id = $id"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
@@ -474,44 +508,29 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getUser() : User {
-      val db = dbHelper!!.readableDatabase
-      val data = User()
-      val sql = "select * from $TABLE_USER order by id desc limit 1"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         data.id = cursor.getInt(0)
-         data.type = cursor.getString(1)
-         data.idToken = cursor.getString(2)
-         data.accessToken = cursor.getString(3)
-         data.email = cursor.getString(4)
-         data.name = cursor.getString(5)
-         data.nickname = cursor.getString(6)
-         data.gender = cursor.getString(7)
-         data.birthYear = cursor.getString(8)
-         data.birthDay = cursor.getString(9)
-         data.profileImage = cursor.getString(10)
-         data.regDate = cursor.getString(11)
-      }
-      cursor.close()
-      return data
-   }
-
    fun insertUser(data: User) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("type", data.type)
       values.put("idToken", data.idToken)
-      values.put("accessToken", data.accessToken)
       values.put("email", data.email)
       values.put("name", data.name)
       values.put("nickname", data.nickname)
       values.put("gender", data.gender)
-      values.put("birthYear", data.birthYear)
       values.put("birthDay", data.birthDay)
       values.put("profileImage", data.profileImage)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_USER, null, values)
+   }
+
+   fun insertToken(data: Token) {
+      val db = dbHelper!!.writableDatabase
+      val values = ContentValues()
+      values.put("userId", data.userId)
+      values.put("accessToken", data.accessToken)
+      values.put("refreshToken", data.refreshToken)
+      values.put("regDate", data.regDate)
+      db!!.insert(TABLE_TOKEN, null, values)
    }
 
    fun insertFood(data: Food?) {
@@ -654,16 +673,31 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_DAILY_DATA, null, values)
    }
 
-   fun updateData(table: String, column: String, data: String, id: Int){
+   fun updateString(table: String, column: String, data: String, id: Int){
       val db = dbHelper!!.writableDatabase
       val sql = "update $table set $column='$data' where id=$id"
       db.execSQL(sql)
       db.close()
    }
 
-   fun updateFood(data: Food){
+   fun updateInt(table: String, column: String, data: Int, id: Int){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_FOOD set count=${data.count} where id='${data.id}'"
+      val sql = "update $table set $column=$data where id=$id"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateDouble(table: String, column: String, data: Double, id: Int){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set $column=$data where id=$id"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateToken(data: Token){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $TABLE_TOKEN set accessToken = '${data.accessToken}', refreshToken = '${data.refreshToken}', regDate = '${data.regDate}' " +
+              "where userId=${data.userId}"
       db.execSQL(sql)
       db.close()
    }

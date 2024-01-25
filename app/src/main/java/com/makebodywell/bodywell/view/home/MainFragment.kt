@@ -47,13 +47,12 @@ class MainFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupCalendar()
+      val getUser = dataManager!!.getUser()
+      if(getUser.profileImage != "") {
+         binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
+         binding.tvName.text = getUser.name + " 님"
+      }
 
-      return binding.root
-   }
-
-   private fun initView() {
       binding.clFood.setOnClickListener {
          replaceFragment1(requireActivity(), FoodFragment())
       }
@@ -78,8 +77,9 @@ class MainFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      val getUser = dataManager!!.getUser()
-      binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
+      setupCalendar()
+
+      return binding.root
    }
 
    private fun setupCalendar() {

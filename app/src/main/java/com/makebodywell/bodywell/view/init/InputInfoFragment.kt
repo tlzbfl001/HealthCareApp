@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.init
 
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.ContentValues
 import android.content.Intent
@@ -12,9 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,20 +22,27 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.apollographql.apollo3.ApolloClient
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
 import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
+import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Optional
 
 class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
@@ -55,7 +61,11 @@ class InputInfoFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
+
       getUser = dataManager!!.getUser()
+      if(getUser.profileImage != "") {
+         binding.ivProfile.setImageURI(Uri.parse(getUser.profileImage))
+      }
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_signup)
@@ -104,8 +114,45 @@ class InputInfoFragment : Fragment() {
          dialog2!!.window!!.setGravity(Gravity.BOTTOM)
       }
 
-      getUser = dataManager!!.getUser()
-      binding.ivProfile.setImageURI(Uri.parse(getUser.profileImage))
+      binding.tvBirthday.setOnClickListener {
+         val datePickerCalendar = Calendar.getInstance()
+         val year = datePickerCalendar.get(Calendar.YEAR)
+         val month = datePickerCalendar.get(Calendar.MONTH)
+         val day = datePickerCalendar.get(Calendar.DAY_OF_MONTH)
+
+         val dpd = DatePickerDialog(requireContext(), R.style.MySpinnerDatePickerStyle,{ _, year, monthOfYear, dayOfMonth ->
+               val month = monthOfYear + 1
+               binding.tvBirthday.text = "$year-${String.format("%02d", month)}-${String.format("%02d", dayOfMonth)}"
+            }, year, month, day
+         )
+
+         // 최대 날짜를 현재 시각 이후로
+         dpd.datePicker.maxDate = System.currentTimeMillis() - 1000
+         dpd.show()
+      }
+
+      binding.cvContinue.setOnClickListener {
+         var birthDay = ""
+         var name = ""
+
+         if(binding.tvBirthday.text.toString() != "") {
+            birthDay = binding.tvBirthday.text.toString()
+         }
+
+         if(binding.etName.text.toString() != "") {
+            name = binding.etName.text.toString()
+         }
+
+         dataManager?.updateString(TABLE_USER, "birthDay", birthDay, getUser.id)
+         dataManager?.updateString(TABLE_USER, "name", name, getUser.id)
+
+         /*val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
+         lifecycleScope.launch{
+            val response = apolloClient.mutation(UpdateUserProfileMutation(userId = ))
+         }
+*/
+         replaceInputFragment(requireActivity(), InputBodyFragment())
+      }
 
       return binding.root
    }
@@ -120,7 +167,7 @@ class InputInfoFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(randomFileName(), "image/jpeg", img)
 
-                  dataManager?.updateData(TABLE_USER, "profileImage", uri.toString(), getUser.id)
+                  dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), getUser.id)
                   binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
                }else {
                }
@@ -128,7 +175,7 @@ class InputInfoFragment : Fragment() {
             STORAGE_REQUEST_CODE -> {
                val uri = data?.data
 
-               dataManager?.updateData(TABLE_USER, "profileImage", uri.toString(), getUser.id)
+               dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), getUser.id)
                binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
             }
          }

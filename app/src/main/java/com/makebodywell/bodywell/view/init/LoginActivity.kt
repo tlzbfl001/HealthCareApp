@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -34,6 +35,7 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
 import com.makebodywell.bodywell.model.Body
+import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.CreateAppleOauthInput
 import com.makebodywell.bodywell.type.CreateGoogleOauthInput
@@ -170,8 +172,8 @@ class LoginActivity : AppCompatActivity() {
                override fun onSuccess(result: NidProfileResponse) {
                   val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
                   if(getUser.regDate == "") {
-                     dataManager!!.insertUser(User(type = "naver", accessToken = NaverIdLoginSDK.getAccessToken(), email = result.profile?.email, name = result.profile?.name,
-                        nickname = result.profile?.nickname, gender = result.profile?.gender, birthYear = result.profile?.birthYear, birthDay = result.profile?.birthday,
+                     dataManager!!.insertUser(User(type = "naver", email = result.profile?.email, name = result.profile?.name, nickname = result.profile?.nickname,
+                        gender = result.profile?.gender, birthDay = result.profile?.birthYear + "-" + result.profile?.birthday,
                         profileImage = result.profile?.profileImage, regDate = LocalDate.now().toString()))
 
                      lifecycleScope.launch{
@@ -234,8 +236,7 @@ class LoginActivity : AppCompatActivity() {
 
             val getUser = dataManager!!.getUser("google", gsa?.email.toString())
             if(getUser.regDate == "") {
-               val user = User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString())
-               dataManager!!.insertUser(user)
+               dataManager!!.insertUser(User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString()))
 
                lifecycleScope.launch{
                   val response = apolloClient!!.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
@@ -243,12 +244,48 @@ class LoginActivity : AppCompatActivity() {
                   ))).execute()
                }
 
-               startActivity(Intent(this, InputActivity::class.java))
-            }else { // 로그인
+               var loginSuccess = false
                lifecycleScope.launch{
                   val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
                      idToken = gsa?.idToken.toString()
                   ))).execute()
+
+                  loginSuccess = if(response.data!!.loginUserGoogle.success) {
+                     val getUser = dataManager!!.getUser()
+                     dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
+                        refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
+                     true
+                  }else {
+                     false
+                  }
+               }
+
+               if(loginSuccess) {
+                  startActivity(Intent(this, InputActivity::class.java))
+               }else {
+                  Toast.makeText(this, "서버에 이상이 있습니다.", Toast.LENGTH_SHORT).show()
+               }
+            }else { // 로그인
+               var loginSuccess = false
+               lifecycleScope.launch{
+                  val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+                     idToken = gsa?.idToken.toString()
+                  ))).execute()
+
+                  loginSuccess = if(response.data!!.loginUserGoogle.success) {
+                     val getUser = dataManager!!.getUser()
+                     dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
+                        refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
+                     true
+                  }else {
+                     false
+                  }
+               }
+
+               if(loginSuccess) {
+                  startActivity(Intent(this, InputActivity::class.java))
+               }else {
+                  Toast.makeText(this, "서버에 이상이 있습니다.", Toast.LENGTH_SHORT).show()
                }
 
                startActivity(Intent(this, MainActivity::class.java))

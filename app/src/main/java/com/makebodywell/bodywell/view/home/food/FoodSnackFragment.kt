@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodSnackBinding
 import com.makebodywell.bodywell.model.Food
@@ -68,7 +70,7 @@ class FoodSnackFragment : Fragment() {
 
         binding.cvSave.setOnClickListener {
             val getFoodData = foodRecordAdapter!!.getFoodData()
-            dataManager!!.updateFood(Food(id = getFoodData.id, count = getFoodData.count))
+            dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())

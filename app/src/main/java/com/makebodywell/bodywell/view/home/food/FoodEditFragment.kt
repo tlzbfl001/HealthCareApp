@@ -93,7 +93,7 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "foodId", id.toInt())
+         dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", id.toInt())
          for(i in 0 until imageList.size) {
             dataManager?.insertFoodImage(imageList[i])
          }

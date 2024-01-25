@@ -7,8 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 5
+      const val DATABASE_VERSION = 16
       const val TABLE_USER = "user"
+      const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
@@ -24,9 +25,13 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onCreate(db: SQLiteDatabase) {
-      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, accessToken text, email text, name text, " +
-              "nickname text, gender text, birthYear text, birthDay text, profileImage text, regDate text);"
+      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, email text, name text, " +
+              "nickname text, gender text, birthDay text, profileImage text, height real, weight real, weightGoal real, kcalGoal real, " +
+              "waterGoal integer, waterUnit integer, regDate text);"
       db.execSQL(user)
+
+      val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, accessToken text, refreshToken text, regDate text);"
+      db.execSQL(token)
 
       val food = "create table $TABLE_FOOD(id integer primary key autoincrement, name text, unit integer, amount integer, count integer, kcal integer," +
               "carbohydrate real, protein real, fat real, salt real, sugar real, type integer, regDate text);"
@@ -73,6 +78,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
 
    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
       db.execSQL("drop table if exists $TABLE_USER")
+      db.execSQL("drop table if exists $TABLE_TOKEN")
       db.execSQL("drop table if exists $TABLE_FOOD")
       db.execSQL("drop table if exists $TABLE_WATER")
       db.execSQL("drop table if exists $TABLE_EXERCISE")

@@ -86,3 +86,11 @@ query Me {
     }
   }
 }
+
+mutation UpdateUserProfile($userId: String!, $updateUserProfileInput: UpdateUserProfileInput!) {
+  updateUserProfile(userId: $userId, updateUserProfileInput: $updateUserProfileInput) {
+    code
+    message
+    success
+  }
+}
