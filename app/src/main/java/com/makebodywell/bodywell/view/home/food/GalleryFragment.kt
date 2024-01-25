@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.GalleryAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentGalleryBinding
-import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.note.NoteFragment
 import java.io.FileNotFoundException
@@ -88,8 +88,8 @@ class GalleryFragment : Fragment() {
                     if(data?.extras?.get("data") != null){
                         val img = data.extras?.get("data") as Bitmap
                         val uri = saveFile(randomFileName(), "image/jpeg", img)
-                        val image = Image(imageUri = uri.toString(), regDate = LocalDate.now().toString())
-                        dataManager?.insertImage(image)
+                        val image = FoodImage(imageUri = uri.toString(), regDate = LocalDate.now().toString())
+                        dataManager?.insertFoodImage(image)
                         listView()
                     }else {
                         listView()
@@ -97,8 +97,8 @@ class GalleryFragment : Fragment() {
                 }
                 STORAGE_REQUEST_CODE -> {
                     val uri = data?.data
-                    val image = Image(imageUri = uri.toString(), regDate = LocalDate.now().toString())
-                    dataManager?.insertImage(image)
+                    val image = FoodImage(imageUri = uri.toString(), regDate = LocalDate.now().toString())
+                    dataManager?.insertFoodImage(image)
                     listView()
                 }
             }

@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.FoodImage
 
 class PhotoSlideAdapter2 (
     private val context: Context,
-    private val itemList: ArrayList<Image>
+    private val itemList: ArrayList<FoodImage>
 ) : PagerAdapter() {
     private var onLongClickListener: OnLongClickListener? = null
 

@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 14
+      const val DATABASE_VERSION = 5
       const val TABLE_USER = "user"
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
@@ -20,7 +20,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_NOTE = "note"
       const val TABLE_SLEEP = "sleep"
       const val TABLE_DAILY_DATA = "dailyData"
-      const val TABLE_IMAGE = "image"
+      const val TABLE_FOOD_IMAGE = "foodImage"
    }
 
    override fun onCreate(db: SQLiteDatabase) {
@@ -67,8 +67,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
               "bodyGoal real, sleepHourGoal integer, sleepMinuteGoal integer, drugGoal integer, regDate text);"
       db.execSQL(dailyData)
 
-      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, imageUri text, type integer, foodId integer, regDate text);"
-      db.execSQL(image)
+      val foodImage = "create table $TABLE_FOOD_IMAGE(id integer primary key autoincrement, imageUri text, type integer, dataId integer, regDate text);"
+      db.execSQL(foodImage)
    }
 
    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -84,7 +84,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $TABLE_NOTE")
       db.execSQL("drop table if exists $TABLE_SLEEP")
       db.execSQL("drop table if exists $TABLE_DAILY_DATA")
-      db.execSQL("drop table if exists $TABLE_IMAGE")
+      db.execSQL("drop table if exists $TABLE_FOOD_IMAGE")
       onCreate(db)
    }
 }

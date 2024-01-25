@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
+import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.util.stream.Collectors
@@ -33,7 +34,7 @@ class FoodBreakfastFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var photoAdapter: PhotoViewAdapter? = null
    private var adapter: FoodIntakeAdapter? = null
-   private var imageData: ArrayList<Image>? = null
+   private var imageData: ArrayList<FoodImage>? = null
 
    private var calendarDate = ""
    private var type = 1
@@ -159,9 +160,9 @@ class FoodBreakfastFragment : Fragment() {
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
                      dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
-                     dataManager!!.deleteItem(TABLE_IMAGE, "foodId", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "foodId", dataList[pos].id)
 
-                     imageData!!.stream().filter { x -> x.foodId == dataList[pos].id }
+                     imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
                         .collect(Collectors.toList()).forEach { x ->
                            imageData!!.remove(x)
                         }

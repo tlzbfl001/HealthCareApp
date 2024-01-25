@@ -20,7 +20,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -246,7 +246,7 @@ class FoodFragment : Fragment() {
    }
 
    private fun photoView() {
-      val imageList: ArrayList<Image> = ArrayList()
+      val imageList: ArrayList<FoodImage> = ArrayList()
 
       val getData1 = dataManager!!.getImage(1, calendarDate.toString())
       val getData2 = dataManager!!.getImage(2, calendarDate.toString())
@@ -254,19 +254,19 @@ class FoodFragment : Fragment() {
       val getData4 = dataManager!!.getImage(4, calendarDate.toString())
 
       for(i in 0 until getData1.size) {
-         imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
+         imageList.add(FoodImage(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
       }
 
       for(i in 0 until getData2.size) {
-         imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
+         imageList.add(FoodImage(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
       }
 
       for(i in 0 until getData3.size) {
-         imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
+         imageList.add(FoodImage(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
       }
 
       for(i in 0 until getData4.size) {
-         imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
+         imageList.add(FoodImage(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
       }
 
       val adapter = PhotoSlideAdapter2(requireActivity(), imageList)

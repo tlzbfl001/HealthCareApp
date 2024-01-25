@@ -33,6 +33,7 @@ import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
+import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.CreateAppleOauthInput
 import com.makebodywell.bodywell.type.CreateGoogleOauthInput
@@ -42,7 +43,10 @@ import com.makebodywell.bodywell.type.LoginAppleOauthInput
 import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
 import com.makebodywell.bodywell.type.LoginNaverOauthInput
+import com.makebodywell.bodywell.util.AlarmReceiver
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.view.home.body.BodyRecordFragment
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
@@ -58,6 +62,7 @@ class LoginActivity : AppCompatActivity() {
 
    private var backWait:Long = 0
 
+   private val bundle = Bundle()
    private var dataManager: DataManager? = null
 
    private var apolloClient: ApolloClient? = null
@@ -143,7 +148,6 @@ class LoginActivity : AppCompatActivity() {
                val response = apolloClient!!.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
                   idToken = token.idToken.toString()
                ))).execute()
-               Log.d(TAG, "createUserKakao: ${response.data?.createUserKakao}")
             }
 
             startActivity(Intent(this, InputActivity::class.java))
@@ -152,7 +156,6 @@ class LoginActivity : AppCompatActivity() {
                val response = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
                   idToken = token.idToken.toString()
                ))).execute()
-               Log.d(TAG, "loginUserKakao: ${response.data?.loginUserKakao}")
             }
 
             startActivity(Intent(this, MainActivity::class.java))
@@ -175,7 +178,6 @@ class LoginActivity : AppCompatActivity() {
                         val response = apolloClient!!.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
                            accessToken = NaverIdLoginSDK.getAccessToken().toString()
                         ))).execute()
-                        Log.d(TAG, "createUserNaver: ${response.data?.createUserNaver}")
                      }
 
                      startActivity(Intent(this@LoginActivity, InputActivity::class.java))
@@ -184,25 +186,24 @@ class LoginActivity : AppCompatActivity() {
                         val response = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
                            accessToken = NaverIdLoginSDK.getAccessToken().toString()
                         ))).execute()
-                        Log.d(TAG, "loginUserNaver: ${response.data?.loginUserNaver}")
                      }
 
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
                }
                override fun onError(errorCode: Int, message: String) {
-                  Log.e(TAG, message)
+                  Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
                }
                override fun onFailure(httpStatus: Int, message: String) {
-                  Log.e(TAG, message)
+                  Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
                }
             })
          }
          override fun onError(errorCode: Int, message: String) {
-            Log.e(TAG, message)
+            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
          }
          override fun onFailure(httpStatus: Int, message: String) {
-            Log.e(TAG, message)
+            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
          }
       }
 
@@ -233,13 +234,13 @@ class LoginActivity : AppCompatActivity() {
 
             val getUser = dataManager!!.getUser("google", gsa?.email.toString())
             if(getUser.regDate == "") {
-               dataManager!!.insertUser(User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString()))
+               val user = User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString())
+               dataManager!!.insertUser(user)
 
                lifecycleScope.launch{
                   val response = apolloClient!!.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
                      idToken = gsa?.idToken.toString()
                   ))).execute()
-                  Log.d(TAG, "CreateUserGoogle: ${response.data?.createUserGoogle}")
                }
 
                startActivity(Intent(this, InputActivity::class.java))
@@ -248,7 +249,6 @@ class LoginActivity : AppCompatActivity() {
                   val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
                      idToken = gsa?.idToken.toString()
                   ))).execute()
-                  Log.d(TAG, "LoginUserGoogle: ${response.data?.loginUserGoogle}")
                }
 
                startActivity(Intent(this, MainActivity::class.java))
@@ -295,7 +295,6 @@ class LoginActivity : AppCompatActivity() {
             val response = apolloClient!!.mutation(CreateUserAppleMutation(CreateAppleOauthInput(
                idToken = idToken
             ))).execute()
-            Log.d(TAG, "createUserApple: ${response.data?.createUserApple}")
          }
 
          startActivity(Intent(this, InputActivity::class.java))
@@ -304,7 +303,6 @@ class LoginActivity : AppCompatActivity() {
             val response = apolloClient!!.mutation(LoginUserAppleMutation(LoginAppleOauthInput(
                idToken = idToken
             ))).execute()
-            Log.d(TAG, "loginUserApple: ${response.data?.loginUserApple}")
          }
 
          startActivity(Intent(this, MainActivity::class.java))

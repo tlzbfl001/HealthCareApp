@@ -11,7 +11,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_DATE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
@@ -24,7 +24,7 @@ import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.model.User
@@ -112,17 +112,17 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getImage(type: Int, date: String) : ArrayList<Image> {
+   fun getImage(type: Int, date: String) : ArrayList<FoodImage> {
       val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Image> = ArrayList()
-      val sql = "select * from $TABLE_IMAGE where type = $type and regDate = '$date'"
+      val list: ArrayList<FoodImage> = ArrayList()
+      val sql = "select * from $TABLE_FOOD_IMAGE where type = $type and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         val data = Image()
+         val data = FoodImage()
          data.id = cursor.getInt(0)
          data.imageUri = cursor.getString(1)
          data.type = cursor.getInt(2)
-         data.foodId = cursor.getInt(3)
+         data.dataId = cursor.getInt(3)
          data.regDate = cursor.getString(4)
          list.add(data)
       }
@@ -130,17 +130,17 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getImage(id: Int) : ArrayList<Image> {
+   fun getImage(id: Int) : ArrayList<FoodImage> {
       val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Image> = ArrayList()
-      val sql = "select * from $TABLE_IMAGE where foodId = $id"
+      val list: ArrayList<FoodImage> = ArrayList()
+      val sql = "select * from $TABLE_FOOD_IMAGE where dataId = $id"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         val data = Image()
+         val data = FoodImage()
          data.id = cursor.getInt(0)
          data.imageUri = cursor.getString(1)
          data.type = cursor.getInt(2)
-         data.foodId = cursor.getInt(3)
+         data.dataId = cursor.getInt(3)
          data.regDate = cursor.getString(4)
          list.add(data)
       }
@@ -474,6 +474,29 @@ class DataManager(private var context: Context?) {
       return list
    }
 
+   fun getUser() : User {
+      val db = dbHelper!!.readableDatabase
+      val data = User()
+      val sql = "select * from $TABLE_USER order by id desc limit 1"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id = cursor.getInt(0)
+         data.type = cursor.getString(1)
+         data.idToken = cursor.getString(2)
+         data.accessToken = cursor.getString(3)
+         data.email = cursor.getString(4)
+         data.name = cursor.getString(5)
+         data.nickname = cursor.getString(6)
+         data.gender = cursor.getString(7)
+         data.birthYear = cursor.getString(8)
+         data.birthDay = cursor.getString(9)
+         data.profileImage = cursor.getString(10)
+         data.regDate = cursor.getString(11)
+      }
+      cursor.close()
+      return data
+   }
+
    fun insertUser(data: User) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
@@ -509,14 +532,14 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_FOOD, null, values)
    }
 
-   fun insertImage(data: Image?) {
+   fun insertFoodImage(data: FoodImage) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
-      values.put("imageUri", data?.imageUri)
-      values.put("type", data?.type)
-      values.put("foodId", data?.foodId)
-      values.put("regDate", data?.regDate)
-      db!!.insert(TABLE_IMAGE, null, values)
+      values.put("imageUri", data.imageUri)
+      values.put("type", data.type)
+      values.put("dataId", data.dataId)
+      values.put("regDate", data.regDate)
+      db!!.insert(TABLE_FOOD_IMAGE, null, values)
    }
 
    fun insertWater(data: Water) {
@@ -629,6 +652,13 @@ class DataManager(private var context: Context?) {
       values.put("drugGoal", data.drugGoal)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_DAILY_DATA, null, values)
+   }
+
+   fun updateData(table: String, column: String, data: String, id: Int){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set $column='$data' where id=$id"
+      db.execSQL(sql)
+      db.close()
    }
 
    fun updateFood(data: Food){

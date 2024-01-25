@@ -100,4 +100,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
 
     implementation 'nl.joery.timerangepicker:timerangepicker:1.0.0'
+
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

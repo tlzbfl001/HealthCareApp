@@ -15,11 +15,12 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
@@ -33,7 +34,7 @@ class FoodEditFragment : Fragment() {
 
    private var dataManager: DataManager? = null
    private var getFood = Food()
-   private var imageList = ArrayList<Image>()
+   private var imageList = ArrayList<FoodImage>()
 
    private var calendarDate = ""
    private var id = ""
@@ -92,9 +93,9 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_IMAGE, "foodId", id.toInt())
+         dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "foodId", id.toInt())
          for(i in 0 until imageList.size) {
-            dataManager?.insertImage(imageList[i])
+            dataManager?.insertFoodImage(imageList[i])
          }
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
@@ -117,7 +118,7 @@ class FoodEditFragment : Fragment() {
          when(requestCode){
             STORAGE_REQUEST_CODE -> {
                val uri = data?.data
-               val image = Image(imageUri = uri.toString(), type = type.toInt(), foodId = getFood.id, regDate = calendarDate)
+               val image = FoodImage(imageUri = uri.toString(), type = type.toInt(), dataId = getFood.id, regDate = calendarDate)
                imageList.add(image)
                setupPhotoView(imageList)
             }
@@ -125,7 +126,7 @@ class FoodEditFragment : Fragment() {
       }
    }
 
-   private fun setupPhotoView(imageList: ArrayList<Image>) {
+   private fun setupPhotoView(imageList: ArrayList<FoodImage>) {
       if(imageList.size > 0) {
          binding.ivView.visibility = View.GONE
          binding.viewPager.visibility = View.VISIBLE

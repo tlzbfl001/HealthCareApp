@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -15,8 +14,7 @@ import com.makebodywell.bodywell.adapter.CalendarAdapter2
 import com.makebodywell.bodywell.adapter.CalendarAdapter2.OnItemListener
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import java.time.LocalDate
@@ -80,7 +78,7 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
    }
 
    private fun setImageView() {
-      val itemList = ArrayList<Image>()
+      val itemList = ArrayList<FoodImage>()
 
       // 데이터 가져오기
       val getImage1 = dataManager!!.getImage(1, selectedDate.toString())
@@ -90,16 +88,16 @@ class CalendarDialog(context: Context) : Dialog(context), OnItemListener {
 
       // 리스트에 데이터 저장
       for (i in 0 until getImage1.size) {
-         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(FoodImage(id = getImage1[i].id, imageUri = getImage1[i].imageUri, regDate = selectedDate.toString()))
       }
       for (i in 0 until getImage2.size) {
-         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(FoodImage(id = getImage2[i].id, imageUri = getImage2[i].imageUri, regDate = selectedDate.toString()))
       }
       for (i in 0 until getImage3.size) {
-         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(FoodImage(id = getImage3[i].id, imageUri = getImage3[i].imageUri, regDate = selectedDate.toString()))
       }
       for (i in 0 until getImage4.size) {
-         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(FoodImage(id = getImage4[i].id, imageUri = getImage4[i].imageUri, regDate = selectedDate.toString()))
       }
 
       if (itemList.size > 0) {
