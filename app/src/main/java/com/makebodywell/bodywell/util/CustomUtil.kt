@@ -23,6 +23,14 @@ class CustomUtil {
          }
       }
 
+      fun replaceInputFragment2(activity: FragmentActivity, fragment: Fragment?, bundle: Bundle?) {
+         (activity as InputActivity).supportFragmentManager.beginTransaction().apply {
+            fragment?.arguments = bundle
+            add(R.id.inputFrame, fragment!!)
+            commit()
+         }
+      }
+
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             replace(R.id.mainFrame, fragment!!)

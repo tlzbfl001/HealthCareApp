@@ -13,26 +13,33 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Optional
+import com.makebodywell.bodywell.LoginUserGoogleMutation
+import com.makebodywell.bodywell.MeQuery
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
 import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
@@ -42,16 +49,14 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Optional
 
 class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
    private val binding get() = _binding!!
 
+   private val bundle = Bundle()
    private var dataManager: DataManager? = null
-   private var getUser = User()
-
-   private var dialog2: Dialog? = null
+   private var dialog: Dialog? = null
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -62,36 +67,22 @@ class InputInfoFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      getUser = dataManager!!.getUser()
-      if(getUser.profileImage != "") {
-         binding.ivProfile.setImageURI(Uri.parse(getUser.profileImage))
-      }
+      val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_signup)
-      dialog.setCancelable(false)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
-      btnConfirm.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputBodyFragment())
-         dialog.dismiss()
-      }
-
-      binding.cvContinue.setOnClickListener {
-         dialog.show()
-      }
+      val user = arguments?.getParcelable<User>("user")!!
+      Log.d(TAG, "user: $user")
 
       binding.ivBack.setOnClickListener {
          replaceInputFragment(requireActivity(), InputTermsFragment())
       }
 
       binding.ivProfile.setOnClickListener {
-         dialog2 = Dialog(requireActivity())
-         dialog2!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-         dialog2!!.setContentView(R.layout.dialog_gallery)
+         dialog = Dialog(requireActivity())
+         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+         dialog!!.setContentView(R.layout.dialog_gallery)
 
-         val cl1 = dialog2!!.findViewById<ConstraintLayout>(R.id.cl1)
-         val cl2 = dialog2!!.findViewById<ConstraintLayout>(R.id.cl2)
+         val cl1 = dialog!!.findViewById<ConstraintLayout>(R.id.cl1)
+         val cl2 = dialog!!.findViewById<ConstraintLayout>(R.id.cl2)
 
          cl1.setOnClickListener {
             if (requestPermission()) {
@@ -108,10 +99,10 @@ class InputInfoFragment : Fragment() {
             }
          }
 
-         dialog2!!.show()
-         dialog2!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-         dialog2!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-         dialog2!!.window!!.setGravity(Gravity.BOTTOM)
+         dialog!!.show()
+         dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+         dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+         dialog!!.window!!.setGravity(Gravity.BOTTOM)
       }
 
       binding.tvBirthday.setOnClickListener {
@@ -126,32 +117,48 @@ class InputInfoFragment : Fragment() {
             }, year, month, day
          )
 
-         // 최대 날짜를 현재 시각 이후로
+         // 최대 날짜를 현재 시각으로
          dpd.datePicker.maxDate = System.currentTimeMillis() - 1000
          dpd.show()
       }
 
       binding.cvContinue.setOnClickListener {
-         var birthDay = ""
          var name = ""
-
-         if(binding.tvBirthday.text.toString() != "") {
-            birthDay = binding.tvBirthday.text.toString()
-         }
+         var birthday = ""
 
          if(binding.etName.text.toString() != "") {
             name = binding.etName.text.toString()
          }
 
-         dataManager?.updateString(TABLE_USER, "birthDay", birthDay, getUser.id)
-         dataManager?.updateString(TABLE_USER, "name", name, getUser.id)
-
-         /*val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
-         lifecycleScope.launch{
-            val response = apolloClient.mutation(UpdateUserProfileMutation(userId = ))
+         if(binding.tvBirthday.text.toString() != "") {
+            birthday = binding.tvBirthday.text.toString()
          }
-*/
-         replaceInputFragment(requireActivity(), InputBodyFragment())
+
+         val getToken = dataManager!!.getToken(user.id)
+
+         lifecycleScope.launch{
+            val response = apolloClient.mutation(UpdateUserProfileMutation(
+               userId = user.userId.toString(), UpdateUserProfileInput(
+               birth = Optional.present(birthday), name = Optional.present(name)
+            ))).addHttpHeader(
+               "Authorization",
+               "Bearer ${getToken.accessToken}"
+            ).execute()
+
+            Log.d(TAG, "updateUserProfile: ${response.data?.updateUserProfile}")
+
+            // 회원 정보 DB 에 저장
+            if(response.data!!.updateUserProfile.success) {
+               dataManager?.updateString(TABLE_USER, "name", name, user.id)
+               dataManager?.updateString(TABLE_USER, "birthday", birthday, user.id)
+
+               val getUser = dataManager!!.getUser()
+               bundle.putParcelable("user", getUser)
+               replaceInputFragment2(requireActivity(), InputBodyFragment(), bundle)
+            }else {
+               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+            }
+         }
       }
 
       return binding.root
@@ -167,7 +174,7 @@ class InputInfoFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(randomFileName(), "image/jpeg", img)
 
-                  dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), getUser.id)
+                  dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), id)
                   binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
                }else {
                }
@@ -175,7 +182,7 @@ class InputInfoFragment : Fragment() {
             STORAGE_REQUEST_CODE -> {
                val uri = data?.data
 
-               dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), getUser.id)
+               dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), id)
                binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
             }
          }
@@ -186,7 +193,6 @@ class InputInfoFragment : Fragment() {
       return SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())
    }
 
-   // 사진 저장
    private fun saveFile(fileName:String, mimeType:String, bitmap: Bitmap): Uri?{
       // MediaStore 에 파일명, mimeType 을 지정
       val cv = ContentValues()

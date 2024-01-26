@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 16
+      const val DATABASE_VERSION = 79
       const val TABLE_USER = "user"
       const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
@@ -25,9 +25,9 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onCreate(db: SQLiteDatabase) {
-      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, email text, name text, " +
-              "nickname text, gender text, birthDay text, profileImage text, height real, weight real, weightGoal real, kcalGoal real, " +
-              "waterGoal integer, waterUnit integer, regDate text);"
+      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, userId text, email text, name text, " +
+           "nickname text, gender text, birthday text, profileImage text, height real, weight real, weightGoal real, kcalGoal real, " +
+           "waterGoal integer, waterUnit integer, regDate text);"
       db.execSQL(user)
 
       val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, accessToken text, refreshToken text, regDate text);"

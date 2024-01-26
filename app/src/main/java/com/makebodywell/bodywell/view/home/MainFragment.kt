@@ -50,8 +50,8 @@ class MainFragment : Fragment() {
       val getUser = dataManager!!.getUser()
       if(getUser.profileImage != "") {
          binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
-         binding.tvName.text = getUser.name + " 님"
       }
+      binding.tvName.text = getUser.name + " 님"
 
       binding.clFood.setOnClickListener {
          replaceFragment1(requireActivity(), FoodFragment())

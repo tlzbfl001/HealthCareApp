@@ -2,10 +2,13 @@ package com.makebodywell.bodywell.view.init
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.ActivityInputBinding
+import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
 import kotlin.system.exitProcess
 
 class InputActivity : AppCompatActivity() {
@@ -14,12 +17,19 @@ class InputActivity : AppCompatActivity() {
 
    private var backWait:Long = 0
 
+   private val bundle = Bundle()
+
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       _binding = ActivityInputBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      supportFragmentManager.beginTransaction().add(R.id.inputFrame, InputTermsFragment()).commit()
+      val user: User = intent.getParcelableExtra("user")!!
+
+      Log.d(CustomUtil.TAG, "user1: $user")
+
+      bundle.putParcelable("user", user)
+      replaceInputFragment2(this, InputTermsFragment(), bundle)
    }
 
    override fun onBackPressed() {
