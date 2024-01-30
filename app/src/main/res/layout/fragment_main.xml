@@ -13,9 +13,10 @@
        app:layout_constraintEnd_toEndOf="parent">
       <de.hdodenhof.circleimageview.CircleImageView
          android:id="@+id/ivUser"
-         android:layout_width="50dp"
-         android:layout_height="50dp"
-         android:src="@drawable/user_main"
+         android:layout_width="48dp"
+         android:layout_height="48dp"
+         android:background="@drawable/oval"
+         android:src="@drawable/user_white"
          android:layout_marginLeft="25dp"
          app:layout_constraintTop_toTopOf="@id/ivCalendar"
          app:layout_constraintBottom_toBottomOf="@id/ivCalendar"
@@ -26,7 +27,7 @@
          android:layout_height="wrap_content"
          android:layout_marginLeft="8dp"
          android:text="바디웰 님"
-         android:textSize="17dp"
+         android:textSize="16dp"
          android:textColor="@color/black"
          app:layout_constraintStart_toEndOf="@id/ivUser"
          app:layout_constraintTop_toTopOf="@id/ivUser"

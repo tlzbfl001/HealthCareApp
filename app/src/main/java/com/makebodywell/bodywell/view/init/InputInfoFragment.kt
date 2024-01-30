@@ -34,7 +34,6 @@ import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
@@ -65,7 +64,7 @@ class InputInfoFragment : Fragment() {
 
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
       Log.d(TAG, "InputInfoFragment user: $getUser")
 
       binding.ivProfile.setOnClickListener {

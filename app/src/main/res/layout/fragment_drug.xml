@@ -358,7 +358,7 @@
           android:layout_marginLeft="25dp"
           android:text="하루 약복용"
           android:textColor="@color/black"
-          android:textSize="19dp"
+          android:textSize="17dp"
           android:textStyle="bold"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintStart_toStartOf="parent"/>

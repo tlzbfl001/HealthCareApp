@@ -9,7 +9,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.MyApp
 import com.navercorp.nid.NaverIdLoginSDK
 
@@ -24,16 +24,16 @@ class SplashActivity : AppCompatActivity() {
       dataManager!!.open()
 
       Handler().postDelayed({
-         if(MyApp.prefs.userId() == 0) {
+         if(MyApp.prefs.getId() == 0) {
             startActivity(Intent(this, InitActivity::class.java))
          }else {
-            val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+            val getUser = dataManager!!.getUser(MyApp.prefs.getId())
 
             when(getUser.type) {
                "google" -> {
                   val gsa = GoogleSignIn.getLastSignedInAccount(this)
                   if(gsa == null) {
-                     startActivity(Intent(this, InitActivity::class.java))
+                     startActivity(Intent(this, LoginActivity::class.java))
                   }else {
                      startActivity(Intent(this, MainActivity::class.java))
                   }
@@ -41,9 +41,9 @@ class SplashActivity : AppCompatActivity() {
                "naver" -> {
                   NaverIdLoginSDK.initialize(this, getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
                      R.string.app_name))
-                  Log.d(CustomUtil.TAG, "NaverIdLoginSDK: ${NaverIdLoginSDK.getAccessToken()}")
+                  Log.d(TAG, "NaverIdLoginSDK: ${NaverIdLoginSDK.getAccessToken()}")
                   if(NaverIdLoginSDK.getAccessToken() == null) {
-                     startActivity(Intent(this, InitActivity::class.java))
+                     startActivity(Intent(this, LoginActivity::class.java))
                   }else {
                      startActivity(Intent(this, MainActivity::class.java))
                   }
@@ -51,7 +51,7 @@ class SplashActivity : AppCompatActivity() {
                "kakao" -> {
                   UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
                      if (error != null) {
-                        startActivity(Intent(this, InitActivity::class.java))
+                        startActivity(Intent(this, LoginActivity::class.java))
                      } else if (tokenInfo != null) {
                         startActivity(Intent(this, MainActivity::class.java))
                      }

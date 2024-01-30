@@ -120,7 +120,7 @@
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/clNaver"
       android:layout_width="match_parent"
-       android:layout_height="50dp"
+      android:layout_height="50dp"
       android:background="#66AB45"
       android:layout_marginBottom="15dp"
       app:layout_constraintStart_toStartOf="parent"
@@ -185,7 +185,7 @@
       android:id="@+id/tv10"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="40dp"
+      android:layout_marginBottom="45dp"
       android:text="회원가입없이 소셜계정을 통해 바로 이용가능하며 첫 로그인시 이용약관 및 개인정보처리방침 동의로 간주합니다"
       android:textSize="12dp"
       android:textColor="#AFA7A7"

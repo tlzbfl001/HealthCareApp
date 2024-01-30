@@ -19,7 +19,6 @@ import com.makebodywell.bodywell.type.Gender
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
 import com.makebodywell.bodywell.util.MyApp
 import kotlinx.coroutines.launch
 
@@ -42,7 +41,7 @@ class InputBodyFragment : Fragment() {
 
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
       Log.d(TAG, "InputBodyFragment user: $getUser")
 
       binding.ivBack.setOnClickListener {

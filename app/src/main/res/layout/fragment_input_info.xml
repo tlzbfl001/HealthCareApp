@@ -42,7 +42,7 @@
        android:layout_width="110dp"
        android:layout_height="110dp"
        android:layout_marginTop="5dp"
-       android:src="@drawable/user"
+       android:src="@drawable/user_grey"
        app:layout_constraintTop_toBottomOf="@id/tv3"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toEndOf="parent"/>

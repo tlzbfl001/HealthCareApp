@@ -3,8 +3,7 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:orientation="vertical"
-   android:background="@color/white">
+   android:background="#ECECEC">
    <ScrollView
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -19,28 +18,22 @@
             android:id="@+id/cl1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rec_main_top"
-            android:backgroundTint="#DDDDDD"
+            android:background="@drawable/rec_setting_top"
+            android:backgroundTint="@color/white"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-            <ImageView
-               android:id="@+id/ivLogo"
-               android:layout_width="120dp"
-               android:layout_height="13dp"
-               android:src="@drawable/logo3"
-               android:layout_marginTop="30dp"
-               android:layout_marginLeft="30dp"
-               app:layout_constraintTop_toTopOf="parent"
-               app:layout_constraintStart_toStartOf="parent"/>
             <androidx.cardview.widget.CardView
+               android:id="@+id/cvProfile"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_marginRight="30dp"
+               android:layout_marginTop="20dp"
+               android:layout_marginRight="20dp"
                app:cardBackgroundColor="#AAAAAA"
                app:cardCornerRadius="4dp"
-               app:layout_constraintTop_toTopOf="@id/ivLogo"
-               app:layout_constraintBottom_toBottomOf="@id/ivLogo"
+               app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent">
                <TextView
                   android:layout_width="wrap_content"
@@ -54,48 +47,86 @@
                   android:textSize="14dp" />
             </androidx.cardview.widget.CardView>
             <ImageView
+                android:id="@+id/ivLogo"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo3"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toBottomOf="@id/cvProfile"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <de.hdodenhof.circleimageview.CircleImageView
                android:id="@+id/ivUser"
-               android:layout_width="94dp"
-               android:layout_height="94dp"
-               android:layout_marginTop="5dp"
-               app:tint="@color/white"
+               android:layout_width="85dp"
+               android:layout_height="85dp"
+               android:src="@drawable/user_grey"
+               android:layout_marginTop="22dp"
+               android:layout_marginBottom="22dp"
                app:layout_constraintTop_toBottomOf="@id/ivLogo"
                app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintEnd_toEndOf="parent"/>
-            <TextView
-               android:id="@+id/tvName"
-               android:layout_width="wrap_content"
-               android:layout_height="37dp"
-               android:gravity="bottom"
-               android:text="바디웰"
-               android:textSize="22dp"
-               android:textColor="@color/black"
-               app:layout_constraintTop_toBottomOf="@id/ivUser"
-               app:layout_constraintEnd_toStartOf="@id/tv1"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintHorizontal_chainStyle="packed"/>
-            <TextView
-               android:id="@+id/tv1"
-               android:layout_width="wrap_content"
-               android:layout_height="37dp"
-               android:gravity="bottom"
-               android:text=" 님"
-               android:textSize="20dp"
-               android:textColor="#717171"
-               app:layout_constraintStart_toEndOf="@id/tvName"
-               app:layout_constraintBottom_toBottomOf="@id/tvName"
-               app:layout_constraintEnd_toEndOf="parent"/>
-            <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginBottom="16dp"
-               android:text="반갑습니다."
-               android:textSize="16dp"
-               android:textColor="#7F7A7A"
-               app:layout_constraintTop_toBottomOf="@id/tvName"
+               app:layout_constraintEnd_toStartOf="@id/view"
+               app:layout_constraintBottom_toBottomOf="parent" />
+            <ImageView
+                android:id="@+id/ivProfile2"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/camera"
+                android:background="@drawable/oval"
+                android:padding="4dp"
+                android:elevation="5dp"
+                app:tint="#BBBBBB"
+                app:layout_constraintBottom_toBottomOf="@id/ivUser"
+                app:layout_constraintEnd_toEndOf="@id/ivUser" />
+            <View
+               android:id="@+id/view"
+               android:layout_width="1dp"
+               android:layout_height="90dp"
+               android:background="@color/black"
+               android:layout_marginLeft="-20dp"
+               app:layout_constraintTop_toTopOf="@id/ivUser"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintEnd_toEndOf="parent"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+               app:layout_constraintBottom_toBottomOf="@id/ivUser"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clBox"
+                android:layout_width="0dp"
+                android:layout_height="90dp"
+                android:layout_marginLeft="17dp"
+                app:layout_constraintTop_toTopOf="@id/view"
+                app:layout_constraintStart_toEndOf="@id/view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/view">
+               <TextView
+                   android:id="@+id/tvName"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="바디웰"
+                   android:textSize="17dp"
+                   android:textColor="@color/black"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintBottom_toTopOf="@id/tvAge"
+                   app:layout_constraintStart_toStartOf="parent"/>
+               <TextView
+                   android:id="@+id/tvAge"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="0세 / 여"
+                   android:textSize="17dp"
+                   android:textColor="@color/black"
+                   app:layout_constraintBottom_toTopOf="@id/tvHeight"
+                   app:layout_constraintTop_toBottomOf="@id/tvName"
+                   app:layout_constraintStart_toStartOf="@id/tvName"/>
+               <TextView
+                   android:id="@+id/tvHeight"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="0cm / 0kg"
+                   android:textSize="17dp"
+                   android:textColor="@color/black"
+                   app:layout_constraintBottom_toBottomOf="parent"
+                   app:layout_constraintTop_toBottomOf="@id/tvAge"
+                   app:layout_constraintStart_toStartOf="@id/tvName"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.constraintlayout.widget.ConstraintLayout>
          <ImageView
             android:id="@+id/ivSetting"
@@ -104,7 +135,7 @@
             android:src="@drawable/setting"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="30dp"
-            app:tint="#AAAAAA"
+            app:tint="#5A8EFF"
             app:layout_constraintTop_toBottomOf="@id/cl1"
             app:layout_constraintStart_toStartOf="parent"/>
          <TextView
@@ -112,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:text="사용 환경"
-            android:textSize="18dp"
+            android:textSize="17dp"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@id/ivSetting"
             app:layout_constraintTop_toTopOf="@id/ivSetting"
@@ -121,22 +152,23 @@
             android:id="@+id/cv1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            app:cardBackgroundColor="#EEEEEE"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/ivSetting"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
-               android:padding="12dp">
+               android:padding="14dp">
                <ImageView
                   android:id="@+id/ivUser2"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
                   android:src="@drawable/user_setting"
                   app:tint="#000000"
                   app:layout_constraintTop_toTopOf="parent"
@@ -162,9 +194,9 @@
                <ImageView
                   android:id="@+id/ivLouder"
                   android:layout_width="14dp"
-                  android:layout_height="15dp"
+                  android:layout_height="14dp"
                   android:src="@drawable/louder"
-                  android:layout_marginTop="13dp"
+                  android:layout_marginTop="15dp"
                   app:tint="#606060"
                   app:layout_constraintTop_toBottomOf="@id/ivUser2"
                   app:layout_constraintStart_toStartOf="parent"
@@ -179,10 +211,10 @@
                   android:textColor="@color/black"
                   app:layout_constraintStart_toEndOf="@id/ivLouder"
                   app:layout_constraintTop_toTopOf="@id/ivLouder"
-                  app:layout_constraintEnd_toStartOf="@id/ivRight2"
+                  app:layout_constraintEnd_toStartOf="@id/iv2"
                   app:layout_constraintBottom_toBottomOf="@id/ivLouder"/>
                <ImageView
-                  android:id="@+id/ivRight2"
+                  android:id="@+id/iv2"
                   android:layout_width="12dp"
                   android:layout_height="12dp"
                   android:src="@drawable/arrow_right_round"
@@ -197,8 +229,9 @@
             android:layout_width="19dp"
             android:layout_height="19dp"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="30dp"
+             android:layout_marginLeft="30dp"
             android:src="@drawable/device"
+            app:tint="#5A8EFF"
             app:layout_constraintTop_toBottomOf="@id/cv1"
             app:layout_constraintStart_toStartOf="parent"/>
          <TextView
@@ -206,7 +239,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:text="내 기기"
-            android:textSize="18dp"
+            android:textSize="17dp"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@id/ivDevice"
             app:layout_constraintTop_toTopOf="@id/ivDevice"
@@ -215,22 +248,23 @@
             android:id="@+id/cv2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            app:cardBackgroundColor="#EEEEEE"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/ivDevice"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
-               android:padding="12dp">
+               android:padding="14dp">
                <ImageView
                   android:id="@+id/ivBluetooth"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
                   android:src="@drawable/bluetooth"
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
@@ -265,7 +299,8 @@
             android:layout_height="19dp"
             android:src="@drawable/note"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="30dp"
+             android:layout_marginLeft="30dp"
+            app:tint="#5A8EFF"
             app:layout_constraintTop_toBottomOf="@id/cv2"
             app:layout_constraintStart_toStartOf="parent"/>
          <TextView
@@ -273,7 +308,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="이용 정보"
-            android:textSize="18dp"
+            android:textSize="17dp"
             android:textColor="@color/black"
             app:layout_constraintTop_toTopOf="@id/ivNote"
             app:layout_constraintStart_toEndOf="@id/ivNote"
@@ -281,12 +316,13 @@
          <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            app:cardBackgroundColor="#EEEEEE"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/ivNote"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -294,11 +330,11 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
-               android:padding="12dp">
+               android:padding="14dp">
                <ImageView
                   android:id="@+id/ivArticle"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
                   android:src="@drawable/article"
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -322,9 +358,9 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <ImageView
                   android:id="@+id/ivQuestion"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
-                  android:layout_marginTop="13dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/question"
                   app:layout_constraintTop_toBottomOf="@+id/ivArticle"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -348,9 +384,9 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <ImageView
                   android:id="@+id/ivFaq"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
-                  android:layout_marginTop="13dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/faq"
                   app:layout_constraintTop_toBottomOf="@+id/ivQuestion"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -374,9 +410,9 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <ImageView
                   android:id="@+id/ivInfo"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
-                  android:layout_marginTop="13dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/info"
                   app:layout_constraintTop_toBottomOf="@+id/ivFaq"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -400,14 +436,15 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <ImageView
                   android:id="@+id/ivLogout"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
-                  android:layout_marginTop="13dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/logout"
                   app:layout_constraintTop_toBottomOf="@+id/ivInfo"
                   app:layout_constraintStart_toStartOf="parent"/>
                <TextView
-                  android:layout_width="wrap_content"
+                  android:id="@+id/tvLogout"
+                  android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:layout_marginLeft="10dp"
                   android:text="로그아웃"
@@ -415,10 +452,12 @@
                   android:textColor="@color/black"
                   app:layout_constraintTop_toTopOf="@id/ivLogout"
                   app:layout_constraintStart_toEndOf="@id/ivLogout"
+                  app:layout_constraintEnd_toStartOf="@id/iv8"
                   app:layout_constraintBottom_toBottomOf="@id/ivLogout"/>
                <ImageView
-                   android:layout_width="12dp"
-                   android:layout_height="12dp"
+                  android:id="@+id/iv8"
+                  android:layout_width="12dp"
+                  android:layout_height="12dp"
                   android:src="@drawable/arrow_right_round"
                   app:tint="#9E9E9E"
                   app:layout_constraintTop_toTopOf="@id/ivLogout"
@@ -426,9 +465,9 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <ImageView
                   android:id="@+id/ivDelete"
-                  android:layout_width="16dp"
-                  android:layout_height="16dp"
-                  android:layout_marginTop="13dp"
+                  android:layout_width="14dp"
+                  android:layout_height="14dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/delete"
                   app:layout_constraintTop_toBottomOf="@+id/ivLogout"
                   app:layout_constraintStart_toStartOf="parent"

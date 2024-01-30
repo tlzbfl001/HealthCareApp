@@ -14,7 +14,13 @@ class PreferenceUtil(context: Context) {
         return prefs.getString(key, defValue).toString()
     }
 
-    fun userId(): Int {
+    fun getId(): Int {
         return prefs.getInt("userId", 0)
+    }
+
+    fun removePrefs(key: String) {
+        prefs.edit().remove(key)
+        prefs.edit().clear()
+        prefs.edit().apply()
     }
 }

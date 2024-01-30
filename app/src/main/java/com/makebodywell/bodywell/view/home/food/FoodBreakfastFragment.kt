@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
 import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.util.stream.Collectors
@@ -32,7 +34,8 @@ class FoodBreakfastFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var photoAdapter: PhotoViewAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
-   private var imageData: ArrayList<FoodImage>? = null
+   private var imageData = ArrayList<FoodImage>()
+   private var imageData2 = ArrayList<FoodImage>()
 
    private var calendarDate = ""
    private var type = 1
@@ -88,9 +91,10 @@ class FoodBreakfastFragment : Fragment() {
 
    private fun photoView() {
       imageData = dataManager!!.getImage(type, calendarDate)
+      imageData2 = dataManager!!.getImage(type, calendarDate)
 
-      if(imageData!!.size > 0) {
-         photoAdapter = PhotoViewAdapter(imageData!!)
+      if(imageData.size > 0) {
+         photoAdapter = PhotoViewAdapter(imageData)
 
          binding.viewPager.adapter = photoAdapter
          binding.viewPager.offscreenPageLimit = 5
@@ -160,16 +164,16 @@ class FoodBreakfastFragment : Fragment() {
                      dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
                      dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", dataList[pos].id)
 
-                     dataList.removeAt(pos)
-                     intakeAdapter!!.notifyDataSetChanged()
-
-                     if (imageData!!.size > 0) {
-                        imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
+                     if (imageData.size > 0) {
+                        imageData.stream().filter { x -> x.dataId == dataList[pos].id }
                            .collect(Collectors.toList()).forEach { x ->
-                              imageData!!.remove(x)
+                              imageData.remove(x)
                            }
                         photoAdapter!!.notifyDataSetChanged()
                      }
+
+                     dataList.removeAt(pos)
+                     intakeAdapter!!.notifyDataSetChanged()
 
                      Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                   }

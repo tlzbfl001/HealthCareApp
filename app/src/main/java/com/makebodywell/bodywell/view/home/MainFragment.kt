@@ -17,7 +17,6 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
@@ -51,7 +50,7 @@ class MainFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
       Log.d(TAG, "MainFragment user: $getUser")
 
       if(getUser.name != "" && getUser.name != null) {
