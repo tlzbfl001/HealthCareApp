@@ -11,13 +11,9 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.drugSelected1
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.drugSelected2
-import com.makebodywell.bodywell.util.DrugUtil
-import com.makebodywell.bodywell.util.DrugUtil.Companion.drugEndDate
-import com.makebodywell.bodywell.util.DrugUtil.Companion.drugStartDate
 import com.makebodywell.bodywell.view.home.drug.DrugSelectDateFragment1
 import com.makebodywell.bodywell.view.init.MainActivity
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class CalendarAdapter3 (
     private val context: Context,

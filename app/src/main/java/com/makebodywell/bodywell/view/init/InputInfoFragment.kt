@@ -19,7 +19,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,19 +26,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
-import com.makebodywell.bodywell.LoginUserGoogleMutation
-import com.makebodywell.bodywell.MeQuery
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
-import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
@@ -54,9 +50,9 @@ class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var dialog: Dialog? = null
+   private var uri:Uri? = null
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -69,12 +65,8 @@ class InputInfoFragment : Fragment() {
 
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
-      val user = arguments?.getParcelable<User>("user")!!
-      Log.d(TAG, "user: $user")
-
-      binding.ivBack.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputTermsFragment())
-      }
+      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      Log.d(TAG, "InputInfoFragment user: $getUser")
 
       binding.ivProfile.setOnClickListener {
          dialog = Dialog(requireActivity())
@@ -123,8 +115,8 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         var name = ""
-         var birthday = ""
+         var name = "바디웰"
+         var birthday = "1990-01-01"
 
          if(binding.etName.text.toString() != "") {
             name = binding.etName.text.toString()
@@ -134,30 +126,24 @@ class InputInfoFragment : Fragment() {
             birthday = binding.tvBirthday.text.toString()
          }
 
-         val getToken = dataManager!!.getToken(user.id)
+         val getToken = dataManager!!.getToken(getUser.id)
 
          lifecycleScope.launch{
             val response = apolloClient.mutation(UpdateUserProfileMutation(
-               userId = user.userId.toString(), UpdateUserProfileInput(
-               birth = Optional.present(birthday), name = Optional.present(name)
-            ))).addHttpHeader(
+               userId = getUser.userId.toString(), UpdateUserProfileInput(birth = Optional.present(birthday), name = Optional.present(name))
+            )).addHttpHeader(
                "Authorization",
                "Bearer ${getToken.accessToken}"
             ).execute()
 
-            Log.d(TAG, "updateUserProfile: ${response.data?.updateUserProfile}")
+            Log.d(TAG, "inputInfo updateUserProfile: ${response.data!!.updateUserProfile}")
+            Log.d(TAG, "inputInfo uri: $uri")
 
-            // 회원 정보 DB 에 저장
-            if(response.data!!.updateUserProfile.success) {
-               dataManager?.updateString(TABLE_USER, "name", name, user.id)
-               dataManager?.updateString(TABLE_USER, "birthday", birthday, user.id)
+            dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), getUser.id)
+            dataManager?.updateString(TABLE_USER, "name", name, getUser.id)
+            dataManager?.updateString(TABLE_USER, "birthday", birthday, getUser.id)
 
-               val getUser = dataManager!!.getUser()
-               bundle.putParcelable("user", getUser)
-               replaceInputFragment2(requireActivity(), InputBodyFragment(), bundle)
-            }else {
-               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            replaceInputFragment(requireActivity(), InputBodyFragment())
          }
       }
 
@@ -172,17 +158,13 @@ class InputInfoFragment : Fragment() {
             CAMERA_REQUEST_CODE -> {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
-                  val uri = saveFile(randomFileName(), "image/jpeg", img)
-
-                  dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), id)
+                  uri = saveFile(randomFileName(), "image/jpeg", img)
                   binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
                }else {
                }
             }
             STORAGE_REQUEST_CODE -> {
-               val uri = data?.data
-
-               dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), id)
+               uri = data?.data
                binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
             }
          }

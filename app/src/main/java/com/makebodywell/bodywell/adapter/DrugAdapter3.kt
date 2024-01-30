@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.DrugTime
-import com.makebodywell.bodywell.util.DrugUtil
 
 class DrugAdapter3 (
     private val itemList: ArrayList<DrugTime>

@@ -10,13 +10,17 @@ import com.makebodywell.bodywell.adapter.ExerciseListAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDate
 
 class ExerciseListFragment : Fragment() {
    private var _binding: FragmentExerciseListBinding? = null
    private val binding get() = _binding!!
 
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
+
+   private var calendarDate = ""
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -27,12 +31,15 @@ class ExerciseListFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
+      calendarDate = arguments?.getString("calendarDate").toString()
+      bundle.putString("calendarDate", calendarDate)
+
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseFragment())
       }
 
       binding.tvInput.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+         replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
       }
 
       val getExercise = dataManager!!.getExercise(LocalDate.now().toString())

@@ -56,15 +56,10 @@ class LoginActivity : AppCompatActivity() {
    private var backWait:Long = 0
 
    private var dataManager: DataManager? = null
-
    private var apolloClient: ApolloClient? = null
-
    private var gsc: GoogleSignInClient? = null
    private var gso: GoogleSignInOptions? = null
    private var gsa: GoogleSignInAccount? = null
-
-   private lateinit var oauthProvider: OAuthProvider.Builder
-   private lateinit var firebaseAuth: FirebaseAuth
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -76,9 +71,9 @@ class LoginActivity : AppCompatActivity() {
 
       apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
-      // 카카오 로그인
-      binding.clKakao.setOnClickListener {
-         kakaoLogin()
+      // 구글 로그인
+      binding.clGoogle.setOnClickListener {
+         googleLogin()
       }
 
       // 네이버 로그인
@@ -86,14 +81,9 @@ class LoginActivity : AppCompatActivity() {
          naverLogin()
       }
 
-      // 구글 로그인
-      binding.clGoogle.setOnClickListener {
-         googleLogin()
-      }
-
-      // 애플 로그인
-      binding.clApple.setOnClickListener {
-         appleLogin()
+      // 카카오 로그인
+      binding.clKakao.setOnClickListener {
+         kakaoLogin()
       }
    }
 
@@ -118,32 +108,27 @@ class LoginActivity : AppCompatActivity() {
             gsa = GoogleSignIn.getLastSignedInAccount(this)
 
             val getUser = dataManager!!.getUser("google", gsa?.email.toString())
+
             if(getUser.regDate == "") { // 초기 가입 작업
                val user = User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString())
-
                val intent = Intent(this, InputActivity::class.java)
                intent.putExtra("user", user)
                startActivity(intent)
             }else { // 로그인
-               var loginSuccess = false
-
                lifecycleScope.launch{
                   val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
                      idToken = gsa?.idToken.toString()
                   ))).execute()
 
-                  loginSuccess = if(response.data!!.loginUserGoogle.success) {
-                     val getUser = dataManager!!.getUser("google")
+                  if(response.data!!.loginUserGoogle.success) {
+                     val getUser = dataManager!!.getUser("google", gsa?.email.toString())
                      dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
                         refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
-                     true
-                  }else false
-               }
 
-               if(loginSuccess) {
-                  startActivity(Intent(this, MainActivity::class.java))
-               }else {
-                  Toast.makeText(this, "서버에 이상이 있습니다.", Toast.LENGTH_SHORT).show()
+                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                  }else {
+                     Toast.makeText(this@LoginActivity, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+                  }
                }
             }
          }catch (e: ApiException) {
@@ -175,13 +160,13 @@ class LoginActivity : AppCompatActivity() {
                         ))).execute()
 
                         if(response.data!!.loginUserNaver.success) {
-                           val getUser = dataManager!!.getUser("naver")
+                           val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
                            dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
                               refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         }else {
-                           Toast.makeText(this@LoginActivity, "서버 오류, 관리자에게 문의해주세요", Toast.LENGTH_SHORT).show()
+                           Toast.makeText(this@LoginActivity, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                         }
                      }
                   }
@@ -250,84 +235,21 @@ class LoginActivity : AppCompatActivity() {
             intent.putExtra("user", user)
             startActivity(intent)
          }else { // 로그인
-            var loginSuccess = false
-
             lifecycleScope.launch{
                val response = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
                   idToken = token.idToken.toString()
                ))).execute()
 
-               loginSuccess = if(response.data!!.loginUserKakao.success) {
-                  val getUser = dataManager!!.getUser("kakao")
+               if(response.data!!.loginUserKakao.success) {
+                  val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
                   dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
                      refreshToken = response.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
-                  true
-               }else false
+
+                  startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+               }else {
+                  Toast.makeText(this@LoginActivity, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               }
             }
-
-            if(loginSuccess) {
-               startActivity(Intent(this, MainActivity::class.java))
-            }else {
-               Toast.makeText(this, "서버에 이상이 있습니다.", Toast.LENGTH_SHORT).show()
-            }
-         }
-      }
-   }
-
-   private fun appleLogin() {
-      // 인증 API 초기화
-      oauthProvider = OAuthProvider.newBuilder("apple.com")
-      oauthProvider.scopes = listOf("email", "name")
-      oauthProvider.addCustomParameter("locale", "ko")
-      firebaseAuth = FirebaseAuth.getInstance()
-
-      // 이미 받은 응답이 있는지 확인
-      val pending = firebaseAuth.pendingAuthResult
-      if(pending != null) {
-         pending.addOnSuccessListener { authResult ->
-            appleApollo(authResult)
-         }.addOnFailureListener { e ->
-            e.printStackTrace()
-         }
-      }else {
-         firebaseAuth.startActivityForSignInWithProvider(this, oauthProvider.build()).addOnSuccessListener { authResult ->
-            appleApollo(authResult)
-         }.addOnFailureListener { e ->
-            e.printStackTrace()
-         }
-      }
-   }
-
-   private fun appleApollo(authResult: AuthResult) {
-      val idToken = (authResult.credential as OAuthCredential?)!!.idToken.toString()
-      val getUser = dataManager!!.getUser("apple", authResult.user?.email.toString())
-
-      if(getUser.regDate == "") {
-         val user = User(type = "apple", idToken = idToken, email = authResult.user?.email.toString(), regDate = LocalDate.now().toString())
-
-         val intent = Intent(this, InputActivity::class.java)
-         intent.putExtra("user", user)
-         startActivity(intent)
-      }else { // 로그인
-         var loginSuccess = false
-
-         lifecycleScope.launch{
-            val response = apolloClient!!.mutation(LoginUserAppleMutation(LoginAppleOauthInput(
-               idToken = idToken
-            ))).execute()
-
-            loginSuccess = if(response.data!!.loginUserApple.success) {
-               val getUser = dataManager!!.getUser("kakao")
-               dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserApple.accessToken.toString(),
-                  refreshToken = response.data!!.loginUserApple.refreshToken.toString(), regDate = LocalDate.now().toString()))
-               true
-            }else false
-         }
-
-         if(loginSuccess) {
-            startActivity(Intent(this, MainActivity::class.java))
-         }else {
-            Toast.makeText(this, "서버에 이상이 있습니다.", Toast.LENGTH_SHORT).show()
          }
       }
    }

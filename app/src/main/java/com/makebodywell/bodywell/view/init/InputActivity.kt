@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat
 import com.makebodywell.bodywell.databinding.ActivityInputBinding
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
 import kotlin.system.exitProcess
 
@@ -25,8 +26,7 @@ class InputActivity : AppCompatActivity() {
       setContentView(binding.root)
 
       val user: User = intent.getParcelableExtra("user")!!
-
-      Log.d(CustomUtil.TAG, "user1: $user")
+      Log.d(TAG, "InputActivity user: $user")
 
       bundle.putParcelable("user", user)
       replaceInputFragment2(this, InputTermsFragment(), bundle)

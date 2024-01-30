@@ -14,6 +14,7 @@ import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
@@ -24,10 +25,9 @@ class FoodRecord1Fragment : Fragment() {
    private var bundle = Bundle()
 
    private var dataManager: DataManager? = null
-   private var dataList = ArrayList<Food>()
-   private val itemList = ArrayList<Food>()
-   private val searchList = ArrayList<String>()
-   private val originalList = ArrayList<String>()
+   private val itemList = ArrayList<Item>()
+   private val searchList = ArrayList<Item>()
+   private val originalList = ArrayList<Item>()
 
    private var calendarDate = ""
    private var type = ""
@@ -71,6 +71,8 @@ class FoodRecord1Fragment : Fragment() {
    }
 
    private fun listView() {
+      var dataList = ArrayList<Food>()
+
       when(type) {
          "1" -> dataList = dataManager!!.getFood(1, calendarDate)
          "2" -> dataList = dataManager!!.getFood(2, calendarDate)
@@ -78,19 +80,20 @@ class FoodRecord1Fragment : Fragment() {
          "4" -> dataList = dataManager!!.getFood(4, calendarDate)
       }
 
-      if(dataList.size != 0) {
-         binding.rv1.visibility = View.VISIBLE
-
-         for (i in 0 until dataList.size) {
-            itemList.add(Food(id = dataList[i].id, name = dataList[i].name))
+      if(dataList.size > 0) {
+         for(i in 0 until dataList.size) {
+            itemList.add(Item(string1 = dataList[i].name, int1 = dataList[i].id))
          }
+
+         binding.tvEmpty.visibility = View.GONE
+         binding.rv1.visibility = View.VISIBLE
 
          val adapter = FoodRecord1Adapter(itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          adapter.setOnItemClickListener(object : FoodRecord1Adapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("id", itemList[pos].id.toString())
+               bundle.putString("id", dataList[pos].id.toString())
                replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
             }
          })
@@ -101,23 +104,26 @@ class FoodRecord1Fragment : Fragment() {
 
    private fun searchView() {
       var adapter = SearchAdapter()
-      val strings = arrayListOf("Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "가나", "한국", "가나다", "가다", "중국", "미국", "유럽")
 
-      for(i in 0 until strings.size) {
-         originalList.add(strings[i])
+      for(i in 0 until itemList.size) {
+         originalList.add(itemList[i])
       }
 
       binding.etSearch.addTextChangedListener(object: TextWatcher{
          override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
          override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
          override fun afterTextChanged(p0: Editable?) {
+            binding.rv1.visibility = View.GONE
+            binding.rv2.visibility = View.VISIBLE
             searchList.clear()
             if(binding.etSearch.text.toString() == "") {
+               binding.rv1.visibility = View.VISIBLE
+               binding.rv2.visibility = View.GONE
                adapter.clearItems()
             }else {
                // 검색 단어를 포함하는지 확인
-               for(i in 0 until strings.size) {
-                  if(originalList[i].lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+               for(i in 0 until itemList.size) {
+                  if(originalList[i].string1.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
                      searchList.add(originalList[i])
                   }
                   adapter.setItems(searchList)
@@ -131,8 +137,9 @@ class FoodRecord1Fragment : Fragment() {
       binding.rv2.adapter = adapter
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
-         override fun onClick(v: View, position: Int) {
-            Log.d(TAG, "position: ${searchList[position]}")
+         override fun onClick(v: View, pos: Int) {
+            bundle.putString("id", searchList[pos].int1.toString())
+            replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
          }
       })
    }

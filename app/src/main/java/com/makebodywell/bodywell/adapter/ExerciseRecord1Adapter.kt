@@ -9,11 +9,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.exercise.ExerciseDetailFragment
-import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
+import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
 
 class ExerciseRecord1Adapter (
     private val context: FragmentActivity,
@@ -33,7 +30,7 @@ class ExerciseRecord1Adapter (
                 calories = itemList[position].calories)
             bundle.putParcelable("exercise", exercise)
 
-            replaceFragment2(context, ExerciseDetailFragment(), bundle)
+            replaceFragment2(context, ExerciseEditFragment(), bundle)
         }
     }
 

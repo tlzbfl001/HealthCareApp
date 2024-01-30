@@ -13,12 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
-import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -33,7 +31,7 @@ class FoodBreakfastFragment : Fragment() {
 
    private var dataManager: DataManager? = null
    private var photoAdapter: PhotoViewAdapter? = null
-   private var adapter: FoodIntakeAdapter? = null
+   private var intakeAdapter: FoodIntakeAdapter? = null
    private var imageData: ArrayList<FoodImage>? = null
 
    private var calendarDate = ""
@@ -73,7 +71,7 @@ class FoodBreakfastFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         val getFoodData = adapter!!.getFoodData()
+         val getFoodData = intakeAdapter!!.getFoodData()
          dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
@@ -151,10 +149,10 @@ class FoodBreakfastFragment : Fragment() {
    private fun listView() {
       val dataList = dataManager!!.getFood(type, calendarDate)
       if(dataList.size != 0) {
-         adapter = FoodIntakeAdapter(requireActivity(), dataList)
+         intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-         adapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+         intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                val dialog = AlertDialog.Builder(context)
                   .setMessage("정말 삭제하시겠습니까?")
@@ -162,16 +160,14 @@ class FoodBreakfastFragment : Fragment() {
                      dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
                      dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", dataList[pos].id)
 
-                     imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
-                        .collect(Collectors.toList()).forEach { x ->
-                           imageData!!.remove(x)
-                        }
-
                      dataList.removeAt(pos)
-
-                     adapter!!.notifyDataSetChanged()
+                     intakeAdapter!!.notifyDataSetChanged()
 
                      if (imageData!!.size > 0) {
+                        imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
+                           .collect(Collectors.toList()).forEach { x ->
+                              imageData!!.remove(x)
+                           }
                         photoAdapter!!.notifyDataSetChanged()
                      }
 
@@ -183,7 +179,7 @@ class FoodBreakfastFragment : Fragment() {
             }
          })
 
-         binding.rv.adapter = adapter
+         binding.rv.adapter = intakeAdapter
       }
    }
 }

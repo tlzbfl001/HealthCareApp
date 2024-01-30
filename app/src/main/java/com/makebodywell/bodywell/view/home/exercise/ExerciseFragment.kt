@@ -20,24 +20,25 @@ import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.view.home.body.BodyFragment
+import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import com.makebodywell.bodywell.view.home.body.BodyFragment
-import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import java.time.LocalDate
 
 class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
-   private var calendarDate = LocalDate.now()
-
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: ExerciseAdapter? = null
    private var getDailyData = DailyData()
 
+   private var calendarDate = LocalDate.now()
    private var sum = 0
 
    override fun onCreateView(
@@ -51,6 +52,55 @@ class ExerciseFragment : Fragment() {
 
       binding.tvDate.text = dateFormat(calendarDate)
 
+      settingGoal()
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         calendarDate = calendarDate!!.minusDays(1)
+         binding.tvDate.text = dateFormat(calendarDate)
+         dailyView()
+      }
+
+      binding.clNext.setOnClickListener {
+         calendarDate = calendarDate!!.plusDays(1)
+         binding.tvDate.text = dateFormat(calendarDate)
+         dailyView()
+      }
+
+      binding.cvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.cvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.cvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.cvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.cvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
+      }
+
+      binding.clRecord.setOnClickListener {
+         bundle.putString("calendarDate", calendarDate.toString())
+         replaceFragment2(requireActivity(), ExerciseListFragment(), bundle)
+      }
+
+      dailyView()
+
+      return binding.root
+   }
+
+   private fun settingGoal() {
       // 목표 설정
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -88,70 +138,24 @@ class ExerciseFragment : Fragment() {
       binding.clGoal.setOnClickListener {
          dialog.show()
       }
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
-         dailyView()
-      }
-
-      binding.clNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
-         dailyView()
-      }
-
-      binding.cvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.cvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.cvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.cvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.cvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
-
-      binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseListFragment())
-      }
-
-      setupGoal()
-      dailyView()
-
-      return binding.root
    }
 
-   private fun setupGoal() {
-      // 텍스트 초기화
+   private fun dailyView() {
+      // 목표 초기화
+      binding.pbExercise.max = 0
+      binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
       binding.tvConsume.text = "0 kcal"
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      // 목표 초기화
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       sum = getExerciseCalories(requireActivity(), calendarDate.toString())
 
-      if(getDailyData.exerciseGoal > 0 && sum > 0) {
+      if(sum > 0) {
+         binding.pbExercise.setProgressStartColor(Color.parseColor("#FFB846"))
+         binding.pbExercise.setProgressEndColor(Color.parseColor("#FFB846"))
          binding.pbExercise.max = getDailyData.exerciseGoal
-         binding.pbExercise.progress = sum
-      }else if (getDailyData.exerciseGoal == 0 && sum > 0) {
-         binding.pbExercise.max = sum
          binding.pbExercise.progress = sum
       }
 
@@ -164,9 +168,7 @@ class ExerciseFragment : Fragment() {
       }else {
          binding.tvRemain.text = "0 kcal"
       }
-   }
 
-   private fun dailyView() {
       val getExercise = dataManager!!.getExercise(calendarDate.toString())
 
       adapter = ExerciseAdapter(getExercise)

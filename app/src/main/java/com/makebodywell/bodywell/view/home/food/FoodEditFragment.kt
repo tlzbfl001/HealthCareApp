@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
@@ -37,7 +36,7 @@ class FoodEditFragment : Fragment() {
    private var imageList = ArrayList<FoodImage>()
 
    private var calendarDate = ""
-   private var id = ""
+   private var id = 0
    private var type = ""
 
    override fun onCreateView(
@@ -51,22 +50,15 @@ class FoodEditFragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
-      id = arguments?.getString("id").toString()
+      id = arguments?.getString("id").toString().toInt()
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
-      getFood = dataManager!!.getFood(arguments?.getString("id")!!.toInt())
+      getFood = dataManager!!.getFood(id)
       var count = getFood.count
 
       binding.tvName.text = getFood.name
-      binding.tvCount.text = count.toString()
-      binding.tvAmount.text = getFood.amount
-      binding.tvKcal.text = getFood.kcal
-      binding.tvCar.text = getFood.carbohydrate
-      binding.tvProtein.text = getFood.protein
-      binding.tvFat.text = getFood.fat
-      binding.tvSalt.text = getFood.salt
-      binding.tvSugar.text = getFood.sugar
+      dataTextView(count)
 
       binding.clBack.setOnClickListener {
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
@@ -83,17 +75,17 @@ class FoodEditFragment : Fragment() {
       binding.ivMinus.setOnClickListener {
          if(count > 0) {
             count--
-            binding.tvCount.text = count.toString()
+            dataTextView(count)
          }
       }
 
       binding.ivPlus.setOnClickListener {
          count++
-         binding.tvCount.text = count.toString()
+         dataTextView(count)
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", id.toInt())
+         dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", id)
          for(i in 0 until imageList.size) {
             dataManager?.insertFoodImage(imageList[i])
          }
@@ -102,14 +94,25 @@ class FoodEditFragment : Fragment() {
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
-      val getData = dataManager!!.getImage(id.toInt())
+      val getData = dataManager!!.getImage(id)
       for(i in 0 until getData.size) {
          imageList.add(getData[i])
       }
 
-      setupPhotoView(imageList)
+      photoView(imageList)
 
       return binding.root
+   }
+
+   private fun dataTextView(count: Int) {
+      binding.tvCount.text = count.toString()
+      binding.tvAmount.text = (getFood.amount * count).toString()
+      binding.tvKcal.text = (getFood.kcal * count).toString()
+      binding.tvCar.text = String.format("%.1f", (getFood.carbohydrate * count))
+      binding.tvProtein.text = String.format("%.1f", (getFood.protein * count))
+      binding.tvFat.text = String.format("%.1f", (getFood.fat * count))
+      binding.tvSalt.text = String.format("%.1f", (getFood.salt * count))
+      binding.tvSugar.text = String.format("%.1f", (getFood.sugar * count))
    }
 
    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -120,13 +123,13 @@ class FoodEditFragment : Fragment() {
                val uri = data?.data
                val image = FoodImage(imageUri = uri.toString(), type = type.toInt(), dataId = getFood.id, regDate = calendarDate)
                imageList.add(image)
-               setupPhotoView(imageList)
+               photoView(imageList)
             }
          }
       }
    }
 
-   private fun setupPhotoView(imageList: ArrayList<FoodImage>) {
+   private fun photoView(imageList: ArrayList<FoodImage>) {
       if(imageList.size > 0) {
          binding.ivView.visibility = View.GONE
          binding.viewPager.visibility = View.VISIBLE
@@ -192,6 +195,6 @@ class FoodEditFragment : Fragment() {
 
    companion object {
       private const val REQUEST_CODE = 1
-      private const val STORAGE_REQUEST_CODE = 2
+      private const val STORAGE_REQUEST_CODE = 100
    }
 }

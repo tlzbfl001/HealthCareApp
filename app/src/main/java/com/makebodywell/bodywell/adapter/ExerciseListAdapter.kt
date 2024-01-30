@@ -35,7 +35,7 @@ class ExerciseListAdapter (
       holder.tvTime.text = "${itemList[position].workoutTime}분"
       holder.tvKcal.text = "${itemList[position].calories} kcal"
 
-      holder.ivDelete.setOnClickListener {
+      holder.clX.setOnClickListener {
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
@@ -60,6 +60,6 @@ class ExerciseListAdapter (
       val tvName: TextView = itemView.findViewById(R.id.tvName)
       val tvTime: TextView = itemView.findViewById(R.id.tvTime)
       val tvKcal: TextView = itemView.findViewById(R.id.tvKcal)
-      val ivDelete: ConstraintLayout = itemView.findViewById(R.id.ivDelete)
+      val clX: ConstraintLayout = itemView.findViewById(R.id.clX)
    }
 }

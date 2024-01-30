@@ -1,9 +1,12 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.content.Context
+import android.hardware.input.InputManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.database.DataManager
@@ -33,71 +36,100 @@ class FoodInputFragment : Fragment() {
 
       binding.clBack.setOnClickListener {
          when(type) {
-            "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-            "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-            "3" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-            "4" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            "1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+            "2" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+            "3" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+            "4" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
          }
+      }
+
+      binding.root.setOnClickListener {
+         hideKeyboard()
       }
 
       binding.cvSave.setOnClickListener {
-         if(binding.etName.text.toString() == "" || binding.etUnit.text.toString() == "" || binding.etAmount.text.toString() == "" || binding.etKcal.text.toString() == "") {
-            Toast.makeText(requireActivity(), "내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+         var name = ""
+         var unit = ""
+         var amount = 0
+         var kcal = 0
+         var carbohydrate = 0.0
+         var protein = 0.0
+         var fat = 0.0
+         var salt = 0.0
+         var sugar = 0.0
+
+         if(binding.etName.text.toString() == "" && binding.etUnit.text.toString() == "" && binding.etAmount.text.toString() == "" &&
+            binding.etKcal.text.toString() == "" && binding.etCar.text.toString() == "" && binding.etProtein.text.toString() == "" &&
+            binding.etFat.text.toString() == "" && binding.etSalt.text.toString() == "" && binding.etSugar.text.toString() == "") {
+            name = "사과"
+            unit = "g"
+            amount = 100
+            kcal = 52
+            carbohydrate = 13.81
+            protein = 0.26
+            fat = 0.17
+            salt = 1.0
+            sugar = 10.8
          }else {
-            if(binding.etAmount.text.toString() == "") {
-               binding.etAmount.setText("0")
+            if(binding.etName.text.toString() != "") {
+               name = binding.etName.text.toString()
             }
-            if(binding.etKcal.text.toString() == "") {
-               binding.etKcal.setText("0")
+            if(binding.etUnit.text.toString() != "") {
+               unit = binding.etUnit.text.toString()
             }
-            if(binding.etCar.text.toString() == "") {
-               binding.etCar.setText("0.0")
+            if(binding.etAmount.text.toString() != "") {
+               amount = binding.etAmount.text.toString().toInt()
             }
-            if(binding.etProtein.text.toString() == "") {
-               binding.etProtein.setText("0.0")
+            if(binding.etKcal.text.toString() != "") {
+               kcal = binding.etKcal.text.toString().toInt()
             }
-            if(binding.etFat.text.toString() == "") {
-               binding.etFat.setText("0.0")
+            if(binding.etCar.text.toString() != "") {
+               carbohydrate = binding.etCar.text.toString().toDouble()
             }
-            if(binding.etSalt.text.toString() == "") {
-               binding.etSalt.setText("0.0")
+            if(binding.etProtein.text.toString() != "") {
+               protein = binding.etProtein.text.toString().toDouble()
             }
-            if(binding.etSugar.text.toString() == "") {
-               binding.etSugar.setText("0.0")
+            if(binding.etFat.text.toString() != "") {
+               fat = binding.etFat.text.toString().toDouble()
             }
-
-            when(type) {
-               "1" -> {
-                  dataManager.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
-                     amount = binding.etAmount.text.toString(), count = 1, kcal = binding.etKcal.text.toString(),
-                     carbohydrate = binding.etCar.text.toString(), protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(),
-                     salt = binding.etSalt.text.toString(), sugar = binding.etSugar.text.toString(), type = 1, regDate = calendarDate))
-               }
-               "2" -> {
-                  dataManager.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
-                     amount = binding.etAmount.text.toString(), count = 1, kcal = binding.etKcal.text.toString(),
-                     carbohydrate = binding.etCar.text.toString(), protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(),
-                     salt = binding.etSalt.text.toString(), sugar = binding.etSugar.text.toString(), type = 2, regDate = calendarDate))
-               }
-               "3" -> {
-                  dataManager.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
-                     amount = binding.etAmount.text.toString(), count = 1, kcal = binding.etKcal.text.toString(),
-                     carbohydrate = binding.etCar.text.toString(), protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(),
-                     salt = binding.etSalt.text.toString(), sugar = binding.etSugar.text.toString(), type = 3, regDate = calendarDate))
-               }
-               "4" -> {
-                  dataManager.insertFood(Food(name = binding.etName.text.toString(), unit = binding.etUnit.text.toString(),
-                     amount = binding.etAmount.text.toString(), count = 1, kcal = binding.etKcal.text.toString(),
-                     carbohydrate = binding.etCar.text.toString(), protein = binding.etProtein.text.toString(), fat = binding.etFat.text.toString(),
-                     salt = binding.etSalt.text.toString(), sugar = binding.etSugar.text.toString(), type = 4, regDate = calendarDate))
-               }
+            if(binding.etSalt.text.toString() != "") {
+               salt = binding.etSalt.text.toString().toDouble()
             }
-
-            Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+            if(binding.etSugar.text.toString() != "") {
+               sugar = binding.etSugar.text.toString().toDouble()
+            }
          }
+
+         when(type) {
+            "1" -> {
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
+                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 1, regDate = calendarDate))
+            }
+            "2" -> {
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
+                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 2, regDate = calendarDate))
+            }
+            "3" -> {
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
+                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 3, regDate = calendarDate))
+            }
+            "4" -> {
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
+                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 4, regDate = calendarDate))
+            }
+         }
+
+         Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
       }
 
       return binding.root
+   }
+
+   private fun hideKeyboard() {
+      if(activity != null && requireActivity().currentFocus != null) {
+         val inputManager: InputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+         inputManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+      }
    }
 }

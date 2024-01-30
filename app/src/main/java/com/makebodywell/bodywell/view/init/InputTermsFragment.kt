@@ -27,7 +27,6 @@ import com.makebodywell.bodywell.LoginUserKakaoMutation
 import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.MeQuery
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputTermsBinding
@@ -41,10 +40,10 @@ import com.makebodywell.bodywell.type.LoginAppleOauthInput
 import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
 import com.makebodywell.bodywell.type.LoginNaverOauthInput
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
+import com.makebodywell.bodywell.util.MyApp
 import com.navercorp.nid.NaverIdLoginSDK
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -56,7 +55,7 @@ class InputTermsFragment : Fragment() {
    private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var apolloClient: ApolloClient? = null
-
+   private var user = User()
    private var isAll = true
 
    override fun onCreateView(
@@ -69,6 +68,9 @@ class InputTermsFragment : Fragment() {
       dataManager!!.open()
 
       apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
+
+      user = arguments?.getParcelable("user")!!
+      Log.d(TAG, "InputTermsFragment user: $user")
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(activity, LoginActivity::class.java))
@@ -126,29 +128,27 @@ class InputTermsFragment : Fragment() {
       }
 
       binding.tvView1.setOnClickListener {
-         showBottomDialog("서비스 이용 약관 동의", 1)
+         showTermsDialog("서비스 이용 약관 동의", 1)
       }
 
       binding.tvView2.setOnClickListener {
-         showBottomDialog("개인정보처리방침 동의", 2)
+         showTermsDialog("개인정보처리방침 동의", 2)
       }
 
       binding.tvView3.setOnClickListener {
-         showBottomDialog("민감정보 수집 및 이용 동의", 3)
+         showTermsDialog("민감정보 수집 및 이용 동의", 3)
       }
 
       binding.tvView4.setOnClickListener {
-         showBottomDialog("마케팅 수신 동의", 4)
+         showTermsDialog("마케팅 수신 동의", 4)
       }
 
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            val user = arguments?.getParcelable<User>("user")!!
             when(user.type) {
-               "google" -> googleSignIn(user)
-               "naver" -> naverSignIn(user)
-               "kakao" -> kakaoSignIn(user)
-               "apple" -> appleSignIn(user)
+               "google" -> googleSignIn()
+               "naver" -> naverSignIn()
+               "kakao" -> kakaoSignIn()
             }
          }else {
             Toast.makeText(requireActivity(), "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
@@ -158,40 +158,44 @@ class InputTermsFragment : Fragment() {
       return binding.root
    }
 
-   private fun googleSignIn(user: User) {
-      dataManager!!.insertUser(user)
-
+   private fun googleSignIn() {
       lifecycleScope.launch{
-         // 서버 회원가입
          val response = apolloClient!!.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
             idToken = user.idToken.toString()
          ))).execute()
-      }
 
-      lifecycleScope.launch{
-         // 서버 로그인
-         val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+         Log.d(TAG, "createUserGoogle: ${response.data!!.createUserGoogle}")
+
+         // DB 에 회원 저장
+         dataManager!!.insertUser(user)
+
+         val response2 = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
             idToken = user.idToken.toString()
          ))).execute()
 
-         if(response.data!!.loginUserGoogle.success) {
-            val getUser = dataManager!!.getUser()
+         Log.d(TAG, "loginUserGoogle: ${response2.data!!.loginUserGoogle}")
 
-            // 로컬 DB 에 토큰 저장
-            dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
-               refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
+         if(response2.data!!.loginUserGoogle.success) {
+            val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
 
-            val response2 = apolloClient!!.query(MeQuery()).addHttpHeader(
+            // DB 에 토큰 저장
+            dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response2.data!!.loginUserGoogle.accessToken.toString(),
+               refreshToken = response2.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
+
+            val response3 = apolloClient!!.query(MeQuery()).addHttpHeader(
                "Authorization",
-               "Bearer ${response.data!!.loginUserGoogle.accessToken.toString()}"
+               "Bearer ${response2.data!!.loginUserGoogle.accessToken.toString()}"
             ).execute()
 
+            Log.d(TAG, "me: ${response3.data!!.me}")
+
             // 로컬 DB 에 userId 저장
-            if(response2.data!!.me.user.userId != "") {
-               dataManager?.updateString(TABLE_USER, "userId", response2.data!!.me.user.userId, getUser.id)
+            if(response3.data!!.me.user.userId != "") {
+               dataManager?.updateString(TABLE_USER, "userId", response3.data!!.me.user.userId, getUser.id)
                signInDialog()
             }else {
                Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               return@launch
             }
          }else {
             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
@@ -199,96 +203,101 @@ class InputTermsFragment : Fragment() {
       }
    }
 
-   private fun naverSignIn(user: User) {
+   private fun naverSignIn() {
       lifecycleScope.launch{
          val response = apolloClient!!.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
             accessToken = NaverIdLoginSDK.getAccessToken().toString()
          ))).execute()
-      }
 
-      lifecycleScope.launch{
-         val response = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
+         Log.d(TAG, "createUserNaver: ${response.data!!.createUserNaver}")
+
+         // DB 에 회원 저장
+         dataManager!!.insertUser(user)
+
+         val response2 = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
             accessToken = user.idToken.toString()
          ))).execute()
 
-         if(response.data!!.loginUserNaver.success) {
-            val getUser = dataManager!!.getUser()
-            dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
-               refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
+         Log.d(TAG, "loginUserNaver: ${response2.data!!.loginUserNaver}")
 
-            signInDialog()
+         if(response2.data!!.loginUserNaver.success) {
+            val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
+
+            MyApp.prefs.setPrefs("userId", getUser.id)
+
+            // DB 에 토큰 저장
+            dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response2.data!!.loginUserNaver.accessToken.toString(),
+               refreshToken = response2.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
+
+            val response3 = apolloClient!!.query(MeQuery()).addHttpHeader(
+               "Authorization",
+               "Bearer ${response2.data!!.loginUserNaver.accessToken.toString()}"
+            ).execute()
+
+            Log.d(TAG, "me: ${response3.data!!.me}")
+
+            // 로컬 DB 에 userId 저장
+            if(response3.data!!.me.user.userId != "") {
+               dataManager?.updateString(TABLE_USER, "userId", response3.data!!.me.user.userId, getUser.id)
+               signInDialog()
+            }else {
+               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               return@launch
+            }
          }else {
             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
          }
       }
    }
 
-   private fun kakaoSignIn(user: User) {
-      dataManager!!.insertUser(User(type = "kakao", idToken = user.idToken, email = user.email, name = user.name, nickname = user.nickname,
-         profileImage = user.profileImage, regDate = LocalDate.now().toString()))
-
+   private fun kakaoSignIn() {
       lifecycleScope.launch{
          val response = apolloClient!!.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
             idToken = user.idToken.toString()
          ))).execute()
-      }
 
-      var loginSuccess = false
+         Log.d(TAG, "createUserKakao: ${response.data!!.createUserKakao}")
 
-      lifecycleScope.launch{
-         val response = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
+         // DB 에 회원 저장
+         dataManager!!.insertUser(user)
+
+         val response2 = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
             idToken = user.idToken.toString()
          ))).execute()
 
-         loginSuccess = if(response.data!!.loginUserKakao.success) {
-            val getUser = dataManager!!.getUser()
-            dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
-               refreshToken = response.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
-            true
-         }else false
-      }
+         Log.d(TAG, "loginUserKakao: ${response2.data!!.loginUserKakao}")
 
-      if(loginSuccess) {
-         replaceInputFragment(requireActivity(), InputInfoFragment())
-      }else {
-         Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-      }
-   }
+         if(response2.data!!.loginUserKakao.success) {
+            val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
 
-   private fun appleSignIn(user: User) {
-      dataManager!!.insertUser(User(type = "apple", idToken = user.idToken, email = user.email, regDate = LocalDate.now().toString()))
+            MyApp.prefs.setPrefs("userId", getUser.id)
 
-      lifecycleScope.launch{
-         val response = apolloClient!!.mutation(CreateUserAppleMutation(CreateAppleOauthInput(
-            idToken = user.idToken.toString()
-         ))).execute()
-      }
+            // DB 에 토큰 저장
+            dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response2.data!!.loginUserKakao.accessToken.toString(),
+               refreshToken = response2.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-      var loginSuccess = false
+            val response3 = apolloClient!!.query(MeQuery()).addHttpHeader(
+               "Authorization",
+               "Bearer ${response2.data!!.loginUserKakao.accessToken.toString()}"
+            ).execute()
 
-      lifecycleScope.launch{
-         val response = apolloClient!!.mutation(LoginUserAppleMutation(LoginAppleOauthInput(
-            idToken = user.idToken.toString()
-         ))).execute()
+            Log.d(TAG, "me: ${response3.data!!.me}")
 
-         loginSuccess = if(response.data!!.loginUserApple.success) {
-            val getUser = dataManager!!.getUser()
-            dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserApple.accessToken.toString(),
-               refreshToken = response.data!!.loginUserApple.refreshToken.toString(), regDate = LocalDate.now().toString()))
-            true
-         }else false
-      }
-
-      if(loginSuccess) {
-         replaceInputFragment(requireActivity(), InputInfoFragment())
-      }else {
-         Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+            // 로컬 DB 에 userId 저장
+            if(response3.data!!.me.user.userId != "") {
+               dataManager?.updateString(TABLE_USER, "userId", response3.data!!.me.user.userId, getUser.id)
+               signInDialog()
+            }else {
+               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               return@launch
+            }
+         }else {
+            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+         }
       }
    }
 
    private fun signInDialog() {
-      val getUser = dataManager!!.getUser()
-
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_signup)
       dialog.setCancelable(false)
@@ -296,15 +305,14 @@ class InputTermsFragment : Fragment() {
       val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
 
       btnConfirm.setOnClickListener {
-         bundle.putParcelable("user", getUser)
-         replaceInputFragment2(requireActivity(), InputInfoFragment(), bundle)
+         replaceInputFragment(requireActivity(), InputInfoFragment())
          dialog.dismiss()
       }
 
       dialog.show()
    }
 
-   private fun showBottomDialog(title: String, id: Int) {
+   private fun showTermsDialog(title: String, id: Int) {
       val dialog = Dialog(requireActivity())
       dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
       dialog.setContentView(R.layout.dialog_terms)

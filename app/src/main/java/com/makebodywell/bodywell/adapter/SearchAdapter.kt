@@ -6,13 +6,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.model.Item
 
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
-    private var itemList: ArrayList<String> = ArrayList<String>()
+    private var itemList: ArrayList<Item> = ArrayList<Item>()
     private var itemClickListener : OnItemClickListener? = null
 
     interface OnItemClickListener {
-        fun onClick(v: View, position: Int)
+        fun onClick(v: View, pos: Int)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
@@ -25,7 +26,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = itemList[position]
+        holder.textView.text = itemList[position].string1
 
         holder.textView.setOnClickListener {
             itemClickListener?.onClick(it, holder.adapterPosition)
@@ -36,7 +37,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
         return itemList.size
     }
 
-    fun setItems(list: ArrayList<String>) {
+    fun setItems(list: ArrayList<Item>) {
         itemList = list
         notifyDataSetChanged()
     }

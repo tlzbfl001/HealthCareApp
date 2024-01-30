@@ -10,14 +10,15 @@ import android.view.ViewGroup
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
-import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
+import com.makebodywell.bodywell.util.MyApp
 
 class InputGoalFragment : Fragment() {
    private var _binding: FragmentInputGoalBinding? = null
    private val binding get() = _binding!!
 
+   private val bundle = Bundle()
    private var dataManager: DataManager? = null
 
    override fun onCreateView(
@@ -29,8 +30,8 @@ class InputGoalFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val user = arguments?.getParcelable<User>("user")!!
-      Log.d(TAG, "user: $user")
+      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      Log.d(TAG, "InputGoalFragment user: $getUser")
 
       binding.ivBack.setOnClickListener {
          replaceInputFragment(requireActivity(), InputBodyFragment())
@@ -62,12 +63,12 @@ class InputGoalFragment : Fragment() {
             waterGoal = binding.etWaterGoal.text.toString().toInt()
          }
 
-         dataManager?.updateDouble(TABLE_USER, "weightGoal", weightGoal, user.id)
-         dataManager?.updateInt(TABLE_USER, "kcalGoal", kcalGoal, user.id)
-         dataManager?.updateInt(TABLE_USER, "waterUnit", waterUnit, user.id)
-         dataManager?.updateInt(TABLE_USER, "waterGoal", waterGoal, user.id)
+         dataManager?.updateDouble(TABLE_USER, "weightGoal", weightGoal, getUser.id)
+         dataManager?.updateInt(TABLE_USER, "kcalGoal", kcalGoal, getUser.id)
+         dataManager?.updateInt(TABLE_USER, "waterUnit", waterUnit, getUser.id)
+         dataManager?.updateInt(TABLE_USER, "waterGoal", waterGoal, getUser.id)
 
-         startActivity(Intent(activity, MainActivity::class.java))
+         startActivity(Intent(requireActivity(), MainActivity::class.java))
       }
 
       return binding.root

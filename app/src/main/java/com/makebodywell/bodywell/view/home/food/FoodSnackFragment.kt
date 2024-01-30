@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +19,10 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodSnackBinding
 import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.FoodImage
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import java.util.stream.Collectors
 import kotlin.math.abs
 
 class FoodSnackFragment : Fragment() {
@@ -33,7 +36,8 @@ class FoodSnackFragment : Fragment() {
 
     private var dataManager: DataManager? = null
     private var photoAdapter: PhotoViewAdapter? = null
-    private var foodRecordAdapter: FoodIntakeAdapter? = null
+    private var intakeAdapter: FoodIntakeAdapter? = null
+    private var imageData: ArrayList<FoodImage>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +73,7 @@ class FoodSnackFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            val getFoodData = foodRecordAdapter!!.getFoodData()
+            val getFoodData = intakeAdapter!!.getFoodData()
             dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
@@ -83,15 +87,10 @@ class FoodSnackFragment : Fragment() {
     }
 
     private fun photoView() {
-        val imageList: ArrayList<Uri> = ArrayList()
+        imageData = dataManager!!.getImage(type, calendarDate)
 
-        val getFoodImage = dataManager!!.getImage(type, calendarDate)
-        for(i in 0 until getFoodImage.size) {
-            imageList.add(Uri.parse(getFoodImage[i].imageUri))
-        }
-
-        if(getFoodImage.size > 0) {
-            photoAdapter = PhotoViewAdapter(getFoodImage)
+        if(imageData!!.size > 0) {
+            photoAdapter = PhotoViewAdapter(imageData!!)
 
             binding.viewPager.adapter = photoAdapter
             binding.viewPager.offscreenPageLimit = 5
@@ -148,19 +147,41 @@ class FoodSnackFragment : Fragment() {
     }
 
     private fun listView() {
-        val itemList = ArrayList<Food>()
         val dataList = dataManager!!.getFood(type, calendarDate)
 
         if(dataList.size != 0) {
-            for (i in 0 until dataList.size) {
-                itemList.add(Food(id = dataList[i].id, name = dataList[i].name, unit = dataList[i].unit, amount = dataList[i].amount, count = dataList[i].count,
-                    kcal = dataList[i].kcal, carbohydrate = dataList[i].carbohydrate, protein = dataList[i].protein, fat = dataList[i].fat))
-            }
-
             // 섭취한 식단 설정
-            foodRecordAdapter = FoodIntakeAdapter(requireActivity(), itemList)
+            intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList)
             binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            binding.rv.adapter = foodRecordAdapter
+
+            intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+                override fun onItemClick(pos: Int) {
+                    val dialog = AlertDialog.Builder(context)
+                        .setMessage("정말 삭제하시겠습니까?")
+                        .setPositiveButton("확인") { _, _ ->
+                            dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
+                            dataManager!!.deleteItem(DBHelper.TABLE_FOOD_IMAGE, "dataId", dataList[pos].id)
+
+                            dataList.removeAt(pos)
+                            intakeAdapter!!.notifyDataSetChanged()
+
+                            if (imageData!!.size > 0) {
+                                imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
+                                    .collect(Collectors.toList()).forEach { x ->
+                                        imageData!!.remove(x)
+                                    }
+                                photoAdapter!!.notifyDataSetChanged()
+                            }
+
+                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("취소", null)
+                        .create()
+                    dialog.show()
+                }
+            })
+
+            binding.rv.adapter = intakeAdapter
         }
     }
 }

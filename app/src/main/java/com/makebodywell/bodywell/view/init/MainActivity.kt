@@ -1,12 +1,19 @@
 package com.makebodywell.bodywell.view.init
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.ActivityMainBinding
+import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.note.NoteFragment
 import com.makebodywell.bodywell.view.setting.SettingFragment
 import com.makebodywell.bodywell.view.report.ReportBodyFragment
@@ -16,6 +23,7 @@ class MainActivity : AppCompatActivity() {
    private var _binding: ActivityMainBinding? = null
    private val binding get() = _binding!!
 
+   private val bundle = Bundle()
    private var backWait:Long = 0
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +31,7 @@ class MainActivity : AppCompatActivity() {
       _binding = ActivityMainBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      // 처음화면
-      supportFragmentManager.beginTransaction().add(R.id.mainFrame, MainFragment()).commit()
+      replaceFragment1(this, MainFragment())
 
       // 하단메뉴
       binding.navigation.setOnNavigationItemSelectedListener { item ->

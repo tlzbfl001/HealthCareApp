@@ -20,7 +20,7 @@ class SlideFragment1 : Fragment() {
       _binding = FragmentSlide1Binding.inflate(layoutInflater)
 
       binding.ivLogo.setOnClickListener {
-         startActivity(Intent(context, InputActivity::class.java))
+         startActivity(Intent(context, MainActivity::class.java))
       }
 
       return binding.root

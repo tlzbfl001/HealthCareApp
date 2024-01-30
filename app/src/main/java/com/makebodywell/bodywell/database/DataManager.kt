@@ -69,6 +69,34 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun getUser(id: Int) : User {
+      val db = dbHelper!!.readableDatabase
+      val data = User()
+      val sql = "select * from $TABLE_USER where id = $id"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id=cursor.getInt(0)
+         data.type=cursor.getString(1)
+         data.idToken=cursor.getString(2)
+         data.userId=cursor.getString(3)
+         data.email = cursor.getString(4)
+         data.name = cursor.getString(5)
+         data.nickname = cursor.getString(6)
+         data.gender = cursor.getString(7)
+         data.birthday = cursor.getString(8)
+         data.profileImage = cursor.getString(9)
+         data.height = cursor.getDouble(10).toString()
+         data.weight = cursor.getDouble(11).toString()
+         data.weightGoal = cursor.getDouble(12).toString()
+         data.kcalGoal = cursor.getInt(13).toString()
+         data.waterGoal = cursor.getInt(14).toString()
+         data.waterUnit = cursor.getInt(15).toString()
+         data.regDate = cursor.getString(16)
+      }
+      cursor.close()
+      return data
+   }
+
    fun getToken(userId: Int) : Token {
       val db = dbHelper!!.readableDatabase
       val data = Token()
@@ -85,79 +113,23 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getUser() : User {
-      val db = dbHelper!!.readableDatabase
-      val data = User()
-      val sql = "select * from $TABLE_USER order by id desc limit 1"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         data.id=cursor.getInt(0)
-         data.type=cursor.getString(1)
-         data.idToken=cursor.getString(2)
-         data.userId=cursor.getString(3)
-         data.email = cursor.getString(4)
-         data.name = cursor.getString(5)
-         data.nickname = cursor.getString(6)
-         data.gender = cursor.getString(7)
-         data.birthday = cursor.getString(8)
-         data.profileImage = cursor.getString(9)
-         data.height = cursor.getDouble(10).toString()
-         data.weight = cursor.getDouble(11).toString()
-         data.weightGoal = cursor.getDouble(12).toString()
-         data.kcalGoal = cursor.getInt(13).toString()
-         data.waterGoal = cursor.getInt(14).toString()
-         data.waterUnit = cursor.getInt(15).toString()
-         data.regDate = cursor.getString(16)
-      }
-      cursor.close()
-      return data
-   }
-
-   fun getUser(type: String) : User {
-      val db = dbHelper!!.readableDatabase
-      val data = User()
-      val sql = "select * from $TABLE_USER where type = $type order by id desc limit 1"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         data.id=cursor.getInt(0)
-         data.type=cursor.getString(1)
-         data.idToken=cursor.getString(2)
-         data.userId=cursor.getString(3)
-         data.email = cursor.getString(4)
-         data.name = cursor.getString(5)
-         data.nickname = cursor.getString(6)
-         data.gender = cursor.getString(7)
-         data.birthday = cursor.getString(8)
-         data.profileImage = cursor.getString(9)
-         data.height = cursor.getDouble(10).toString()
-         data.weight = cursor.getDouble(11).toString()
-         data.weightGoal = cursor.getDouble(12).toString()
-         data.kcalGoal = cursor.getInt(13).toString()
-         data.waterGoal = cursor.getInt(14).toString()
-         data.waterUnit = cursor.getInt(15).toString()
-         data.regDate = cursor.getString(16)
-      }
-      cursor.close()
-      return data
-   }
-
    fun getFood(id: Int) : Food {
       val db = dbHelper!!.readableDatabase
       val data = Food()
-      val sql = "select id from $TABLE_FOOD where id = $id"
+      val sql = "select * from $TABLE_FOOD where id = $id"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(1)
          data.unit=cursor.getString(2)
-         data.amount= cursor.getInt(3).toString()
+         data.amount= cursor.getInt(3)
          data.count= cursor.getInt(4)
-         data.kcal= cursor.getInt(5).toString()
-         data.carbohydrate= cursor.getDouble(6).toString()
-         data.protein= cursor.getDouble(7).toString()
-         data.fat= cursor.getDouble(8).toString()
-         data.salt= cursor.getDouble(9).toString()
-         data.sugar= cursor.getDouble(10).toString()
+         data.kcal= cursor.getInt(5)
+         data.carbohydrate= cursor.getDouble(6)
+         data.protein= cursor.getDouble(7)
+         data.fat= cursor.getDouble(8)
+         data.salt= cursor.getDouble(9)
+         data.sugar= cursor.getDouble(10)
          data.type = cursor.getInt(11)
          data.regDate = cursor.getString(12)
       }
@@ -175,14 +147,14 @@ class DataManager(private var context: Context?) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(1)
          data.unit=cursor.getString(2)
-         data.amount= cursor.getInt(3).toString()
+         data.amount= cursor.getInt(3)
          data.count= cursor.getInt(4)
-         data.kcal= cursor.getInt(5).toString()
-         data.carbohydrate= cursor.getDouble(6).toString()
-         data.protein= cursor.getDouble(7).toString()
-         data.fat= cursor.getDouble(8).toString()
-         data.salt= cursor.getDouble(9).toString()
-         data.sugar= cursor.getDouble(10).toString()
+         data.kcal= cursor.getInt(5)
+         data.carbohydrate= cursor.getDouble(6)
+         data.protein= cursor.getDouble(7)
+         data.fat= cursor.getDouble(8)
+         data.salt= cursor.getDouble(9)
+         data.sugar= cursor.getDouble(10)
          data.type = cursor.getInt(11)
          data.regDate = cursor.getString(12)
          list.add(data)
@@ -286,13 +258,30 @@ class DataManager(private var context: Context?) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(1)
          data.intensity=cursor.getString(2)
-         data.workoutTime= cursor.getInt(3)
+         data.workoutTime= cursor.getString(3)
          data.calories= cursor.getInt(4)
          data.regDate= cursor.getString(5)
          list.add(data)
       }
       cursor.close()
       return list
+   }
+
+   fun getExercise(id: Int): Exercise {
+      val db = dbHelper!!.readableDatabase
+      val data = Exercise()
+      val sql = "select * from $TABLE_EXERCISE where id = '$id'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id=cursor.getInt(0)
+         data.name=cursor.getString(1)
+         data.intensity=cursor.getString(2)
+         data.workoutTime= cursor.getString(3)
+         data.calories= cursor.getInt(4)
+         data.regDate= cursor.getString(5)
+      }
+      cursor.close()
+      return data
    }
 
    fun getBody() : ArrayList<Body> {
@@ -582,7 +571,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("name", data?.name)
-      values.put("unit", data?.count)
+      values.put("unit", data?.unit)
       values.put("amount", data?.amount)
       values.put("count", data?.count)
       values.put("kcal", data?.kcal)
@@ -754,14 +743,6 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateExercise(data: Exercise) {
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_EXERCISE set name='${data.name}', intensity='${data.intensity}', workoutTime='${data.workoutTime}', " +
-              "calories=${data.calories} where id=${data.id}"
-      db.execSQL(sql)
-      db.close()
-   }
-
    fun updateBody(data: Body){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_BODY set height=${data.height}, weight=${data.weight}, age=${data.age}, gender='${data.gender}', " +
@@ -816,13 +797,6 @@ class DataManager(private var context: Context?) {
    fun deleteItem(table: String, column: String, id: Int): Boolean {
       val db = dbHelper!!.writableDatabase
       val success = db!!.delete(table, "$column=$id",null)
-      db.close()
-      return (Integer.parseInt("$success") != -1)
-   }
-
-   fun deleteTest(table: String): Boolean {
-      val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(table,"",null)
       db.close()
       return (Integer.parseInt("$success") != -1)
    }

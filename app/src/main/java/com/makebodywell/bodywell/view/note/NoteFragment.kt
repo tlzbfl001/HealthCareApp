@@ -22,7 +22,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
@@ -81,7 +81,7 @@ class NoteFragment : Fragment() {
                setWeekView()
 
                // 섭취 칼로리 계산
-               val foodKcal = CustomUtil.getFoodKcal(requireActivity(), selectedDate.toString())
+               val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
                binding.tvKcal1.text = "${foodKcal.int5} kcal"
 
                // 소비 칼로리 계산

@@ -25,8 +25,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.Test.Companion.deleteData
-import com.makebodywell.bodywell.util.Test.Companion.insertData
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -121,7 +119,6 @@ class ReportBodyFragment : Fragment() {
       }
 
       dailyView()
-      test()
 
       return binding.root
    }
@@ -441,15 +438,6 @@ class ReportBodyFragment : Fragment() {
          viewPortHandler: ViewPortHandler
       ): String {
          return value.toString()
-      }
-   }
-
-   private fun test() {
-      binding.tvWeight.setOnClickListener {
-         deleteData(requireActivity())
-      }
-      binding.tvBmi.setOnClickListener {
-         insertData(requireActivity())
       }
    }
 }

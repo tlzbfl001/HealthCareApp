@@ -32,20 +32,18 @@ import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
-import kotlin.math.round
 
 class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var getDailyData = DailyData()
    private val itemList1 = ArrayList<Food>()
    private val itemList2 = ArrayList<Food>()
    private val itemList3 = ArrayList<Food>()
    private val itemList4 = ArrayList<Food>()
-
-   private var bundle = Bundle()
 
    private var calendarDate: LocalDate? = null
    private var sum = 0
@@ -66,40 +64,7 @@ class FoodFragment : Fragment() {
       calendarDate = LocalDate.now()
       binding.tvDate.text = dateFormat(calendarDate)
 
-      // 목표 설정
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val et = dialog.findViewById<EditText>(R.id.et)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }else {
-               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), calendarDate.toString())
-            }
-
-            binding.pbFood.max = et.text.toString().toInt()
-            binding.tvGoal.text = "${et.text} kcal"
-
-            val remain = et.text.toString().toInt() - sum
-            if(remain > 0) {
-               binding.tvRemain.text = "$remain kcal"
-            }else {
-               binding.tvRemain.text = "0 kcal"
-            }
-
-            dialog.dismiss()
-         }
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
+      settingGoal()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -201,36 +166,68 @@ class FoodFragment : Fragment() {
       return binding.root
    }
 
+   private fun settingGoal() {
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }else {
+               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), calendarDate.toString())
+            }
+
+            binding.pbFood.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kcal"
+
+            val remain = et.text.toString().toInt() - sum
+            if(remain > 0) {
+               binding.tvRemain.text = "$remain kcal"
+            }else {
+               binding.tvRemain.text = "0 kcal"
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
+   }
+
    private fun dailyView() {
-      val getFood = dataManager!!.getFood(1, calendarDate.toString())
-
       // 목표 설정
-      setupGoal()
+      dailyGoal()
 
-      // 이미지뷰 설정
+      // 이미지뷰
       photoView()
 
-      // 영양성분 설정
-      nutritionView(getFood)
-
-      // 리스트뷰 설정
+      // 리스트뷰
       listView()
    }
 
-   private fun setupGoal() {
-      // 텍스트 초기화
+   private fun dailyGoal() {
+      // 목표 초기화
+      binding.pbFood.max = 0
+      binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      // 목표 초기화
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       sum = getFoodKcal(requireActivity(), calendarDate.toString()).int1
 
-      if(getDailyData.foodGoal > 0 && sum > 0) {
+      if(sum > 0) {
+         binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
+         binding.pbFood.setProgressEndColor(Color.parseColor("#EE6685"))
          binding.pbFood.max = getDailyData.foodGoal
-         binding.pbFood.progress = sum
-      }else if (getDailyData.foodGoal == 0 && sum > 0) {
-         binding.pbFood.max = sum
          binding.pbFood.progress = sum
       }
 
@@ -269,48 +266,25 @@ class FoodFragment : Fragment() {
          imageList.add(FoodImage(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
       }
 
-      val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
-      binding.viewPager.adapter = adapter
-      binding.viewPager.setPadding(0, 0, 0, 0)
+      if(imageList.size > 0) {
+         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+         binding.viewPager.adapter = adapter
+         binding.viewPager.setPadding(0, 0, 0, 0)
 
-      binding.clLeft.setOnClickListener {
-         val current = binding.viewPager.currentItem
-         if(current == 0) {
-            binding.viewPager.setCurrentItem(0, true)
-         }else {
-            binding.viewPager.setCurrentItem(current-1, true)
+         binding.clLeft.setOnClickListener {
+            val current = binding.viewPager.currentItem
+            if(current == 0) {
+               binding.viewPager.setCurrentItem(0, true)
+            }else {
+               binding.viewPager.setCurrentItem(current-1, true)
+            }
+         }
+
+         binding.clRight.setOnClickListener {
+            val current = binding.viewPager.currentItem
+            binding.viewPager.setCurrentItem(current+1, true)
          }
       }
-
-      binding.clRight.setOnClickListener {
-         val current = binding.viewPager.currentItem
-         binding.viewPager.setCurrentItem(current+1, true)
-      }
-   }
-
-   private fun nutritionView(dataList: ArrayList<Food>) {
-      var carbohydrate = 0.0
-      var protein = 0.0
-      var fat = 0.0
-
-      if(dataList.size > 0) {
-         for(i in 0 until dataList.size) {
-            carbohydrate += dataList[i].carbohydrate.toDouble()
-            protein += dataList[i].protein.toDouble()
-            fat += dataList[i].fat.toDouble()
-         }
-      }
-
-      val recommendedCar = "순탄수 " + (round(carbohydrate) * (50/100)) + "%"
-      val recommendedPro = "단백질 " + round(protein) + "%"
-      val recommendedFat = "지방 " + (round(fat) * (150/100)) + "%"
-
-      binding.tvCalPct.text = recommendedCar
-      binding.tvProteinPct.text = recommendedPro
-      binding.tvFatPct.text = recommendedFat
-      binding.tvCar.text = carbohydrate.toString() + "g"
-      binding.tvProtein.text = protein.toString() + "g"
-      binding.tvFat.text = fat.toString() + "g"
    }
 
    private fun listView() {
@@ -324,9 +298,16 @@ class FoodFragment : Fragment() {
       val getFood3 = dataManager!!.getFood(3, calendarDate.toString())
       val getFood4 = dataManager!!.getFood(4, calendarDate.toString())
 
-      var total1 = 0
+      var kcal1 = 0
+      var carbohydrate1 = 0.0
+      var protein1 = 0.0
+      var fat1 = 0.0
       for(i in 0 until getFood1.size) {
-         total1 += getFood1[i].kcal.toInt() * getFood1[i].count
+         kcal1 += getFood1[i].kcal * getFood1[i].count
+         carbohydrate1 += getFood1[i].carbohydrate * getFood1[i].count
+         protein1 += getFood1[i].protein * getFood1[i].count
+         fat1 += getFood1[i].fat * getFood1[i].count
+
          itemList1.add(
             Food(id = getFood1[i].id, name = getFood1[i].name, unit = getFood1[i].unit, amount = getFood1[i].amount, count = getFood1[i].count,
                kcal = getFood1[i].kcal, carbohydrate = getFood1[i].carbohydrate, protein = getFood1[i].protein, fat = getFood1[i].fat,
@@ -334,9 +315,16 @@ class FoodFragment : Fragment() {
          )
       }
 
-      var total2 = 0
+      var kcal2 = 0
+      var carbohydrate2 = 0.0
+      var protein2 = 0.0
+      var fat2 = 0.0
       for(i in 0 until getFood2.size) {
-         total2 += getFood2[i].kcal.toInt() * getFood2[i].count
+         kcal2 += getFood2[i].kcal * getFood2[i].count
+         carbohydrate2 += getFood2[i].carbohydrate * getFood2[i].count
+         protein2 += getFood2[i].protein * getFood2[i].count
+         fat2 += getFood2[i].fat * getFood2[i].count
+
          itemList2.add(
             Food(id = getFood2[i].id, name = getFood2[i].name, unit = getFood2[i].unit, amount = getFood2[i].amount, count = getFood2[i].count,
                kcal = getFood2[i].kcal, carbohydrate = getFood2[i].carbohydrate, protein = getFood2[i].protein, fat = getFood2[i].fat,
@@ -344,9 +332,16 @@ class FoodFragment : Fragment() {
          )
       }
 
-      var total3 = 0
+      var kcal3 = 0
+      var carbohydrate3 = 0.0
+      var protein3 = 0.0
+      var fat3 = 0.0
       for(i in 0 until getFood3.size) {
-         total3 += getFood3[i].kcal.toInt() * getFood3[i].count
+         kcal3 += getFood3[i].kcal * getFood3[i].count
+         carbohydrate3 += getFood3[i].carbohydrate * getFood3[i].count
+         protein3 += getFood3[i].protein * getFood3[i].count
+         fat3 += getFood3[i].fat * getFood3[i].count
+
          itemList3.add(
             Food(id = getFood3[i].id, name = getFood3[i].name, unit = getFood3[i].unit, amount = getFood3[i].amount, count = getFood3[i].count,
                kcal = getFood3[i].kcal, carbohydrate = getFood3[i].carbohydrate, protein = getFood3[i].protein, fat = getFood3[i].fat,
@@ -354,9 +349,16 @@ class FoodFragment : Fragment() {
          )
       }
 
-      var total4 = 0
+      var kcal4 = 0
+      var carbohydrate4 = 0.0
+      var protein4 = 0.0
+      var fat4 = 0.0
       for(i in 0 until getFood4.size) {
-         total4 += getFood4[i].kcal.toInt() * getFood4[i].count
+         kcal4 += getFood4[i].kcal * getFood4[i].count
+         carbohydrate4 += getFood4[i].carbohydrate * getFood4[i].count
+         protein4 += getFood4[i].protein * getFood4[i].count
+         fat4 += getFood4[i].fat * getFood4[i].count
+
          itemList4.add(
             Food(id = getFood4[i].id, name = getFood4[i].name, unit = getFood4[i].unit, amount = getFood4[i].amount, count = getFood4[i].count,
                kcal = getFood4[i].kcal, carbohydrate = getFood4[i].carbohydrate, protein = getFood4[i].protein, fat = getFood4[i].fat,
@@ -364,10 +366,24 @@ class FoodFragment : Fragment() {
          )
       }
 
-      binding.tvTotal1.text = "$total1 kcal"
-      binding.tvTotal2.text = "$total2 kcal"
-      binding.tvTotal3.text = "$total3 kcal"
-      binding.tvTotal4.text = "$total4 kcal"
+      val totalCal = carbohydrate1 + carbohydrate2 + carbohydrate3 + carbohydrate4
+      val totalPro = protein1 + protein2 + protein3 + protein4
+      val totalFat = fat1 + fat2 + fat3 + fat4
+      val recommendedCar = "순탄수 " + String.format("%.1f", totalCal * (50/100)) + "%"
+      val recommendedPro = "단백질 " + String.format("%.1f", totalPro) + "%"
+      val recommendedFat = "지방 " + String.format("%.1f", totalFat * (150/100)) + "%"
+
+      binding.tvCalPct.text = recommendedCar
+      binding.tvProteinPct.text = recommendedPro
+      binding.tvFatPct.text = recommendedFat
+      binding.tvCar.text = String.format("%.1f", totalCal) + "g"
+      binding.tvProtein.text = String.format("%.1f", totalPro) + "g"
+      binding.tvFat.text = String.format("%.1f", totalFat) + "g"
+
+      binding.tvTotal1.text = "$kcal1 kcal"
+      binding.tvTotal2.text = "$kcal2 kcal"
+      binding.tvTotal3.text = "$kcal3 kcal"
+      binding.tvTotal4.text = "$kcal4 kcal"
 
       val adapter1 = FoodTextAdapter(itemList1)
       binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

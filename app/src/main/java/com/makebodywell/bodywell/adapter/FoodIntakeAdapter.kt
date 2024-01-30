@@ -30,17 +30,17 @@ class FoodIntakeAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.tvName.text = itemList[position].name
-        holder.tvKcal.text = "${itemList[position].kcal!!.toInt() * itemList[position].count} kcal"
-        holder.tvCount.text = itemList[position].count.toString()
-        holder.tvDesc.text = "${itemList[position].count}개/${itemList[position].amount}${itemList[position].unit}"
-
         // 섭취한 식단 카운트하기
         var count = itemList[position].count
-        val kcal = itemList[position].kcal.toInt()
-        val amount = itemList[position].amount.toInt()
+        val kcal = itemList[position].kcal
+        val amount = itemList[position].amount
         foodData.id = itemList[position].id
         foodData.count = count
+
+        holder.tvName.text = itemList[position].name
+        holder.tvKcal.text = "${kcal * count} kcal"
+        holder.tvCount.text = count.toString()
+        holder.tvDesc.text = "${count}개/${amount * count}${itemList[position].unit}"
 
         holder.ivMinus.setOnClickListener {
             if (count > 1) {

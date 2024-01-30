@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
@@ -34,12 +35,12 @@ class BodyFragment : Fragment() {
    private var _binding: FragmentBodyBinding? = null
    private val binding get() = _binding!!
 
-   private var calendarDate = LocalDate.now()
-
+   private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var getDailyData = DailyData()
    private var getBody = Body()
 
+   private var calendarDate = LocalDate.now()
    private var isExpand = false
 
    override fun onCreateView(
@@ -51,57 +52,9 @@ class BodyFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupGoal()
-      dailyView()
-
-      return binding.root
-   }
-
-   private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
 
-      // 목표 설정
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val et = dialog.findViewById<EditText>(R.id.et)
-      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-      tvUnit.text = "kg"
-      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
-            }else {
-               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
-            }
-
-            binding.pbBody.max = et.text.toString().toDouble().roundToInt()
-            binding.tvGoal.text = "${et.text} kg"
-
-            val remain = et.text.toString().toDouble() - getBody.weight.toString().toDouble()
-            if(remain > 0) {
-               val split = remain.toString().split(".")
-               when(split[1]) {
-                  "0" -> binding.tvRemain.text = "${split[0]} kg"
-                  else -> binding.tvRemain.text = "$remain kg"
-               }
-            }else {
-               binding.tvRemain.text = "0 kg"
-            }
-         }
-
-         dialog.dismiss()
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
+      settingGoal()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -110,15 +63,15 @@ class BodyFragment : Fragment() {
       binding.clPrev.setOnClickListener {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
-         dailyView()
+         dailyGoal()
+         dailyList()
       }
 
       binding.clNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
-         dailyView()
+         dailyGoal()
+         dailyList()
       }
 
       binding.cvFood.setOnClickListener {
@@ -145,10 +98,7 @@ class BodyFragment : Fragment() {
          if(getBody.regDate == "") {
             replaceFragment1(requireActivity(), BodyRecordFragment())
          }else {
-            val bundle = Bundle()
-            val body = Body(id = getBody.id, height = getBody.height, weight = getBody.weight, age = getBody.age, gender = getBody.gender,
-               exerciseLevel = getBody.exerciseLevel, fat = getBody.fat, muscle = getBody.muscle, bmi = getBody.bmi, bmr = getBody.bmr)
-            bundle.putParcelable("body", body)
+            bundle.putString("calendarDate", calendarDate.toString())
             replaceFragment2(requireActivity(), BodyRecordFragment(), bundle)
          }
       }
@@ -188,9 +138,54 @@ class BodyFragment : Fragment() {
          }
          isExpand = !isExpand
       }
+
+      dailyGoal()
+      dailyList()
+
+      return binding.root
    }
 
-   private fun setupGoal() {
+   private fun settingGoal() {
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+      tvUnit.text = "kg"
+      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
+            }else {
+               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
+            }
+
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble()))
+            }else {
+               dataManager!!.updateDouble(TABLE_BODY, "bodyGoal", et.text.toString().toDouble(), getDailyData.id)
+            }
+
+            dailyGoal()
+         }
+
+         dialog.dismiss()
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
+   }
+
+   private fun dailyGoal() {
+      binding.pbBody.max = 0
+      binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
       binding.tvWeight.text = "0 kg"
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
@@ -210,6 +205,8 @@ class BodyFragment : Fragment() {
 
       getBody = dataManager!!.getBody(calendarDate.toString())
       if (getBody.weight > 0) {
+         binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
+         binding.pbBody.setProgressEndColor(Color.parseColor("#AED77D"))
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
 
          val split = getBody.weight.toString().split(".")
@@ -230,7 +227,7 @@ class BodyFragment : Fragment() {
       }
    }
 
-   private fun dailyView() {
+   private fun dailyList() {
       binding.tvBmi.text = getBody.bmi.toString()
       binding.tvFat.text = "${getBody.fat} %"
       binding.tvMuscle.text = "${getBody.muscle} kg"

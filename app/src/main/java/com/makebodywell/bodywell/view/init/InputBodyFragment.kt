@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.apollographql.apollo3.ApolloClient
@@ -16,12 +15,12 @@ import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputBodyBinding
-import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.Gender
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment2
+import com.makebodywell.bodywell.util.MyApp
 import kotlinx.coroutines.launch
 
 class InputBodyFragment : Fragment() {
@@ -30,7 +29,6 @@ class InputBodyFragment : Fragment() {
 
    private val bundle = Bundle()
    private var dataManager: DataManager? = null
-
    private var gender = Gender.MALE
 
    override fun onCreateView(
@@ -44,8 +42,12 @@ class InputBodyFragment : Fragment() {
 
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
-      val user = arguments?.getParcelable<User>("user")!!
-      Log.d(TAG, "user: $user")
+      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      Log.d(TAG, "InputBodyFragment user: $getUser")
+
+      binding.ivBack.setOnClickListener {
+         replaceInputFragment(requireActivity(), InputInfoFragment())
+      }
 
       binding.tvSkip.setOnClickListener {
          replaceInputFragment(requireActivity(), InputGoalFragment())
@@ -74,6 +76,7 @@ class InputBodyFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
+         val getToken = dataManager!!.getToken(getUser.id)
          var height = 0.0
          var weight = 0.0
 
@@ -85,33 +88,22 @@ class InputBodyFragment : Fragment() {
             weight = binding.etWeight.text.toString().toDouble()
          }
 
-         val getToken = dataManager!!.getToken(user.id)
-
          lifecycleScope.launch{
             val response = apolloClient.mutation(UpdateUserProfileMutation(
-               userId = user.userId.toString(), UpdateUserProfileInput(
-                  gender = Optional.present(gender), height = Optional.present(height), weight = Optional.present(weight)
-            ))).addHttpHeader(
+               userId = getUser.userId.toString(), UpdateUserProfileInput(gender = Optional.present(gender), height = Optional.present(height), weight = Optional.present(weight))
+            )).addHttpHeader(
                "Authorization",
                "Bearer ${getToken.accessToken}"
             ).execute()
 
-            Log.d(TAG, "updateUserProfile: ${response.data?.updateUserProfile}")
+            Log.d(TAG, "inputBody updateUserProfile: ${response.data!!.updateUserProfile}")
 
-            // 회원 정보 DB 에 저장
-            if(response.data!!.updateUserProfile.success) {
-               dataManager?.updateDouble(TABLE_USER, "height", height, user.id)
-               dataManager?.updateDouble(TABLE_USER, "weight", weight, user.id)
+            dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
+            dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
+            dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
 
-               val getUser = dataManager!!.getUser()
-               bundle.putParcelable("user", getUser)
-               replaceInputFragment2(requireActivity(), InputBodyFragment(), bundle)
-            }else {
-               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-            }
+            replaceInputFragment(requireActivity(), InputGoalFragment())
          }
-
-         replaceInputFragment(requireActivity(), InputGoalFragment())
       }
 
       return binding.root

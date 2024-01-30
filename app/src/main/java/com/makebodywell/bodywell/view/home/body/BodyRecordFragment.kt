@@ -30,25 +30,20 @@ class BodyRecordFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-
-      return binding.root
-   }
-
-   private fun initView() {
-      val bundle = arguments?.getParcelable<Body>("body")
+      val calendarDate = arguments?.getString("calendarDate").toString()
+      val getBody = dataManager!!.getBody(calendarDate)
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
-      if (bundle != null) {
-         binding.etBmi.setText(bundle.bmi.toString())
-         binding.etFat.setText(bundle.fat.toString())
-         binding.etMuscle.setText(bundle.muscle.toString())
-         binding.etHeight.setText(bundle.height.toString())
-         binding.etWeight.setText(bundle.weight.toString())
-         binding.etAge.setText(bundle.age.toString())
-         binding.etGender.setText(bundle.gender)
+      if (getBody.regDate != "") {
+         binding.etBmi.setText(getBody.bmi.toString())
+         binding.etFat.setText(getBody.fat.toString())
+         binding.etMuscle.setText(getBody.muscle.toString())
+         binding.etHeight.setText(getBody.height.toString())
+         binding.etWeight.setText(getBody.weight.toString())
+         binding.etAge.setText(getBody.age.toString())
+         binding.etGender.setText(getBody.gender)
 
-         when(bundle.exerciseLevel) {
+         when(getBody.exerciseLevel) {
             1 -> {
                binding.radioBtn1.isChecked = true
                exerciseLevel = 1
@@ -101,8 +96,7 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            var result = ""
-            result = if(binding.etGender.text.toString().trim() == "남자") {
+            val result = if(binding.etGender.text.toString().trim() == "남자") {
                val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*binding.etAge.text.toString().toDouble())+5)*step
                String.format("%.1f", num)
             }else {
@@ -131,17 +125,19 @@ class BodyRecordFragment : Fragment() {
          if(bmi == "") bmi = "0.0"
          if(bmr == "") bmr = "0.0"
 
-         if(bundle == null) {
+         if(getBody.regDate == "") {
             dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
                exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateBody(Body(id = bundle.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+            dataManager!!.updateBody(Body(id = getBody.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
                exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
 
          replaceFragment1(requireActivity(), BodyFragment())
       }
+
+      return binding.root
    }
 }

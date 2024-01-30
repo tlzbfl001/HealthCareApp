@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.Item
 
 class FoodRecord1Adapter (
-   private var itemList: ArrayList<Food> = ArrayList()
+   private var itemList: ArrayList<Item> = ArrayList()
 ) : RecyclerView.Adapter<FoodRecord1Adapter.ViewHolder>() {
    private var onItemClickListener: OnItemClickListener? = null
 
@@ -19,7 +19,7 @@ class FoodRecord1Adapter (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.textView.text = itemList[position].name
+      holder.textView.text = itemList[position].string1
 
       holder.textView.setOnClickListener {
          onItemClickListener!!.onItemClick(position)

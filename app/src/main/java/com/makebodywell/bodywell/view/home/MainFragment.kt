@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.ViewGroup.LayoutParams
 import androidx.fragment.app.Fragment
@@ -16,9 +17,12 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -47,11 +51,16 @@ class MainFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getUser = dataManager!!.getUser()
-      if(getUser.profileImage != "") {
+      val getUser = dataManager!!.getUser(MyApp.prefs.userId())
+      Log.d(TAG, "MainFragment user: $getUser")
+
+      if(getUser.name != "" && getUser.name != null) {
+         binding.tvName.text = getUser.name + " 님"
+      }
+
+      if(getUser.profileImage != "" && getUser.profileImage != null) {
          binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
       }
-      binding.tvName.text = getUser.name + " 님"
 
       binding.clFood.setOnClickListener {
          replaceFragment1(requireActivity(), FoodFragment())

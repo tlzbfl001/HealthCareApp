@@ -9,8 +9,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.deleteList
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
 import com.makebodywell.bodywell.view.home.drug.DrugSelectDateFragment2

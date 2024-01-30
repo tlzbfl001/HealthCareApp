@@ -53,17 +53,65 @@ class WaterFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      setupGoal()
-      dailyView()
+      binding.tvDate.text = dateFormat(calendarDate)
+
+      settingGoal()
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         if(getWater.regDate != "") {
+            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
+         }
+
+         calendarDate = calendarDate!!.minusDays(1)
+         binding.tvDate.text = dateFormat(calendarDate)
+
+         dailyGoal()
+         dailyWater()
+      }
+
+      binding.clNext.setOnClickListener {
+         if(getWater.regDate != "") {
+            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
+         }
+
+         calendarDate = calendarDate!!.plusDays(1)
+         binding.tvDate.text = dateFormat(calendarDate)
+
+         dailyGoal()
+         dailyWater()
+      }
+
+      binding.cvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.cvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.cvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.cvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.cvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
+      }
+
+      dailyGoal()
+      dailyWater()
 
       return binding.root
    }
 
-   private fun initView() {
-      binding.tvDate.text = dateFormat(calendarDate)
-
-      // 목표 설정
+   private fun settingGoal() {
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_water_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -112,55 +160,9 @@ class WaterFragment : Fragment() {
       binding.clGoal.setOnClickListener {
          dialog.show()
       }
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         if(getWater.regDate != "") {
-            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
-         }
-
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
-         dailyView()
-      }
-
-      binding.clNext.setOnClickListener {
-         if(getWater.regDate != "") {
-            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
-         }
-
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
-         setupGoal()
-         dailyView()
-      }
-
-      binding.cvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.cvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.cvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.cvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.cvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
    }
 
-   private fun setupGoal() {
+   private fun dailyGoal() {
       // 목표 초기화
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       getWater = dataManager!!.getWater(calendarDate.toString())
@@ -172,37 +174,31 @@ class WaterFragment : Fragment() {
       binding.tvVolume.text = "200ml"
       binding.tvGoal.text = "0잔/0ml"
       binding.tvRemain.text = "0잔/0ml"
+
       goal = getDailyData.waterGoal
       volume = getWater.volume
-      count = 0
+      count = getWater.water
 
-      if(getWater.regDate != "") {
-         count = getWater.water
+      if(count > 0) {
+         binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
+         binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
+         binding.pbWater.max = goal
+         binding.pbWater.progress = count
+      }
 
-         if(count == 0) {
-            binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
-            binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
-         }else {
-            binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
-            binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
-            binding.pbWater.max = goal
-            binding.pbWater.progress = count
-         }
+      binding.tvIntake.text = "${count}잔/${count * volume}ml"
+      binding.tvVolume.text = "${volume}ml"
+      binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
 
-         binding.tvIntake.text = "${count}잔/${count * volume}ml"
-         binding.tvVolume.text = "${volume}ml"
-         binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
-
-         val remain = goal - count
-         if(remain > 0) {
-            binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-         }else {
-            binding.tvRemain.text = "0잔/0ml"
-         }
+      val remain = goal - count
+      if(remain > 0) {
+         binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
+      }else {
+         binding.tvRemain.text = "0잔/0ml"
       }
    }
 
-   private fun dailyView() {
+   private fun dailyWater() {
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
       binding.rv.layoutManager = layoutManager
 
