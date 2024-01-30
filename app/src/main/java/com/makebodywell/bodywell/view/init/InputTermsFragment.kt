@@ -52,7 +52,6 @@ class InputTermsFragment : Fragment() {
    private var _binding: FragmentInputTermsBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var apolloClient: ApolloClient? = null
    private var user = User()
@@ -177,6 +176,8 @@ class InputTermsFragment : Fragment() {
 
          if(response2.data!!.loginUserGoogle.success) {
             val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
+
+            MyApp.prefs.setPrefs("userId", getUser.id)
 
             // DB 에 토큰 저장
             dataManager!!.insertToken(Token(userId = getUser.id, accessToken = response2.data!!.loginUserGoogle.accessToken.toString(),

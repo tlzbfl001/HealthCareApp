@@ -115,8 +115,23 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         var name = "바디웰"
-         var birthday = "1990-01-01"
+         var name = if(getUser.name != "" && getUser.name != null) {
+            getUser.name
+         }else {
+            "바디웰"
+         }
+
+         var birthday = if(getUser.birthday != "" && getUser.birthday != null) {
+            getUser.birthday
+         }else {
+            "1990-01-01"
+         }
+
+         val profileImage = if(uri != null) {
+            uri.toString()
+         }else {
+            ""
+         }
 
          if(binding.etName.text.toString() != "") {
             name = binding.etName.text.toString()
@@ -139,9 +154,9 @@ class InputInfoFragment : Fragment() {
             Log.d(TAG, "inputInfo updateUserProfile: ${response.data!!.updateUserProfile}")
             Log.d(TAG, "inputInfo uri: $uri")
 
-            dataManager?.updateString(TABLE_USER, "profileImage", uri.toString(), getUser.id)
-            dataManager?.updateString(TABLE_USER, "name", name, getUser.id)
-            dataManager?.updateString(TABLE_USER, "birthday", birthday, getUser.id)
+            dataManager?.updateString(TABLE_USER, "name", name!!, getUser.id)
+            dataManager?.updateString(TABLE_USER, "birthday", birthday!!, getUser.id)
+            dataManager?.updateString(TABLE_USER, "profileImage", profileImage, getUser.id)
 
             replaceInputFragment(requireActivity(), InputBodyFragment())
          }

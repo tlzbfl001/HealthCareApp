@@ -53,53 +53,36 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-    // lifecycle
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-rc01"
     implementation "androidx.lifecycle:lifecycle-service:2.4.0-rc01"
 
-    // viewModel
     implementation "androidx.fragment:fragment-ktx:1.3.2"
 
-    // healthConnect
     implementation 'androidx.health:health-connect-client:1.0.0-alpha03'
 
-    // Google
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
 
-    // KaKaoLogin
     implementation "com.kakao.sdk:v2-all:2.11.2"
 
-    // NaverLogin
-    implementation 'com.navercorp.nid:oauth:5.1.1' // jdk 11
+    implementation 'com.navercorp.nid:oauth:5.1.1'
 
-    // Viewpager
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
-    // MpAndroidChart
     implementation 'com.github.PhilJay:MpAndroidChart:v3.0.3'
 
-    // CircleProgressBar
     implementation 'com.dinuscxj:circleprogressbar:1.3.6'
 
-    // IndicatorSeekbar
     implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
 
-    // dotsIndicator
     implementation 'com.tbuonomo:dotsindicator:4.2'
 
-    // circleIndicator
     implementation 'me.relex:circleindicator:2.1.4'
 
-    // Apollo
     implementation("com.apollographql.apollo3:apollo-runtime:3.7.3")
-
-    // Firebase
-    implementation 'com.google.firebase:firebase-auth-ktx:22.1.2'
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
 
     implementation 'nl.joery.timerangepicker:timerangepicker:1.0.0'
 
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    
+    implementation 'androidx.core:core-splashscreen:1.0.0-rc01'
 }
