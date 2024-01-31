@@ -9,6 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.OnCompleteListener
+import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSettingBinding
@@ -46,22 +50,33 @@ class SettingFragment : Fragment() {
 
                when(getUser.type) {
                   "google" -> {
+                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getString(R.string.googleWebClientId))
+                        .requestEmail()
+                        .build()
+                     val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
+                     gsc.signOut()
                   }
                   "naver" -> {
                      NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
                         R.string.app_name))
-                     Log.d(TAG, "NaverIdLoginSDK: ${NaverIdLoginSDK.getAccessToken()}")
                      NaverIdLoginSDK.logout()
                   }
                   "kakao" -> {
-
+                     UserApiClient.instance.logout { error ->
+                        if (error != null) {
+                           Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+                        }else {
+                           Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
+                        }
+                     }
                   }
                }
 
                MyApp.prefs.removePrefs("userId")
-               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
 
+               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                startActivity(Intent(requireActivity(), LoginActivity::class.java))
             }
             .setNegativeButton("취소", null)

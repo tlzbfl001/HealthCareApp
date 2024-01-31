@@ -46,6 +46,7 @@ class LoginActivity : AppCompatActivity() {
 
    private var dataManager: DataManager? = null
    private var apolloClient: ApolloClient? = null
+
    private var gsc: GoogleSignInClient? = null
    private var gso: GoogleSignInOptions? = null
    private var gsa: GoogleSignInAccount? = null
@@ -100,7 +101,7 @@ class LoginActivity : AppCompatActivity() {
 
             if(getUser.regDate == "") { // 초기 가입 작업
                val user = User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString())
-               val intent = Intent(this, InputActivity::class.java)
+               val intent = Intent(applicationContext, InputActivity::class.java)
                intent.putExtra("user", user)
                startActivity(intent)
             }else { // 로그인
@@ -114,9 +115,9 @@ class LoginActivity : AppCompatActivity() {
                      dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
                         refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                     startActivity(Intent(applicationContext, MainActivity::class.java))
                   }else {
-                     Toast.makeText(this@LoginActivity, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(applicationContext, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                   }
                }
             }
@@ -139,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
                         nickname = result.profile?.nickname, gender = result.profile?.gender, birthday = result.profile?.birthYear + "-" + result.profile?.birthday,
                         profileImage = result.profile?.profileImage, regDate = LocalDate.now().toString())
 
-                     val intent = Intent(this@LoginActivity, InputActivity::class.java)
+                     val intent = Intent(applicationContext, InputActivity::class.java)
                      intent.putExtra("user", user)
                      startActivity(intent)
                   }else { // 로그인
@@ -153,9 +154,9 @@ class LoginActivity : AppCompatActivity() {
                            dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
                               refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-                           startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                           startActivity(Intent(applicationContext, MainActivity::class.java))
                         }else {
-                           Toast.makeText(this@LoginActivity, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+                           Toast.makeText(applicationContext, "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                         }
                      }
                   }
@@ -182,37 +183,9 @@ class LoginActivity : AppCompatActivity() {
    }
 
    private fun kakaoLogin() {
-      val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+      val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
          if (error != null) {
-            when {
-               error.toString() == AuthErrorCause.AccessDenied.toString() -> {
-                  Toast.makeText(this, "접근이 거부 됨(동의 취소)", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.InvalidClient.toString() -> {
-                  Toast.makeText(this, "유효하지 않은 앱", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.InvalidGrant.toString() -> {
-                  Toast.makeText(this, "인증 수단이 유효하지 않아 인증할 수 없습니다.", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.InvalidRequest.toString() -> {
-                  Toast.makeText(this, "요청 파라미터 오류", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.InvalidScope.toString() -> {
-                  Toast.makeText(this, "유효하지 않은 scope ID", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.Misconfigured.toString() -> {
-                  Toast.makeText(this, "설정(android key hash)이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.ServerError.toString() -> {
-                  Toast.makeText(this, "서버 내부 에러", Toast.LENGTH_SHORT).show()
-               }
-               error.toString() == AuthErrorCause.Unauthorized.toString() -> {
-                  Toast.makeText(this, "앱이 요청 권한이 없습니다.", Toast.LENGTH_SHORT).show()
-               }
-               else -> { // Unknown
-                  Toast.makeText(this, "오류 발생", Toast.LENGTH_SHORT).show()
-               }
-            }
+//            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
          }else if (token != null) { // 로그인 성공
             kakaoApollo(token)
          }
@@ -229,14 +202,14 @@ class LoginActivity : AppCompatActivity() {
                   return@loginWithKakaoTalk
                }else {
                   // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                  UserApiClient.instance.loginWithKakaoAccount(this, callback = mCallback)
+                  UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
                }
             }else if(token != null) { // 로그인 성공
                kakaoApollo(token)
             }
          }
       }else { // 카카오계정으로 로그인
-         UserApiClient.instance.loginWithKakaoAccount(this, callback = mCallback)
+         UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
       }
    }
 

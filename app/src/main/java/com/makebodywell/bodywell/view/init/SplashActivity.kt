@@ -32,6 +32,7 @@ class SplashActivity : AppCompatActivity() {
             when(getUser.type) {
                "google" -> {
                   val gsa = GoogleSignIn.getLastSignedInAccount(this)
+
                   if(gsa == null) {
                      startActivity(Intent(this, LoginActivity::class.java))
                   }else {
@@ -41,7 +42,7 @@ class SplashActivity : AppCompatActivity() {
                "naver" -> {
                   NaverIdLoginSDK.initialize(this, getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
                      R.string.app_name))
-                  Log.d(TAG, "NaverIdLoginSDK: ${NaverIdLoginSDK.getAccessToken()}")
+
                   if(NaverIdLoginSDK.getAccessToken() == null) {
                      startActivity(Intent(this, LoginActivity::class.java))
                   }else {
@@ -52,7 +53,7 @@ class SplashActivity : AppCompatActivity() {
                   UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
                      if (error != null) {
                         startActivity(Intent(this, LoginActivity::class.java))
-                     } else if (tokenInfo != null) {
+                     }else if (tokenInfo != null) {
                         startActivity(Intent(this, MainActivity::class.java))
                      }
                   }
