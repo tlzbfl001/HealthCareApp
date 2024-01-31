@@ -59,7 +59,6 @@
             <meta-data android:name="health_permissions"
                 android:resource="@array/health_permissions" />
         </activity>
-        <activity android:name=".view.init.InputActivity" />
         <activity
             android:name=".view.init.SplashActivity"
             android:exported="true">

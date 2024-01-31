@@ -12,7 +12,7 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.deleteList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
+import com.makebodywell.bodywell.util.CustomUtil.Companion.drugDateList
 import com.makebodywell.bodywell.view.home.drug.DrugSelectDateFragment2
 import com.makebodywell.bodywell.view.init.MainActivity
 import java.time.LocalDate

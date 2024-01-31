@@ -36,7 +36,7 @@
          android:id="@+id/ivCalendar"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="30dp"
+         android:layout_marginTop="15dp"
          android:layout_marginRight="25dp"
          app:cardCornerRadius="10dp"
          app:layout_constraintTop_toTopOf="parent"

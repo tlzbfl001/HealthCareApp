@@ -32,8 +32,9 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
@@ -157,7 +158,7 @@ class InputInfoFragment : Fragment() {
             dataManager?.updateString(TABLE_USER, "birthday", birthday!!, getUser.id)
             dataManager?.updateString(TABLE_USER, "profileImage", profileImage, getUser.id)
 
-            replaceInputFragment(requireActivity(), InputBodyFragment())
+            replaceLoginFragment1(requireActivity(), InputBodyFragment())
          }
       }
 

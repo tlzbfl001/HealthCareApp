@@ -18,7 +18,7 @@ import com.makebodywell.bodywell.databinding.FragmentInputBodyBinding
 import com.makebodywell.bodywell.type.Gender
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
 import kotlinx.coroutines.launch
 
@@ -26,7 +26,6 @@ class InputBodyFragment : Fragment() {
    private var _binding: FragmentInputBodyBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var gender = Gender.MALE
 
@@ -45,11 +44,11 @@ class InputBodyFragment : Fragment() {
       Log.d(TAG, "InputBodyFragment user: $getUser")
 
       binding.ivBack.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputInfoFragment())
+         replaceLoginFragment1(requireActivity(), InputInfoFragment())
       }
 
       binding.tvSkip.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputGoalFragment())
+         replaceLoginFragment1(requireActivity(), InputGoalFragment())
       }
 
       binding.cvMan.setOnClickListener {
@@ -101,7 +100,7 @@ class InputBodyFragment : Fragment() {
             dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
             dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
 
-            replaceInputFragment(requireActivity(), InputGoalFragment())
+            replaceLoginFragment1(requireActivity(), InputGoalFragment())
          }
       }
 

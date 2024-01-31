@@ -1,7 +1,10 @@
 package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -21,12 +24,20 @@ class InitActivity : AppCompatActivity() {
    private var _binding: ActivityInitBinding? = null
    private val binding get() = _binding!!
 
+   private var backWait:Long = 0
+
    private var adapter: SectionPageAdapter = SectionPageAdapter(supportFragmentManager)
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       _binding = ActivityInitBinding.inflate(layoutInflater)
       setContentView(binding.root)
+
+      this.window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+      }
 
       adapter.addFragment(SlideFragment1(), "1")
       adapter.addFragment(SlideFragment2(), "2")
@@ -72,5 +83,16 @@ class InitActivity : AppCompatActivity() {
          override fun onPageScrollStateChanged(state: Int) {}
          override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
       })
+   }
+
+   override fun onBackPressed() {
+      if(System.currentTimeMillis() - backWait >=2000 ) {
+         backWait = System.currentTimeMillis()
+         Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+      } else {
+         ActivityCompat.finishAffinity(this)
+         System.runFinalization()
+         exitProcess(0)
+      }
    }
 }

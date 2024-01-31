@@ -11,14 +11,13 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceInputFragment
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
 
 class InputGoalFragment : Fragment() {
    private var _binding: FragmentInputGoalBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
    private var dataManager: DataManager? = null
 
    override fun onCreateView(
@@ -34,7 +33,7 @@ class InputGoalFragment : Fragment() {
       Log.d(TAG, "InputGoalFragment user: $getUser")
 
       binding.ivBack.setOnClickListener {
-         replaceInputFragment(requireActivity(), InputBodyFragment())
+         replaceLoginFragment1(requireActivity(), InputBodyFragment())
       }
 
       binding.tvSkip.setOnClickListener {

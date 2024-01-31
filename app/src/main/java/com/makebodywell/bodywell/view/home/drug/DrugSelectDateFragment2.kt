@@ -16,10 +16,10 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.isItemClick
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil.Companion.drugDateList
+import com.makebodywell.bodywell.util.CustomUtil.Companion.drugEndDate
+import com.makebodywell.bodywell.util.CustomUtil.Companion.drugStartDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.DrugUtil.Companion.drugDateList
-import com.makebodywell.bodywell.util.DrugUtil.Companion.drugEndDate
-import com.makebodywell.bodywell.util.DrugUtil.Companion.drugStartDate
 import java.time.LocalDate
 
 class DrugSelectDateFragment2 : Fragment(), CalendarAdapter4.OnItemListener {

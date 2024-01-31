@@ -7,26 +7,38 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
-import com.makebodywell.bodywell.view.init.InputActivity
 import com.makebodywell.bodywell.view.init.MainActivity
+import com.makebodywell.bodywell.view.init.LoginActivity
+import java.time.LocalDate
 
 class CustomUtil {
    companion object {
       const val TAG = "testTag"
 
-      fun replaceInputFragment(activity: FragmentActivity, fragment: Fragment?) {
-         (activity as InputActivity).supportFragmentManager.beginTransaction().apply {
-            replace(R.id.inputFrame, fragment!!)
+      var drugType = ""
+      var drugName = ""
+      var drugCount = ""
+      var drugUnitNum = 0
+      var drugPeriodNum = 0
+      var drugStartDate = ""
+      var drugEndDate = ""
+      var drugTimeList = ArrayList<DrugTime>()
+      var drugDateList = ArrayList<LocalDate>()
+
+      fun replaceLoginFragment1(activity: FragmentActivity, fragment: Fragment?) {
+         (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
+            replace(R.id.loginFrame, fragment!!)
             commit()
          }
       }
 
-      fun replaceInputFragment2(activity: FragmentActivity, fragment: Fragment?, bundle: Bundle?) {
-         (activity as InputActivity).supportFragmentManager.beginTransaction().apply {
+      fun replaceLoginFragment2(activity: FragmentActivity, fragment: Fragment?, bundle: Bundle?) {
+         (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
             fragment?.arguments = bundle
-            add(R.id.inputFrame, fragment!!)
+            add(R.id.loginFrame, fragment!!)
             commit()
          }
       }
@@ -136,6 +148,16 @@ class CustomUtil {
          }
 
          return sum
+      }
+
+      fun setDrugTimeList(h: Int, m: Int) {
+         drugTimeList.add(DrugTime(hour = h, minute = m))
+      }
+
+      fun clearDrugData() {
+         drugStartDate = ""
+         drugEndDate = ""
+         drugTimeList.clear()
       }
    }
 }
