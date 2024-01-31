@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFAFA">
+    android:background="#FFFAFA"
+    android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/clBack"
        android:layout_width="wrap_content"
@@ -27,10 +28,10 @@
        android:id="@+id/tvTitle"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:layout_marginTop="30dp"
+       android:layout_marginTop="15dp"
        android:text="직접 추가 기록"
        android:textColor="@color/black"
-       android:textSize="20dp"
+       android:textSize="18dp"
        app:layout_constraintEnd_toEndOf="parent"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintTop_toTopOf="parent"/>
@@ -143,7 +144,7 @@
                    android:layout_height="wrap_content"
                    android:layout_marginTop="10dp"
                    android:text="1개 기준으로 입력해주세요"
-                   android:textSize="13.5dp"
+                   android:textSize="13dp"
                    android:textColor="#cccccc"
                    app:layout_constraintTop_toBottomOf="@id/cv3"
                    app:layout_constraintStart_toStartOf="parent"

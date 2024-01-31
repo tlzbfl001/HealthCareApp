@@ -65,7 +65,7 @@ class FoodFragment : Fragment() {
 
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
       dataManager = DataManager(activity)

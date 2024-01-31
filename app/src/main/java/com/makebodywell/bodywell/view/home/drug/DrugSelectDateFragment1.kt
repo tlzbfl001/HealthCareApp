@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.drug
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,16 @@ class DrugSelectDateFragment1 : Fragment(), CalendarAdapter3.OnItemListener {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentDrugSelectDateBinding.inflate(layoutInflater)
+
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
 
       dataManager = DataManager(activity)
       dataManager!!.open()

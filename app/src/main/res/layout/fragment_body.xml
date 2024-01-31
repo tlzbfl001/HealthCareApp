@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/clBack"
        android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
        android:id="@+id/tvDate"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:layout_marginTop="25dp"
+       android:layout_marginTop="15dp"
        android:text="2023년 7월 23일"
        android:textColor="@color/black"
        android:textSize="17dp"
@@ -267,7 +267,6 @@
                       android:text="현재 체중"
                       android:textColor="@color/black"
                       android:textSize="17dp"
-                      android:textStyle="bold"
                       app:layout_constraintBottom_toTopOf="@id/tvWeight"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -294,7 +293,6 @@
                 android:text="목표 체중"
                 android:textSize="17dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/cl2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/view1"
@@ -326,7 +324,6 @@
                 android:text="남은 체중"
                 android:textSize="17dp"
                 android:textColor="@color/black"
-                android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="@id/tv1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/view1"/>
@@ -374,7 +371,6 @@
                    android:text="하루 신체/체성분"
                    android:textColor="@color/black"
                    android:textSize="17dp"
-                   android:textStyle="bold"
                    app:layout_constraintTop_toTopOf="parent"
                    app:layout_constraintStart_toStartOf="parent"/>
                <androidx.constraintlayout.widget.ConstraintLayout
