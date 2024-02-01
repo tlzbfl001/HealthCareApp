@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
@@ -214,6 +216,8 @@ class BodyFragment : Fragment() {
       }
 
       getBody = dataManager!!.getBody(calendarDate.toString())
+      Log.d(TAG, "getBody: $getBody")
+
       if (getBody.weight > 0) {
          binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
          binding.pbBody.setProgressEndColor(Color.parseColor("#AED77D"))
@@ -249,6 +253,7 @@ class BodyFragment : Fragment() {
       when{
          bmi < 186 -> {
             binding.bmiIndicator1.progress = bmi
+            binding.bmiIndicator1.thumb.setTint(Color.BLACK)
             binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
@@ -259,6 +264,7 @@ class BodyFragment : Fragment() {
          bmi < 231 -> {
             binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator2.progress = bmi
+            binding.bmiIndicator2.thumb.setTint(Color.BLACK)
             binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
@@ -269,6 +275,7 @@ class BodyFragment : Fragment() {
             binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator3.progress = bmi
+            binding.bmiIndicator3.thumb.setTint(Color.BLACK)
             binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
@@ -279,6 +286,7 @@ class BodyFragment : Fragment() {
             binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator4.progress = bmi
+            binding.bmiIndicator4.thumb.setTint(Color.BLACK)
             binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
             binding.tvBmiStatus.text = "비만1"
@@ -289,6 +297,7 @@ class BodyFragment : Fragment() {
             binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator5.progress = bmi
+            binding.bmiIndicator5.thumb.setTint(Color.BLACK)
             binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
             binding.tvBmiStatus.text = "비만2"
          }
@@ -299,6 +308,7 @@ class BodyFragment : Fragment() {
             binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
             binding.bmiIndicator6.progress = bmi
+            binding.bmiIndicator6.thumb.setTint(Color.BLACK)
             binding.tvBmiStatus.text = "심각한비만3"
          }
       }
@@ -309,6 +319,7 @@ class BodyFragment : Fragment() {
       when{
          fat < 141 -> {
             binding.fatIndicator1.progress = fat
+            binding.fatIndicator1.thumb.setTint(Color.BLACK)
             binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
@@ -318,6 +329,7 @@ class BodyFragment : Fragment() {
          fat < 211 -> {
             binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator2.progress = fat
+            binding.fatIndicator2.thumb.setTint(Color.BLACK)
             binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
@@ -327,6 +339,7 @@ class BodyFragment : Fragment() {
             binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator3.progress = fat
+            binding.fatIndicator3.thumb.setTint(Color.BLACK)
             binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
             binding.tvFatStatus.text = "건강한수준"
@@ -336,6 +349,7 @@ class BodyFragment : Fragment() {
             binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator4.progress = fat
+            binding.fatIndicator4.thumb.setTint(Color.BLACK)
             binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
             binding.tvFatStatus.text = "괜찮은수준"
          }
@@ -345,6 +359,7 @@ class BodyFragment : Fragment() {
             binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
             binding.fatIndicator5.progress = fat
+            binding.fatIndicator5.thumb.setTint(Color.BLACK)
             binding.tvFatStatus.text = "높은수준"
          }
       }
@@ -355,6 +370,7 @@ class BodyFragment : Fragment() {
       when{
          muscle < 267 -> {
             binding.muscleIndicator1.progress = muscle
+            binding.muscleIndicator1.thumb.setTint(Color.BLACK)
             binding.muscleIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.muscleIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.tvMuscleStatus.text = "낮음"
@@ -362,6 +378,7 @@ class BodyFragment : Fragment() {
          muscle < 311 -> {
             binding.muscleIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.muscleIndicator2.progress = muscle
+            binding.muscleIndicator2.thumb.setTint(Color.BLACK)
             binding.muscleIndicator3.thumb.setTint(Color.TRANSPARENT)
             binding.tvMuscleStatus.text = "표준"
          }
@@ -369,6 +386,7 @@ class BodyFragment : Fragment() {
             binding.muscleIndicator1.thumb.setTint(Color.TRANSPARENT)
             binding.muscleIndicator2.thumb.setTint(Color.TRANSPARENT)
             binding.muscleIndicator3.progress = muscle
+            binding.muscleIndicator3.thumb.setTint(Color.BLACK)
             binding.tvMuscleStatus.text = "높음"
          }
       }

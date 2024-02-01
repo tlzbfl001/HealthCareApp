@@ -21,6 +21,7 @@ class BodyRecordFragment : Fragment() {
    private var dataManager: DataManager? = null
 
    private var exerciseLevel = 1
+   private var gender = "MALE"
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +53,11 @@ class BodyRecordFragment : Fragment() {
          binding.etHeight.setText(getBody.height.toString())
          binding.etWeight.setText(getBody.weight.toString())
          binding.etAge.setText(getBody.age.toString())
-         binding.etGender.setText(getBody.gender)
+
+         when(getBody.gender) {
+            "MALE" -> genderUI1()
+            else -> genderUI2()
+         }
 
          when(getBody.exerciseLevel) {
             1 -> {
@@ -82,6 +87,14 @@ class BodyRecordFragment : Fragment() {
          replaceFragment1(requireActivity(), BodyFragment())
       }
 
+      binding.tvMan.setOnClickListener {
+         genderUI1()
+      }
+
+      binding.tvWoman.setOnClickListener {
+         genderUI2()
+      }
+
       binding.radioGroup.setOnCheckedChangeListener{ _, checkedId ->
          when(checkedId) {
             R.id.radioBtn1 -> exerciseLevel = 1
@@ -93,12 +106,12 @@ class BodyRecordFragment : Fragment() {
       }
 
       // BMR 구하기
-      binding.clResult.setOnClickListener {
-         if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "" ||
-            binding.etAge.text.toString().trim() == "" || binding.etGender.text.toString().trim() == "") {
+      binding.cvResult.setOnClickListener {
+         if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "" || binding.etAge.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "내 신체 정보를 전부 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             var step = 0.0
+
             when(exerciseLevel) {
                1 -> step = 1.2
                2 -> step = 1.375
@@ -107,7 +120,7 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            val result = if(binding.etGender.text.toString().trim() == "남자") {
+            val result = if(gender == "MALE") {
                val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*binding.etAge.text.toString().toDouble())+5)*step
                String.format("%.1f", num)
             }else {
@@ -137,11 +150,11 @@ class BodyRecordFragment : Fragment() {
          if(bmr == "") bmr = "0.0"
 
          if(getBody.regDate == "") {
-            dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
-               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
+            dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender, exerciseLevel = exerciseLevel,
+               fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateBody(Body(id = getBody.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = binding.etGender.text.toString(),
+            dataManager!!.updateBody(Body(id = getBody.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender,
                exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
@@ -150,5 +163,21 @@ class BodyRecordFragment : Fragment() {
       }
 
       return binding.root
+   }
+
+   private fun genderUI1() {
+      binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
+      binding.tvMan.setTextColor(Color.WHITE)
+      binding.tvWoman.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWoman.setTextColor(Color.BLACK)
+      gender = "MALE"
+   }
+
+   private fun genderUI2() {
+      binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvMan.setTextColor(Color.BLACK)
+      binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
+      binding.tvWoman.setTextColor(Color.WHITE)
+      gender = "FEMALE"
    }
 }

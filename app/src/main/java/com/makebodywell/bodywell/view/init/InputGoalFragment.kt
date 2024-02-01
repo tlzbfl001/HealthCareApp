@@ -30,7 +30,6 @@ class InputGoalFragment : Fragment() {
       dataManager!!.open()
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
-      Log.d(TAG, "InputGoalFragment user: $getUser")
 
       binding.ivBack.setOnClickListener {
          replaceLoginFragment1(requireActivity(), InputBodyFragment())

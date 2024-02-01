@@ -41,7 +41,6 @@ class InputBodyFragment : Fragment() {
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
-      Log.d(TAG, "InputBodyFragment user: $getUser")
 
       binding.ivBack.setOnClickListener {
          replaceLoginFragment1(requireActivity(), InputInfoFragment())
@@ -93,8 +92,6 @@ class InputBodyFragment : Fragment() {
                "Authorization",
                "Bearer ${getToken.accessToken}"
             ).execute()
-
-            Log.d(TAG, "inputBody updateUserProfile: ${response.data!!.updateUserProfile}")
 
             dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
             dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)

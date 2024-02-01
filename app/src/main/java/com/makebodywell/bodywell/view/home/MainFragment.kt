@@ -61,7 +61,6 @@ class MainFragment : Fragment() {
       dataManager!!.open()
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
-      Log.d(TAG, "MainFragment user: $getUser")
 
       if(getUser.name != "" && getUser.name != null) {
          binding.tvName.text = getUser.name + " 님"

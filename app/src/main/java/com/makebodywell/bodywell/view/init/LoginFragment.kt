@@ -102,11 +102,10 @@ class LoginFragment : Fragment() {
         if (requestCode == 1000) {
             GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
                 if(it.isSuccessful) {
-                    val getUser = dataManager!!.getUser("google", it.result.email.toString())
+                    val getUser1 = dataManager!!.getUser("google", it.result.email.toString())
 
-                    if(getUser.regDate == "") { // 초기 가입 작업
+                    if(getUser1.regDate == "") { // 초기 가입 작업
                         val user = User(type = "google", idToken = it.result.idToken, email = it.result.email, name = it.result.displayName, regDate = LocalDate.now().toString())
-
                         bundle.putParcelable("user", user)
                         replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
                     }else { // 로그인
@@ -118,11 +117,12 @@ class LoginFragment : Fragment() {
                             if(response.data == null) {
                                 Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                             }else {
-                                val getUser = dataManager!!.getUser("google", it.result.email.toString())
-                                dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
+                                val getUser2 = dataManager!!.getUser("google", it.result.email.toString())
+
+                                dataManager!!.updateToken(Token(userId = getUser2.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
                                     refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-                                MyApp.prefs.setPrefs("userId", getUser.id)
+                                MyApp.prefs.setPrefs("userId", getUser2.id)
 
                                 startActivity(Intent(requireActivity(), MainActivity::class.java))
                             }
@@ -141,16 +141,16 @@ class LoginFragment : Fragment() {
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                     override fun onSuccess(result: NidProfileResponse) {
                         if(NaverIdLoginSDK.getAccessToken() != null && NaverIdLoginSDK.getAccessToken() != "") {
-                            val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
+                            val getUser1 = dataManager!!.getUser("naver", result.profile?.email.toString())
 
-                            if(getUser.regDate == "") { // 초기 가입 작업
+                            if(getUser1.regDate == "") {
                                 val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email, name = result.profile?.name,
                                     nickname = result.profile?.nickname, gender = result.profile?.gender, birthday = result.profile?.birthYear + "-" + result.profile?.birthday,
                                     profileImage = result.profile?.profileImage, regDate = LocalDate.now().toString())
 
                                 bundle.putParcelable("user", user)
                                 replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
-                            }else { // 로그인
+                            }else {
                                 lifecycleScope.launch{
                                     val response = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
                                         accessToken = NaverIdLoginSDK.getAccessToken().toString()
@@ -159,11 +159,12 @@ class LoginFragment : Fragment() {
                                     if(response.data == null) {
                                         Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                                     }else {
-                                        val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
-                                        dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
+                                        val getUser2 = dataManager!!.getUser("naver", result.profile?.email.toString())
+
+                                        dataManager!!.updateToken(Token(userId = getUser2.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
                                             refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-                                        MyApp.prefs.setPrefs("userId", getUser.id)
+                                        MyApp.prefs.setPrefs("userId", getUser2.id)
 
                                         startActivity(Intent(requireActivity(), MainActivity::class.java))
                                     }
@@ -206,15 +207,14 @@ class LoginFragment : Fragment() {
 
         // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
         if(UserApiClient.instance.isKakaoTalkLoginAvailable(requireActivity())) {
-            UserApiClient.instance.loginWithKakaoTalk(requireActivity()) { token, error -> // 카카오톡으로 로그인
-                if(error != null) { // 로그인 실패 부분
+            UserApiClient.instance.loginWithKakaoTalk(requireActivity()) { token, error ->
+                if(error != null) {
                     Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
 
                     // 사용자가 카카오톡 설치 후 디바이스 권한요청 화면에서 로그인을 취소한 경우, 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리
                     if(error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                         return@loginWithKakaoTalk
-                    }else {
-                        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                    }else { // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                         UserApiClient.instance.loginWithKakaoAccount(requireActivity(), callback = callback)
                     }
                 }else if(token != null) { // 로그인 성공
@@ -231,12 +231,11 @@ class LoginFragment : Fragment() {
             if(error != null) {
                 Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
             }else {
-                val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString()) // 사용자 가입여부 체크
+                val getUser1 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString()) // 사용자 가입여부 체크
 
-                if(getUser.regDate == "") { // 초기 가입 작업
+                if(getUser1.regDate == "") { // 초기 가입 작업
                     val user = User(type = "kakao", idToken = token.idToken, email = user?.kakaoAccount?.email, name = user?.kakaoAccount?.name,
                         nickname = user?.kakaoAccount?.profile?.nickname, profileImage = user?.kakaoAccount?.profile?.profileImageUrl, regDate = LocalDate.now().toString())
-
                     bundle.putParcelable("user", user)
                     replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
                 }else { // 로그인
@@ -248,11 +247,12 @@ class LoginFragment : Fragment() {
                         if(response.data == null) {
                             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                         }else {
-                            val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
-                            dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
+                            val getUser2 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
+
+                            dataManager!!.updateToken(Token(userId = getUser2.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
                                 refreshToken = response.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-                            MyApp.prefs.setPrefs("userId", getUser.id)
+                            MyApp.prefs.setPrefs("userId", getUser2.id)
 
                             startActivity(Intent(requireActivity(), MainActivity::class.java))
                         }

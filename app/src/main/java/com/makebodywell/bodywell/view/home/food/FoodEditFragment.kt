@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
@@ -31,14 +32,13 @@ class FoodEditFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
-
    private var dataManager: DataManager? = null
    private var getFood = Food()
    private var imageList = ArrayList<FoodImage>()
 
    private var calendarDate = ""
-   private var id = 0
    private var type = ""
+   private var id = -1
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -62,6 +62,7 @@ class FoodEditFragment : Fragment() {
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
       id = arguments?.getString("id").toString().toInt()
+
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
@@ -69,6 +70,7 @@ class FoodEditFragment : Fragment() {
       var count = getFood.count
 
       binding.tvName.text = getFood.name
+
       dataTextView(count)
 
       binding.clBack.setOnClickListener {
@@ -84,7 +86,7 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.ivMinus.setOnClickListener {
-         if(count > 0) {
+         if(count > 1) {
             count--
             dataTextView(count)
          }
@@ -97,11 +99,14 @@ class FoodEditFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", id)
+
          for(i in 0 until imageList.size) {
-            dataManager?.insertFoodImage(imageList[i])
+            dataManager!!.insertFoodImage(imageList[i])
          }
 
-         Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         dataManager!!.updateInt(TABLE_FOOD, "count", count, id)
+
+         Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
@@ -133,7 +138,9 @@ class FoodEditFragment : Fragment() {
             STORAGE_REQUEST_CODE -> {
                val uri = data?.data
                val image = FoodImage(imageUri = uri.toString(), type = type.toInt(), dataId = getFood.id, regDate = calendarDate)
+
                imageList.add(image)
+
                photoView(imageList)
             }
          }

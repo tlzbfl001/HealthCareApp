@@ -24,7 +24,6 @@ class FoodRecord1Fragment : Fragment() {
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
-
    private var dataManager: DataManager? = null
    private val itemList = ArrayList<Item>()
    private val searchList = ArrayList<Item>()
@@ -132,8 +131,7 @@ class FoodRecord1Fragment : Fragment() {
                binding.rv2.visibility = View.GONE
                adapter.clearItems()
             }else {
-               // 검색 단어를 포함하는지 확인
-               for(i in 0 until itemList.size) {
+               for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
                   if(originalList[i].string1.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
                      searchList.add(originalList[i])
                   }
@@ -145,7 +143,6 @@ class FoodRecord1Fragment : Fragment() {
 
       adapter = SearchAdapter()
       binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.rv2.adapter = adapter
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
@@ -153,5 +150,7 @@ class FoodRecord1Fragment : Fragment() {
             replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
          }
       })
+
+      binding.rv2.adapter = adapter
    }
 }

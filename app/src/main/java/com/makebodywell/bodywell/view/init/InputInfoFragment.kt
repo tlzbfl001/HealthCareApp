@@ -66,24 +66,23 @@ class InputInfoFragment : Fragment() {
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
-      Log.d(TAG, "InputInfoFragment user: $getUser")
 
       binding.ivProfile.setOnClickListener {
          dialog = Dialog(requireActivity())
          dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
          dialog!!.setContentView(R.layout.dialog_gallery)
 
-         val cl1 = dialog!!.findViewById<ConstraintLayout>(R.id.cl1)
-         val cl2 = dialog!!.findViewById<ConstraintLayout>(R.id.cl2)
+         val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
+         val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
 
-         cl1.setOnClickListener {
+         clCamera.setOnClickListener {
             if (requestPermission()) {
                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
          }
 
-         cl2.setOnClickListener {
+         clGallery.setOnClickListener {
             if (requestPermission()) {
                val intent = Intent(Intent.ACTION_PICK)
                intent.type = MediaStore.Images.Media.CONTENT_TYPE
@@ -91,10 +90,10 @@ class InputInfoFragment : Fragment() {
             }
          }
 
-         dialog!!.show()
          dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
          dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
          dialog!!.window!!.setGravity(Gravity.BOTTOM)
+         dialog!!.show()
       }
 
       binding.tvBirthday.setOnClickListener {
@@ -150,9 +149,6 @@ class InputInfoFragment : Fragment() {
                "Authorization",
                "Bearer ${getToken.accessToken}"
             ).execute()
-
-            Log.d(TAG, "inputInfo updateUserProfile: ${response.data!!.updateUserProfile}")
-            Log.d(TAG, "inputInfo uri: $uri")
 
             dataManager?.updateString(TABLE_USER, "name", name!!, getUser.id)
             dataManager?.updateString(TABLE_USER, "birthday", birthday!!, getUser.id)

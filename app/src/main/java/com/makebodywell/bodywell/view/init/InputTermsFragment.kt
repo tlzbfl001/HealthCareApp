@@ -63,7 +63,7 @@ class InputTermsFragment : Fragment() {
       apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
       user = arguments?.getParcelable("user")!!
-      Log.d(TAG, "InputTermsFragment user: $user")
+      Log.d(TAG, "InputTermsFragment: $user")
 
       binding.ivBack.setOnClickListener {
         replaceLoginFragment1(requireActivity(), LoginFragment())
@@ -153,44 +153,45 @@ class InputTermsFragment : Fragment() {
 
    private fun googleSignIn() {
       lifecycleScope.launch{
-         // 회원가입
          val signIn = apolloClient!!.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
             idToken = user.idToken.toString()
          ))).execute()
 
+         Log.d(TAG, "googleSignIn: ${signIn.data}")
+
          if(signIn.data == null) {
             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            // 사용자정보 저장
-            dataManager!!.insertUser(user)
-
-            // 로그인
             val login = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
                idToken = user.idToken.toString()
             ))).execute()
 
-            Log.d(TAG, "loginUserGoogle: ${login.data!!.loginUserGoogle}")
+            Log.d(TAG, "googleLogin: ${login.data}")
 
             if(login.data == null) {
                Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
             }else {
-               val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
-               MyApp.prefs.setPrefs("userId", getUser.id)
-
-               // 토큰 저장
-               dataManager!!.insertToken(Token(userId = getUser.id, accessToken = login.data!!.loginUserGoogle.accessToken.toString(),
-                  refreshToken = login.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
-
                val getUserId = apolloClient!!.query(MeQuery()).addHttpHeader(
                   "Authorization",
                   "Bearer ${login.data!!.loginUserGoogle.accessToken.toString()}"
                ).execute()
 
-               Log.d(TAG, "userId: ${getUserId.data!!.me.user.userId}")
+               Log.d(TAG, "googleUserId: ${getUserId.data}")
 
-               // userId 저장
-               if(getUserId.data != null) {
-                  dataManager?.updateString(TABLE_USER, "userId", getUserId.data!!.me.user.userId, getUser.id)
+               if(getUserId.data == null) {
+                  Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               }else {
+                  dataManager!!.insertUser(user) // 사용자 정보 저장
+
+                  val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
+
+                  MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
+
+                  dataManager!!.insertToken(Token(userId = getUser.id, accessToken = login.data!!.loginUserGoogle.accessToken.toString(),
+                     refreshToken = login.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString())) // 토큰 저장
+
+                  dataManager?.updateString(TABLE_USER, "userId", getUserId.data!!.me.user.userId, getUser.id) // userId 저장
+
                   signInDialog()
                }
             }
@@ -200,7 +201,6 @@ class InputTermsFragment : Fragment() {
 
    private fun naverSignIn() {
       lifecycleScope.launch{
-         // 회원가입
          val signIn = apolloClient!!.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
             accessToken = NaverIdLoginSDK.getAccessToken().toString()
          ))).execute()
@@ -208,37 +208,32 @@ class InputTermsFragment : Fragment() {
          if(signIn.data == null) {
             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            // 사용자정보 저장
-            dataManager!!.insertUser(user)
-
-            // 로그인
             val login = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
                accessToken = user.idToken.toString()
             ))).execute()
 
-            Log.d(TAG, "loginUserNaver: ${login.data!!.loginUserNaver}")
-
             if(login.data == null) {
                Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
             }else {
-               val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
-
-               MyApp.prefs.setPrefs("userId", getUser.id)
-
-               // 토큰 저장
-               dataManager!!.insertToken(Token(userId = getUser.id, accessToken = login.data!!.loginUserNaver.accessToken.toString(),
-                  refreshToken = login.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
-
                val getUserId = apolloClient!!.query(MeQuery()).addHttpHeader(
                   "Authorization",
                   "Bearer ${login.data!!.loginUserNaver.accessToken.toString()}"
                ).execute()
 
-               Log.d(TAG, "userId: ${getUserId.data!!.me.user.userId}")
+               if(getUserId.data == null) {
+                  Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               }else {
+                  dataManager!!.insertUser(user)
 
-               // userId 저장
-               if(getUserId.data != null) {
+                  val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
+
+                  MyApp.prefs.setPrefs("userId", getUser.id)
+
+                  dataManager!!.insertToken(Token(userId = getUser.id, accessToken = login.data!!.loginUserNaver.accessToken.toString(),
+                     refreshToken = login.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
+
                   dataManager?.updateString(TABLE_USER, "userId", getUserId.data!!.me.user.userId, getUser.id)
+
                   signInDialog()
                }
             }
@@ -248,7 +243,6 @@ class InputTermsFragment : Fragment() {
 
    private fun kakaoSignIn() {
       lifecycleScope.launch{
-         // 회원가입
          val signIn = apolloClient!!.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
             idToken = user.idToken.toString()
          ))).execute()
@@ -256,37 +250,32 @@ class InputTermsFragment : Fragment() {
          if(signIn.data == null) {
             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            // 사용자정보 저장
-            dataManager!!.insertUser(user)
-
-            // 로그인
             val login = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
                idToken = user.idToken.toString()
             ))).execute()
 
-            Log.d(TAG, "loginUserKakao: ${login.data!!.loginUserKakao}")
-
             if(login.data == null) {
                Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
             }else {
-               val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
-
-               MyApp.prefs.setPrefs("userId", getUser.id)
-
-               // DB 에 토큰 저장
-               dataManager!!.insertToken(Token(userId = getUser.id, accessToken = login.data!!.loginUserKakao.accessToken.toString(),
-                  refreshToken = login.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
-
                val getUserId = apolloClient!!.query(MeQuery()).addHttpHeader(
                   "Authorization",
                   "Bearer ${login.data!!.loginUserKakao.accessToken.toString()}"
                ).execute()
 
-               Log.d(TAG, "userId: ${getUserId.data!!.me.user.userId}")
+               if(getUserId.data == null) {
+                  Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+               }else {
+                  dataManager!!.insertUser(user)
 
-               // userId 저장
-               if(getUserId.data != null) {
+                  val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
+
+                  MyApp.prefs.setPrefs("userId", getUser.id)
+
+                  dataManager!!.insertToken(Token(userId = getUser.id, accessToken = login.data!!.loginUserKakao.accessToken.toString(),
+                     refreshToken = login.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
+
                   dataManager?.updateString(TABLE_USER, "userId", getUserId.data!!.me.user.userId, getUser.id)
+
                   signInDialog()
                }
             }
@@ -334,9 +323,9 @@ class InputTermsFragment : Fragment() {
          4 -> terms4.visibility = View.VISIBLE
       }
 
-      dialog.show()
       dialog.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
       dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
       dialog.window!!.setGravity(Gravity.BOTTOM)
+      dialog.show()
    }
 }
