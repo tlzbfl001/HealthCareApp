@@ -61,37 +61,53 @@ class SettingFragment : Fragment() {
 
                when(getUser.type) {
                   "google" -> {
-                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getString(R.string.googleWebClientId))
-                        .requestEmail()
-                        .build()
-                     val gsc = GoogleSignIn.getClient(requireActivity(), gso)
+                     val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
+                     if(account != null) {
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                           .requestIdToken(getString(R.string.googleWebClientId))
+                           .requestEmail()
+                           .build()
+                        val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
-                     gsc.signOut()
+                        gsc.signOut().addOnCompleteListener {
+                           if (it.isSuccessful) {
+                              MyApp.prefs.removePrefs("userId")
+
+                              Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                              startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                           } else {
+                              Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
+                           }
+                        }
+                     }
                   }
                   "naver" -> {
                      NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
                         R.string.app_name))
                      NaverIdLoginSDK.logout()
+
+                     MyApp.prefs.removePrefs("userId")
+
+                     Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                     startActivity(Intent(requireActivity(), LoginActivity::class.java))
                   }
                   "kakao" -> {
                      UserApiClient.instance.logout { error ->
                         if (error != null) {
-                           Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+                           Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show()
                         }else {
-                           Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
+                           MyApp.prefs.removePrefs("userId")
+
+                           Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                           startActivity(Intent(requireActivity(), LoginActivity::class.java))
                         }
                      }
                   }
                }
-
-               MyApp.prefs.removePrefs("userId")
-
-               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-               startActivity(Intent(requireActivity(), LoginActivity::class.java))
             }
             .setNegativeButton("취소", null)
             .create()
+
          dialog.show()
       }
 

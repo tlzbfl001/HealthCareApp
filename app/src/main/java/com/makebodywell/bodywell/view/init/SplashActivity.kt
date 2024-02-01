@@ -32,7 +32,43 @@ class SplashActivity : AppCompatActivity() {
       dataManager = DataManager(this)
       dataManager!!.open()
 
-      Handler().postDelayed({
+      if(MyApp.prefs.getId() == -1) {
+         startActivity(Intent(this, InitActivity::class.java))
+      }else {
+         val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+
+         when(getUser.type) {
+            "google" -> {
+               val gsa = GoogleSignIn.getLastSignedInAccount(this)
+
+               if(gsa == null) {
+                  startActivity(Intent(this, LoginActivity::class.java))
+               }else {
+                  startActivity(Intent(this, MainActivity::class.java))
+               }
+            }
+            "naver" -> {
+               NaverIdLoginSDK.initialize(this, getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(R.string.app_name))
+
+               if(NaverIdLoginSDK.getAccessToken() == null) {
+                  startActivity(Intent(this, LoginActivity::class.java))
+               }else {
+                  startActivity(Intent(this, MainActivity::class.java))
+               }
+            }
+            "kakao" -> {
+               UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
+                  if (error != null) {
+                     startActivity(Intent(this, LoginActivity::class.java))
+                  }else if (tokenInfo != null) {
+                     startActivity(Intent(this, MainActivity::class.java))
+                  }
+               }
+            }
+         }
+      }
+
+      /*Handler().postDelayed({
          if(MyApp.prefs.getId() == 0) {
             startActivity(Intent(this, InitActivity::class.java))
          }else {
@@ -70,6 +106,6 @@ class SplashActivity : AppCompatActivity() {
          }
 
          finish()
-      }, 1000)
+      }, 1000)*/
    }
 }

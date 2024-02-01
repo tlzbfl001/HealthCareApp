@@ -18,6 +18,7 @@ import com.google.android.gms.common.api.ApiException
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.LoginUserGoogleMutation
 import com.makebodywell.bodywell.LoginUserKakaoMutation
@@ -99,42 +100,37 @@ class LoginFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1000) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                task.getResult(ApiException::class.java)
-                gsa = GoogleSignIn.getLastSignedInAccount(requireActivity())
+            GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    val getUser = dataManager!!.getUser("google", it.result.email.toString())
 
-                val getUser = dataManager!!.getUser("google", gsa?.email.toString())
+                    if(getUser.regDate == "") { // 초기 가입 작업
+                        val user = User(type = "google", idToken = it.result.idToken, email = it.result.email, name = it.result.displayName, regDate = LocalDate.now().toString())
 
-                if(getUser.regDate == "") { // 초기 가입 작업
-                    val user = User(type = "google", idToken = gsa?.idToken, email = gsa?.email, name = gsa?.displayName, regDate = LocalDate.now().toString())
+                        bundle.putParcelable("user", user)
+                        replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
+                    }else { // 로그인
+                        lifecycleScope.launch{
+                            val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+                                idToken = it.result.idToken.toString()
+                            ))).execute()
 
-                    bundle.putParcelable("user", user)
-                    replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
-                }else { // 로그인
-                    lifecycleScope.launch{
-                        val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
-                            idToken = gsa?.idToken.toString()
-                        ))).execute()
+                            if(response.data == null) {
+                                Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+                            }else {
+                                val getUser = dataManager!!.getUser("google", it.result.email.toString())
+                                dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
+                                    refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
-                        if(response.data == null) {
-                            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-                        }else {
-                            val getUser = dataManager!!.getUser("google", gsa?.email.toString())
-                            dataManager!!.updateToken(
-                                Token(userId = getUser.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
-                                    refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString())
-                            )
+                                MyApp.prefs.setPrefs("userId", getUser.id)
 
-                            MyApp.prefs.setPrefs("userId", getUser.id)
-
-                            startActivity(Intent(requireActivity(), MainActivity::class.java))
+                                startActivity(Intent(requireActivity(), MainActivity::class.java))
+                            }
                         }
                     }
+                }else {
+                    Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
                 }
-            }catch (e: ApiException) {
-                Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
-                e.printStackTrace()
             }
         }
     }
@@ -164,10 +160,8 @@ class LoginFragment : Fragment() {
                                         Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                                     }else {
                                         val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
-                                        dataManager!!.updateToken(
-                                            Token(userId = getUser.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
-                                                refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString())
-                                        )
+                                        dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
+                                            refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
                                         MyApp.prefs.setPrefs("userId", getUser.id)
 
@@ -176,7 +170,7 @@ class LoginFragment : Fragment() {
                                 }
                             }
                         }else {
-                            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
                         }
                     }
                     override fun onError(errorCode: Int, message: String) {
@@ -255,10 +249,8 @@ class LoginFragment : Fragment() {
                             Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                             val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
-                            dataManager!!.updateToken(
-                                Token(userId = getUser.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
-                                    refreshToken = response.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString())
-                            )
+                            dataManager!!.updateToken(Token(userId = getUser.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
+                                refreshToken = response.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
                             MyApp.prefs.setPrefs("userId", getUser.id)
 
@@ -268,5 +260,10 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun getKeyHash() {
+        val keyHash = Utility.getKeyHash(applicationContext)
+        Log.d(TAG, keyHash)
     }
 }

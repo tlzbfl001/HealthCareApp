@@ -11,12 +11,10 @@ class PreferenceUtil(context: Context) {
     }
 
     fun getId(): Int {
-        return prefs.getInt("userId", 0)
+        return prefs.getInt("userId", -1)
     }
 
     fun removePrefs(key: String) {
-        prefs.edit().remove(key)
-        prefs.edit().clear()
-        prefs.edit().apply()
+        prefs.edit().remove(key).apply()
     }
 }

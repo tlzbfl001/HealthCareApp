@@ -175,7 +175,6 @@ class InputTermsFragment : Fragment() {
                Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
             }else {
                val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
-
                MyApp.prefs.setPrefs("userId", getUser.id)
 
                // 토큰 저장
