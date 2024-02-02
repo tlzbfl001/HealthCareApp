@@ -107,12 +107,8 @@ class BodyFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         if(getBody.regDate == "") {
-            replaceFragment1(requireActivity(), BodyRecordFragment())
-         }else {
-            bundle.putString("calendarDate", calendarDate.toString())
-            replaceFragment2(requireActivity(), BodyRecordFragment(), bundle)
-         }
+         bundle.putString("calendarDate", calendarDate.toString())
+         replaceFragment2(requireActivity(), BodyRecordFragment(), bundle)
       }
 
       binding.clBmi.setOnClickListener {

@@ -7,7 +7,6 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_DATA
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_DATE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
@@ -21,7 +20,6 @@ import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugCheck
-import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
@@ -352,10 +350,11 @@ class DataManager(private var context: Context?) {
          data.name = cursor.getString(2)
          data.amount = cursor.getString(3)
          data.unit = cursor.getString(4)
-         data.period = cursor.getString(5)
+         data.count = cursor.getInt(5)
          data.startDate = cursor.getString(6)
          data.endDate = cursor.getString(7)
          data.isSet = cursor.getInt(8)
+         data.regDate = cursor.getString(9)
          list.add(data)
       }
       cursor.close()
@@ -384,22 +383,6 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return data
-   }
-
-   fun getDrugDate(id: Int) : ArrayList<DrugDate> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<DrugDate> = ArrayList()
-      val sql = "select * from $TABLE_DRUG_DATE where drugId = $id"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = DrugDate()
-         data.id = cursor.getInt(0)
-         data.date=cursor.getString(1)
-         data.drugId=cursor.getInt(2)
-         list.add(data)
-      }
-      cursor.close()
-      return list
    }
 
    fun getDrugTime(id: Int) : ArrayList<DrugTime> {
@@ -457,10 +440,11 @@ class DataManager(private var context: Context?) {
          data.name = cursor.getString(2)
          data.amount = cursor.getString(3)
          data.unit = cursor.getString(4)
-         data.period = cursor.getString(5)
+         data.count = cursor.getInt(5)
          data.startDate = cursor.getString(6)
          data.endDate = cursor.getString(7)
          data.isSet = cursor.getInt(8)
+         data.regDate = cursor.getString(9)
          list.add(data)
       }
       cursor.close()
@@ -489,12 +473,10 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id = cursor.getInt(0)
-         data.sleepHour = cursor.getInt(1)
-         data.sleepMinute = cursor.getInt(2)
-         data.bedHour = cursor.getInt(3)
-         data.bedMinute = cursor.getInt(4)
-         data.wakeHour = cursor.getInt(5)
-         data.wakeMinute = cursor.getInt(6)
+         data.bedTime = cursor.getInt(1)
+         data.wakeTime = cursor.getInt(2)
+         data.sleepTime = cursor.getInt(3)
+         data.regDate = cursor.getString(4)
       }
       cursor.close()
       return data
@@ -510,9 +492,8 @@ class DataManager(private var context: Context?) {
          data.waterGoal = cursor.getInt(2)
          data.exerciseGoal = cursor.getInt(3)
          data.bodyGoal = cursor.getDouble(4)
-         data.sleepHourGoal = cursor.getInt(5)
-         data.sleepMinuteGoal = cursor.getInt(6)
-         data.drugGoal = cursor.getInt(7)
+         data.sleepGoal = cursor.getInt(5)
+         data.drugGoal = cursor.getInt(6)
       }
       cursor.close()
       return data
@@ -638,9 +619,10 @@ class DataManager(private var context: Context?) {
       values.put("name", data.name)
       values.put("amount", data.amount)
       values.put("unit", data.unit)
-      values.put("period", data.period)
+      values.put("count", data.count)
       values.put("startDate", data.startDate)
       values.put("endDate", data.endDate)
+      values.put("isSet", data.isSet)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_DRUG, null, values)
    }
@@ -652,14 +634,6 @@ class DataManager(private var context: Context?) {
       values.put("minute", data.minute)
       values.put("drugId", data.drugId)
       db!!.insert(TABLE_DRUG_TIME, null, values)
-   }
-
-   fun insertDrugDate(data: DrugDate) {
-      val db = dbHelper!!.writableDatabase
-      val values = ContentValues()
-      values.put("date", data.date)
-      values.put("drugId", data.drugId)
-      db!!.insert(TABLE_DRUG_DATE, null, values)
    }
 
    fun insertDrugCheck(checked: Int, drugTimeId: Int, regDate: String) {
@@ -683,12 +657,9 @@ class DataManager(private var context: Context?) {
    fun insertSleep(data: Sleep) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
-      values.put("sleepHour", data.sleepHour)
-      values.put("sleepMinute", data.sleepMinute)
-      values.put("bedHour", data.bedHour)
-      values.put("bedMinute", data.bedMinute)
-      values.put("wakeHour", data.wakeHour)
-      values.put("wakeMinute", data.wakeMinute)
+      values.put("bedTime", data.bedTime)
+      values.put("wakeTime", data.wakeTime)
+      values.put("sleepTime", data.sleepTime)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_SLEEP, null, values)
    }
@@ -700,8 +671,7 @@ class DataManager(private var context: Context?) {
       values.put("waterGoal", data.waterGoal)
       values.put("exerciseGoal", data.exerciseGoal)
       values.put("bodyGoal", data.bodyGoal)
-      values.put("sleepHourGoal", data.sleepHourGoal)
-      values.put("sleepMinuteGoal", data.sleepMinuteGoal)
+      values.put("sleepGoal", data.sleepGoal)
       values.put("drugGoal", data.drugGoal)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_DAILY_DATA, null, values)
@@ -774,8 +744,7 @@ class DataManager(private var context: Context?) {
 
    fun updateSleep(data: Sleep){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_SLEEP set sleepHour=${data.sleepHour}, sleepMinute=${data.sleepMinute}, bedHour=${data.bedHour}, bedMinute=${data.bedMinute}," +
-              "wakeHour=${data.wakeHour}, wakeMinute=${data.wakeMinute} where regDate='${data.regDate}'"
+      val sql = "update $TABLE_SLEEP set bedTime=${data.bedTime}, wakeTime=${data.wakeTime}, sleepTime=${data.sleepTime} where regDate='${data.regDate}'"
       db.execSQL(sql)
       db.close()
    }

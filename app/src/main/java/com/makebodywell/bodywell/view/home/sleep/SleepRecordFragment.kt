@@ -80,17 +80,19 @@ class SleepRecordFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val calendarDate = arguments?.getString("calendarDate").toString()
-
          val getSleep = dataManager!!.getSleep(calendarDate)
+
+         val bedTime = bedHour * 60 + bedMinute
+         val wakeTime = wakeHour * 60 + wakeMinute
+         val sleepTime = sleepHour * 60 + sleepMinute
+
          if(getSleep.regDate == "") {
-            dataManager!!.insertSleep(Sleep(sleepHour = sleepHour, sleepMinute = sleepMinute, bedHour = bedHour, bedMinute = bedMinute,
-               wakeHour = wakeHour, wakeMinute = wakeMinute, regDate = calendarDate))
+            dataManager!!.insertSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = calendarDate))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
          }else {
-            dataManager!!.updateSleep(Sleep(sleepHour = sleepHour, sleepMinute = sleepMinute, bedHour = bedHour, bedMinute = bedMinute,
-               wakeHour = wakeHour, wakeMinute = wakeMinute, regDate = calendarDate))
+            dataManager!!.updateSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = calendarDate))
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())

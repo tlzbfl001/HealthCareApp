@@ -247,7 +247,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
                <com.dinuscxj.progressbar.CircleProgressBar
-                   android:id="@+id/pbBody"
+                   android:id="@+id/pbSleep"
                    android:layout_width="match_parent"
                    android:layout_height="match_parent"
                    app:progress_background_color="#E1E5E6"
@@ -366,7 +366,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
-                android:text="하루 신체/체성분"
+                android:text="하루 수면 관리"
                 android:textColor="@color/white"
                 android:textSize="17dp"
                 app:layout_constraintTop_toTopOf="parent"

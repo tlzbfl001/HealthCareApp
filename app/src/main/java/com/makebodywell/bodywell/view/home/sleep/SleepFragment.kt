@@ -8,10 +8,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSleepBinding
+import com.makebodywell.bodywell.model.DailyData
+import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -29,10 +35,11 @@ class SleepFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
+   private var dataManager: DataManager? = null
+   private var getDaily = DailyData()
+   private var getSleep = Sleep()
 
    private var calendarDate: LocalDate? = null
-
-   private var dataManager: DataManager? = null
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -55,10 +62,6 @@ class SleepFragment : Fragment() {
 
       calendarDate = LocalDate.now()
       binding.tvDate.text = dateFormat(calendarDate)
-
-      settingGoal()
-
-      dailyView()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -101,51 +104,75 @@ class SleepFragment : Fragment() {
          replaceFragment2(requireActivity(), SleepRecordFragment(), bundle)
       }
 
+      settingGoal()
+      dailyView()
+
       return binding.root
-   }
-
-   private fun dailyView() {
-      val getSleep = dataManager!!.getSleep(calendarDate.toString())
-      val getDaily = dataManager!!.getDailyData(calendarDate.toString())
-
-      binding.tvSleep.text = "${getSleep.sleepHour}h ${getSleep.sleepMinute}m"
-      binding.tvGoal.text = "${getDaily.sleepHourGoal}h ${getDaily.sleepMinuteGoal}m"
-      binding.tvBedtime.text = "${getSleep.bedHour}h ${getSleep.bedMinute}min"
-      binding.tvWakeTime.text = "${getSleep.wakeHour}h ${getSleep.wakeMinute}min"
-
-      if(getDaily.sleepHourGoal > 0) {
-         val cal1 = Calendar.getInstance()
-         cal1.set(Calendar.HOUR_OF_DAY, getDaily.sleepHourGoal)
-         cal1.set(Calendar.MINUTE, getDaily.sleepMinuteGoal)
-         cal1.set(Calendar.SECOND, 0)
-         cal1.set(Calendar.MILLISECOND, 0)
-         val goal = cal1.timeInMillis
-
-         val cal2 = Calendar.getInstance()
-         cal2.set(Calendar.HOUR_OF_DAY, getSleep.sleepHour)
-         cal2.set(Calendar.MINUTE, getSleep.sleepMinute)
-         cal2.set(Calendar.SECOND, 0)
-         cal2.set(Calendar.MILLISECOND, 0)
-         val sleep = cal2.timeInMillis
-
-         val result = (goal - sleep) / 1000
-         if(result > 0) {
-            binding.tvRemain.text = "${(result / (60 * 60))}h ${((result / 60) % 60)}m"
-         }
-      }
    }
 
    private fun settingGoal() {
       val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_sleep_input)
+      dialog.setContentView(R.layout.dialog_sleep)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+      val etHour = dialog.findViewById<EditText>(R.id.etHour)
+      val etMinute = dialog.findViewById<EditText>(R.id.etMinute)
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
       btnSave.setOnClickListener {
+         val hour = if(etHour.text.toString().trim() == "") {
+            7
+         } else {
+            etHour.text.toString().toInt()
+         }
+
+         var minute = if(etMinute.text.toString().trim() == "") {
+            0
+         } else {
+            etMinute.text.toString().toInt()
+         }
+
+         val total = hour * 60 + minute
+
+         if(getDaily.regDate == "") {
+            dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = calendarDate.toString()))
+         }else {
+            dataManager!!.updateGoal("sleepGoal", total, calendarDate.toString())
+         }
+
+         binding.pbSleep.max = total
+         binding.tvGoal.text = "${total / 60}h ${total % 60}m"
+
+         val remain = total - getSleep.sleepTime
+
+         if(remain > 0) {
+            binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
+         }else {
+            binding.tvRemain.text = "0h 0m"
+         }
+
          dialog.dismiss()
       }
 
       binding.clGoal.setOnClickListener {
          dialog.show()
+      }
+   }
+
+   private fun dailyView() {
+      getSleep = dataManager!!.getSleep(calendarDate.toString())
+      getDaily = dataManager!!.getDailyData(calendarDate.toString())
+
+      binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
+      binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"
+      binding.tvBedtime.text = "${getSleep.bedTime / 60}h ${getSleep.bedTime % 60}m"
+      binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
+
+      if(getDaily.sleepGoal > 0) {
+         val result = (getDaily.sleepGoal - getSleep.sleepTime)
+         if(result > 0) {
+            binding.tvRemain.text = "${result / 60}h ${result % 60}m"
+         }
       }
    }
 }

@@ -3,35 +3,41 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="#EEEEEE"
-   android:id="@+id/mainLayout" >
+   android:background="#F6F4FF"
+   android:id="@+id/mainLayout">
    <androidx.core.widget.NestedScrollView
       android:id="@+id/scrollView"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
-      app:layout_constraintBottom_toTopOf="@id/tvSave"
+      android:layout_height="match_parent"
+      android:fillViewport="true"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_weight="1">
+      app:layout_constraintTop_toTopOf="parent">
       <LinearLayout
          android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:orientation="vertical"
-         android:paddingLeft="30dp"
-         android:paddingRight="30dp">
+         android:layout_height="match_parent"
+         android:orientation="vertical">
          <androidx.constraintlayout.widget.ConstraintLayout
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="15dp"
-                android:src="@drawable/x1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/black" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.ConstraintLayout
+               android:id="@+id/clX"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               app:layout_constraintTop_toTopOf="@id/tvTitle"
+               app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+               app:layout_constraintStart_toStartOf="parent">
+               <ImageView
+                  android:layout_width="35dp"
+                  android:layout_height="35dp"
+                  android:src="@drawable/x1"
+                  android:layout_marginLeft="25dp"
+                  app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
@@ -39,7 +45,7 @@
                 android:layout_marginTop="15dp"
                 android:text="복용하는 약을 입력해주세요"
                 android:textColor="@color/black"
-                android:textSize="16dp"
+                android:textSize="18dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +53,7 @@
                 android:id="@+id/tvTitle1"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
                 android:text="약종류"
                 android:textColor="@color/black"
                 android:textSize="16dp"
@@ -55,23 +62,26 @@
                 app:layout_constraintBottom_toBottomOf="@id/etType"/>
             <EditText
                 android:id="@+id/etType"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rec_30"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="25dp"
                 android:paddingLeft="10dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:hint="처방약, 영양제"
                 android:textColorHint="#cccccc"
                 android:textColor="@color/black"
-                android:textSize="14dp"
+                android:textSize="16dp"
                 app:layout_constraintTop_toBottomOf="@id/tvTitle"
-                app:layout_constraintStart_toEndOf="@id/tvTitle1"/>
+                app:layout_constraintStart_toEndOf="@id/tvTitle1"
+                app:layout_constraintEnd_toEndOf="parent"/>
             <TextView
                 android:id="@+id/tvTitle2"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
                 android:text="약이름"
                 android:textColor="@color/black"
                 android:textSize="16dp"
@@ -83,12 +93,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rec_30"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="25dp"
                 android:paddingLeft="10dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textColor="@color/black"
-                android:textSize="14dp"
+                android:textSize="16dp"
                 app:layout_constraintTop_toBottomOf="@id/etType"
                 app:layout_constraintStart_toEndOf="@id/tvTitle2"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +108,7 @@
                 android:id="@+id/tvTitle3"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
                 android:text="복용량"
                 android:textColor="@color/black"
                 android:textSize="16dp"
@@ -108,13 +120,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rec_30"
-                android:inputType="numberDecimal"
-                android:layout_marginTop="10dp"
+                android:inputType="number"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="25dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:paddingLeft="10dp"
                 android:textColor="@color/black"
-                android:textSize="14dp"
+                android:textSize="16dp"
                 app:layout_constraintTop_toBottomOf="@id/etName"
                 app:layout_constraintStart_toEndOf="@id/tvTitle3"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -123,6 +136,7 @@
                 android:id="@+id/tvTitle4"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
                 android:text="단위"
                 android:textColor="@color/black"
                 android:textSize="16dp"
@@ -133,7 +147,8 @@
                 android:id="@+id/cl1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="25dp"
                 app:layout_constraintTop_toBottomOf="@id/etAmount"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvTitle3">
@@ -159,7 +174,7 @@
                       android:layout_marginBottom="4dp"
                       android:text="정"
                       android:textColor="@color/white"
-                      android:textSize="14dp"
+                      android:textSize="16dp"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -187,7 +202,7 @@
                       android:layout_marginBottom="4dp"
                       android:text="개"
                       android:textColor="@color/black"
-                      android:textSize="14dp"
+                      android:textSize="16dp"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -213,9 +228,9 @@
                       android:layout_gravity="center"
                       android:layout_marginTop="4dp"
                       android:layout_marginBottom="4dp"
-                      android:text="ml"
+                      android:text="봉"
                       android:textColor="@color/black"
-                      android:textSize="14dp"
+                      android:textSize="16dp"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -242,7 +257,7 @@
                       android:layout_marginBottom="4dp"
                       android:text="mg"
                       android:textColor="@color/black"
-                      android:textSize="14dp"
+                      android:textSize="16dp"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -254,9 +269,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="25dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tvTitle4"
                 app:layout_constraintTop_toBottomOf="@id/cl1"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_weight="1">
                <androidx.cardview.widget.CardView
                    android:id="@+id/clUnit5"
@@ -278,9 +296,9 @@
                       android:layout_gravity="center"
                       android:layout_marginTop="4dp"
                       android:layout_marginBottom="4dp"
-                      android:text="set"
+                      android:text="ml"
                       android:textColor="@color/black"
-                      android:textSize="14dp"
+                      android:textSize="16dp"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -306,9 +324,9 @@
                       android:layout_gravity="center"
                       android:layout_marginTop="4dp"
                       android:layout_marginBottom="4dp"
-                      android:text="봉"
+                      android:text="set"
                       android:textColor="@color/black"
-                      android:textSize="14dp"
+                      android:textSize="16dp"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
                       app:layout_constraintStart_toStartOf="parent"
@@ -334,179 +352,179 @@
                    app:layout_constraintStart_toEndOf="@id/clUnit7"
                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-            <TextView
-                android:id="@+id/tvTitle5"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:text="복용 주기"
-                android:textColor="@color/black"
-                android:textSize="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/cvDaily"
-                app:layout_constraintBottom_toBottomOf="@id/cvDaily"/>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvDaily"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                app:cardBackgroundColor="#A47AE8"
-                app:cardCornerRadius="15dp"
-                app:cardElevation="0dp"
-                app:layout_constraintStart_toEndOf="@id/tvTitle5"
-                app:layout_constraintTop_toBottomOf="@id/cl2">
-               <TextView
-                   android:id="@+id/tvDaily"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginLeft="15dp"
-                   android:layout_marginRight="15dp"
-                   android:layout_marginTop="4dp"
-                   android:layout_marginBottom="4dp"
-                   android:text="매일"
-                   android:textSize="14dp"
-                   android:textColor="@color/white"
-                   android:textAlignment="center" />
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvSpecific"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="15dp"
-                app:cardElevation="0dp"
-                app:layout_constraintBottom_toBottomOf="@id/cvDaily"
-                app:layout_constraintStart_toEndOf="@id/cvDaily"
-                app:layout_constraintTop_toTopOf="@id/cvDaily">
-               <TextView
-                   android:id="@+id/tvSpecific"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginLeft="15dp"
-                   android:layout_marginRight="15dp"
-                   android:layout_marginTop="4dp"
-                   android:layout_marginBottom="4dp"
-                   android:text="특정일 지정"
-                   android:textAlignment="center"
-                   android:textColor="@color/black"
-                   android:textSize="14dp" />
-            </androidx.cardview.widget.CardView>
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rec_30"
-                android:layout_marginTop="10dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                app:layout_constraintStart_toEndOf="@id/tvTitle5"
-                app:layout_constraintTop_toBottomOf="@id/cvDaily"
-                app:layout_constraintEnd_toEndOf="parent">
-               <TextView
-                   android:id="@+id/tvPeriod"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:textColor="@color/black"
-                   android:textSize="14dp"
-                   app:layout_constraintBottom_toBottomOf="parent"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            <!--<TextView
-                android:id="@+id/tvTitle6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="일일 복용 횟수"
-                android:textSize="16dp"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/ivMinus"
-                app:layout_constraintBottom_toBottomOf="@id/ivMinus"/>
-            <ImageView
-                android:id="@+id/ivMinus"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/rec_border_black"
-                android:layout_marginTop="30dp"
-                android:layout_marginLeft="15dp"
-                android:padding="3dp"
-                android:src="@drawable/minus"
-                app:layout_constraintTop_toBottomOf="@id/clDate"
-                app:layout_constraintStart_toEndOf="@id/tvTitle6"
-                app:layout_constraintHorizontal_chainStyle="packed"/>
-            <EditText
-                android:id="@+id/countArea"
-                android:layout_width="120dp"
-                android:layout_height="32dp"
-                android:background="@drawable/rec_border_black"
-                app:layout_constraintStart_toEndOf="@id/ivMinus"
-                app:layout_constraintTop_toTopOf="@id/ivMinus"
-                app:layout_constraintBottom_toBottomOf="@id/ivMinus"/>
-            <ImageView
-                android:id="@+id/ivPlus"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/rec_border_black"
-                android:padding="3dp"
-                android:src="@drawable/plus"
-                app:layout_constraintStart_toEndOf="@id/countArea"
-                app:layout_constraintTop_toTopOf="@id/countArea"
-                app:layout_constraintBottom_toBottomOf="@id/countArea"/>-->
-            <TextView
-                android:id="@+id/tv7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="일일 복용 회차/시간"
-                android:textSize="16dp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/clDate"
-                app:layout_constraintStart_toStartOf="parent"/>
          </androidx.constraintlayout.widget.ConstraintLayout>
          <LinearLayout
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_marginTop="10dp"
-             android:layout_marginBottom="30dp">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvAddTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="5dp"
-                app:cardCornerRadius="15dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/white">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#516AC3"
+            android:paddingTop="25dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
                <TextView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="4dp"
-                   android:layout_marginBottom="4dp"
-                   android:layout_marginLeft="12dp"
-                   android:layout_marginRight="12dp"
-                   android:text="추가"
-                   android:textSize="14dp"
-                   android:textColor="@color/black"/>
-            </androidx.cardview.widget.CardView>
+                  android:id="@+id/tvTitle5"
+                  android:layout_width="80dp"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="25dp"
+                  android:text="복용일"
+                  android:textColor="@color/white"
+                  android:textSize="16dp"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintTop_toTopOf="@id/cvCount"
+                  app:layout_constraintBottom_toBottomOf="@id/cvCount"/>
+               <androidx.cardview.widget.CardView
+                  android:id="@+id/cvCount"
+                  android:layout_width="150dp"
+                  android:layout_height="wrap_content"
+                  app:cardBackgroundColor="@color/white"
+                  app:cardCornerRadius="20dp"
+                  app:cardElevation="0dp"
+                  app:layout_constraintStart_toEndOf="@id/tvTitle5"
+                  app:layout_constraintTop_toTopOf="parent">
+                  <androidx.constraintlayout.widget.ConstraintLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:padding="5dp">
+                     <ImageView
+                        android:id="@+id/ivMinus"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/oval"
+                        android:backgroundTint="@color/white"
+                        android:elevation="2dp"
+                        android:src="@drawable/minus"
+                        android:padding="4dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tvCount"/>
+                     <TextView
+                        android:id="@+id/tvCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="1"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
+                        android:textAlignment="center"
+                        app:layout_constraintStart_toEndOf="@id/ivMinus"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/ivPlus"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                     <ImageView
+                        android:id="@+id/ivPlus"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/oval"
+                        android:backgroundTint="#A47AE8"
+                        android:elevation="2dp"
+                        android:src="@drawable/plus"
+                        android:padding="4dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/tvCount"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                  </androidx.constraintlayout.widget.ConstraintLayout>
+               </androidx.cardview.widget.CardView>
+               <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="8dp"
+                  android:text="일"
+                  android:textSize="16dp"
+                  android:textColor="@color/white"
+                  app:layout_constraintTop_toTopOf="@id/cvCount"
+                  app:layout_constraintBottom_toBottomOf="@id/cvCount"
+                  app:layout_constraintStart_toEndOf="@id/cvCount"/>
+               <TextView
+                  android:id="@+id/tv7"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="25dp"
+                  android:text="회차/시간"
+                  android:textSize="16dp"
+                  android:textColor="@color/white"
+                  app:layout_constraintTop_toTopOf="@id/cvAddTime"
+                  app:layout_constraintBottom_toBottomOf="@id/cvAddTime"
+                  app:layout_constraintStart_toStartOf="parent"/>
+               <androidx.cardview.widget.CardView
+                  android:id="@+id/cvAddTime"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="25dp"
+                  app:cardBackgroundColor="#7FBDFF"
+                  app:cardCornerRadius="15dp"
+                  app:cardElevation="0dp"
+                  app:layout_constraintStart_toStartOf="@id/cvCount"
+                  app:layout_constraintTop_toBottomOf="@id/cvCount">
+                  <TextView
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="center"
+                     android:layout_marginTop="3dp"
+                     android:layout_marginBottom="3dp"
+                     android:layout_marginLeft="20dp"
+                     android:layout_marginRight="20dp"
+                     android:text="추가"
+                     android:textColor="@color/white"
+                     android:textSize="16dp"/>
+               </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/recyclerView"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="105dp"
+               android:layout_marginTop="8dp"
+               app:layout_constraintTop_toBottomOf="@id/cvAdd"
+               app:layout_constraintStart_toStartOf="@id/cvAdd"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:layout_gravity="bottom"
+               android:layout_marginTop="15dp"
+               android:layout_marginBottom="30dp">
+               <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:layout_marginBottom="15dp"
+                  android:text="0일동안 0회 복용"
+                  android:textSize="22dp"
+                  android:textColor="#F8FFCF"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintBottom_toTopOf="@id/cvSave"/>
+               <androidx.cardview.widget.CardView
+                  android:id="@+id/cvSave"
+                  android:layout_width="230dp"
+                  android:layout_height="wrap_content"
+                  app:cardBackgroundColor="#9F98FF"
+                  app:cardCornerRadius="30dp"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintBottom_toBottomOf="parent">
+                  <androidx.constraintlayout.widget.ConstraintLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:paddingTop="8dp"
+                     android:paddingBottom="8dp">
+                     <TextView
+                        android:id="@+id/tvStart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="저장"
+                        android:textColor="@color/white"
+                        android:textSize="17dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                  </androidx.constraintlayout.widget.ConstraintLayout>
+               </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
          </LinearLayout>
       </LinearLayout>
    </androidx.core.widget.NestedScrollView>
-   <TextView
-      android:id="@+id/tvSave"
-      android:layout_width="match_parent"
-      android:layout_height="50dp"
-      android:background="#888888"
-      android:gravity="center"
-      android:text="저장"
-      android:textColor="@color/white"
-      android:textSize="20dp"
-      app:layout_constraintTop_toBottomOf="@id/scrollView"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

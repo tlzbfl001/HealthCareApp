@@ -87,8 +87,7 @@ class ExerciseInputFragment : Fragment() {
             Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString(), intensity = intensity,
-               workoutTime = binding.etTime.text.toString(), calories = binding.etKcal.text.toString().toInt(),
-               regDate = LocalDate.now().toString()))
+               workoutTime = binding.etTime.text.toString(), calories = binding.etKcal.text.toString().toInt(), regDate = calendarDate))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

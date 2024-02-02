@@ -7,7 +7,6 @@ data class DailyData(
     var exerciseGoal: Int = 0,
     var bodyGoal: Double = 0.0,
     var drugGoal: Int = 0,
-    var sleepHourGoal: Int = 0,
-    var sleepMinuteGoal: Int = 0,
+    var sleepGoal: Int = 0,
     var regDate: String = ""
 )

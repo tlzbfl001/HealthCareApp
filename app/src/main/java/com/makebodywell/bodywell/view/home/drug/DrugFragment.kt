@@ -163,41 +163,24 @@ class DrugFragment : Fragment() {
 
       // 약복용 체크값 초기화
       val getDrugCheckCount = dataManager!!.getDrugCheckCount(calendarDate.toString())
-      check += getDrugCheckCount
+      check = getDrugCheckCount
 
       // 약복용 리스트 생성
       val getDrugDaily = dataManager!!.getDrugDaily(calendarDate.toString())
       for(i in 0 until getDrugDaily.size) {
-         if(getDrugDaily[i].period == "매일") {
-            val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
-            for(j in 0 until getDrugTime.size) {
-               val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, calendarDate.toString())
-               itemList.add(DrugList(id = getDrugTime[j].id, date = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
-                  unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
-                  initCheck = check, checked = getDrugCheck.checked)
-               )
-            }
-         }
-         if(getDrugDaily[i].period == "특정일 지정") {
-            val getDrugDate = dataManager!!.getDrugDate(getDrugDaily[i].id)
-            for(j in 0 until getDrugDate.size) {
-               if(getDrugDate[j].date == calendarDate.toString()) {
-                  val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
-                  for(k in 0 until getDrugTime.size) {
-                     val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[k].id, calendarDate.toString())
-                     itemList.add(DrugList(id = getDrugTime[k].id, date = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
-                        unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[k].hour)+":"+String.format("%02d", getDrugTime[k].minute),
-                        initCheck = check, checked = getDrugCheck.checked)
-                     )
-                  }
-               }
-            }
+         val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
+         for(j in 0 until getDrugTime.size) {
+            val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, calendarDate.toString())
+            itemList.add(DrugList(id = getDrugTime[j].id, date = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
+               unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
+               initCheck = check, checked = getDrugCheck.checked)
+            )
          }
       }
 
-      val sortedList = itemList.sortedBy{ it.time }
+//      val sortedList = itemList.sortedBy{ it.time }
 
-      adapter = DrugAdapter1(requireActivity(), sortedList, getDailyData.drugGoal)
+      adapter = DrugAdapter1(requireActivity(), itemList, getDailyData.drugGoal)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.requestLayout()
       binding.recyclerView.adapter = adapter

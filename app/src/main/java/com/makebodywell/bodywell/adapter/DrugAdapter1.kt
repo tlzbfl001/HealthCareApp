@@ -52,7 +52,6 @@ class DrugAdapter1 (
             fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
         }
 
-        // 체크값 설정
         if(itemList[position].checked == 1) {
             holder.tvCheck.isChecked = true
         }

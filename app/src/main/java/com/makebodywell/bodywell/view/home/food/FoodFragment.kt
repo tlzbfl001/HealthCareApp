@@ -180,6 +180,7 @@ class FoodFragment : Fragment() {
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
       val et = dialog.findViewById<EditText>(R.id.et)
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
 

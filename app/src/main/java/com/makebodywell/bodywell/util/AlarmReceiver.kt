@@ -9,14 +9,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.model.DrugTime
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 
@@ -27,19 +23,13 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val id = intent.getStringExtra("id")
+        val startDate = intent.getStringExtra("startDate")
+        val endDate = intent.getStringExtra("endDate")
         val timeList: ArrayList<DrugTime> = intent.getParcelableArrayListExtra("timeList")!!
         val message = intent.getStringExtra("message")
 
-        if(intent.getParcelableArrayListExtra<DrugDate>("dateList") == null) {
-            val startDate = intent.getStringExtra("startDate")
-            val endDate = intent.getStringExtra("endDate")
-            showAlarmNotification(context, id!!.toInt(), message)
-            setAlarm1(context, id.toInt(), startDate!!, endDate!!, timeList, message!!)
-        }else {
-            val dateList: ArrayList<DrugDate> = intent.getParcelableArrayListExtra("dateList")!!
-            showAlarmNotification(context, id!!.toInt(), message)
-            setAlarm2(context, id.toInt(), timeList, dateList, message!!)
-        }
+        showAlarmNotification(context, id!!.toInt(), message)
+        setAlarm(context, id.toInt(), startDate!!, endDate!!, timeList, message!!)
     }
 
     private fun showAlarmNotification(context: Context, id: Int, message: String?) {
@@ -59,7 +49,7 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.notify(id, notification)
     }
 
-    fun setAlarm1(context: Context, id: Int, startDate: String, endDate: String, timeList: ArrayList<DrugTime>, message: String) {
+    fun setAlarm(context: Context, id: Int, startDate: String, endDate: String, timeList: ArrayList<DrugTime>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, AlarmReceiver::class.java)
@@ -94,7 +84,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         e.printStackTrace()
                     }
                     return
-                }else if(i == (timeList.size - 1)) { //마지막번째일경우 다음날 알람실행
+                }else if(i == (timeList.size - 1)) {
                     cal.add(Calendar.DATE, 1)
                     cal.set(Calendar.HOUR_OF_DAY, timeList[0].hour)
                     cal.set(Calendar.MINUTE, timeList[0].minute)
@@ -125,47 +115,6 @@ class AlarmReceiver : BroadcastReceiver() {
                 alarmManager.setAlarmClock(AlarmClockInfo(cal.timeInMillis, pendingIntent), pendingIntent)
             }catch (e: SecurityException) {
                 e.printStackTrace()
-            }
-        }
-    }
-
-    fun setAlarm2(context: Context, id: Int, timeList: ArrayList<DrugTime>, dateList: ArrayList<DrugDate>, message: String) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(context, AlarmReceiver::class.java)
-        intent.putExtra("id", id.toString())
-        intent.putExtra("timeList", timeList)
-        intent.putExtra("dateList", dateList)
-        intent.putExtra("message", message)
-
-        pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
-        }else {
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
-
-        val today = LocalDate.now()
-        for(i in 0 until dateList.size) {
-            if(today >= LocalDate.parse(dateList[i].date)) {
-                val cal = Calendar.getInstance()
-                val currentTime = System.currentTimeMillis()
-
-                for(j in 0 until timeList.size) {
-                    cal.set(Calendar.HOUR_OF_DAY, timeList[j].hour)
-                    cal.set(Calendar.MINUTE, timeList[j].minute)
-                    cal.set(Calendar.SECOND, 0)
-                    cal.set(Calendar.MILLISECOND, 0)
-                    val selectTime = cal.timeInMillis
-
-                    if(selectTime > currentTime) {
-                        try{
-                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent)
-                        }catch (e: SecurityException) {
-                            e.printStackTrace()
-                        }
-                        return
-                    }
-                }
             }
         }
     }

@@ -7,11 +7,11 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="5dp"
-      android:layout_marginLeft="30dp"
-      android:layout_marginRight="30dp"
-      android:layout_marginBottom="15dp"
+      android:layout_marginLeft="25dp"
+      android:layout_marginRight="25dp"
+      android:layout_marginBottom="5dp"
       app:cardBackgroundColor="@color/white"
-      app:cardElevation="5dp"
+      app:cardElevation="3dp"
       app:cardCornerRadius="20dp"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -20,57 +20,28 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="15dp"
-         android:layout_marginRight="15dp"
-         android:layout_marginTop="10dp"
-         android:layout_marginBottom="10dp" >
+         android:padding="15dp">
          <TextView
             android:id="@+id/tvType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="text"
-            android:textSize="11dp"
+            android:textSize="14dp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-         <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/alarm"
-            android:layout_marginRight="5dp"
-            app:layout_constraintTop_toTopOf="@id/switchOnOff"
-            app:layout_constraintBottom_toBottomOf="@id/switchOnOff"
-            app:layout_constraintEnd_toStartOf="@id/switchOnOff"/>
-         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchOnOff"
-            android:layout_width="36dp"
-            android:layout_height="15dp"
-            android:thumb="@drawable/switch_thumb"
-            app:track="@drawable/switch_track"
-            app:thumbTextPadding="24dp"
-            app:switchMinWidth="36dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-         <TextView
-            android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="text"
-            android:textSize="20dp"
-            android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@id/tvType"
+            app:layout_constraintTop_toTopOf="@id/cvModify"
+            app:layout_constraintBottom_toBottomOf="@id/cvModify"
             app:layout_constraintStart_toStartOf="parent"/>
          <androidx.cardview.widget.CardView
             android:id="@+id/cvModify"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
+            android:layout_marginLeft="8dp"
             app:cardBackgroundColor="#8A8A8A"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="15dp"
             app:cardElevation="0dp"
-            app:layout_constraintTop_toTopOf="@id/tvName"
-            app:layout_constraintStart_toEndOf="@id/tvName"
-            app:layout_constraintBottom_toBottomOf="@id/tvName">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvType"
+            app:layout_constraintBottom_toBottomOf="@id/tvType">
             <TextView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
@@ -82,65 +53,91 @@
                android:textSize="12dp"
                android:textColor="@color/white"/>
          </androidx.cardview.widget.CardView>
+         <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/alarm"
+            android:layout_marginRight="5dp"
+            app:layout_constraintTop_toTopOf="@id/switchOnOff"
+            app:layout_constraintBottom_toBottomOf="@id/switchOnOff"
+            app:layout_constraintEnd_toStartOf="@id/switchOnOff"/>
+         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchOnOff"
+            android:layout_width="40dp"
+            android:layout_height="15dp"
+            android:thumb="@drawable/switch_thumb"
+            app:track="@drawable/switch_track"
+            app:thumbTextPadding="24dp"
+            app:switchMinWidth="36dp"
+            app:layout_constraintTop_toTopOf="@id/cvModify"
+            app:layout_constraintBottom_toBottomOf="@id/cvModify"
+            app:layout_constraintEnd_toEndOf="parent" />
+         <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="text"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/cvModify"
+            app:layout_constraintStart_toStartOf="parent"/>
+         <ImageView
+            android:id="@+id/ivOval1"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:src="@drawable/oval"
+            app:tint="#D9D9D9"
+            app:layout_constraintTop_toTopOf="@id/tvPeriod"
+            app:layout_constraintBottom_toBottomOf="@id/tvPeriod"
+            app:layout_constraintStart_toStartOf="parent" />
          <TextView
             android:id="@+id/tvPeriod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
             android:text="text"
-            android:textSize="13dp"
+            android:textSize="14dp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@id/cvModify"
-            app:layout_constraintStart_toStartOf="parent"/>
-         <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="text"
-            android:textSize="13dp"
-            android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@id/tvPeriod"
-            app:layout_constraintStart_toStartOf="parent"/>
-         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="-7dp"
-            app:layout_constraintTop_toBottomOf="@id/tvDate"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/tvName"
+            app:layout_constraintStart_toEndOf="@id/ivOval1"/>
+         <ImageView
+            android:id="@+id/ivOval2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:src="@drawable/oval"
+            app:tint="#D9D9D9"
+            app:layout_constraintTop_toTopOf="@id/tvCount"
+            app:layout_constraintBottom_toBottomOf="@id/tvCount"
+            app:layout_constraintStart_toStartOf="parent" />
          <TextView
             android:id="@+id/tvCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="10dp"
             android:text="text"
-            android:textSize="13dp"
+            android:textSize="14dp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@id/recyclerView1"
-            app:layout_constraintStart_toStartOf="parent"/>
-         <TextView
-            android:id="@+id/tvUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="정"
-            android:textSize="13dp"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@id/tvCount"
-            app:layout_constraintTop_toTopOf="@id/tvCount"
-            app:layout_constraintBottom_toBottomOf="@id/tvCount"/>
+            app:layout_constraintTop_toBottomOf="@id/tvPeriod"
+            app:layout_constraintStart_toEndOf="@id/ivOval2"/>
          <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView2"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-             android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintTop_toBottomOf="@id/tvCount"
             app:layout_constraintStart_toStartOf="parent"/>
          <ImageView
             android:id="@+id/ivDelete"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/x4"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:background="@drawable/oval"
+            android:backgroundTint="#666666"
+            android:src="@drawable/x2"
+            android:padding="2dp"
+            app:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>

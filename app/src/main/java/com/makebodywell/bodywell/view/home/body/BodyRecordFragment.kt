@@ -151,7 +151,7 @@ class BodyRecordFragment : Fragment() {
 
          if(getBody.regDate == "") {
             dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender, exerciseLevel = exerciseLevel,
-               fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = LocalDate.now().toString()))
+               fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = calendarDate))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager!!.updateBody(Body(id = getBody.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender,

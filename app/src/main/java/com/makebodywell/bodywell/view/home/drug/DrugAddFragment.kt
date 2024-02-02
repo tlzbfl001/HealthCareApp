@@ -10,22 +10,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.adapter.DrugAdapter5
+import com.makebodywell.bodywell.adapter.DrugAdapter4
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
-import com.makebodywell.bodywell.model.DrugDate
 import com.makebodywell.bodywell.model.DrugTime
-import com.makebodywell.bodywell.util.CustomUtil.Companion.clearDrugData
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugCount
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugDateList
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugEndDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugName
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugPeriodNum
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugStartDate
+import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugType
-import com.makebodywell.bodywell.util.CustomUtil.Companion.drugUnitNum
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
 import java.time.LocalDate
@@ -36,10 +27,13 @@ class DrugAddFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var adapter: DrugAdapter5? = null
+   private var alarmReceiver: AlarmReceiver? = null
+   private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
+
+   private val getDate = LocalDate.now()
    private var unit = "정"
-   private var period = "매일"
+   private var count = 1
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +54,8 @@ class DrugAddFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
+      alarmReceiver = AlarmReceiver()
+
       initView()
       settingTime()
       showTimeList()
@@ -68,114 +64,67 @@ class DrugAddFragment : Fragment() {
    }
 
    private fun initView() {
-      // 복용주기 화면이동 후 설정값 재지정
-      if(arguments?.getString("data") == "DrugSelectDateFragment") {
-         binding.etType.setText(drugType)
-         binding.etName.setText(drugName)
-         binding.etAmount.setText(drugCount)
-
-         if(drugStartDate != "" && drugEndDate != "") {
-            binding.tvPeriod.text = "$drugStartDate ~ $drugEndDate"
-         }
-
-         when(drugUnitNum) {
-            1 -> unit1()
-            2 -> unit2()
-            3 -> unit3()
-            4 -> unit4()
-            5 -> unit5()
-            6 -> unit6()
-         }
-
-         when(drugPeriodNum) {
-            1 -> period1()
-            2 -> period2()
-         }
-      }else {
-         clearDrugData()
-      }
-
-      binding.ivBack.setOnClickListener {
+      binding.clX.setOnClickListener {
          replaceFragment1(requireActivity(), DrugRecordFragment())
-      }
-
-      binding.cvDaily.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugSelectDateFragment1())
       }
 
       binding.clUnit1.setOnClickListener {
          unit1()
-         drugUnitNum = 1
       }
 
       binding.clUnit2.setOnClickListener {
          unit2()
-         drugUnitNum = 2
       }
 
       binding.clUnit3.setOnClickListener {
          unit3()
-         drugUnitNum = 3
       }
 
       binding.clUnit4.setOnClickListener {
          unit4()
-         drugUnitNum = 4
       }
 
       binding.clUnit5.setOnClickListener {
          unit5()
-         drugUnitNum = 5
       }
 
       binding.clUnit6.setOnClickListener {
          unit6()
-         drugUnitNum = 6
       }
 
-      binding.cvDaily.setOnClickListener {
-         period1()
-         drugPeriodNum = 1
-         drugType = binding.etType.text.toString()
-         drugName = binding.etName.text.toString()
-         drugCount = binding.etAmount.text.toString()
-
-         replaceFragment1(requireActivity(), DrugSelectDateFragment1())
+      binding.ivMinus.setOnClickListener {
+         if(count > 1) {
+            count--
+            binding.tvCount.text = count.toString()
+         }
       }
 
-      binding.cvSpecific.setOnClickListener {
-         period2()
-         drugPeriodNum = 2
-         drugType = binding.etType.text.toString()
-         drugName = binding.etName.text.toString()
-         drugCount = binding.etAmount.text.toString()
-
-         replaceFragment1(requireActivity(), DrugSelectDateFragment2())
+      binding.ivPlus.setOnClickListener {
+         count++
+         binding.tvCount.text = count.toString()
       }
 
-      binding.tvSave.setOnClickListener {
-         if(binding.etType.text.isEmpty() || binding.etName.text.isEmpty() || binding.etAmount.text.isEmpty() || binding.tvPeriod.text == "" || itemList.size == 0) {
-            Toast.makeText(activity, "입력을 확인해주세요.", Toast.LENGTH_SHORT).show()
+      binding.cvSave.setOnClickListener {
+         if(itemList.size == 0) {
+            Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
+            val startDate = getDate.toString()
+            val endDate = getDate.plusDays(count.toLong() - 1).toString()
+
             // 약 데이터 저장
             dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etAmount.text.toString(),
-               unit = unit, period = period, startDate = drugStartDate, endDate = drugEndDate, regDate = LocalDate.now().toString()))
+               unit = unit, startDate = startDate, endDate = endDate, count = count, isSet = 1, regDate = getDate.toString()))
 
-            val getDrugId = dataManager!!.getDrugId(LocalDate.now().toString())
+            val getDrugId = dataManager!!.getDrugId(getDate.toString())
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
                dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
             }
 
-            // 특정 날짜 데이터 저장
-            if(period == "특정일 지정") {
-               val drugDate = ArrayList<DrugDate>()
-               for(i in 0 until drugDateList.size) {
-                  dataManager!!.insertDrugDate(DrugDate(date = drugDateList[i].toString(), drugId = getDrugId.id))
-                  drugDate.add(DrugDate(date = drugDateList[i].toString()))
-               }
-            }
+            val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
+
+            alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, startDate, endDate, drugTimeList, message)
 
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), DrugRecordFragment())
@@ -226,7 +175,7 @@ class DrugAddFragment : Fragment() {
          binding.recyclerView.visibility = View.VISIBLE
       }
 
-      adapter = DrugAdapter5(itemList)
+      adapter = DrugAdapter4(requireActivity(), itemList)
       binding.recyclerView.adapter = adapter
    }
 
@@ -324,21 +273,5 @@ class DrugAddFragment : Fragment() {
       binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit6.setTextColor(Color.WHITE)
       unit = "봉"
-   }
-
-   private fun period1() {
-      binding.cvDaily.setCardBackgroundColor(Color.parseColor("#A47AE8"))
-      binding.tvDaily.setTextColor(Color.WHITE)
-      binding.cvSpecific.setCardBackgroundColor(Color.WHITE)
-      binding.tvSpecific.setTextColor(Color.BLACK)
-      period = "매일"
-   }
-
-   private fun period2() {
-      binding.cvDaily.setCardBackgroundColor(Color.WHITE)
-      binding.tvDaily.setTextColor(Color.BLACK)
-      binding.cvSpecific.setCardBackgroundColor(Color.parseColor("#A47AE8"))
-      binding.tvSpecific.setTextColor(Color.WHITE)
-      period = "특정일 지정"
    }
 }

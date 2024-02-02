@@ -18,15 +18,7 @@ class CustomUtil {
    companion object {
       const val TAG = "testTag"
 
-      var drugType = ""
-      var drugName = ""
-      var drugCount = ""
-      var drugUnitNum = 0
-      var drugPeriodNum = 0
-      var drugStartDate = ""
-      var drugEndDate = ""
       var drugTimeList = ArrayList<DrugTime>()
-      var drugDateList = ArrayList<LocalDate>()
 
       fun replaceLoginFragment1(activity: FragmentActivity, fragment: Fragment?) {
          (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
@@ -152,12 +144,6 @@ class CustomUtil {
 
       fun setDrugTimeList(h: Int, m: Int) {
          drugTimeList.add(DrugTime(hour = h, minute = m))
-      }
-
-      fun clearDrugData() {
-         drugStartDate = ""
-         drugEndDate = ""
-         drugTimeList.clear()
       }
    }
 }
