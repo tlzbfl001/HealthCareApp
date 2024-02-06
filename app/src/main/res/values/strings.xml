@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name">BodyWell</string>
-    <string name="googleWebClientId">598051682826-f7lamjml7e8lbnf4il224tnvebi706qh.apps.googleusercontent.com</string>
-    <string name="nativeAppKey">d9c3b1c89cfbb632aa6cbfeadd09861e</string>
-    <string name="nativeAppKey2">kakaod9c3b1c89cfbb632aa6cbfeadd09861e</string>
-    <string name="naverClientId">MhfyG1p13DZogqMU_T2M</string>
-    <string name="naverClientSecret">tkqS2oroTP</string>
-    <string name="appleServiceId">kr.bodywell.BodyWell.android</string>
+   <string name="app_name">BodyWell</string>
+   <string name="googleWebClientId">598051682826-f7lamjml7e8lbnf4il224tnvebi706qh.apps.googleusercontent.com</string>
+   <string name="nativeAppKey">d9c3b1c89cfbb632aa6cbfeadd09861e</string>
+   <string name="nativeAppKey2">kakaod9c3b1c89cfbb632aa6cbfeadd09861e</string>
+   <string name="naverClientId">MhfyG1p13DZogqMU_T2M</string>
+   <string name="naverClientSecret">tkqS2oroTP</string>
+   <string name="appleServiceId">kr.bodywell.BodyWell.android</string>
 
-    <string name="terms1">
+   <string name="terms1">
 제1조(목적)\n
 이 약관은 주식회사 바디웰 (사업자등록번호: 12345)이 운영하는 바디웰(이하 &quot;바디웰&quot;이라 한다)에서 제공하는 인터넷 관련 서비스(이하 &quot;서비스&quot;라 한다)를 이용함에 있어 사이버 몰과 이용자의 권리 의무 및 책임사항을 규정함을 목적으로 합니다.\n
 ※「PC통신, 무선 등을 이용하는 전자상거래에 대해서도 그 성질에 반하지 않는 한 이 약관을 준용합니다.」\n\n
@@ -150,7 +150,7 @@
 ① &quot;바디웰&quot;과 이용자 간에 발생한 전자상거래 분쟁에 관한 소송은 제소 당시의 이용자의 주소에 의하고, 주소가 없는 경우에는 거소를 관할하는 지방법원의 전속관할로 합니다. 다만, 제소 당시 이용자의 주소 또는 거소가 분명하지 않거나 외국 거주자의 경우에는 민사소송법상의 관할법원에 제기합니다.\n
 ② &quot;바디웰&quot;과 이용자 간에 제기된 전자상거래 소송에는 한국법을 적용합니다.
     </string>
-    <string name="terms21">
+   <string name="terms21">
 &lt;바디웰&gt;(\&apos;makebodywell.com\&apos;이하 \&apos;바디웰\&apos;)은(는) 「개인정보 보호법」 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.\n
 ○ 이 개인정보처리방침은 2021년 8월 12부터 적용됩니다.\n\n
 제1조(개인정보의 처리 목적)  &lt;바디웰&gt;(\&apos;makebodywell.com\&apos;이하 \&apos;바디웰\&apos;)은(는) 다음의 목적을 위하여 개인정보를 처리합니다.
@@ -191,7 +191,7 @@
 수탁자가 개인정보를 안전하게 처리하는지를 감독하고 있습니다.\n
 ③ 위탁업무의 내용이나 수탁자가 변경될 경우에는 지체없이 본 개인정보 처리방침을 통하여 공개하도록 하겠습니다.
     </string>
-    <string name="terms22">
+   <string name="terms22">
 제5조(정보주체와 법정대리인의 권리·의무 및 그 행사방법)\n
 ① 정보주체는 바디웰에 대해 언제든지 개인정보 열람·정정·삭제·처리정지 요구 등의 권리를 행사할 수 있습니다.\n
 ② 제1항에 따른 권리 행사는 바디웰에 대해 「개인정보 보호법」 시행령 제41조제1항에 따라 서면, 전자우편, 모사전송(FAX) 등을 통하여 하실 수 있으며 바디웰은(는) 이에 대해 지체 없이 조치하겠습니다.\n
@@ -240,17 +240,17 @@
 ① 이 개인정보처리방침은 2021년 8월 12부터 적용됩니다.\n
 ② 이전의 개인정보 처리방침은 아래에서 확인하실 수 있습니다.
     </string>
-    <string name="terms31">
+   <string name="terms31">
 주식회사 바디웰(이하 &quot;회사&quot;)은 개인 민감정보보호법 제23조(민감정보 처리제한), 동법 시행령 제18조(민감정보 범위), 표준지침 제15조(민감정보처리), 민감정보 정의, 종류, 동의사항 등 정보통신서비스 제공자가 준수하여야 할 관련 법령상의 민감정보 처리제한 규정을 준수하며, 관련 법령에 의거한 개인 민감정보 취급방침을 정하여 이용자 권익 보호에 최선을 다하고 있습니다.\n
 본 개인 민감정보 취급방침은 회사가 제공하는 바디웰 어플리케이션(이하 &quot;서비스&quot;)에 적용되며 다음과 같은 내용을 담담고 있습니다.\n\n
 민감정보 수집 및 이용 목적\n
 회사는 민감정보를 다음 목적을 위해 취급합니다. 취급한 민감정보는 다음의 목적 이외의 용도로는 사용 되지 않으며 이용 목적이 변경될 시에는 사전 동의를 구할 예정입니다.
     </string>
-    <string name="terms32">
+   <string name="terms32">
 동의 거부의 권리\n
 귀화계서는 회사의 민감정보 수집 및 이용에 대한 동의 거부권이 있으며 동의 거부시에는 바디웰 어플리케이션 이용이 불가능합니다.
     </string>
-    <string name="terms4">
+   <string name="terms4">
 1. 광고성 정보의 이용목적\n
 바디웰이 제공하는 각종 경품 행사, 이벤트 등의 광고성 정보를 전자우편이나 서신우편, 문자(SMS 또는 카카오 알림톡), 푸시, 전화 등을 통해 이용자에게 제공합니다.\n
 •마케팅 수신 동의는 거부하실 수 있으며 동의 이후에라도 고객의 의사에 따라 동의를 철회할 수 있습니다. 동의를 거부하시더라도 바디웰이 제공하는 서비스의 이용에 제한이 되지 않습니다. 단, 할인, 이벤트 등의 마케팅 정보 안내 서비스가 제한됩니다.\n
@@ -258,6 +258,6 @@
 2. 미동의 시 불이익 사항\n
 개인정보보호법 제22조 제5항에 의해 선택정보 사항에 대해서는 동의 거부하시더라도 서비스 이용에 제한되지 않습니다. 단, 할인, 이벤트 등의 마케팅 정보 안내 서비스가 제한됩니다.
     </string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+   <!-- TODO: Remove or change this placeholder text -->
+   <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

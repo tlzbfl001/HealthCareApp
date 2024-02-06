@@ -9,6 +9,7 @@ data class User(
     var type: String? = "",
     var idToken: String? = "",
     var userId: String? = "",
+    var deviceId: String? = "",
     var email: String? = "",
     var name: String? = "",
     var nickname: String? = "",

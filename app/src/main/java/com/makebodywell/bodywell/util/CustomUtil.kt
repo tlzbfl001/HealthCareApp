@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.apollographql.apollo3.ApolloClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugTime
@@ -17,8 +18,8 @@ import java.time.LocalDate
 class CustomUtil {
    companion object {
       const val TAG = "testTag"
-
       var drugTimeList = ArrayList<DrugTime>()
+      val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
       fun replaceLoginFragment1(activity: FragmentActivity, fragment: Fragment?) {
          (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {

@@ -70,19 +70,94 @@ mutation LoginUserApple($loginAppleLoginInput: LoginAppleOauthInput!) {
   }
 }
 
+mutation CreateDevice($userId: String!, $createDeviceInput: CreateDeviceInput!) {
+  createDevice(userId: $userId, createDeviceInput: $createDeviceInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation CreateHealth($userId: String!) {
+  createHealth(userId: $userId) {
+    code
+    message
+    success
+  }
+}
+
 query Me {
   me {
     code
     message
     success
     user {
-      createdAt
-      email
-      emailVerified
-      role
-      updatedAt
+      health {
+        activities {
+          activityId
+          device {
+            deviceHardwareVersion
+            deviceId
+            deviceLabel
+            deviceManufacturer
+            deviceModel
+            deviceName
+            deviceSoftwareVersion
+          }
+          appleExerciseTime
+          appleMoveTime
+          appleStandTime
+          activeEnergyBurned
+          basalEnergyBurned
+          distanceCycling
+          distanceDownhillSnowSports
+          distanceSwimming
+          distanceWalkingRunning
+          distanceWheelchair
+          flightsClimbed
+          nikeFuel
+          pushCount
+          runningGroundContactTime
+          runningPower
+          runningSpeed
+          runningStrideLength
+          runningVerticalOscillation
+          stepCount
+          swimmingStrokeCount
+          vo2Max
+          startedAt
+          endedAt
+          createdAt
+          updatedAt
+        }
+        bodyMeasurements {
+          device {
+            deviceHardwareVersion
+            deviceId
+            deviceLabel
+            deviceManufacturer
+            deviceModel
+            deviceName
+            deviceSoftwareVersion
+          }
+          appleSleepingWristTemperature
+          bodyFatPercentage
+          bodyMass
+          bodyMassIndex
+          bodyMeasurementId
+          height
+          leanBodyMass
+          waistCircumference
+          startedAt
+          endedAt
+          createdAt
+          updatedAt
+        }
+        createdAt
+        healthId
+        updatedAt
+      }
       userId
-      username
     }
   }
 }

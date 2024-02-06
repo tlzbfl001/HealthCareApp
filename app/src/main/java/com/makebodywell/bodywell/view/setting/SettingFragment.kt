@@ -4,25 +4,23 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.apollographql.apollo3.ApolloClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.OnCompleteListener
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSettingBinding
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.init.LoginActivity
 import com.navercorp.nid.NaverIdLoginSDK
+import java.util.Calendar
 
 class SettingFragment : Fragment() {
    private var _binding: FragmentSettingBinding? = null
@@ -48,6 +46,8 @@ class SettingFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
+
+      userProfile()
 
       binding.tvConnect.setOnClickListener {
          replaceFragment1(requireActivity(), ConnectFragment())
@@ -112,5 +112,32 @@ class SettingFragment : Fragment() {
       }
 
       return binding.root
+   }
+
+   private fun userProfile() {
+      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+
+      binding.tvName.text = getUser.name
+
+      val current = Calendar.getInstance()
+      val currentYear = current.get(Calendar.YEAR)
+      val currentMonth = current.get(Calendar.MONTH) + 1
+      val currentDay = current.get(Calendar.DAY_OF_MONTH)
+
+      var age: Int = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
+      if (getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay)
+         age--
+
+      val gender = if(getUser.gender == "MALE") "남" else "여"
+
+      binding.tvAge.text = "만${age}세 / $gender"
+
+      val hSplit = getUser.height!!.split(".")
+      val height = if(hSplit[1] == "0") hSplit[0] else getUser.height
+
+      val wSplit = getUser.weight!!.split(".")
+      val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight
+
+      binding.tvHeight.text = "${height}cm / ${weight}kg"
    }
 }

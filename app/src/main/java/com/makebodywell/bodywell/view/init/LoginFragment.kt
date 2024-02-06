@@ -1,7 +1,9 @@
 package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -32,6 +34,7 @@ import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
 import com.makebodywell.bodywell.type.LoginNaverOauthInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment2
 import com.makebodywell.bodywell.util.MyApp
 import com.navercorp.nid.NaverIdLoginSDK
@@ -50,7 +53,6 @@ class LoginFragment : Fragment() {
     private val bundle = Bundle()
 
     private var dataManager: DataManager? = null
-    private var apolloClient: ApolloClient? = null
 
     private var gsc: GoogleSignInClient? = null
     private var gso: GoogleSignInOptions? = null
@@ -64,8 +66,6 @@ class LoginFragment : Fragment() {
 
         dataManager = DataManager(requireActivity())
         dataManager!!.open()
-
-        apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
         // 구글 로그인
         binding.clGoogle.setOnClickListener {
@@ -110,7 +110,7 @@ class LoginFragment : Fragment() {
                         replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
                     }else { // 로그인
                         lifecycleScope.launch{
-                            val response = apolloClient!!.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+                            val response = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
                                 idToken = it.result.idToken.toString()
                             ))).execute()
 
@@ -152,7 +152,7 @@ class LoginFragment : Fragment() {
                                 replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
                             }else {
                                 lifecycleScope.launch{
-                                    val response = apolloClient!!.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
+                                    val response = apolloClient.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
                                         accessToken = NaverIdLoginSDK.getAccessToken().toString()
                                     ))).execute()
 

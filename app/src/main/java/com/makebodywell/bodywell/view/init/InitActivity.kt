@@ -43,6 +43,7 @@ class InitActivity : AppCompatActivity() {
       adapter.addFragment(SlideFragment2(), "2")
       adapter.addFragment(SlideFragment3(), "3")
       adapter.addFragment(SlideFragment4(), "4")
+
       binding.viewpager.adapter = adapter
       binding.dotsIndicator.setViewPager(binding.viewpager)
 

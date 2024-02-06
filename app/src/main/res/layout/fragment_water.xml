@@ -232,7 +232,7 @@
                    android:paddingLeft="3dp"
                    android:text="목표설정"
                    android:textColor="@color/black"
-                   android:textSize="16dp"
+                   android:textSize="15dp"
                    app:layout_constraintTop_toTopOf="parent"
                    app:layout_constraintEnd_toEndOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,6 +18,7 @@ import com.makebodywell.bodywell.databinding.FragmentInputBodyBinding
 import com.makebodywell.bodywell.type.Gender
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
 import kotlinx.coroutines.launch
@@ -27,7 +28,7 @@ class InputBodyFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var gender = Gender.MALE
+   private var gender = Gender.FEMALE
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +38,6 @@ class InputBodyFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
-
-      val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
 

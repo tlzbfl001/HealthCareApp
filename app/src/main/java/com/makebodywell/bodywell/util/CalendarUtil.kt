@@ -9,16 +9,7 @@ import java.util.Calendar
 
 class CalendarUtil {
    companion object {
-      var isItemClick = false
       var selectedDate: LocalDate = LocalDate.now()
-      var deleteList: ArrayList<Int> = ArrayList<Int>()
-      var drugSelected1: LocalDate? = null
-      var drugSelected2: LocalDate? = null
-
-      fun calendarTitle(): String? {
-         val formatter = DateTimeFormatter.ofPattern("yyyy  MMMM")
-         return selectedDate.format(formatter)
-      }
 
       fun dateFormat(date: LocalDate?): String? {
          val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")

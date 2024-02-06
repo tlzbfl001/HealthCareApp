@@ -222,7 +222,7 @@
              android:paddingLeft="3dp"
              android:text="목표설정"
              android:textColor="@color/black"
-             android:textSize="16dp"
+             android:textSize="15dp"
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintEnd_toEndOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
@@ -375,16 +375,18 @@
              app:layout_constraintTop_toTopOf="@id/tv5"
              app:layout_constraintBottom_toBottomOf="@id/tv5"
              app:layout_constraintEnd_toStartOf="@id/tv5"/>
+
          <TextView
-             android:id="@+id/tv5"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="약복용 기록"
-             android:textColor="@color/black"
-             android:textSize="16dp"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintBottom_toBottomOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"/>
+            android:id="@+id/tv5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="약복용 기록"
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
       </androidx.constraintlayout.widget.ConstraintLayout>
       <androidx.cardview.widget.CardView
           android:id="@+id/cv1"

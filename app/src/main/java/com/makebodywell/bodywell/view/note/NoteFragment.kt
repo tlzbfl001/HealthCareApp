@@ -19,7 +19,6 @@ import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteBinding
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.calendarTitle
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
@@ -31,6 +30,7 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
 import com.makebodywell.bodywell.view.home.food.GalleryFragment
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 class NoteFragment : Fragment() {
@@ -121,7 +121,7 @@ class NoteFragment : Fragment() {
 
    private fun setWeekView() {
       // 텍스트 초기화
-      binding.tvCalTitle.text = calendarTitle()
+      binding.tvCalTitle.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy  MMMM"))
       binding.tvDate.text = dateFormat(selectedDate)
 
       val getNote = dataManager!!.getNote(selectedDate.toString())
@@ -141,6 +141,7 @@ class NoteFragment : Fragment() {
       // 스와이프 설정
       val gestureListener = SwipeGesture(binding.recyclerView)
       val gestureDetector = GestureDetector(requireActivity(), gestureListener)
+
       binding.recyclerView.setOnTouchListener { _, event ->
          return@setOnTouchListener gestureDetector.onTouchEvent(event)
       }

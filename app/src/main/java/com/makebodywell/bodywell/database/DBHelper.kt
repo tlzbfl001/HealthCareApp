@@ -24,7 +24,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onCreate(db: SQLiteDatabase) {
-      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, userId text, email text, name text, " +
+      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, idToken text, userId text, deviceId text, email text, name text, " +
            "nickname text, gender text, birthday text, profileImage text, height real, weight real, weightGoal real, kcalGoal real, " +
            "waterGoal integer, waterUnit integer, regDate text);"
       db.execSQL(user)
