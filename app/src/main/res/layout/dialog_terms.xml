@@ -17,7 +17,7 @@
             android:layout_weight="1"
             android:layout_marginLeft="25dp"
             android:text="서비스 이용 약관 동의"
-            android:textSize="18dp"
+            android:textSize="17dp"
             android:textColor="@color/black"
             app:layout_constraintTop_toTopOf="@id/clX"
             app:layout_constraintBottom_toBottomOf="@id/clX"

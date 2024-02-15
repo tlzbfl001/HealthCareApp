@@ -4,24 +4,17 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
-import com.makebodywell.bodywell.adapter.FoodRecord2Adapter
+import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseRecord2Binding
-import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import java.time.LocalDate
 
 class ExerciseRecord2Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord2Binding? = null
@@ -86,10 +79,10 @@ class ExerciseRecord2Fragment : Fragment() {
             itemList.add(Item(string1 = dataList[i].name, int1 = dataList[i].id))
          }
 
-         val adapter = FoodRecord1Adapter(itemList)
+         val adapter = FoodRecordAdapter(itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-         adapter.setOnItemClickListener(object : FoodRecord1Adapter.OnItemClickListener {
+         adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                bundle.putString("id", dataList[pos].id.toString())
                replaceFragment2(requireActivity(), ExerciseEditFragment(), bundle)

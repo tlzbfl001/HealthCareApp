@@ -1,4 +1,4 @@
-package com.makebodywell.bodywell.view
+package com.makebodywell.bodywell.view.home
 
 import android.os.Bundle
 import android.util.Log

@@ -238,8 +238,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:paddingTop="8dp"
-          android:paddingBottom="8dp">
+          android:paddingTop="7dp"
+          android:paddingBottom="7dp">
          <TextView
              android:id="@+id/textView2"
              android:layout_width="0dp"
@@ -247,7 +247,7 @@
              android:gravity="center"
              android:text="시작하기"
              android:textColor="@color/white"
-             android:textSize="18dp"
+             android:textSize="17dp"
              app:layout_constraintBottom_toBottomOf="parent"
              app:layout_constraintStart_toStartOf="parent"
              app:layout_constraintTop_toTopOf="parent"

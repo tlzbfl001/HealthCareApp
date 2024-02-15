@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.Item
 
-class FoodRecord1Adapter (
+class FoodRecordAdapter (
    private var itemList: ArrayList<Item> = ArrayList()
-) : RecyclerView.Adapter<FoodRecord1Adapter.ViewHolder>() {
+) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
    private var onItemClickListener: OnItemClickListener? = null
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

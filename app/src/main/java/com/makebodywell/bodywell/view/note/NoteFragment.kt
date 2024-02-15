@@ -1,34 +1,53 @@
 package com.makebodywell.bodywell.view.note
 
+import android.app.Activity
+import android.app.Dialog
+import android.content.ContentValues
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.os.Build
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.GestureDetector
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import android.view.Window
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.makebodywell.bodywell.adapter.CalendarAdapter1
+import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.adapter.CalendarAdapter2
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteBinding
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
-import com.makebodywell.bodywell.view.home.food.GalleryFragment
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -37,11 +56,10 @@ class NoteFragment : Fragment() {
    private var _binding: FragmentNoteBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
-
    private var dataManager: DataManager? = null
-
    private var days = ArrayList<LocalDate?>()
+   private var dialog: Dialog? = null
+   private var uri:Uri? = null
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -63,10 +81,12 @@ class NoteFragment : Fragment() {
       dataManager!!.open()
 
       // 날짜 초기화
-      val data = arguments?.getString("data").toString()
-      if(data != "note") {
+      if(arguments?.getString("data").toString() != "note") {
          selectedDate = LocalDate.now()
       }
+
+      setWeekView()
+      setImageView()
 
       binding.ivWrite.setOnClickListener {
          replaceFragment1(requireActivity(), NoteWriteFragment())
@@ -76,69 +96,6 @@ class NoteFragment : Fragment() {
          replaceFragment1(requireActivity(), NoteWriteFragment())
       }
 
-      binding.ivPrev.setOnClickListener {
-         selectedDate = selectedDate.minusWeeks(1)
-         setWeekView()
-      }
-
-      binding.ivNext.setOnClickListener {
-         selectedDate = selectedDate.plusWeeks(1)
-         setWeekView()
-      }
-
-      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : OnItemClickListener {
-            override fun onItemClick(view: View, position: Int) {
-               selectedDate = days[position]!!
-               setWeekView()
-
-               // 섭취 칼로리 계산
-               val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
-               binding.tvKcal1.text = "${foodKcal.int5} kcal"
-
-               // 소비 칼로리 계산
-               var total = 0
-               val getExercise = dataManager!!.getExercise(selectedDate.toString())
-               for(i in 0 until getExercise.size) {
-                  total += getExercise[i].calories
-               }
-               binding.tvKcal2.text = "$total kcal"
-            }
-         })
-      )
-
-      binding.clGallery.setOnClickListener {
-         if(requestPermission()) {
-            bundle.putString("type", "5")
-            bundle.putString("calendarDate", selectedDate.toString())
-            replaceFragment2(requireActivity(), GalleryFragment(), bundle)
-         }
-      }
-
-      setWeekView()
-
-      return binding.root
-   }
-
-   private fun setWeekView() {
-      // 텍스트 초기화
-      binding.tvCalTitle.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy  MMMM"))
-      binding.tvDate.text = dateFormat(selectedDate)
-
-      val getNote = dataManager!!.getNote(selectedDate.toString())
-      if(getNote.string1 != "") {
-         binding.tvNoteTitle.text = getNote.string1
-      }else {
-         binding.tvNoteTitle.text = "제목."
-      }
-
-      // 달력 설정
-      days = weekArray(selectedDate)
-      val adapter = CalendarAdapter1(days)
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
-      binding.recyclerView.layoutManager = layoutManager
-      binding.recyclerView.adapter = adapter
-
-      // 스와이프 설정
       val gestureListener = SwipeGesture(binding.recyclerView)
       val gestureDetector = GestureDetector(requireActivity(), gestureListener)
 
@@ -146,7 +103,81 @@ class NoteFragment : Fragment() {
          return@setOnTouchListener gestureDetector.onTouchEvent(event)
       }
 
-      // 이미지뷰
+      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : OnItemClickListener {
+         override fun onItemClick(view: View, position: Int) {
+            selectedDate = days[position]!!
+
+            // 섭취 칼로리 계산
+            val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
+            binding.tvKcal1.text = "${foodKcal.int5} kcal"
+
+            // 소비 칼로리 계산
+            var total = 0
+            val getExercise = dataManager!!.getExercise(selectedDate.toString())
+            for(i in 0 until getExercise.size) {
+               total += getExercise[i].calories
+            }
+
+            binding.tvKcal2.text = "$total kcal"
+
+            setWeekView()
+            setImageView()
+         }
+      }))
+
+      // 카메라 설정
+      binding.clCamera.setOnClickListener {
+         if(cameraRequest(requireActivity())) {
+            dialog = Dialog(requireActivity())
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setContentView(R.layout.dialog_gallery)
+
+            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+
+            clCamera.setOnClickListener {
+               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+               startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            }
+
+            clGallery.setOnClickListener {
+               val intent = Intent(Intent.ACTION_PICK)
+               intent.type = MediaStore.Images.Media.CONTENT_TYPE
+               startActivityForResult(intent, STORAGE_REQUEST_CODE)
+            }
+
+            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog!!.window!!.setGravity(Gravity.BOTTOM)
+            dialog!!.show()
+         }
+      }
+
+      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
+      binding.recyclerView.layoutManager = layoutManager
+
+      return binding.root
+   }
+
+   private fun setWeekView() {
+      // 텍스트 초기화
+      binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
+      binding.tvYearText.text = selectedDate.month.toString()
+
+      val getNote = dataManager!!.getNote(selectedDate.toString())
+      if(getNote.string1 != "") {
+         binding.tvTitle.text = getNote.string1
+      }else {
+         binding.tvTitle.text = "제목"
+      }
+
+      // 달력 설정
+      days = weekArray(selectedDate)
+      val adapter = CalendarAdapter2(days)
+      binding.recyclerView.adapter = adapter
+   }
+
+   private fun setImageView() {
       val dataList = dataManager!!.getImage(5, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
@@ -164,9 +195,11 @@ class NoteFragment : Fragment() {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
+                     setImageView()
                   } else {
                      selectedDate = selectedDate.plusWeeks(1)
                      setWeekView()
+                     setImageView()
                   }
                }
             }
@@ -218,35 +251,39 @@ class NoteFragment : Fragment() {
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
    }
 
-   private fun requestPermission(): Boolean {
-      var check = true
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         for(permission in CAMERA_PERMISSION_3) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
-               check = false
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+      super.onActivityResult(requestCode, resultCode, data)
+      if(resultCode == Activity.RESULT_OK){
+         when(requestCode){
+            CAMERA_REQUEST_CODE -> {
+               if(data?.extras?.get("data") != null){
+                  val img = data.extras?.get("data") as Bitmap
+                  uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+
+                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  setImageView()
+
+                  dialog!!.dismiss()
+               }
             }
-         }
-      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         for(permission in CAMERA_PERMISSION_2) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
-               check = false
-            }
-         }
-      }else {
-         for(permission in CAMERA_PERMISSION_1) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
-               check = false
+            STORAGE_REQUEST_CODE -> {
+               uri = data!!.data
+               if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
+                  val uriParse = getImageUriWithAuthority(requireActivity(), uri)
+                  dataManager!!.insertImage(Image(imageUri = uriParse!!, type = 5, regDate = selectedDate.toString()))
+                  setImageView()
+               }else {
+                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  setImageView()
+               }
+
+               dialog!!.dismiss()
             }
          }
       }
-      return check
    }
 
    companion object {
-      private const val REQUEST_CODE = 1
       private const val SWIPE_THRESHOLD = 100
       private const val SWIPE_VELOCITY_THRESHOLD = 100
    }

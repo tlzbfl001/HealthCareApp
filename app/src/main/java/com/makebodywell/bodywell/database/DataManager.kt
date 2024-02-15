@@ -10,7 +10,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_TOKEN
@@ -23,7 +23,7 @@ import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.model.Token
@@ -50,19 +50,22 @@ class DataManager(private var context: Context?) {
          data.idToken=cursor.getString(2)
          data.userId=cursor.getString(3)
          data.deviceId=cursor.getString(4)
-         data.email = cursor.getString(5)
-         data.name = cursor.getString(6)
-         data.nickname = cursor.getString(7)
-         data.gender = cursor.getString(8)
-         data.birthday = cursor.getString(9)
-         data.profileImage = cursor.getString(10)
-         data.height = cursor.getDouble(11).toString()
-         data.weight = cursor.getDouble(12).toString()
-         data.weightGoal = cursor.getDouble(13).toString()
-         data.kcalGoal = cursor.getInt(14).toString()
-         data.waterGoal = cursor.getInt(15).toString()
-         data.waterUnit = cursor.getInt(16).toString()
-         data.regDate = cursor.getString(17)
+         data.healthId=cursor.getString(5)
+         data.activityId=cursor.getString(6)
+         data.bodyMeasurementId=cursor.getString(7)
+         data.email = cursor.getString(8)
+         data.name = cursor.getString(9)
+         data.nickname = cursor.getString(10)
+         data.gender = cursor.getString(11)
+         data.birthday = cursor.getString(12)
+         data.profileImage = cursor.getString(13)
+         data.height = cursor.getDouble(14).toString()
+         data.weight = cursor.getDouble(15).toString()
+         data.weightGoal = cursor.getDouble(16).toString()
+         data.kcalGoal = cursor.getInt(17).toString()
+         data.waterGoal = cursor.getInt(18).toString()
+         data.waterUnit = cursor.getInt(19).toString()
+         data.regDate = cursor.getString(20)
       }
       cursor.close()
       return data
@@ -79,19 +82,22 @@ class DataManager(private var context: Context?) {
          data.idToken=cursor.getString(2)
          data.userId=cursor.getString(3)
          data.deviceId=cursor.getString(4)
-         data.email = cursor.getString(5)
-         data.name = cursor.getString(6)
-         data.nickname = cursor.getString(7)
-         data.gender = cursor.getString(8)
-         data.birthday = cursor.getString(9)
-         data.profileImage = cursor.getString(10)
-         data.height = cursor.getDouble(11).toString()
-         data.weight = cursor.getDouble(12).toString()
-         data.weightGoal = cursor.getDouble(13).toString()
-         data.kcalGoal = cursor.getInt(14).toString()
-         data.waterGoal = cursor.getInt(15).toString()
-         data.waterUnit = cursor.getInt(16).toString()
-         data.regDate = cursor.getString(17)
+         data.healthId=cursor.getString(5)
+         data.activityId=cursor.getString(6)
+         data.bodyMeasurementId=cursor.getString(7)
+         data.email = cursor.getString(8)
+         data.name = cursor.getString(9)
+         data.nickname = cursor.getString(10)
+         data.gender = cursor.getString(11)
+         data.birthday = cursor.getString(12)
+         data.profileImage = cursor.getString(13)
+         data.height = cursor.getDouble(14).toString()
+         data.weight = cursor.getDouble(15).toString()
+         data.weightGoal = cursor.getDouble(16).toString()
+         data.kcalGoal = cursor.getInt(17).toString()
+         data.waterGoal = cursor.getInt(18).toString()
+         data.waterUnit = cursor.getInt(19).toString()
+         data.regDate = cursor.getString(20)
       }
       cursor.close()
       return data
@@ -163,13 +169,13 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getImage(type: Int, date: String) : ArrayList<FoodImage> {
+   fun getImage(type: Int, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
-      val list: ArrayList<FoodImage> = ArrayList()
-      val sql = "select * from $TABLE_FOOD_IMAGE where type = $type and regDate = '$date'"
+      val list: ArrayList<Image> = ArrayList()
+      val sql = "select * from $TABLE_IMAGE where type = $type and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         val data = FoodImage()
+         val data = Image()
          data.id = cursor.getInt(0)
          data.imageUri = cursor.getString(1)
          data.type = cursor.getInt(2)
@@ -181,13 +187,13 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getImage(id: Int) : ArrayList<FoodImage> {
+   fun getImage(id: Int) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
-      val list: ArrayList<FoodImage> = ArrayList()
-      val sql = "select * from $TABLE_FOOD_IMAGE where dataId = $id"
+      val list: ArrayList<Image> = ArrayList()
+      val sql = "select * from $TABLE_IMAGE where dataId = $id"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         val data = FoodImage()
+         val data = Image()
          data.id = cursor.getInt(0)
          data.imageUri = cursor.getString(1)
          data.type = cursor.getInt(2)
@@ -284,10 +290,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getBody() : ArrayList<Body> {
+   fun getBody(userId: Int) : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY"
+      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY where userId = $userId"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Body()
@@ -301,32 +307,32 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getBody(date: String) : Body {
+   fun getBody(userId: Int, date: String) : Body {
       val db = dbHelper!!.readableDatabase
       val data = Body()
-      val sql = "select * from $TABLE_BODY where regDate = '$date'"
+      val sql = "select * from $TABLE_BODY where userId = $userId and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id = cursor.getInt(0)
-         data.height = cursor.getDouble(1)
-         data.weight = cursor.getDouble(2)
-         data.age = cursor.getInt(3)
-         data.gender = cursor.getString(4)
-         data.exerciseLevel = cursor.getInt(5)
-         data.fat = cursor.getDouble(6)
-         data.muscle = cursor.getDouble(7)
-         data.bmi = cursor.getDouble(8)
-         data.bmr = cursor.getDouble(9)
-         data.regDate = cursor.getString(10)
+         data.height = cursor.getDouble(2)
+         data.weight = cursor.getDouble(3)
+         data.age = cursor.getInt(4)
+         data.gender = cursor.getString(5)
+         data.exerciseLevel = cursor.getInt(6)
+         data.fat = cursor.getDouble(7)
+         data.muscle = cursor.getDouble(8)
+         data.bmi = cursor.getDouble(9)
+         data.bmr = cursor.getDouble(10)
+         data.regDate = cursor.getString(11)
       }
       cursor.close()
       return data
    }
 
-   fun getBody(start: String, end: String) : ArrayList<Body> {
+   fun getBody(userId: Int, start: String, end: String) : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY where regDate BETWEEN '$start' and '$end'"
+      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY where userId = $userId and regDate BETWEEN '$start' and '$end'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Body()
@@ -568,14 +574,14 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_FOOD, null, values)
    }
 
-   fun insertFoodImage(data: FoodImage) {
+   fun insertImage(data: Image) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("imageUri", data.imageUri)
       values.put("type", data.type)
       values.put("dataId", data.dataId)
       values.put("regDate", data.regDate)
-      db!!.insert(TABLE_FOOD_IMAGE, null, values)
+      db!!.insert(TABLE_IMAGE, null, values)
    }
 
    fun insertWater(data: Water) {
@@ -601,6 +607,7 @@ class DataManager(private var context: Context?) {
    fun insertBody(data: Body) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
+      values.put("userId", data.userId)
       values.put("height", data.height)
       values.put("weight", data.weight)
       values.put("age", data.age)

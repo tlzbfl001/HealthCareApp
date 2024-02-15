@@ -2,30 +2,57 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.text.SimpleDateFormat
 
 class FoodEditFragment : Fragment() {
    private var _binding: FragmentFoodEditBinding? = null
@@ -34,7 +61,8 @@ class FoodEditFragment : Fragment() {
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var getFood = Food()
-   private var imageList = ArrayList<FoodImage>()
+   private var imageList = ArrayList<Image>()
+   private var dialog: Dialog? = null
 
    private var calendarDate = ""
    private var type = ""
@@ -78,10 +106,29 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.clPhoto.setOnClickListener {
-         if (requestPermission()) {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = MediaStore.Images.Media.CONTENT_TYPE
-            startActivityForResult(intent, STORAGE_REQUEST_CODE)
+         if (cameraRequest(requireActivity())) {
+            dialog = Dialog(requireActivity())
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setContentView(R.layout.dialog_gallery)
+
+            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+
+            clCamera.setOnClickListener {
+               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+               startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            }
+
+            clGallery.setOnClickListener {
+               val intent = Intent(Intent.ACTION_PICK)
+               intent.type = MediaStore.Images.Media.CONTENT_TYPE
+               startActivityForResult(intent, STORAGE_REQUEST_CODE)
+            }
+
+            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog!!.window!!.setGravity(Gravity.BOTTOM)
+            dialog!!.show()
          }
       }
 
@@ -98,10 +145,10 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", id)
+         dataManager!!.deleteItem(TABLE_IMAGE, "dataId", id)
 
          for(i in 0 until imageList.size) {
-            dataManager!!.insertFoodImage(imageList[i])
+            dataManager!!.insertImage(imageList[i])
          }
 
          dataManager!!.updateInt(TABLE_FOOD, "count", count, id)
@@ -131,23 +178,7 @@ class FoodEditFragment : Fragment() {
       binding.tvSugar.text = String.format("%.1f", (getFood.sugar * count))
    }
 
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-      super.onActivityResult(requestCode, resultCode, data)
-      if(resultCode == Activity.RESULT_OK){
-         when(requestCode){
-            STORAGE_REQUEST_CODE -> {
-               val uri = data?.data
-               val image = FoodImage(imageUri = uri.toString(), type = type.toInt(), dataId = getFood.id, regDate = calendarDate)
-
-               imageList.add(image)
-
-               photoView(imageList)
-            }
-         }
-      }
-   }
-
-   private fun photoView(imageList: ArrayList<FoodImage>) {
+   private fun photoView(imageList: ArrayList<Image>) {
       if(imageList.size > 0) {
          binding.ivView.visibility = View.GONE
          binding.viewPager.visibility = View.VISIBLE
@@ -182,37 +213,34 @@ class FoodEditFragment : Fragment() {
       }
    }
 
-   private fun requestPermission(): Boolean {
-      var check = true
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+      super.onActivityResult(requestCode, resultCode, data)
+      if(resultCode == Activity.RESULT_OK){
+         when(requestCode){
+            CAMERA_REQUEST_CODE -> {
+               if(data?.extras?.get("data") != null){
+                  val img = data.extras?.get("data") as Bitmap
+                  val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), regDate = selectedDate.toString()))
+                  photoView(imageList)
 
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         for(permission in CAMERA_PERMISSION_3) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
-               check = false
+                  dialog!!.dismiss()
+               }
             }
-         }
-      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         for(permission in CAMERA_PERMISSION_2) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
-               check = false
-            }
-         }
-      }else {
-         for(permission in CAMERA_PERMISSION_1) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
-               check = false
+            STORAGE_REQUEST_CODE -> {
+               val uri = data!!.data
+               if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
+                  val uriParse = getImageUriWithAuthority(requireActivity(), uri)
+                  imageList.add(Image(imageUri = uriParse!!, type = type.toInt(), regDate = selectedDate.toString()))
+                  photoView(imageList)
+               }else {
+                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), regDate = selectedDate.toString()))
+                  photoView(imageList)
+               }
+
+               dialog!!.dismiss()
             }
          }
       }
-
-      return check
-   }
-
-   companion object {
-      private const val REQUEST_CODE = 1
-      private const val STORAGE_REQUEST_CODE = 100
    }
 }

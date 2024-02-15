@@ -7,6 +7,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -31,7 +32,9 @@ import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
@@ -40,10 +43,18 @@ import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -53,7 +64,7 @@ class InputInfoFragment : Fragment() {
 
    private var dataManager: DataManager? = null
    private var dialog: Dialog? = null
-   private var uri:Uri? = null
+   private var image: String? = ""
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -67,32 +78,30 @@ class InputInfoFragment : Fragment() {
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
 
       binding.ivProfile.setOnClickListener {
-         dialog = Dialog(requireActivity())
-         dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-         dialog!!.setContentView(R.layout.dialog_gallery)
+         if(cameraRequest(requireActivity())) {
+            dialog = Dialog(requireActivity())
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setContentView(R.layout.dialog_gallery)
 
-         val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
-         val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
 
-         clCamera.setOnClickListener {
-            if (requestPermission()) {
+            clCamera.setOnClickListener {
                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
-         }
 
-         clGallery.setOnClickListener {
-            if (requestPermission()) {
+            clGallery.setOnClickListener {
                val intent = Intent(Intent.ACTION_PICK)
                intent.type = MediaStore.Images.Media.CONTENT_TYPE
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
-         }
 
-         dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-         dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-         dialog!!.window!!.setGravity(Gravity.BOTTOM)
-         dialog!!.show()
+            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog!!.window!!.setGravity(Gravity.BOTTOM)
+            dialog!!.show()
+         }
       }
 
       binding.tvBirthday.setOnClickListener {
@@ -125,11 +134,7 @@ class InputInfoFragment : Fragment() {
             "1990-01-01"
          }
 
-         val profileImage = if(uri != null) {
-            uri.toString()
-         }else {
-            ""
-         }
+         val profileImage = if(image != "" && image != null) image else ""
 
          if(binding.etName.text.toString() != "") {
             name = binding.etName.text.toString()
@@ -151,7 +156,7 @@ class InputInfoFragment : Fragment() {
 
             dataManager?.updateString(TABLE_USER, "name", name!!, getUser.id)
             dataManager?.updateString(TABLE_USER, "birthday", birthday!!, getUser.id)
-            dataManager?.updateString(TABLE_USER, "profileImage", profileImage, getUser.id)
+            dataManager?.updateString(TABLE_USER, "profileImage", profileImage!!, getUser.id)
 
             replaceLoginFragment1(requireActivity(), InputBodyFragment())
          }
@@ -166,89 +171,29 @@ class InputInfoFragment : Fragment() {
       if(resultCode == Activity.RESULT_OK){
          when(requestCode){
             CAMERA_REQUEST_CODE -> {
-               if(data?.extras?.get("data") != null){
+               if(data!!.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
-                  uri = saveFile(randomFileName(), "image/jpeg", img)
+                  val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+                  image = uri.toString()
+
                   binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
-               }else {
+
+                  dialog!!.dismiss()
                }
             }
             STORAGE_REQUEST_CODE -> {
-               uri = data?.data
+               val uri = data!!.data
+               image = if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
+                  getImageUriWithAuthority(requireActivity(), uri)
+               }else {
+                  uri.toString()
+               }
+
                binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
+
+               dialog!!.dismiss()
             }
          }
       }
-   }
-
-   private fun randomFileName(): String {
-      return SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())
-   }
-
-   private fun saveFile(fileName:String, mimeType:String, bitmap: Bitmap): Uri?{
-      // MediaStore 에 파일명, mimeType 을 지정
-      val cv = ContentValues()
-      cv.put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-      cv.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
-      cv.put(MediaStore.Images.Media.IS_PENDING, 1)
-
-      // MediaStore 에 파일을 저장
-      val uri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
-      try {
-         if(uri != null){
-            val descriptor = requireActivity().contentResolver.openFileDescriptor(uri, "w")
-            val fos = FileOutputStream(descriptor?.fileDescriptor)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-
-            fos.close()
-            cv.clear()
-
-            cv.put(MediaStore.Images.Media.IS_PENDING, 0)
-            requireActivity().contentResolver.update(uri, cv, null, null)
-         }
-      } catch(e: FileNotFoundException) {
-         e.printStackTrace()
-      } catch (e: IOException) {
-         e.printStackTrace()
-      } catch (e: Exception) {
-         e.printStackTrace()
-      }
-
-      return uri
-   }
-
-   private fun requestPermission(): Boolean {
-      var check = true
-
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         for(permission in CAMERA_PERMISSION_3) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_3), REQUEST_CODE)
-               check = false
-            }
-         }
-      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         for(permission in CAMERA_PERMISSION_2) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
-               check = false
-            }
-         }
-      }else {
-         for(permission in CAMERA_PERMISSION_1) {
-            if (ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-               ActivityCompat.requestPermissions(requireActivity(), arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
-               check = false
-            }
-         }
-      }
-
-      return check
-   }
-
-   companion object {
-      private const val REQUEST_CODE = 1
-      private const val CAMERA_REQUEST_CODE = 2
-      private const val STORAGE_REQUEST_CODE = 3
    }
 }

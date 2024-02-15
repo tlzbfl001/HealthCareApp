@@ -29,7 +29,7 @@
                android:id="@+id/cvProfile"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_marginTop="28dp"
+               android:layout_marginTop="20dp"
                android:layout_marginRight="20dp"
                app:cardBackgroundColor="#AAAAAA"
                app:cardCornerRadius="4dp"
@@ -197,7 +197,7 @@
                   android:layout_width="14dp"
                   android:layout_height="14dp"
                   android:src="@drawable/louder"
-                  android:layout_marginTop="17dp"
+                  android:layout_marginTop="15dp"
                   app:tint="#606060"
                   app:layout_constraintTop_toBottomOf="@id/ivUser2"
                   app:layout_constraintStart_toStartOf="parent"
@@ -261,7 +261,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
-               android:padding="14dp">
+               android:padding="12dp">
                <ImageView
                   android:id="@+id/ivBluetooth"
                   android:layout_width="14dp"
@@ -361,7 +361,7 @@
                   android:id="@+id/ivQuestion"
                   android:layout_width="14dp"
                   android:layout_height="14dp"
-                  android:layout_marginTop="17dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/question"
                   app:layout_constraintTop_toBottomOf="@+id/ivArticle"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -387,7 +387,7 @@
                   android:id="@+id/ivFaq"
                   android:layout_width="14dp"
                   android:layout_height="14dp"
-                  android:layout_marginTop="17dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/faq"
                   app:layout_constraintTop_toBottomOf="@+id/ivQuestion"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -413,7 +413,7 @@
                   android:id="@+id/ivInfo"
                   android:layout_width="14dp"
                   android:layout_height="14dp"
-                  android:layout_marginTop="17dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/info"
                   app:layout_constraintTop_toBottomOf="@+id/ivFaq"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -439,7 +439,7 @@
                   android:id="@+id/ivLogout"
                   android:layout_width="14dp"
                   android:layout_height="14dp"
-                  android:layout_marginTop="17dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/logout"
                   app:layout_constraintTop_toBottomOf="@+id/ivInfo"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -468,7 +468,7 @@
                   android:id="@+id/ivDelete"
                   android:layout_width="14dp"
                   android:layout_height="14dp"
-                  android:layout_marginTop="17dp"
+                  android:layout_marginTop="15dp"
                   android:src="@drawable/delete"
                   app:layout_constraintTop_toBottomOf="@+id/ivLogout"
                   app:layout_constraintStart_toStartOf="parent"

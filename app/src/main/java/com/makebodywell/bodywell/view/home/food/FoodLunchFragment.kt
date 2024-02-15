@@ -18,7 +18,7 @@ import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodLunchBinding
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.util.stream.Collectors
@@ -36,7 +36,7 @@ class FoodLunchFragment : Fragment() {
     private var dataManager: DataManager? = null
     private var photoAdapter: PhotoViewAdapter? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
-    private var imageData: ArrayList<FoodImage>? = null
+    private var imageData: ArrayList<Image>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -169,7 +169,7 @@ class FoodLunchFragment : Fragment() {
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
-                            dataManager!!.deleteItem(DBHelper.TABLE_FOOD_IMAGE, "dataId", dataList[pos].id)
+                            dataManager!!.deleteItem(DBHelper.TABLE_IMAGE, "dataId", dataList[pos].id)
 
                             dataList.removeAt(pos)
                             intakeAdapter!!.notifyDataSetChanged()

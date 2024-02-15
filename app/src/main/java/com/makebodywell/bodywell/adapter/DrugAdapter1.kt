@@ -13,7 +13,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
-import com.makebodywell.bodywell.view.init.MainActivity
+import com.makebodywell.bodywell.view.home.MainActivity
 
 class DrugAdapter1 (
     private val context: Context,

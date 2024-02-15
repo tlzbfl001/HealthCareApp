@@ -36,7 +36,7 @@ class SettingFragment : Fragment() {
 
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.GRAY
+         statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
 
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -47,7 +47,7 @@ class SettingFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      userProfile()
+//      userProfile()
 
       binding.tvConnect.setOnClickListener {
          replaceFragment1(requireActivity(), ConnectFragment())
@@ -58,6 +58,12 @@ class SettingFragment : Fragment() {
             .setMessage("정말 로그아웃하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+
+               NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
+                  R.string.app_name))
+               NaverIdLoginSDK.logout()
+               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+               startActivity(Intent(requireActivity(), LoginActivity::class.java))
 
                when(getUser.type) {
                   "google" -> {
@@ -75,6 +81,7 @@ class SettingFragment : Fragment() {
 
                               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                               startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                              requireActivity().finish()
                            } else {
                               Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                            }
@@ -90,6 +97,7 @@ class SettingFragment : Fragment() {
 
                      Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                      startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                     requireActivity().finish()
                   }
                   "kakao" -> {
                      UserApiClient.instance.logout { error ->
@@ -100,6 +108,7 @@ class SettingFragment : Fragment() {
 
                            Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                            startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                           requireActivity().finish()
                         }
                      }
                   }

@@ -86,79 +86,19 @@ mutation CreateHealth($userId: String!) {
   }
 }
 
-query Me {
-  me {
+mutation CreateActivity($healthId: String!, $deviceId: String!, $createActivityInput: CreateActivityInput!) {
+  createActivity(healthId: $healthId, deviceId: $deviceId, createActivityInput: $createActivityInput) {
     code
     message
     success
-    user {
-      health {
-        activities {
-          activityId
-          device {
-            deviceHardwareVersion
-            deviceId
-            deviceLabel
-            deviceManufacturer
-            deviceModel
-            deviceName
-            deviceSoftwareVersion
-          }
-          appleExerciseTime
-          appleMoveTime
-          appleStandTime
-          activeEnergyBurned
-          basalEnergyBurned
-          distanceCycling
-          distanceDownhillSnowSports
-          distanceSwimming
-          distanceWalkingRunning
-          distanceWheelchair
-          flightsClimbed
-          nikeFuel
-          pushCount
-          runningGroundContactTime
-          runningPower
-          runningSpeed
-          runningStrideLength
-          runningVerticalOscillation
-          stepCount
-          swimmingStrokeCount
-          vo2Max
-          startedAt
-          endedAt
-          createdAt
-          updatedAt
-        }
-        bodyMeasurements {
-          device {
-            deviceHardwareVersion
-            deviceId
-            deviceLabel
-            deviceManufacturer
-            deviceModel
-            deviceName
-            deviceSoftwareVersion
-          }
-          appleSleepingWristTemperature
-          bodyFatPercentage
-          bodyMass
-          bodyMassIndex
-          bodyMeasurementId
-          height
-          leanBodyMass
-          waistCircumference
-          startedAt
-          endedAt
-          createdAt
-          updatedAt
-        }
-        createdAt
-        healthId
-        updatedAt
-      }
-      userId
-    }
+  }
+}
+
+mutation CreateBodyMeasurement($healthId: String!, $deviceId: String!, $createBodyMeasurementInput: CreateBodyMeasurementInput!) {
+  createBodyMeasurement(healthId: $healthId, deviceId: $deviceId, createBodyMeasurementInput: $createBodyMeasurementInput) {
+    code
+    message
+    success
   }
 }
 
@@ -167,5 +107,44 @@ mutation UpdateUserProfile($userId: String!, $updateUserProfileInput: UpdateUser
     code
     message
     success
+  }
+}
+
+query Me {
+  me {
+    code
+    message
+    success
+    user {
+      email
+      emailVerified
+      role
+      userId
+      username
+      profile {
+        birth
+        gender
+        height
+        name
+        picture
+        weight
+        createdAt
+        updatedAt
+      }
+      health {
+        healthId
+        activities {
+          activityId
+        }
+        bodyMeasurements {
+          bodyMeasurementId
+        }
+      }
+      devices {
+        deviceId
+      }
+      createdAt
+      updatedAt
+    }
   }
 }

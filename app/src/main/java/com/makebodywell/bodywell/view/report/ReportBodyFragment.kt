@@ -25,6 +25,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -73,7 +74,7 @@ class ReportBodyFragment : Fragment() {
          replaceFragment1(requireActivity(), ReportDrugFragment())
       }
 
-      binding.ivPrev.setOnClickListener {
+      binding.clPrev.setOnClickListener {
          when(dateType) {
             0->{
                calendarDate = calendarDate!!.minusDays(1)
@@ -93,7 +94,7 @@ class ReportBodyFragment : Fragment() {
          }
       }
 
-      binding.ivNext.setOnClickListener {
+      binding.clNext.setOnClickListener {
          when(dateType) {
             0->{
                calendarDate = calendarDate!!.plusDays(1)
@@ -146,7 +147,7 @@ class ReportBodyFragment : Fragment() {
       val itemList2 = ArrayList<Body>()
       val itemList3 = ArrayList<Body>()
 
-      val getBody = dataManager!!.getBody()
+      val getBody = dataManager!!.getBody(MyApp.prefs.getId())
       for(i in 0 until getBody.size) {
          if (getBody[i].weight > 0) {
             itemList1.add(Body(weight = getBody[i].weight, regDate = format2.format(format1.parse(getBody[i].regDate)!!)))
@@ -228,7 +229,7 @@ class ReportBodyFragment : Fragment() {
       val itemList3 = ArrayList<Body>()
 
       val weekArray = weekArray(calendarDate)
-      val getData = dataManager!!.getBody(weekArray[0].toString(), weekArray[6].toString())
+      val getData = dataManager!!.getBody(MyApp.prefs.getId(), weekArray[0].toString(), weekArray[6].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
@@ -310,7 +311,7 @@ class ReportBodyFragment : Fragment() {
       val itemList3 = ArrayList<Body>()
 
       val monthArray = monthArray2(calendarDate)
-      val getData = dataManager!!.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getData = dataManager!!.getBody(MyApp.prefs.getId(), monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))

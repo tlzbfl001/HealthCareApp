@@ -1,6 +1,6 @@
 package com.makebodywell.bodywell.model
 
-data class FoodImage(
+data class Image(
     var id: Int = 0,
     var imageUri: String = "",
     var type: Int = 0,

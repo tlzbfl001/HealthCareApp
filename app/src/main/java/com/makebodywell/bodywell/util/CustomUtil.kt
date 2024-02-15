@@ -11,9 +11,8 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
-import com.makebodywell.bodywell.view.init.MainActivity
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.init.LoginActivity
-import java.time.LocalDate
 
 class CustomUtil {
    companion object {
@@ -24,6 +23,7 @@ class CustomUtil {
       fun replaceLoginFragment1(activity: FragmentActivity, fragment: Fragment?) {
          (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
             replace(R.id.loginFrame, fragment!!)
+            addToBackStack(null)
             commit()
          }
       }
@@ -32,6 +32,7 @@ class CustomUtil {
          (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
             fragment?.arguments = bundle
             add(R.id.loginFrame, fragment!!)
+            addToBackStack(null)
             commit()
          }
       }
@@ -39,6 +40,7 @@ class CustomUtil {
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             replace(R.id.mainFrame, fragment!!)
+            addToBackStack(null)
             commit()
          }
       }
@@ -46,7 +48,8 @@ class CustomUtil {
       fun replaceFragment2(activity: Activity, fragment: Fragment?, bundle: Bundle?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             fragment?.arguments = bundle
-            add(R.id.mainFrame, fragment!!)
+            replace(R.id.mainFrame, fragment!!)
+            addToBackStack(null)
             commit()
          }
       }

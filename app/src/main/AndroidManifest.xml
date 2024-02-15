@@ -52,7 +52,8 @@
         tools:targetApi="33">
         <activity
             android:name=".view.init.StartActivity"
-            android:exported="true">
+            android:exported="true"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -60,9 +61,9 @@
         </activity>
         <activity android:name=".view.init.LoginActivity" />
         <activity android:name=".view.init.InitActivity" />
-        <activity android:name=".view.init.MainActivity" />
+        <activity android:name=".view.home.MainActivity" />
         <activity
-           android:name=".view.HealthConnectActivity"
+           android:name=".view.home.HealthConnectActivity"
            android:exported="true">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>

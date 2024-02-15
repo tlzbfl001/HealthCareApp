@@ -10,6 +10,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
 
 class StartActivity : AppCompatActivity() {

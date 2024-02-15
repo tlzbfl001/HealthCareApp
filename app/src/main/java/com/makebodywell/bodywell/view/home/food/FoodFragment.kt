@@ -20,7 +20,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -123,7 +123,7 @@ class FoodFragment : Fragment() {
          if(itemList1.size > 0) {
             if (isExpand1) {
                binding.clView1.visibility = View.GONE
-               binding.ivExpand1.setImageResource(R.drawable.arrow_down)
+               binding.ivExpand1.setImageResource(R.drawable.arrow_down_note)
             } else {
                binding.clView1.visibility = View.VISIBLE
                binding.ivExpand1.setImageResource(R.drawable.arrow_up)
@@ -136,7 +136,7 @@ class FoodFragment : Fragment() {
          if(itemList2.size > 0) {
             if (isExpand2) {
                binding.clView2.visibility = View.GONE
-               binding.ivExpand2.setImageResource(R.drawable.arrow_down)
+               binding.ivExpand2.setImageResource(R.drawable.arrow_down_note)
             } else {
                binding.clView2.visibility = View.VISIBLE
                binding.ivExpand2.setImageResource(R.drawable.arrow_up)
@@ -149,7 +149,7 @@ class FoodFragment : Fragment() {
          if(itemList3.size > 0) {
             if (isExpand3) {
                binding.clView3.visibility = View.GONE
-               binding.ivExpand3.setImageResource(R.drawable.arrow_down)
+               binding.ivExpand3.setImageResource(R.drawable.arrow_down_note)
             } else {
                binding.clView3.visibility = View.VISIBLE
                binding.ivExpand3.setImageResource(R.drawable.arrow_up)
@@ -162,7 +162,7 @@ class FoodFragment : Fragment() {
          if(itemList4.size > 0) {
             if (isExpand4) {
                binding.clView4.visibility = View.GONE
-               binding.ivExpand4.setImageResource(R.drawable.arrow_down)
+               binding.ivExpand4.setImageResource(R.drawable.arrow_down_note)
             } else {
                binding.clView4.visibility = View.VISIBLE
                binding.ivExpand4.setImageResource(R.drawable.arrow_up)
@@ -254,7 +254,7 @@ class FoodFragment : Fragment() {
    }
 
    private fun photoView() {
-      val imageList: ArrayList<FoodImage> = ArrayList()
+      val imageList: ArrayList<Image> = ArrayList()
 
       val getData1 = dataManager!!.getImage(1, calendarDate.toString())
       val getData2 = dataManager!!.getImage(2, calendarDate.toString())
@@ -262,19 +262,19 @@ class FoodFragment : Fragment() {
       val getData4 = dataManager!!.getImage(4, calendarDate.toString())
 
       for(i in 0 until getData1.size) {
-         imageList.add(FoodImage(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
+         imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
       }
 
       for(i in 0 until getData2.size) {
-         imageList.add(FoodImage(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
+         imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
       }
 
       for(i in 0 until getData3.size) {
-         imageList.add(FoodImage(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
+         imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
       }
 
       for(i in 0 until getData4.size) {
-         imageList.add(FoodImage(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
+         imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
       }
 
       if(imageList.size > 0) {

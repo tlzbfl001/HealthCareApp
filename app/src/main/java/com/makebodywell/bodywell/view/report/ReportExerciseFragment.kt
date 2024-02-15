@@ -79,7 +79,7 @@ class ReportExerciseFragment : Fragment() {
          replaceFragment1(requireActivity(), ReportDrugFragment())
       }
 
-      binding.ivPrev.setOnClickListener {
+      binding.clPrev.setOnClickListener {
          when(dateType) {
             0->{
                calendarDate = calendarDate!!.minusDays(1)
@@ -99,7 +99,7 @@ class ReportExerciseFragment : Fragment() {
          }
       }
 
-      binding.ivNext.setOnClickListener {
+      binding.clNext.setOnClickListener {
          when(dateType) {
             0->{
                calendarDate = calendarDate!!.plusDays(1)

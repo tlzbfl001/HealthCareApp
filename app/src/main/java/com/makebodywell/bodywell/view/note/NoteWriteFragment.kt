@@ -45,7 +45,7 @@ class NoteWriteFragment : Fragment() {
 
       bundle.putString("data", "note")
 
-      binding.ivBack.setOnClickListener {
+      binding.clBack.setOnClickListener {
          replaceFragment2(requireActivity(), NoteFragment(), bundle)
       }
 
@@ -59,7 +59,7 @@ class NoteWriteFragment : Fragment() {
          settingData()
       }
 
-      binding.tvSave.setOnClickListener {
+      binding.cvSave.setOnClickListener {
          if(getNote.string3 == "") {
             dataManager!!.insertNote(Item(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
@@ -77,7 +77,6 @@ class NoteWriteFragment : Fragment() {
 
    private fun settingData() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
-      binding.tvNoteDate.text = dateFormat(selectedDate)
 
       val getNote = dataManager!!.getNote(selectedDate.toString())
       if(getNote.int1 != 0) {

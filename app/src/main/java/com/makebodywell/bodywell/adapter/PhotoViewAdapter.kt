@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
 
 class PhotoViewAdapter (
-   private val itemList: ArrayList<FoodImage>
+   private val itemList: ArrayList<Image>
 ) : RecyclerView.Adapter<PhotoViewAdapter.ViewHolder>() {
    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       val imageView: ImageView = itemView.findViewById(R.id.imageView)

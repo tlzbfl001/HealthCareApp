@@ -3,7 +3,6 @@ package com.makebodywell.bodywell.view.home.food
 import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +15,10 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD_IMAGE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
-import com.makebodywell.bodywell.model.FoodImage
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.util.stream.Collectors
@@ -35,8 +33,8 @@ class FoodBreakfastFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var photoAdapter: PhotoViewAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
-   private var imageData = ArrayList<FoodImage>()
-   private var imageData2 = ArrayList<FoodImage>()
+   private var imageData = ArrayList<Image>()
+   private var imageData2 = ArrayList<Image>()
 
    private var calendarDate = ""
    private var type = 1
@@ -149,6 +147,7 @@ class FoodBreakfastFragment : Fragment() {
                }
             }
          }
+
          binding.viewPager.setPageTransformer(transformer)
 
          binding.cvLeft.setOnClickListener {
@@ -173,7 +172,7 @@ class FoodBreakfastFragment : Fragment() {
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
                      dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
-                     dataManager!!.deleteItem(TABLE_FOOD_IMAGE, "dataId", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                      if (imageData.size > 0) {
                         imageData.stream().filter { x -> x.dataId == dataList[pos].id }

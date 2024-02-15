@@ -4,19 +4,17 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.makebodywell.bodywell.adapter.FoodRecord1Adapter
+import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
 class FoodRecord1Fragment : Fragment() {
@@ -98,10 +96,10 @@ class FoodRecord1Fragment : Fragment() {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         val adapter = FoodRecord1Adapter(itemList)
+         val adapter = FoodRecordAdapter(itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-         adapter.setOnItemClickListener(object : FoodRecord1Adapter.OnItemClickListener {
+         adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                bundle.putString("id", dataList[pos].id.toString())
                replaceFragment2(requireActivity(), FoodEditFragment(), bundle)

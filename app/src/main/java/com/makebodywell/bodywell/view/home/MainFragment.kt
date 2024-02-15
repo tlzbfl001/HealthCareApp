@@ -11,14 +11,11 @@ import android.view.ViewGroup.LayoutParams
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.makebodywell.bodywell.CreateHealthMutation
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -26,11 +23,11 @@ import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
-import com.makebodywell.bodywell.view.home.food.CalendarDialog
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -39,6 +36,7 @@ class MainFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
+   private lateinit var adapter: CalendarAdapter1
 
    var days = ArrayList<LocalDate?>()
 
@@ -58,13 +56,10 @@ class MainFragment : Fragment() {
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
       }
 
-//      val createHealth = CustomUtil.apolloClient.mutation(CreateHealthMutation(userId = userId)).addHttpHeader(
-//         "Authorization",
-//         "Bearer $accessToken"
-//      ).execute()
-
       dataManager = DataManager(activity)
       dataManager!!.open()
+
+      selectedDate = LocalDate.now()
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
 
@@ -100,22 +95,6 @@ class MainFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      setupCalendar()
-
-      return binding.root
-   }
-
-   private fun setupCalendar() {
-      selectedDate = LocalDate.now()
-      setWeekView()
-
-      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : RecyclerItemClickListener.OnItemClickListener {
-         override fun onItemClick(view: View, position: Int) {
-            selectedDate = days[position]!!
-            setWeekView()
-         }
-      }))
-
       binding.ivCalendar.setOnClickListener {
          val calendarDialog = CalendarDialog(requireActivity())
          calendarDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -125,24 +104,38 @@ class MainFragment : Fragment() {
          val window = calendarDialog.window
          window?.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
       }
+
+      val gestureListener: SwipeGesture = SwipeGesture(binding.recyclerView)
+      val gestureDetector = GestureDetector(requireActivity(), gestureListener)
+
+      binding.recyclerView.setOnTouchListener { _, event ->
+         return@setOnTouchListener gestureDetector.onTouchEvent(event)
+      }
+
+      binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : RecyclerItemClickListener.OnItemClickListener {
+         override fun onItemClick(view: View, position: Int) {
+            selectedDate = days[position]!!
+            setWeekView()
+            recordView()
+         }
+      }))
+
+      setWeekView()
+      recordView()
+
+      return binding.root
    }
 
    @SuppressLint("ClickableViewAccessibility")
    private fun setWeekView() {
       days = weekArray(selectedDate)
-      val adapter = CalendarAdapter1(days)
+      val adapter = CalendarAdapter1(days, 1)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
       binding.recyclerView.adapter = adapter
 
-      val gestureListener: SwipeGesture = SwipeGesture(binding.recyclerView)
-      val gestureDetector = GestureDetector(requireActivity(), gestureListener)
-      binding.recyclerView.setOnTouchListener { _, event ->
-         return@setOnTouchListener gestureDetector.onTouchEvent(event)
-      }
-
-      // 차트 값 지정
-      recordView()
+      binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
+      binding.tvMonth.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -156,9 +149,11 @@ class MainFragment : Fragment() {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
+                     recordView()
                   } else {
                      selectedDate = selectedDate.plusWeeks(1)
                      setWeekView()
+                     recordView()
                   }
                }
             }
@@ -228,7 +223,7 @@ class MainFragment : Fragment() {
       val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
       val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
-      val getBody = dataManager!!.getBody(selectedDate.toString())
+      val getBody = dataManager!!.getBody(MyApp.prefs.getId(), selectedDate.toString())
       val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {

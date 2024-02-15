@@ -1,9 +1,7 @@
 package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,12 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.apollographql.apollo3.ApolloClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -24,7 +20,6 @@ import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.LoginUserGoogleMutation
 import com.makebodywell.bodywell.LoginUserKakaoMutation
-import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentLoginBinding
@@ -32,11 +27,11 @@ import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
-import com.makebodywell.bodywell.type.LoginNaverOauthInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment2
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.NaverIdLoginSDK.applicationContext
 import com.navercorp.nid.oauth.NidOAuthLogin
@@ -141,7 +136,9 @@ class LoginFragment : Fragment() {
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                     override fun onSuccess(result: NidProfileResponse) {
                         if(NaverIdLoginSDK.getAccessToken() != null && NaverIdLoginSDK.getAccessToken() != "") {
-                            val getUser1 = dataManager!!.getUser("naver", result.profile?.email.toString())
+                            startActivity(Intent(requireActivity(), MainActivity::class.java))
+
+                            /*val getUser1 = dataManager!!.getUser("naver", result.profile?.email.toString())
 
                             if(getUser1.regDate == "") {
                                 val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email, name = result.profile?.name,
@@ -169,7 +166,7 @@ class LoginFragment : Fragment() {
                                         startActivity(Intent(requireActivity(), MainActivity::class.java))
                                     }
                                 }
-                            }
+                            }*/
                         }else {
                             Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
                         }

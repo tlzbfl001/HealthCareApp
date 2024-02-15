@@ -1,18 +1,22 @@
 package com.makebodywell.bodywell.adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.FoodImage
+import com.makebodywell.bodywell.model.Image
+import java.io.IOException
 
 class PhotoSlideAdapter(
    private val context: Context,
-   private val itemList: ArrayList<FoodImage>
+   private val itemList: ArrayList<Image>
 ) : PagerAdapter() {
 
    override fun isViewFromObject(view: View, `object`: Any): Boolean {

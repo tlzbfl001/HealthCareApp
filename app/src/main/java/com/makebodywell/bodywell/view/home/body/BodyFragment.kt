@@ -24,6 +24,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -211,7 +212,7 @@ class BodyFragment : Fragment() {
          }
       }
 
-      getBody = dataManager!!.getBody(calendarDate.toString())
+      getBody = dataManager!!.getBody(MyApp.prefs.getId(), calendarDate.toString())
       Log.d(TAG, "getBody: $getBody")
 
       if (getBody.weight > 0) {

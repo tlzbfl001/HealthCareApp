@@ -12,6 +12,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import java.time.LocalDate
 
 class BodyRecordFragment : Fragment() {
@@ -43,7 +44,7 @@ class BodyRecordFragment : Fragment() {
       dataManager!!.open()
 
       val calendarDate = arguments?.getString("calendarDate").toString()
-      val getBody = dataManager!!.getBody(calendarDate)
+      val getBody = dataManager!!.getBody(MyApp.prefs.getId(), calendarDate)
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
       if (getBody.regDate != "") {

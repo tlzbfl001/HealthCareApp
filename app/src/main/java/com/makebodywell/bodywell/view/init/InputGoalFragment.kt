@@ -2,7 +2,6 @@ package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +9,9 @@ import android.view.ViewGroup
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 
 class InputGoalFragment : Fragment() {
    private var _binding: FragmentInputGoalBinding? = null
