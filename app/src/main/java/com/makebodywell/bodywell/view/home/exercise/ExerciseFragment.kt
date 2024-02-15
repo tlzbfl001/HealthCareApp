@@ -21,6 +21,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -128,7 +129,7 @@ class ExerciseFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateGoal("exerciseGoal",  et.text.toString().toInt(), calendarDate.toString())
+               dataManager!!.updateGoal("exerciseGoal",  et.text.toString().toInt(), MyApp.prefs.getId(), calendarDate.toString())
             }
 
             binding.pbExercise.max = et.text.toString().toInt()
@@ -159,7 +160,7 @@ class ExerciseFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
       sum = getExerciseCalories(requireActivity(), calendarDate.toString())
 
       if(sum > 0) {
@@ -179,7 +180,7 @@ class ExerciseFragment : Fragment() {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager!!.getExercise(calendarDate.toString())
+      val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

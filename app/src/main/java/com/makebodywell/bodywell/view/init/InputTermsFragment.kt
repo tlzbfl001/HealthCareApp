@@ -235,8 +235,8 @@ class InputTermsFragment : Fragment() {
          Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
       }else {
          val userId = me1.data!!.me.user.userId
-         val device = if(Settings.Secure.getString(requireActivity().getContentResolver(), Settings.Secure.ANDROID_ID) != null) {
-            Settings.Secure.getString(requireActivity().getContentResolver(), Settings.Secure.ANDROID_ID)} else ""
+         val device = if(Settings.Secure.getString(requireActivity().contentResolver, Settings.Secure.ANDROID_ID) != null) {
+            Settings.Secure.getString(requireActivity().contentResolver, Settings.Secure.ANDROID_ID)} else ""
          val model = if(Build.MODEL != null) {Build.MODEL} else ""
          val manufacturer = if(Build.MANUFACTURER != null) {Build.MANUFACTURER} else ""
          val ver = if(Build.VERSION.RELEASE != null) {Build.VERSION.RELEASE} else ""
@@ -294,11 +294,9 @@ class InputTermsFragment : Fragment() {
                      val getUser = dataManager!!.getUser(user.type.toString(), user.email.toString())
                      MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
                      dataManager!!.insertToken(Token(userId = getUser.id, accessToken = access, refreshToken = refresh, regDate = LocalDate.now().toString())) // 토큰 저장
-                     dataManager!!.updateString(TABLE_USER, "userId", userId, getUser.id) // userId 저장
-                     dataManager!!.updateString(TABLE_USER, "deviceId", deviceId, getUser.id) // deviceId 저장
-                     dataManager!!.updateString(TABLE_USER, "healthId", healthId, getUser.id) // healthId 저장
-                     dataManager!!.updateString(TABLE_USER, "activityId", me3.data!!.me.user.health!!.activities[0].activityId, getUser.id) // activityId 저장
-                     dataManager!!.updateString(TABLE_USER, "bodyMeasurementId", me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId, getUser.id) // bodyMeasurementId 저장
+                     dataManager!!.updateUser(User(id = getUser.id, userId = userId, deviceId = deviceId, healthId = healthId,
+                        activityId = me3.data!!.me.user.health!!.activities[0].activityId,
+                        bodyMeasurementId = me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId)) // 사용자정보 저장
                   }
                }
             }

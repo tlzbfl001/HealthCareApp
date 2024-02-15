@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.model
 
 data class Food(
     var id: Int = 0,
+    var userId: Int = 0,
     var name: String = "",
     var unit: String = "",
     var amount: Int = 0,

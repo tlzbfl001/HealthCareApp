@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 data class Drug(
    var id: Int = 0,
+   var userId: Int = 0,
    var type: String = "",
    var name: String = "",
    var amount: String = "",
@@ -19,6 +20,7 @@ data class Drug(
 @Parcelize
 data class DrugTime(
    var id: Int = 0,
+   var userId: Int = 0,
    var hour: Int = 0,
    var minute: Int = 0,
    var drugId: Int = 0
@@ -26,6 +28,7 @@ data class DrugTime(
 
 data class DrugCheck(
    var id: Int = 0,
+   var userId: Int = 0,
    var checked: Int = 0,
    var drugTimeId: Int = 0,
    var regDate: String = ""
@@ -33,6 +36,7 @@ data class DrugCheck(
 
 data class DrugList(
    var id: Int = 0,
+   var userId: Int = 0,
    var date: String = "",
    var name: String = "",
    var amount: String = "",

@@ -17,6 +17,7 @@ import com.makebodywell.bodywell.databinding.FragmentSleepRecordBinding
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import nl.joery.timerangepicker.TimeRangePicker
 import java.util.Calendar
@@ -80,7 +81,7 @@ class SleepRecordFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val calendarDate = arguments?.getString("calendarDate").toString()
-         val getSleep = dataManager!!.getSleep(calendarDate)
+         val getSleep = dataManager!!.getSleep(MyApp.prefs.getId(), calendarDate)
 
          val bedTime = bedHour * 60 + bedMinute
          val wakeTime = wakeHour * 60 + wakeMinute

@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.model
 
 data class DailyData(
     var id: Int = 0,
+    var userId: Int = 0,
     var foodGoal: Int = 0,
     var waterGoal: Int = 0,
     var exerciseGoal: Int = 0,

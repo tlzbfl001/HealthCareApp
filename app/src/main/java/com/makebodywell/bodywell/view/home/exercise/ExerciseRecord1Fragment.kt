@@ -15,6 +15,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseRecord1Binding
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 
 class ExerciseRecord1Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord1Binding? = null
@@ -69,7 +70,7 @@ class ExerciseRecord1Fragment : Fragment() {
    }
 
    private fun listView() {
-      val dataList = dataManager!!.getExercise(calendarDate)
+      val dataList = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate)
 
       if(dataList.size > 0) {
          binding.tvEmpty.visibility = View.GONE

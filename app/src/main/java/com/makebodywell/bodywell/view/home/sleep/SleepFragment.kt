@@ -21,6 +21,7 @@ import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -137,7 +138,7 @@ class SleepFragment : Fragment() {
          if(getDaily.regDate == "") {
             dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = calendarDate.toString()))
          }else {
-            dataManager!!.updateGoal("sleepGoal", total, calendarDate.toString())
+            dataManager!!.updateGoal("sleepGoal", total, MyApp.prefs.getId(), calendarDate.toString())
          }
 
          binding.pbSleep.max = total
@@ -160,8 +161,8 @@ class SleepFragment : Fragment() {
    }
 
    private fun dailyView() {
-      getSleep = dataManager!!.getSleep(calendarDate.toString())
-      getDaily = dataManager!!.getDailyData(calendarDate.toString())
+      getSleep = dataManager!!.getSleep(MyApp.prefs.getId(), calendarDate.toString())
+      getDaily = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
 
       binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
       binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"

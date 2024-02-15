@@ -63,7 +63,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="6dp"
                android:text="8"
-               android:textSize="45dp"
+               android:textSize="42dp"
                android:textColor="@color/white"
                app:layout_constraintStart_toEndOf="@id/tvYear"
                app:layout_constraintTop_toTopOf="@id/tvYear"

@@ -55,7 +55,7 @@
        app:layout_constraintTop_toBottomOf="@id/tv2"
        app:layout_constraintStart_toStartOf="parent"/>
    <androidx.cardview.widget.CardView
-       android:id="@+id/cvMan"
+       android:id="@+id/cvWoman"
        android:layout_width="130dp"
        android:layout_height="wrap_content"
        android:layout_marginTop="12dp"
@@ -74,53 +74,13 @@
           android:layout_marginTop="12dp"
           android:layout_marginBottom="12dp">
          <ImageView
-             android:id="@+id/ivMan"
+             android:id="@+id/ivWoman"
              android:layout_width="34dp"
              android:layout_height="34dp"
              android:src="@drawable/man"
              app:tint="@color/white"
              app:layout_constraintStart_toStartOf="parent"
              app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintBottom_toBottomOf="parent"
-             app:layout_constraintEnd_toStartOf="@id/tvMan"
-             app:layout_constraintHorizontal_chainStyle="packed" />
-         <TextView
-             android:id="@+id/tvMan"
-             android:layout_width="50dp"
-             android:layout_height="wrap_content"
-             android:text="남성"
-             android:textColor="@color/white"
-             android:textSize="16dp"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintBottom_toBottomOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"
-             app:layout_constraintStart_toEndOf="@id/ivMan"/>
-      </androidx.constraintlayout.widget.ConstraintLayout>
-   </androidx.cardview.widget.CardView>
-   <androidx.cardview.widget.CardView
-       android:id="@+id/cvWoman"
-       android:layout_width="130dp"
-       android:layout_height="wrap_content"
-       android:layout_marginLeft="30dp"
-       app:cardBackgroundColor="#EEEEEE"
-       app:cardElevation="8dp"
-       app:cardCornerRadius="10dp"
-       app:layout_constraintTop_toTopOf="@id/cvMan"
-       app:layout_constraintBottom_toBottomOf="@id/cvMan"
-       app:layout_constraintStart_toEndOf="@id/cvMan">
-      <androidx.constraintlayout.widget.ConstraintLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="12dp"
-          android:layout_marginBottom="12dp">
-         <ImageView
-             android:id="@+id/ivWoman"
-             android:layout_width="34dp"
-             android:layout_height="34dp"
-             android:src="@drawable/woman"
-             app:tint="#aaaaaa"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintStart_toStartOf="parent"
              app:layout_constraintBottom_toBottomOf="parent"
              app:layout_constraintEnd_toStartOf="@id/tvWoman"
              app:layout_constraintHorizontal_chainStyle="packed" />
@@ -129,9 +89,49 @@
              android:layout_width="50dp"
              android:layout_height="wrap_content"
              android:text="여성"
+             android:textColor="@color/white"
+             android:textSize="16dp"
+             app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"
+             app:layout_constraintStart_toEndOf="@id/ivWoman"/>
+      </androidx.constraintlayout.widget.ConstraintLayout>
+   </androidx.cardview.widget.CardView>
+   <androidx.cardview.widget.CardView
+       android:id="@+id/cvMan"
+       android:layout_width="130dp"
+       android:layout_height="wrap_content"
+       android:layout_marginLeft="30dp"
+       app:cardBackgroundColor="#EEEEEE"
+       app:cardElevation="8dp"
+       app:cardCornerRadius="10dp"
+       app:layout_constraintTop_toTopOf="@id/cvWoman"
+       app:layout_constraintBottom_toBottomOf="@id/cvWoman"
+       app:layout_constraintStart_toEndOf="@id/cvWoman">
+      <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:layout_marginBottom="12dp">
+         <ImageView
+             android:id="@+id/ivMan"
+             android:layout_width="34dp"
+             android:layout_height="34dp"
+             android:src="@drawable/man"
+             app:tint="#aaaaaa"
+             app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintEnd_toStartOf="@id/tvMan"
+             app:layout_constraintHorizontal_chainStyle="packed" />
+         <TextView
+             android:id="@+id/tvMan"
+             android:layout_width="50dp"
+             android:layout_height="wrap_content"
+             android:text="남성"
              android:textColor="@color/black"
              android:textSize="16dp"
-             app:layout_constraintStart_toEndOf="@id/ivWoman"
+             app:layout_constraintStart_toEndOf="@id/ivMan"
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintBottom_toBottomOf="parent"
              app:layout_constraintEnd_toEndOf="parent"/>

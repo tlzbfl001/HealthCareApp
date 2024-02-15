@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -16,6 +17,7 @@ import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 
 class FoodRecord1Fragment : Fragment() {
    private var _binding: FragmentFoodRecord1Binding? = null
@@ -30,6 +32,7 @@ class FoodRecord1Fragment : Fragment() {
    private var calendarDate = ""
    private var type = ""
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -82,10 +85,10 @@ class FoodRecord1Fragment : Fragment() {
       var dataList = ArrayList<Food>()
 
       when(type) {
-         "1" -> dataList = dataManager!!.getFood(1, calendarDate)
-         "2" -> dataList = dataManager!!.getFood(2, calendarDate)
-         "3" -> dataList = dataManager!!.getFood(3, calendarDate)
-         "4" -> dataList = dataManager!!.getFood(4, calendarDate)
+         "1" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 1, calendarDate)
+         "2" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 2, calendarDate)
+         "3" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 3, calendarDate)
+         "4" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 4, calendarDate)
       }
 
       if(dataList.size > 0) {
@@ -101,7 +104,7 @@ class FoodRecord1Fragment : Fragment() {
 
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("id", dataList[pos].id.toString())
+               bundle.putString("dataId", dataList[pos].id.toString())
                replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
             }
          })
@@ -144,7 +147,7 @@ class FoodRecord1Fragment : Fragment() {
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("id", searchList[pos].int1.toString())
+            bundle.putString("dataId", searchList[pos].int1.toString())
             replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
          }
       })

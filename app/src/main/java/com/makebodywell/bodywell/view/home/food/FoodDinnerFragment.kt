@@ -20,6 +20,7 @@ import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -82,7 +83,7 @@ class FoodDinnerFragment : Fragment() {
 
         binding.cvSave.setOnClickListener {
             val getFoodData = intakeAdapter!!.getFoodData()
-            dataManager!!.updateInt(DBHelper.TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
+            dataManager!!.updateInt(DBHelper.TABLE_FOOD, "count", getFoodData.count, MyApp.prefs.getId(), getFoodData.id)
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())
@@ -95,7 +96,7 @@ class FoodDinnerFragment : Fragment() {
     }
 
     private fun photoView() {
-        imageData = dataManager!!.getImage(type, calendarDate)
+        imageData = dataManager!!.getImage(MyApp.prefs.getId(), type, calendarDate)
 
         if(imageData!!.size > 0) {
             photoAdapter = PhotoViewAdapter(imageData!!)
@@ -155,7 +156,7 @@ class FoodDinnerFragment : Fragment() {
     }
 
     private fun listView() {
-        val dataList = dataManager!!.getFood(type, calendarDate)
+        val dataList = dataManager!!.getFood(MyApp.prefs.getId(), type, calendarDate)
 
         if(dataList.size != 0) {
             // 섭취한 식단 설정
@@ -167,8 +168,8 @@ class FoodDinnerFragment : Fragment() {
                     val dialog = AlertDialog.Builder(context)
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager!!.deleteItem(DBHelper.TABLE_FOOD, "id", dataList[pos].id)
-                            dataManager!!.deleteItem(DBHelper.TABLE_IMAGE, "dataId", dataList[pos].id)
+                            dataManager!!.deleteItem(DBHelper.TABLE_FOOD, MyApp.prefs.getId(), "id", dataList[pos].id)
+                            dataManager!!.deleteItem(DBHelper.TABLE_IMAGE, MyApp.prefs.getId(), "dataId", dataList[pos].id)
 
                             dataList.removeAt(pos)
                             intakeAdapter!!.notifyDataSetChanged()

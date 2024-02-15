@@ -16,6 +16,7 @@ import com.makebodywell.bodywell.databinding.FragmentFoodRecord2Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 
 class FoodRecord2Fragment : Fragment() {
    private var _binding: FragmentFoodRecord2Binding? = null
@@ -79,10 +80,10 @@ class FoodRecord2Fragment : Fragment() {
       var dataList = ArrayList<Food>()
 
       when(type) {
-         "1" -> dataList = dataManager!!.getFood(1, calendarDate)
-         "2" -> dataList = dataManager!!.getFood(2, calendarDate)
-         "3" -> dataList = dataManager!!.getFood(3, calendarDate)
-         "4" -> dataList = dataManager!!.getFood(4, calendarDate)
+         "1" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 1, calendarDate)
+         "2" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 2, calendarDate)
+         "3" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 3, calendarDate)
+         "4" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 4, calendarDate)
       }
 
       if(dataList.size > 0) {

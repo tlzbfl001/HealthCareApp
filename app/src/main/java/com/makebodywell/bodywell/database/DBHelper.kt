@@ -32,42 +32,41 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, accessToken text, refreshToken text, regDate text);"
       db.execSQL(token)
 
-      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, name text, unit text, amount integer, count integer, kcal integer," +
+      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, userId integer, name text, unit text, amount integer, count integer, kcal integer," +
               "carbohydrate real, protein real, fat real, salt real, sugar real, type integer, regDate text);"
       db.execSQL(food)
 
-      val water = "create table $TABLE_WATER(id integer primary key autoincrement, water integer, volume integer, regDate text);"
+      val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, water integer, volume integer, regDate text);"
       db.execSQL(water)
 
-      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, name text, intensity text, workoutTime text, calories integer, regDate text);"
+      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, name text, intensity text, workoutTime text, calories integer, regDate text);"
       db.execSQL(exercise)
 
       val body = "create table $TABLE_BODY(id integer primary key autoincrement, userId integer, height real, weight real, age integer, " +
               "gender text, exerciseLevel integer, fat real, muscle real, bmi real, bmr real, regDate text);"
       db.execSQL(body)
 
-      val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, type text, name text, amount text, unit text, count integer," +
+      val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, type text, name text, amount text, unit text, count integer," +
               "startDate text, endDate text, isSet integer, regDate text);"
       db.execSQL(drug)
 
-      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, hour integer, minute integer, drugId integer);"
+      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, hour integer, minute integer, drugId integer);"
       db.execSQL(drugTime)
 
-      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, checked integer, " +
-              "drugTimeId integer, regDate text);"
+      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, checked integer, drugTimeId integer, regDate text);"
       db.execSQL(drugCheck)
 
-      val note = "create table $TABLE_NOTE(id integer primary key autoincrement, title text, content integer, regDate text);"
+      val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, regDate text);"
       db.execSQL(note)
 
-      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, bedTime integer, wakeTime integer, sleepTime integer, regDate text);"
+      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, userId integer, bedTime integer, wakeTime integer, sleepTime integer, regDate text);"
       db.execSQL(sleep)
 
-      val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, foodGoal integer, waterGoal integer, exerciseGoal integer," +
+      val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, userId integer, foodGoal integer, waterGoal integer, exerciseGoal integer," +
               "bodyGoal real, sleepGoal integer, drugGoal integer, regDate text);"
       db.execSQL(dailyData)
 
-      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, imageUri text, type integer, dataId integer, regDate text);"
+      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, imageUri text, type integer, dataId integer, regDate text);"
       db.execSQL(image)
    }
 

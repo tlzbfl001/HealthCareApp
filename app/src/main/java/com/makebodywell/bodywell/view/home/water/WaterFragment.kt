@@ -21,6 +21,7 @@ import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -141,7 +142,7 @@ class WaterFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(waterGoal = goal, regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateGoal("waterGoal", goal, calendarDate.toString())
+               dataManager!!.updateGoal("waterGoal", goal, MyApp.prefs.getId(), calendarDate.toString())
             }
 
             if(getWater.regDate == "") {
@@ -174,8 +175,8 @@ class WaterFragment : Fragment() {
 
    private fun dailyGoal() {
       // 목표 초기화
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-      getWater = dataManager!!.getWater(calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
+      getWater = dataManager!!.getWater(MyApp.prefs.getId(), calendarDate.toString())
 
       binding.pbWater.max = 0
       binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
@@ -245,7 +246,7 @@ class WaterFragment : Fragment() {
          adapter = WaterAdapter(count)
          binding.rv.adapter = adapter
 
-         getWater = dataManager!!.getWater(calendarDate.toString())
+         getWater = dataManager!!.getWater(MyApp.prefs.getId(), calendarDate.toString())
          if(getWater.regDate == "") {
             dataManager!!.insertWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
          }else {
@@ -274,7 +275,7 @@ class WaterFragment : Fragment() {
          adapter = WaterAdapter(count)
          binding.rv.adapter = adapter
 
-         getWater = dataManager!!.getWater(calendarDate.toString())
+         getWater = dataManager!!.getWater(MyApp.prefs.getId(), calendarDate.toString())
          if(getWater.regDate == "") {
             dataManager!!.insertWater(Water(water = count, volume = getWater.volume, regDate = calendarDate.toString()))
          }else {

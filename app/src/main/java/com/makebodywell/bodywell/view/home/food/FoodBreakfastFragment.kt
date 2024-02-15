@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
@@ -21,6 +22,7 @@ import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -39,6 +41,7 @@ class FoodBreakfastFragment : Fragment() {
    private var calendarDate = ""
    private var type = 1
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -84,7 +87,7 @@ class FoodBreakfastFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val getFoodData = intakeAdapter!!.getFoodData()
-         dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
+         dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, MyApp.prefs.getId(), getFoodData.id)
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment1(requireActivity(), FoodFragment())
@@ -99,8 +102,8 @@ class FoodBreakfastFragment : Fragment() {
    }
 
    private fun photoView() {
-      imageData = dataManager!!.getImage(type, calendarDate)
-      imageData2 = dataManager!!.getImage(type, calendarDate)
+      imageData = dataManager!!.getImage(MyApp.prefs.getId(), type, calendarDate)
+      imageData2 = dataManager!!.getImage(MyApp.prefs.getId(), type, calendarDate)
 
       if(imageData.size > 0) {
          photoAdapter = PhotoViewAdapter(imageData)
@@ -161,7 +164,7 @@ class FoodBreakfastFragment : Fragment() {
    }
 
    private fun listView() {
-      val dataList = dataManager!!.getFood(type, calendarDate)
+      val dataList = dataManager!!.getFood(MyApp.prefs.getId(), type, calendarDate)
       if(dataList.size != 0) {
          intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
@@ -171,8 +174,8 @@ class FoodBreakfastFragment : Fragment() {
                val dialog = AlertDialog.Builder(context)
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
-                     dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
-                     dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_FOOD, MyApp.prefs.getId(), "id", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_IMAGE, MyApp.prefs.getId(), "dataId", dataList[pos].id)
 
                      if (imageData.size > 0) {
                         imageData.stream().filter { x -> x.dataId == dataList[pos].id }

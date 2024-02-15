@@ -13,6 +13,7 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.util.MyApp
 
 class ExerciseListAdapter (
    private val context: Context,
@@ -39,7 +40,7 @@ class ExerciseListAdapter (
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
+               dataManager!!.deleteItem(TABLE_EXERCISE, MyApp.prefs.getId(), "id", itemList[position].id)
 
                itemList.removeAt(position)
                notifyDataSetChanged()

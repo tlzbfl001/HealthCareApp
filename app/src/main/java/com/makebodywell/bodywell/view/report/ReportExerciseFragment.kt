@@ -31,6 +31,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -148,7 +149,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_EXERCISE)
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_EXERCISE)
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -176,7 +177,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -204,7 +205,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -238,7 +239,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
          xVal += format2.format(format1.parse(getData[i])!!)
-         val getExercise = dataManager!!.getExercise(getData[i])
+         val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), getData[i])
          for(j in 0 until getExercise.size) {
             total += getExercise[j].workoutTime.toFloat()
          }
@@ -296,7 +297,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
          xVal += format2.format(format1.parse(getData[i])!!)
-         val getExercise = dataManager!!.getExercise(getData[i])
+         val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), getData[i])
          for(j in 0 until getExercise.size) {
             total += getExercise[j].calories.toFloat()
          }
@@ -405,7 +406,7 @@ class ReportExerciseFragment : Fragment() {
       var basketball = 0
 
       for(i in 0 until data.size){
-         val getExercise = dataManager!!.getExercise(data[i])
+         val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), data[i])
          for(j in 0 until getExercise.size) {
             when(getExercise[j].name) {
                "달리기" -> running++

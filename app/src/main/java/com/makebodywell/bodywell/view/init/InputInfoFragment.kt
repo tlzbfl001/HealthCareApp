@@ -33,6 +33,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
 import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.UpdateUserProfileInput
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CustomUtil
@@ -154,9 +155,7 @@ class InputInfoFragment : Fragment() {
                "Bearer ${getToken.accessToken}"
             ).execute()
 
-            dataManager?.updateString(TABLE_USER, "name", name!!, getUser.id)
-            dataManager?.updateString(TABLE_USER, "birthday", birthday!!, getUser.id)
-            dataManager?.updateString(TABLE_USER, "profileImage", profileImage!!, getUser.id)
+            dataManager!!.updateUserInfo(User(id = getUser.id, name = name, birthday = birthday, profileImage = profileImage))
 
             replaceLoginFragment1(requireActivity(), InputBodyFragment())
          }

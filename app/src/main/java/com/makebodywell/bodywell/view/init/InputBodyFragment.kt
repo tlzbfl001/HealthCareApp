@@ -49,17 +49,6 @@ class InputBodyFragment : Fragment() {
          replaceLoginFragment1(requireActivity(), InputGoalFragment())
       }
 
-      binding.cvMan.setOnClickListener {
-         binding.cvMan.setCardBackgroundColor(Color.parseColor("#9F98FF"))
-         binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
-         binding.tvMan.setTextColor(Color.WHITE)
-         binding.cvWoman.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
-         binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
-         binding.tvWoman.setTextColor(Color.BLACK)
-
-         gender = Gender.MALE
-      }
-
       binding.cvWoman.setOnClickListener {
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
@@ -69,6 +58,17 @@ class InputBodyFragment : Fragment() {
          binding.tvWoman.setTextColor(Color.WHITE)
 
          gender = Gender.FEMALE
+      }
+
+      binding.cvMan.setOnClickListener {
+         binding.cvMan.setCardBackgroundColor(Color.parseColor("#9F98FF"))
+         binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
+         binding.tvMan.setTextColor(Color.WHITE)
+         binding.cvWoman.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
+         binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
+         binding.tvWoman.setTextColor(Color.BLACK)
+
+         gender = Gender.MALE
       }
 
       binding.cvContinue.setOnClickListener {
@@ -92,9 +92,9 @@ class InputBodyFragment : Fragment() {
                "Bearer ${getToken.accessToken}"
             ).execute()
 
-            dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
-            dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
-            dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
+            dataManager?.updateString(TABLE_USER, "gender", gender.toString(), MyApp.prefs.getId(), getUser.id)
+            dataManager?.updateDouble(TABLE_USER, "height", height, MyApp.prefs.getId(), getUser.id)
+            dataManager?.updateDouble(TABLE_USER, "weight", weight, MyApp.prefs.getId(), getUser.id)
 
             replaceLoginFragment1(requireActivity(), InputGoalFragment())
          }

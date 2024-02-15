@@ -16,6 +16,7 @@ import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 
 class ExerciseEditFragment : Fragment() {
     private var _binding: FragmentExerciseEditBinding? = null
@@ -50,7 +51,7 @@ class ExerciseEditFragment : Fragment() {
 
         val id = arguments?.getString("id")!!.toInt()
 
-        val getExercise = dataManager!!.getExercise(id)
+        val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), id)
 
         // 텍스트 설정
         binding.tvName.text = getExercise.name
@@ -122,9 +123,9 @@ class ExerciseEditFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            dataManager!!.updateString(TABLE_EXERCISE, "intensity", intensity, getExercise.id)
-            dataManager!!.updateString(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), getExercise.id)
-            dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), getExercise.id)
+            dataManager!!.updateString(TABLE_EXERCISE, "intensity", intensity, MyApp.prefs.getId(), getExercise.id)
+            dataManager!!.updateString(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), MyApp.prefs.getId(), getExercise.id)
+            dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), MyApp.prefs.getId(), getExercise.id)
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

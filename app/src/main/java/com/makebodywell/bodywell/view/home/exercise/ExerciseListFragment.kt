@@ -12,6 +12,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import java.time.LocalDate
 
 class ExerciseListFragment : Fragment() {
@@ -53,7 +54,7 @@ class ExerciseListFragment : Fragment() {
          replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
       }
 
-      val getExercise = dataManager!!.getExercise(calendarDate)
+      val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate)
 
       val adapter = ExerciseListAdapter(requireActivity(), getExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

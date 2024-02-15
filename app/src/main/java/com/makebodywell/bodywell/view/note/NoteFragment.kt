@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.note
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
@@ -36,6 +37,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
@@ -61,6 +63,7 @@ class NoteFragment : Fragment() {
    private var dialog: Dialog? = null
    private var uri:Uri? = null
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -104,6 +107,7 @@ class NoteFragment : Fragment() {
       }
 
       binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : OnItemClickListener {
+         @SuppressLint("SetTextI18n")
          override fun onItemClick(view: View, position: Int) {
             selectedDate = days[position]!!
 
@@ -113,7 +117,7 @@ class NoteFragment : Fragment() {
 
             // 소비 칼로리 계산
             var total = 0
-            val getExercise = dataManager!!.getExercise(selectedDate.toString())
+            val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), selectedDate.toString())
             for(i in 0 until getExercise.size) {
                total += getExercise[i].calories
             }
@@ -164,7 +168,7 @@ class NoteFragment : Fragment() {
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
 
-      val getNote = dataManager!!.getNote(selectedDate.toString())
+      val getNote = dataManager!!.getNote(MyApp.prefs.getId(), selectedDate.toString())
       if(getNote.string1 != "") {
          binding.tvTitle.text = getNote.string1
       }else {
@@ -178,7 +182,7 @@ class NoteFragment : Fragment() {
    }
 
    private fun setImageView() {
-      val dataList = dataManager!!.getImage(5, selectedDate.toString())
+      val dataList = dataManager!!.getImage(MyApp.prefs.getId(), 5, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
       binding.viewPager.setPadding(180, 0, 180, 0)
@@ -260,7 +264,7 @@ class NoteFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
 
-                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  dataManager!!.insertImage(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()
 
                   dialog!!.dismiss()
@@ -270,10 +274,10 @@ class NoteFragment : Fragment() {
                uri = data!!.data
                if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
                   val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  dataManager!!.insertImage(Image(imageUri = uriParse!!, type = 5, regDate = selectedDate.toString()))
+                  dataManager!!.insertImage(Image(userId = MyApp.prefs.getId(), imageUri = uriParse!!, type = 5, regDate = selectedDate.toString()))
                   setImageView()
                }else {
-                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  dataManager!!.insertImage(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()
                }
 

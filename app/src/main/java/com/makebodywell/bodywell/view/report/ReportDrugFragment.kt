@@ -31,6 +31,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -148,7 +149,7 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_DRUG)
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_DRUG)
       if(getDates.size > 0) {
          binding.chart.visibility = View.VISIBLE
          binding.tvEmpty.visibility = View.GONE
@@ -171,7 +172,7 @@ class ReportDrugFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DRUG, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_DRUG, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart.visibility = View.VISIBLE
          binding.tvEmpty.visibility = View.GONE
@@ -194,7 +195,7 @@ class ReportDrugFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DRUG, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_DRUG, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart.visibility = View.VISIBLE
          binding.tvEmpty.visibility = View.GONE
@@ -222,8 +223,8 @@ class ReportDrugFragment : Fragment() {
       var num = -1
 
       for(i in 0 until getData.size){
-         val getDailyData = dataManager!!.getDailyData(getData[i])
-         val count = dataManager!!.getDrugCheckCount(getData[i])
+         val getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), getData[i])
+         val count = dataManager!!.getDrugCheckCount(MyApp.prefs.getId(), getData[i])
 
          if(getDailyData.regDate != "" && count != 0) {
             num++
@@ -329,7 +330,7 @@ class ReportDrugFragment : Fragment() {
       var drug4 = 0
 
       for(i in 0 until data.size){
-         val getDrug = dataManager!!.getDrug(data[i])
+         val getDrug = dataManager!!.getDrug(MyApp.prefs.getId(), data[i])
          for(j in 0 until getDrug.size) {
             when(getDrug[j]) {
                "혈압약" -> drug1++

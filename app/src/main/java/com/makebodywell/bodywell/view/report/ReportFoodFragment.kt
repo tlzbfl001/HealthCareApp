@@ -33,6 +33,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -151,7 +152,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_FOOD)
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_FOOD)
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -166,7 +167,7 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater()
+      val getWater = dataManager!!.getWater(MyApp.prefs.getId())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
@@ -187,7 +188,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -202,7 +203,7 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater(weekArray[0].toString(), weekArray[6].toString())
+      val getWater = dataManager!!.getWater(MyApp.prefs.getId(), weekArray[0].toString(), weekArray[6].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
@@ -223,7 +224,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -239,7 +240,7 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getWater = dataManager!!.getWater(MyApp.prefs.getId(), monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE

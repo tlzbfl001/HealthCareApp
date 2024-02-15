@@ -11,6 +11,7 @@ import com.makebodywell.bodywell.adapter.DrugAdapter2
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugRecordBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.MyApp
 
 class DrugRecordFragment : Fragment() {
    private var _binding: FragmentDrugRecordBinding? = null
@@ -46,7 +47,7 @@ class DrugRecordFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugAddFragment())
       }
 
-      val getDrug = dataManager!!.getDrug()
+      val getDrug = dataManager!!.getDrug(MyApp.prefs.getId())
 
       adapter = DrugAdapter2(requireActivity(), getDrug)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

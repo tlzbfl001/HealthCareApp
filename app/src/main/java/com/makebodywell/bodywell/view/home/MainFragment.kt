@@ -40,6 +40,7 @@ class MainFragment : Fragment() {
 
    var days = ArrayList<LocalDate?>()
 
+   @SuppressLint("ClickableViewAccessibility", "SetTextI18n", "DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -219,12 +220,12 @@ class MainFragment : Fragment() {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
       // 프로그래스바 설정
-      val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+      val getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), selectedDate.toString())
       val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
-      val getWater = dataManager!!.getWater(selectedDate.toString())
+      val getWater = dataManager!!.getWater(MyApp.prefs.getId(), selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       val getBody = dataManager!!.getBody(MyApp.prefs.getId(), selectedDate.toString())
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
+      val getDrugCheckCount = dataManager!!.getDrugCheckCount(MyApp.prefs.getId(), selectedDate.toString())
 
       if(foodSum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))

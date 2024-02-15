@@ -12,6 +12,7 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugList
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.MainActivity
 
@@ -63,11 +64,11 @@ class DrugAdapter1 (
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheck = dataManager!!.getDrugCheck(itemList[position].id, itemList[position].date)
+            val getDrugCheck = dataManager!!.getDrugCheck(MyApp.prefs.getId(), itemList[position].id, itemList[position].date)
             if(holder.tvCheck.isChecked) {
                 check += 1
                 if(getDrugCheck.regDate == "") {
-                    dataManager!!.insertDrugCheck(1, itemList[position].id, itemList[position].date)
+                    dataManager!!.insertDrugCheck(MyApp.prefs.getId(), 1, itemList[position].id, itemList[position].date)
                 }else {
                     dataManager!!.updateDrugCheck(DrugCheck(checked = 1, drugTimeId = itemList[position].id, regDate = itemList[position].date))
                 }

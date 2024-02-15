@@ -102,8 +102,56 @@ mutation CreateBodyMeasurement($healthId: String!, $deviceId: String!, $createBo
   }
 }
 
+mutation UpdateBodyMeasurement($bodyMeasurementId: String!, $updateBodyMeasurementInput: UpdateBodyMeasurementInput!) {
+  updateBodyMeasurement(bodyMeasurementId: $bodyMeasurementId, updateBodyMeasurementInput: $updateBodyMeasurementInput) {
+    code
+    message
+    success
+  }
+}
+
 mutation UpdateUserProfile($userId: String!, $updateUserProfileInput: UpdateUserProfileInput!) {
   updateUserProfile(userId: $userId, updateUserProfileInput: $updateUserProfileInput) {
+    code
+    message
+    success
+  }
+}
+
+mutation RemoveActivity($activityId: String!) {
+  removeActivity(activityId: $activityId) {
+    code
+    message
+    success
+  }
+}
+
+mutation RemoveBodyMeasurement($bodyMeasurementId: String!) {
+  removeBodyMeasurement(bodyMeasurementId: $bodyMeasurementId) {
+    code
+    message
+    success
+  }
+}
+
+mutation RemoveDevice($deviceId: String!) {
+  removeDevice(deviceId: $deviceId) {
+    code
+    message
+    success
+  }
+}
+
+mutation RemoveUserProfile($userId: String!) {
+  removeUserProfile(userId: $userId) {
+    code
+    message
+    success
+  }
+}
+
+mutation RemoveUser($userId: String!) {
+  removeUser(userId: $userId) {
     code
     message
     success
@@ -143,6 +191,39 @@ query Me {
       devices {
         deviceId
       }
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+query BodyMeasurement($bodyMeasurementId: String!) {
+  bodyMeasurement(bodyMeasurementId: $bodyMeasurementId) {
+    code
+    message
+    success
+    bodyMeasurement {
+      appleSleepingWristTemperature
+      bodyFatPercentage
+      bodyMass
+      bodyMassIndex
+      bodyMeasurementId
+      height
+      leanBodyMass
+      waistCircumference
+      device {
+        deviceHardwareVersion
+        deviceId
+        deviceLabel
+        deviceManufacturer
+        deviceModel
+        deviceName
+        deviceSoftwareVersion
+        createdAt
+        updatedAt
+      }
+      startedAt
+      endedAt
       createdAt
       updatedAt
     }

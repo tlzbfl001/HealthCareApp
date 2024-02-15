@@ -10,9 +10,11 @@ import android.widget.Toast
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteWriteBinding
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
@@ -41,7 +43,7 @@ class NoteWriteFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getNote = dataManager!!.getNote(selectedDate.toString())
+      val getNote = dataManager!!.getNote(MyApp.prefs.getId(), selectedDate.toString())
 
       bundle.putString("data", "note")
 
@@ -61,10 +63,10 @@ class NoteWriteFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          if(getNote.string3 == "") {
-            dataManager!!.insertNote(Item(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
+            dataManager!!.insertNote(Note(userId = MyApp.prefs.getId(), title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateNote(Item(string1 = binding.etTitle.text.toString(), string2 = binding.etContent.text.toString(), string3 = selectedDate.toString()))
+            dataManager!!.updateNote(Note(userId = MyApp.prefs.getId(), title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
             Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
          replaceFragment2(requireActivity(), NoteFragment(), bundle)
@@ -78,7 +80,7 @@ class NoteWriteFragment : Fragment() {
    private fun settingData() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
-      val getNote = dataManager!!.getNote(selectedDate.toString())
+      val getNote = dataManager!!.getNote(MyApp.prefs.getId(), selectedDate.toString())
       if(getNote.int1 != 0) {
          binding.etTitle.setText(getNote.string1)
          binding.etContent.setText(getNote.string2)

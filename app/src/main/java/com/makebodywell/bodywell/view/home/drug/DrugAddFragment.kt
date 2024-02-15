@@ -19,6 +19,7 @@ import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
+import com.makebodywell.bodywell.util.MyApp
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -115,11 +116,11 @@ class DrugAddFragment : Fragment() {
             dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etAmount.text.toString(),
                unit = unit, startDate = startDate, endDate = endDate, count = count, isSet = 1, regDate = getDate.toString()))
 
-            val getDrugId = dataManager!!.getDrugId(getDate.toString())
+            val getDrugId = dataManager!!.getDrugId(MyApp.prefs.getId(), getDate.toString())
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
-               dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+               dataManager!!.insertDrugTime(DrugTime(userId = MyApp.prefs.getId(), hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
             }
 
             val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit

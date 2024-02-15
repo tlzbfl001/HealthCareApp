@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.ActivityMainBinding
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MainViewModel
 import com.makebodywell.bodywell.view.note.NoteFragment
 import com.makebodywell.bodywell.view.setting.SettingFragment
@@ -37,9 +38,9 @@ class MainActivity : AppCompatActivity() {
                   commit()
                }
             }
-            R.id.menu2 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, ReportBodyFragment()).commit()
-            R.id.menu3 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, NoteFragment()).commit()
-            R.id.menu4 -> supportFragmentManager.beginTransaction().replace(R.id.mainFrame, SettingFragment()).commit()
+            R.id.menu2 -> replaceFragment1(this, ReportBodyFragment())
+            R.id.menu3 -> replaceFragment1(this, NoteFragment())
+            R.id.menu4 -> replaceFragment1(this, SettingFragment())
          }
          true
       }

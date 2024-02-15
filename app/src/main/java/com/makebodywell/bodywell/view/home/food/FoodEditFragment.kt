@@ -1,20 +1,15 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ContentValues
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,8 +18,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
@@ -33,26 +26,15 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.PermissionUtil
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
-import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.text.SimpleDateFormat
 
 class FoodEditFragment : Fragment() {
    private var _binding: FragmentFoodEditBinding? = null
@@ -66,8 +48,9 @@ class FoodEditFragment : Fragment() {
 
    private var calendarDate = ""
    private var type = ""
-   private var id = -1
+   private var dataId = -1
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -89,12 +72,12 @@ class FoodEditFragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
-      id = arguments?.getString("id").toString().toInt()
+      dataId = arguments?.getString("dataId").toString().toInt()
 
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
-      getFood = dataManager!!.getFood(id)
+      getFood = dataManager!!.getFood(dataId)
       var count = getFood.count
 
       binding.tvName.text = getFood.name
@@ -145,19 +128,19 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_IMAGE, "dataId", id)
+         dataManager!!.deleteItem(TABLE_IMAGE, MyApp.prefs.getId(), "dataId", dataId)
 
          for(i in 0 until imageList.size) {
             dataManager!!.insertImage(imageList[i])
          }
 
-         dataManager!!.updateInt(TABLE_FOOD, "count", count, id)
+         dataManager!!.updateInt(TABLE_FOOD, "count", count, MyApp.prefs.getId(), dataId)
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
-      val getData = dataManager!!.getImage(id)
+      val getData = dataManager!!.getImage(MyApp.prefs.getId(), dataId)
       for(i in 0 until getData.size) {
          imageList.add(getData[i])
       }
@@ -221,7 +204,7 @@ class FoodEditFragment : Fragment() {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
-                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), regDate = selectedDate.toString()))
+                  imageList.add(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView(imageList)
 
                   dialog!!.dismiss()
@@ -231,10 +214,10 @@ class FoodEditFragment : Fragment() {
                val uri = data!!.data
                if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
                   val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  imageList.add(Image(imageUri = uriParse!!, type = type.toInt(), regDate = selectedDate.toString()))
+                  imageList.add(Image(userId = MyApp.prefs.getId(), imageUri = uriParse!!, type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView(imageList)
                }else {
-                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), regDate = selectedDate.toString()))
+                  imageList.add(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView(imageList)
                }
 

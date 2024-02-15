@@ -25,6 +25,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -191,7 +192,7 @@ class FoodFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), calendarDate.toString())
+               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), MyApp.prefs.getId(), calendarDate.toString())
             }
 
             binding.pbFood.max = et.text.toString().toInt()
@@ -232,7 +233,7 @@ class FoodFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
       sum = getFoodKcal(requireActivity(), calendarDate.toString()).int1
 
       if(sum > 0) {
@@ -256,10 +257,10 @@ class FoodFragment : Fragment() {
    private fun photoView() {
       val imageList: ArrayList<Image> = ArrayList()
 
-      val getData1 = dataManager!!.getImage(1, calendarDate.toString())
-      val getData2 = dataManager!!.getImage(2, calendarDate.toString())
-      val getData3 = dataManager!!.getImage(3, calendarDate.toString())
-      val getData4 = dataManager!!.getImage(4, calendarDate.toString())
+      val getData1 = dataManager!!.getImage(MyApp.prefs.getId(), 1, calendarDate.toString())
+      val getData2 = dataManager!!.getImage(MyApp.prefs.getId(), 2, calendarDate.toString())
+      val getData3 = dataManager!!.getImage(MyApp.prefs.getId(), 3, calendarDate.toString())
+      val getData4 = dataManager!!.getImage(MyApp.prefs.getId(), 4, calendarDate.toString())
 
       for(i in 0 until getData1.size) {
          imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
@@ -304,10 +305,10 @@ class FoodFragment : Fragment() {
       itemList3.clear()
       itemList4.clear()
 
-      val getFood1 = dataManager!!.getFood(1, calendarDate.toString())
-      val getFood2 = dataManager!!.getFood(2, calendarDate.toString())
-      val getFood3 = dataManager!!.getFood(3, calendarDate.toString())
-      val getFood4 = dataManager!!.getFood(4, calendarDate.toString())
+      val getFood1 = dataManager!!.getFood(MyApp.prefs.getId(), 1, calendarDate.toString())
+      val getFood2 = dataManager!!.getFood(MyApp.prefs.getId(), 2, calendarDate.toString())
+      val getFood3 = dataManager!!.getFood(MyApp.prefs.getId(), 3, calendarDate.toString())
+      val getFood4 = dataManager!!.getFood(MyApp.prefs.getId(), 4, calendarDate.toString())
 
       var kcal1 = 0
       var carbohydrate1 = 0.0
