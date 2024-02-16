@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.note
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ class NoteWriteFragment : Fragment() {
 
    private var dataManager: DataManager? = null
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -43,7 +45,7 @@ class NoteWriteFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getNote = dataManager!!.getNote(MyApp.prefs.getId(), selectedDate.toString())
+      val getNote = dataManager!!.getNote(selectedDate.toString())
 
       bundle.putString("data", "note")
 
@@ -62,11 +64,11 @@ class NoteWriteFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         if(getNote.string3 == "") {
-            dataManager!!.insertNote(Note(userId = MyApp.prefs.getId(), title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
+         if(getNote.regDate == "") {
+            dataManager!!.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateNote(Note(userId = MyApp.prefs.getId(), title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
+            dataManager!!.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
             Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
          replaceFragment2(requireActivity(), NoteFragment(), bundle)
@@ -80,10 +82,10 @@ class NoteWriteFragment : Fragment() {
    private fun settingData() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
-      val getNote = dataManager!!.getNote(MyApp.prefs.getId(), selectedDate.toString())
-      if(getNote.int1 != 0) {
-         binding.etTitle.setText(getNote.string1)
-         binding.etContent.setText(getNote.string2)
+      val getNote = dataManager!!.getNote(selectedDate.toString())
+      if(getNote.id != 0) {
+         binding.etTitle.setText(getNote.title)
+         binding.etContent.setText(getNote.content)
       }else {
          binding.etTitle.setText("")
          binding.etContent.setText("")

@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
@@ -35,6 +36,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
    private var rv: RecyclerView? = null
    private var viewPager: ViewPager? = null
 
+   @SuppressLint("ClickableViewAccessibility")
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.dialog_calendar)
@@ -164,10 +166,10 @@ class CalendarDialog(context: Context) : Dialog(context) {
       val itemList = ArrayList<Image>()
 
       // 데이터 가져오기
-      val getImage1 = dataManager!!.getImage(MyApp.prefs.getId(), 1, selectedDate.toString())
-      val getImage2 = dataManager!!.getImage(MyApp.prefs.getId(), 2, selectedDate.toString())
-      val getImage3 = dataManager!!.getImage(MyApp.prefs.getId(), 3, selectedDate.toString())
-      val getImage4 = dataManager!!.getImage(MyApp.prefs.getId(), 4, selectedDate.toString())
+      val getImage1 = dataManager!!.getImage(1, selectedDate.toString())
+      val getImage2 = dataManager!!.getImage(2, selectedDate.toString())
+      val getImage3 = dataManager!!.getImage(3, selectedDate.toString())
+      val getImage4 = dataManager!!.getImage(4, selectedDate.toString())
 
       // 리스트에 데이터 저장
       for (i in 0 until getImage1.size) {

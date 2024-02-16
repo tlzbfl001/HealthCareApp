@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -31,6 +32,7 @@ class FoodRecord2Fragment : Fragment() {
    private var calendarDate = ""
    private var type = ""
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -80,10 +82,10 @@ class FoodRecord2Fragment : Fragment() {
       var dataList = ArrayList<Food>()
 
       when(type) {
-         "1" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 1, calendarDate)
-         "2" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 2, calendarDate)
-         "3" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 3, calendarDate)
-         "4" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 4, calendarDate)
+         "1" -> dataList = dataManager!!.getFood(1, calendarDate)
+         "2" -> dataList = dataManager!!.getFood(2, calendarDate)
+         "3" -> dataList = dataManager!!.getFood(3, calendarDate)
+         "4" -> dataList = dataManager!!.getFood(4, calendarDate)
       }
 
       if(dataList.size > 0) {

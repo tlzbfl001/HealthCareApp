@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.exercise
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -27,6 +28,7 @@ class ExerciseEditFragment : Fragment() {
     private var intensity = "상"
     private var calendarDate = ""
 
+    @SuppressLint("InternalInsetResource", "DiscouragedApi")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,7 +53,7 @@ class ExerciseEditFragment : Fragment() {
 
         val id = arguments?.getString("id")!!.toInt()
 
-        val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), id)
+        val getExercise = dataManager!!.getExercise(id)
 
         // 텍스트 설정
         binding.tvName.text = getExercise.name
@@ -123,9 +125,9 @@ class ExerciseEditFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            dataManager!!.updateString(TABLE_EXERCISE, "intensity", intensity, MyApp.prefs.getId(), getExercise.id)
-            dataManager!!.updateString(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), MyApp.prefs.getId(), getExercise.id)
-            dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), MyApp.prefs.getId(), getExercise.id)
+            dataManager!!.updateString(TABLE_EXERCISE, "intensity", intensity, getExercise.id)
+            dataManager!!.updateString(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), getExercise.id)
+            dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), getExercise.id)
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

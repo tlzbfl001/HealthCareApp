@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.adapter
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ class ExerciseListAdapter (
       return ViewHolder(view)
    }
 
+   @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvName.text = itemList[position].name
       holder.tvTime.text = "${itemList[position].workoutTime}분"
@@ -40,7 +42,7 @@ class ExerciseListAdapter (
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteItem(TABLE_EXERCISE, MyApp.prefs.getId(), "id", itemList[position].id)
+               dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
 
                itemList.removeAt(position)
                notifyDataSetChanged()

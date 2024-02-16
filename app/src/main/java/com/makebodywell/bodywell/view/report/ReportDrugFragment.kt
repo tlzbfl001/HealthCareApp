@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.report
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -44,9 +45,12 @@ class ReportDrugFragment : Fragment() {
    private var calendarDate = LocalDate.now()
    private var dateType = 0
 
+   @SuppressLint("SimpleDateFormat")
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
 
+   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -90,12 +94,12 @@ class ReportDrugFragment : Fragment() {
             1->{
                calendarDate = calendarDate!!.minusWeeks(1)
                binding.tvCalTitle.text = weekFormat(calendarDate)
-               weeklyView()
+//               weeklyView()
             }
             2->{
                calendarDate = calendarDate!!.minusMonths(1)
                binding.tvCalTitle.text = monthFormat(calendarDate)
-               monthlyView()
+//               monthlyView()
             }
          }
       }
@@ -149,17 +153,17 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_DRUG)
-      if(getDates.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty.visibility = View.GONE
-         settingChart(binding.chart, getDates)
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty.visibility = View.VISIBLE
-      }
-
-      countView(getDates)
+//      val getDates = dataManager!!.getDates(TABLE_DRUG)
+//      if(getDates.size > 0) {
+//         binding.chart.visibility = View.VISIBLE
+//         binding.tvEmpty.visibility = View.GONE
+//         settingChart(binding.chart, getDates)
+//      }else {
+//         binding.chart.visibility = View.GONE
+//         binding.tvEmpty.visibility = View.VISIBLE
+//      }
+//
+//      countView(getDates)
    }
 
    private fun weeklyView() {
@@ -171,18 +175,18 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_DRUG, weekArray[0].toString(), weekArray[6].toString())
-      if(getDates.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty.visibility = View.GONE
-         settingChart(binding.chart, getDates)
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty.visibility = View.VISIBLE
-      }
-
-      countView(getDates)
+//      val weekArray = weekArray(calendarDate)
+//      val getDates = dataManager!!.getDates(TABLE_DRUG, weekArray[0].toString(), weekArray[6].toString())
+//      if(getDates.size > 0) {
+//         binding.chart.visibility = View.VISIBLE
+//         binding.tvEmpty.visibility = View.GONE
+//         settingChart(binding.chart, getDates)
+//      }else {
+//         binding.chart.visibility = View.GONE
+//         binding.tvEmpty.visibility = View.VISIBLE
+//      }
+//
+//      countView(getDates)
    }
 
    private fun monthlyView() {
@@ -194,18 +198,18 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
-      val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_DRUG, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      if(getDates.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty.visibility = View.GONE
-         settingChart(binding.chart, getDates)
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty.visibility = View.VISIBLE
-      }
-
-      countView(getDates)
+//      val monthArray = monthArray2(calendarDate)
+//      val getDates = dataManager!!.getDates(TABLE_DRUG, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+//      if(getDates.size > 0) {
+//         binding.chart.visibility = View.VISIBLE
+//         binding.tvEmpty.visibility = View.GONE
+//         settingChart(binding.chart, getDates)
+//      }else {
+//         binding.chart.visibility = View.GONE
+//         binding.tvEmpty.visibility = View.VISIBLE
+//      }
+//
+//      countView(getDates)
    }
 
    private fun settingChart(chart: CombinedChart, getData: ArrayList<String>) {
@@ -223,10 +227,10 @@ class ReportDrugFragment : Fragment() {
       var num = -1
 
       for(i in 0 until getData.size){
-         val getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), getData[i])
-         val count = dataManager!!.getDrugCheckCount(MyApp.prefs.getId(), getData[i])
+         val getDailyData = dataManager!!.getDailyData(getData[i])
+         val count = dataManager!!.getDrugCheckCount(getData[i])
 
-         if(getDailyData.regDate != "" && count != 0) {
+         if(getDailyData.regDate != "" && count > 0) {
             num++
 
             val pt = when(getDailyData.drugGoal) {
@@ -323,6 +327,7 @@ class ReportDrugFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun countView(data: ArrayList<String>) {
       var drug1 = 0
       var drug2 = 0
@@ -330,7 +335,7 @@ class ReportDrugFragment : Fragment() {
       var drug4 = 0
 
       for(i in 0 until data.size){
-         val getDrug = dataManager!!.getDrug(MyApp.prefs.getId(), data[i])
+         val getDrug = dataManager!!.getDrug(data[i])
          for(j in 0 until getDrug.size) {
             when(getDrug[j]) {
                "혈압약" -> drug1++

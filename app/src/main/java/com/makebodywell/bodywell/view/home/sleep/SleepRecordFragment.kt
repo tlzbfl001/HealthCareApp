@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.sleep
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
@@ -35,6 +36,7 @@ class SleepRecordFragment : Fragment() {
    private var sleepHour = 0
    private var sleepMinute = 0
 
+   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -59,12 +61,14 @@ class SleepRecordFragment : Fragment() {
       }
 
       binding.time.setOnTimeChangeListener(object : TimeRangePicker.OnTimeChangeListener {
+         @SuppressLint("SetTextI18n")
          override fun onStartTimeChange(startTime: TimeRangePicker.Time) {
             bedHour = binding.time.startTime.hour
             bedMinute = binding.time.startTime.minute
             binding.tvBedtime.text = "$bedHour : $bedMinute"
          }
 
+         @SuppressLint("SetTextI18n")
          override fun onEndTimeChange(endTime: TimeRangePicker.Time) {
             wakeHour = binding.time.endTime.hour
             wakeMinute = binding.time.endTime.minute
@@ -72,6 +76,7 @@ class SleepRecordFragment : Fragment() {
 
          }
 
+         @SuppressLint("SetTextI18n")
          override fun onDurationChange(duration: TimeRangePicker.TimeDuration) {
             sleepHour = duration.hour
             sleepMinute = duration.minute
@@ -81,7 +86,7 @@ class SleepRecordFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val calendarDate = arguments?.getString("calendarDate").toString()
-         val getSleep = dataManager!!.getSleep(MyApp.prefs.getId(), calendarDate)
+         val getSleep = dataManager!!.getSleep(calendarDate)
 
          val bedTime = bedHour * 60 + bedMinute
          val wakeTime = wakeHour * 60 + wakeMinute

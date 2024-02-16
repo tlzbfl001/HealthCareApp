@@ -87,7 +87,7 @@ class FoodBreakfastFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val getFoodData = intakeAdapter!!.getFoodData()
-         dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, MyApp.prefs.getId(), getFoodData.id)
+         dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment1(requireActivity(), FoodFragment())
@@ -95,15 +95,14 @@ class FoodBreakfastFragment : Fragment() {
 
       photoView()
 
-      // 섭취한 식단 설정
-      listView()
+      listView() // 섭취한 식단 설정
 
       return binding.root
    }
 
    private fun photoView() {
-      imageData = dataManager!!.getImage(MyApp.prefs.getId(), type, calendarDate)
-      imageData2 = dataManager!!.getImage(MyApp.prefs.getId(), type, calendarDate)
+      imageData = dataManager!!.getImage(type, calendarDate)
+      imageData2 = dataManager!!.getImage(type, calendarDate)
 
       if(imageData.size > 0) {
          photoAdapter = PhotoViewAdapter(imageData)
@@ -164,18 +163,19 @@ class FoodBreakfastFragment : Fragment() {
    }
 
    private fun listView() {
-      val dataList = dataManager!!.getFood(MyApp.prefs.getId(), type, calendarDate)
+      val dataList = dataManager!!.getFood(type, calendarDate)
       if(dataList.size != 0) {
          intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onItemClick(pos: Int) {
                val dialog = AlertDialog.Builder(context)
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
-                     dataManager!!.deleteItem(TABLE_FOOD, MyApp.prefs.getId(), "id", dataList[pos].id)
-                     dataManager!!.deleteItem(TABLE_IMAGE, MyApp.prefs.getId(), "dataId", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                      if (imageData.size > 0) {
                         imageData.stream().filter { x -> x.dataId == dataList[pos].id }

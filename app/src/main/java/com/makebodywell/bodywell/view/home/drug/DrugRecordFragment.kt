@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.drug
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ class DrugRecordFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter2? = null
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -47,7 +49,7 @@ class DrugRecordFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugAddFragment())
       }
 
-      val getDrug = dataManager!!.getDrug(MyApp.prefs.getId())
+      val getDrug = dataManager!!.getDrug()
 
       adapter = DrugAdapter2(requireActivity(), getDrug)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

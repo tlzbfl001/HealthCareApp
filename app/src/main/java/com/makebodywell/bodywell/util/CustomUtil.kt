@@ -61,10 +61,10 @@ class CustomUtil {
          val item = Item()
 
          var sum = 0
-         val getFood1 = dataManager.getFood(MyApp.prefs.getId(), 1, date)
-         val getFood2 = dataManager.getFood(MyApp.prefs.getId(), 2, date)
-         val getFood3 = dataManager.getFood(MyApp.prefs.getId(), 3, date)
-         val getFood4 = dataManager.getFood(MyApp.prefs.getId(), 4, date)
+         val getFood1 = dataManager.getFood(1, date)
+         val getFood2 = dataManager.getFood(2, date)
+         val getFood3 = dataManager.getFood(3, date)
+         val getFood4 = dataManager.getFood(4, date)
 
          for(i in 0 until getFood1.size) {
             sum += getFood1[i].kcal * getFood1[i].count
@@ -92,10 +92,10 @@ class CustomUtil {
          val dataManager = DataManager(context)
          dataManager.open()
 
-         val getFood1 = dataManager.getFood(MyApp.prefs.getId(), 1, date)
-         val getFood2 = dataManager.getFood(MyApp.prefs.getId(), 2, date)
-         val getFood3 = dataManager.getFood(MyApp.prefs.getId(), 3, date)
-         val getFood4 = dataManager.getFood(MyApp.prefs.getId(), 4, date)
+         val getFood1 = dataManager.getFood(1, date)
+         val getFood2 = dataManager.getFood(2, date)
+         val getFood3 = dataManager.getFood(3, date)
+         val getFood4 = dataManager.getFood(4, date)
 
          var carbohydrate = 0.0
          var protein = 0.0
@@ -135,7 +135,7 @@ class CustomUtil {
          dataManager.open()
 
          var sum = 0
-         val getExercise = dataManager.getExercise(MyApp.prefs.getId(), date)
+         val getExercise = dataManager.getExercise(date)
 
          if(getExercise.size > 0) {
             for(i in 0 until getExercise.size) {

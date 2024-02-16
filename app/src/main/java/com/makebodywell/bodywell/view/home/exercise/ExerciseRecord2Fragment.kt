@@ -72,7 +72,7 @@ class ExerciseRecord2Fragment : Fragment() {
    }
 
    private fun listView() {
-      val dataList = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate)
+      val dataList = dataManager!!.getExercise(calendarDate)
 
       if(dataList.size > 0) {
          binding.tvEmpty.visibility = View.GONE

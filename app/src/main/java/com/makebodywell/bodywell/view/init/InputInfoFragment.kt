@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.init
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -67,6 +68,7 @@ class InputInfoFragment : Fragment() {
    private var dialog: Dialog? = null
    private var image: String? = ""
 
+   @SuppressLint("SetTextI18n")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -123,13 +125,13 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         var name = if(getUser.name != "" && getUser.name != null) {
+         var name = if(getUser.name != "") {
             getUser.name
          }else {
             "바디웰"
          }
 
-         var birthday = if(getUser.birthday != "" && getUser.birthday != null) {
+         var birthday = if(getUser.birthday != "") {
             getUser.birthday
          }else {
             "1990-01-01"
@@ -145,17 +147,17 @@ class InputInfoFragment : Fragment() {
             birthday = binding.tvBirthday.text.toString()
          }
 
-         val getToken = dataManager!!.getToken(getUser.id)
+         val getToken = dataManager!!.getToken()
 
          lifecycleScope.launch{
             val response = apolloClient.mutation(UpdateUserProfileMutation(
-               userId = getUser.userId.toString(), UpdateUserProfileInput(birth = Optional.present(birthday), name = Optional.present(name))
+               userId = getUser.userId!!, UpdateUserProfileInput(birth = Optional.present(birthday), name = Optional.present(name))
             )).addHttpHeader(
                "Authorization",
                "Bearer ${getToken.accessToken}"
             ).execute()
 
-            dataManager!!.updateUserInfo(User(id = getUser.id, name = name, birthday = birthday, profileImage = profileImage))
+            dataManager!!.updateUserInfo(User(id = getUser.id, name = name, birthday = birthday, profileImage = profileImage!!))
 
             replaceLoginFragment1(requireActivity(), InputBodyFragment())
          }

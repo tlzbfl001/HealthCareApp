@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.report
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -44,9 +45,12 @@ class ReportExerciseFragment : Fragment() {
    private var calendarDate = LocalDate.now()
    private var dateType = 0
 
+   @SuppressLint("SimpleDateFormat")
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -149,7 +153,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_EXERCISE)
+      val getDates = dataManager!!.getDates(TABLE_EXERCISE)
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -177,7 +181,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -205,7 +209,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -239,7 +243,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
          xVal += format2.format(format1.parse(getData[i])!!)
-         val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), getData[i])
+         val getExercise = dataManager!!.getExercise(getData[i])
          for(j in 0 until getExercise.size) {
             total += getExercise[j].workoutTime.toFloat()
          }
@@ -297,7 +301,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
          xVal += format2.format(format1.parse(getData[i])!!)
-         val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), getData[i])
+         val getExercise = dataManager!!.getExercise(getData[i])
          for(j in 0 until getExercise.size) {
             total += getExercise[j].calories.toFloat()
          }
@@ -399,6 +403,7 @@ class ReportExerciseFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun countView(data: ArrayList<String>) {
       var running = 0
       var soccer = 0
@@ -406,7 +411,7 @@ class ReportExerciseFragment : Fragment() {
       var basketball = 0
 
       for(i in 0 until data.size){
-         val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), data[i])
+         val getExercise = dataManager!!.getExercise(data[i])
          for(j in 0 until getExercise.size) {
             when(getExercise[j].name) {
                "달리기" -> running++

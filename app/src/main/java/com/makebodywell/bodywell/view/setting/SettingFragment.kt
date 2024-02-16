@@ -62,6 +62,7 @@ class SettingFragment : Fragment() {
    private var getUser = User()
    private var getToken = Token()
 
+   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -117,8 +118,7 @@ class SettingFragment : Fragment() {
                      }
                   }
                   "naver" -> {
-                     val oAuthLoginModule = OAuthLogin.getInstance()
-                     oAuthLoginModule.init(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
+                     NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
                         R.string.app_name))
                      NaverIdLoginSDK.logout()
 
@@ -154,14 +154,14 @@ class SettingFragment : Fragment() {
             .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                getUser = dataManager!!.getUser(MyApp.prefs.getId())
-               getToken = dataManager!!.getToken(MyApp.prefs.getId())
+               getToken = dataManager!!.getToken()
 
                when(getUser.type) {
                   "google" -> {
 
                   }
                   "naver" -> {
-                     NaverIdLoginSDK.getAccessToken().dele
+
                   }
                   "kakao" -> {
                      UserApiClient.instance.unlink { error ->
@@ -189,38 +189,101 @@ class SettingFragment : Fragment() {
       return binding.root
    }
 
+   private fun logoutTest() {
+      when(MyApp.prefs.getId()) {
+         1 -> {
+            val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
+            if(account != null) {
+               val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                  .requestIdToken(getString(R.string.googleWebClientId))
+                  .requestEmail()
+                  .build()
+               val gsc = GoogleSignIn.getClient(requireActivity(), gso)
+
+               gsc.signOut().addOnCompleteListener {
+                  if (it.isSuccessful) {
+                     MyApp.prefs.removePrefs("userId")
+                     Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                     startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                     requireActivity().finish()
+                  } else {
+                     Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
+                  }
+               }
+            }
+         }
+         2 -> {
+            NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
+               R.string.app_name))
+            NaverIdLoginSDK.logout()
+
+            MyApp.prefs.removePrefs("userId")
+            Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireActivity(), LoginActivity::class.java))
+            requireActivity().finish()
+         }
+         3 -> {
+            UserApiClient.instance.logout { error ->
+               if (error != null) {
+                  Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show()
+               }else {
+                  MyApp.prefs.removePrefs("userId")
+
+                  Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                  startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                  requireActivity().finish()
+               }
+            }
+         }
+      }
+   }
+
    @SuppressLint("SetTextI18n")
    private fun userProfile() {
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
 
-      binding.tvName.text = getUser.name
-      binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
+      if(getUser.name != "") {
+         binding.tvName.text = getUser.name
+      }
 
-      val current = Calendar.getInstance()
-      val currentYear = current.get(Calendar.YEAR)
-      val currentMonth = current.get(Calendar.MONTH) + 1
-      val currentDay = current.get(Calendar.DAY_OF_MONTH)
+      if(getUser.profileImage != "") {
+         binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
+      }
 
-      var age: Int = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
-      if (getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay)
-         age--
+      if(getUser.birthday != "") {
+         val current = Calendar.getInstance()
+         val currentYear = current.get(Calendar.YEAR)
+         val currentMonth = current.get(Calendar.MONTH) + 1
+         val currentDay = current.get(Calendar.DAY_OF_MONTH)
 
-      val gender = if(getUser.gender == "MALE") "남" else "여"
+         var age: Int = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
+         if (getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay)
+            age--
 
-      binding.tvAge.text = "만${age}세 / $gender"
+         val gender = if(getUser.gender == "FEMALE") "여" else "남"
 
-      val hSplit = getUser.height!!.split(".")
-      val height = if(hSplit[1] == "0") hSplit[0] else getUser.height
+         binding.tvAge.text = "만${age}세 / $gender"
+      }
 
-      val wSplit = getUser.weight!!.split(".")
-      val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight
+      var height = "0"
+      var weight = "0"
+
+      if(getUser.height != "0") {
+         val hSplit = getUser.height!!.split(".")
+         height = if(hSplit[1] == "0") hSplit[0] else getUser.height!!
+      }
+
+      if(getUser.weight != "0") {
+         val wSplit = getUser.weight!!.split(".")
+         weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight!!
+      }
 
       binding.tvHeight.text = "${height}cm / ${weight}kg"
    }
 
    private suspend fun removeUser(): Boolean {
       val removeUser = apolloClient.mutation(RemoveUserMutation(
-         userId = getUser.userId.toString()
+         userId = getUser.userId!!
       )).addHttpHeader(
          "Authorization", "Bearer ${getToken.accessToken}"
       ).execute()
@@ -229,19 +292,19 @@ class SettingFragment : Fragment() {
    }
 
    private fun removeData() {
-      dataManager!!.deleteAll(TABLE_USER, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_TOKEN, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_FOOD, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_WATER, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_EXERCISE, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_BODY, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_DRUG, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_DRUG_TIME, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_DRUG_CHECK, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_NOTE, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_SLEEP, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_DAILY_DATA, MyApp.prefs.getId())
-      dataManager!!.deleteAll(TABLE_IMAGE, MyApp.prefs.getId())
+      dataManager!!.deleteAll(TABLE_USER)
+      dataManager!!.deleteAll(TABLE_TOKEN)
+      dataManager!!.deleteAll(TABLE_FOOD)
+      dataManager!!.deleteAll(TABLE_WATER)
+      dataManager!!.deleteAll(TABLE_EXERCISE)
+      dataManager!!.deleteAll(TABLE_BODY)
+      dataManager!!.deleteAll(TABLE_DRUG)
+      dataManager!!.deleteAll(TABLE_DRUG_TIME)
+      dataManager!!.deleteAll(TABLE_DRUG_CHECK)
+      dataManager!!.deleteAll(TABLE_NOTE)
+      dataManager!!.deleteAll(TABLE_SLEEP)
+      dataManager!!.deleteAll(TABLE_DAILY_DATA)
+      dataManager!!.deleteAll(TABLE_IMAGE)
       MyApp.prefs.removePrefs("userId")
    }
 }

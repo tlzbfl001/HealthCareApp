@@ -128,19 +128,19 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_IMAGE, MyApp.prefs.getId(), "dataId", dataId)
+         dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataId)
 
          for(i in 0 until imageList.size) {
             dataManager!!.insertImage(imageList[i])
          }
 
-         dataManager!!.updateInt(TABLE_FOOD, "count", count, MyApp.prefs.getId(), dataId)
+         dataManager!!.updateInt(TABLE_FOOD, "count", count, dataId)
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
-      val getData = dataManager!!.getImage(MyApp.prefs.getId(), dataId)
+      val getData = dataManager!!.getImage(dataId)
       for(i in 0 until getData.size) {
          imageList.add(getData[i])
       }
@@ -204,7 +204,7 @@ class FoodEditFragment : Fragment() {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
-                  imageList.add(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView(imageList)
 
                   dialog!!.dismiss()
@@ -212,12 +212,13 @@ class FoodEditFragment : Fragment() {
             }
             STORAGE_REQUEST_CODE -> {
                val uri = data!!.data
+
                if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
                   val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  imageList.add(Image(userId = MyApp.prefs.getId(), imageUri = uriParse!!, type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+                  imageList.add(Image(imageUri = uriParse!!, type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView(imageList)
                }else {
-                  imageList.add(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView(imageList)
                }
 

@@ -20,6 +20,7 @@ import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.LoginUserGoogleMutation
 import com.makebodywell.bodywell.LoginUserKakaoMutation
+import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentLoginBinding
@@ -27,6 +28,7 @@ import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
+import com.makebodywell.bodywell.type.LoginNaverOauthInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment2
@@ -100,7 +102,8 @@ class LoginFragment : Fragment() {
                     val getUser1 = dataManager!!.getUser("google", it.result.email.toString())
 
                     if(getUser1.regDate == "") { // 초기 가입 작업
-                        val user = User(type = "google", idToken = it.result.idToken, email = it.result.email, name = it.result.displayName, regDate = LocalDate.now().toString())
+                        val user = User(type = "google", idToken = it.result.idToken!!, email = it.result.email!!, name = it.result.displayName!!,
+                            regDate = LocalDate.now().toString())
                         bundle.putParcelable("user", user)
                         replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
                     }else { // 로그인
@@ -114,7 +117,7 @@ class LoginFragment : Fragment() {
                             }else {
                                 val getUser2 = dataManager!!.getUser("google", it.result.email.toString())
 
-                                dataManager!!.updateToken(Token(userId = getUser2.id, accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
+                                dataManager!!.updateToken(Token(accessToken = response.data!!.loginUserGoogle.accessToken.toString(),
                                     refreshToken = response.data!!.loginUserGoogle.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
                                 MyApp.prefs.setPrefs("userId", getUser2.id)
@@ -136,14 +139,12 @@ class LoginFragment : Fragment() {
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                     override fun onSuccess(result: NidProfileResponse) {
                         if(NaverIdLoginSDK.getAccessToken() != null && NaverIdLoginSDK.getAccessToken() != "") {
-                            startActivity(Intent(requireActivity(), MainActivity::class.java))
-
-                            /*val getUser1 = dataManager!!.getUser("naver", result.profile?.email.toString())
+                            val getUser1 = dataManager!!.getUser("naver", result.profile?.email.toString())
 
                             if(getUser1.regDate == "") {
-                                val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email, name = result.profile?.name,
-                                    nickname = result.profile?.nickname, gender = result.profile?.gender, birthday = result.profile?.birthYear + "-" + result.profile?.birthday,
-                                    profileImage = result.profile?.profileImage, regDate = LocalDate.now().toString())
+                                val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, name = result.profile?.name!!,
+                                    nickname = result.profile?.nickname!!, gender = result.profile?.gender!!, birthday = result.profile?.birthYear + "-" + result.profile?.birthday,
+                                    profileImage = result.profile?.profileImage!!, regDate = LocalDate.now().toString())
 
                                 bundle.putParcelable("user", user)
                                 replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
@@ -158,7 +159,7 @@ class LoginFragment : Fragment() {
                                     }else {
                                         val getUser2 = dataManager!!.getUser("naver", result.profile?.email.toString())
 
-                                        dataManager!!.updateToken(Token(userId = getUser2.id, accessToken = response.data!!.loginUserNaver.accessToken.toString(),
+                                        dataManager!!.updateToken(Token(accessToken = response.data!!.loginUserNaver.accessToken.toString(),
                                             refreshToken = response.data!!.loginUserNaver.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
                                         MyApp.prefs.setPrefs("userId", getUser2.id)
@@ -166,7 +167,7 @@ class LoginFragment : Fragment() {
                                         startActivity(Intent(requireActivity(), MainActivity::class.java))
                                     }
                                 }
-                            }*/
+                            }
                         }else {
                             Toast.makeText(requireActivity(), "로그인 실패", Toast.LENGTH_SHORT).show()
                         }
@@ -231,13 +232,13 @@ class LoginFragment : Fragment() {
                 val getUser1 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString()) // 사용자 가입여부 체크
 
                 if(getUser1.regDate == "") { // 초기 가입 작업
-                    val user = User(type = "kakao", idToken = token.idToken, email = user?.kakaoAccount?.email, name = user?.kakaoAccount?.name,
-                        nickname = user?.kakaoAccount?.profile?.nickname, profileImage = user?.kakaoAccount?.profile?.profileImageUrl, regDate = LocalDate.now().toString())
-                    bundle.putParcelable("user", user)
+                    val user2 = User(type = "kakao", idToken = token.idToken!!, email = user!!.kakaoAccount?.email!!, name = user.kakaoAccount?.name!!,
+                        nickname = user.kakaoAccount?.profile?.nickname!!, profileImage = user.kakaoAccount?.profile?.profileImageUrl!!, regDate = LocalDate.now().toString())
+                    bundle.putParcelable("user", user2)
                     replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)
                 }else { // 로그인
                     lifecycleScope.launch{
-                        val response = apolloClient!!.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
+                        val response = apolloClient.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
                             idToken = token.idToken.toString()
                         ))).execute()
 
@@ -246,7 +247,7 @@ class LoginFragment : Fragment() {
                         }else {
                             val getUser2 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
 
-                            dataManager!!.updateToken(Token(userId = getUser2.id, accessToken = response.data!!.loginUserKakao.accessToken.toString(),
+                            dataManager!!.updateToken(Token(accessToken = response.data!!.loginUserKakao.accessToken.toString(),
                                 refreshToken = response.data!!.loginUserKakao.refreshToken.toString(), regDate = LocalDate.now().toString()))
 
                             MyApp.prefs.setPrefs("userId", getUser2.id)

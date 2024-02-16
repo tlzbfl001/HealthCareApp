@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.water
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -45,6 +46,7 @@ class WaterFragment : Fragment() {
    private var volume = 0
    private var count = 0
 
+   @SuppressLint("InternalInsetResource", "DiscouragedApi", "SetTextI18n")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -66,7 +68,54 @@ class WaterFragment : Fragment() {
 
       binding.tvDate.text = dateFormat(calendarDate)
 
-      settingGoal()
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_water_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val etGoal = dialog.findViewById<EditText>(R.id.etGoal)
+      val etVolume = dialog.findViewById<EditText>(R.id.etVolume)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      btnSave.setOnClickListener {
+         if(etVolume.text.toString().trim() == "" || etGoal.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else if(etVolume.text.toString().trim() == "0"  || etGoal.text.toString().trim() == "0") {
+            Toast.makeText(requireActivity(), "1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            goal = etGoal.text.toString().toInt()
+            volume = etVolume.text.toString().toInt()
+
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(waterGoal = goal, regDate = calendarDate.toString()))
+            }else {
+               dataManager!!.updateGoal("waterGoal", goal, calendarDate.toString())
+            }
+
+            if(getWater.regDate == "") {
+               dataManager!!.insertWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
+            }else {
+               dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
+            }
+
+            binding.pbWater.max = goal
+            binding.tvIntake.text = "${count}잔/${count * volume}ml"
+            binding.tvVolume.text = "${volume}ml"
+            binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
+            binding.tvUnit.text = (count * volume).toString()
+
+            val remain = goal - count
+            if(remain > 0) {
+               binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
+            }else {
+               binding.tvRemain.text = "0잔/0ml"
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -122,61 +171,11 @@ class WaterFragment : Fragment() {
       return binding.root
    }
 
-   private fun settingGoal() {
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_water_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val etGoal = dialog.findViewById<EditText>(R.id.etGoal)
-      val etVolume = dialog.findViewById<EditText>(R.id.etVolume)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      btnSave.setOnClickListener {
-         if(etVolume.text.toString().trim() == "" || etGoal.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(etVolume.text.toString().trim() == "0"  || etGoal.text.toString().trim() == "0") {
-            Toast.makeText(requireActivity(), "1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            goal = etGoal.text.toString().toInt()
-            volume = etVolume.text.toString().toInt()
-
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(waterGoal = goal, regDate = calendarDate.toString()))
-            }else {
-               dataManager!!.updateGoal("waterGoal", goal, MyApp.prefs.getId(), calendarDate.toString())
-            }
-
-            if(getWater.regDate == "") {
-               dataManager!!.insertWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
-            }else {
-               dataManager!!.updateWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
-            }
-
-            binding.pbWater.max = goal
-            binding.tvIntake.text = "${count}잔/${count * volume}ml"
-            binding.tvVolume.text = "${volume}ml"
-            binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
-            binding.tvUnit.text = (count * volume).toString()
-
-            val remain = goal - count
-            if(remain > 0) {
-               binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-            }else {
-               binding.tvRemain.text = "0잔/0ml"
-            }
-
-            dialog.dismiss()
-         }
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
-   }
-
+   @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       // 목표 초기화
-      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
-      getWater = dataManager!!.getWater(MyApp.prefs.getId(), calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      getWater = dataManager!!.getWater(calendarDate.toString())
 
       binding.pbWater.max = 0
       binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
@@ -209,6 +208,7 @@ class WaterFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun dailyWater() {
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
       binding.rv.layoutManager = layoutManager
@@ -246,7 +246,7 @@ class WaterFragment : Fragment() {
          adapter = WaterAdapter(count)
          binding.rv.adapter = adapter
 
-         getWater = dataManager!!.getWater(MyApp.prefs.getId(), calendarDate.toString())
+         getWater = dataManager!!.getWater(calendarDate.toString())
          if(getWater.regDate == "") {
             dataManager!!.insertWater(Water(water = count, volume = volume, regDate = calendarDate.toString()))
          }else {
@@ -275,7 +275,7 @@ class WaterFragment : Fragment() {
          adapter = WaterAdapter(count)
          binding.rv.adapter = adapter
 
-         getWater = dataManager!!.getWater(MyApp.prefs.getId(), calendarDate.toString())
+         getWater = dataManager!!.getWater(calendarDate.toString())
          if(getWater.regDate == "") {
             dataManager!!.insertWater(Water(water = count, volume = getWater.volume, regDate = calendarDate.toString()))
          }else {

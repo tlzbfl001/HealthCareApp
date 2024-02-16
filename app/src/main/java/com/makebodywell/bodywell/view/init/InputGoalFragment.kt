@@ -60,10 +60,10 @@ class InputGoalFragment : Fragment() {
             waterGoal = binding.etWaterGoal.text.toString().toInt()
          }
 
-         dataManager?.updateDouble(TABLE_USER, "weightGoal", weightGoal, MyApp.prefs.getId(), getUser.id)
-         dataManager?.updateInt(TABLE_USER, "kcalGoal", kcalGoal, MyApp.prefs.getId(), getUser.id)
-         dataManager?.updateInt(TABLE_USER, "waterUnit", waterUnit, MyApp.prefs.getId(), getUser.id)
-         dataManager?.updateInt(TABLE_USER, "waterGoal", waterGoal, MyApp.prefs.getId(), getUser.id)
+         dataManager?.updateDouble(TABLE_USER, "weightGoal", weightGoal, getUser.id)
+         dataManager?.updateInt(TABLE_USER, "kcalGoal", kcalGoal, getUser.id)
+         dataManager?.updateInt(TABLE_USER, "waterUnit", waterUnit, getUser.id)
+         dataManager?.updateInt(TABLE_USER, "waterGoal", waterGoal, getUser.id)
 
          startActivity(Intent(requireActivity(), MainActivity::class.java))
       }

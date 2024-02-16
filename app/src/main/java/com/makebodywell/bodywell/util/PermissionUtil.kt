@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
@@ -100,10 +101,12 @@ class PermissionUtil {
             return check
         }
 
+        @SuppressLint("SimpleDateFormat")
         fun randomFileName(): String {
             return SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())
         }
 
+        @SuppressLint("Recycle")
         fun saveFile(context: Context, fileName:String, mimeType:String, bitmap: Bitmap): Uri?{
             // MediaStore 에 파일명, mimeType 을 지정
             val cv = ContentValues()

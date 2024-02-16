@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.drug
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -36,6 +37,7 @@ class DrugAddFragment : Fragment() {
    private var unit = "정"
    private var count = 1
 
+   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -116,11 +118,11 @@ class DrugAddFragment : Fragment() {
             dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etAmount.text.toString(),
                unit = unit, startDate = startDate, endDate = endDate, count = count, isSet = 1, regDate = getDate.toString()))
 
-            val getDrugId = dataManager!!.getDrugId(MyApp.prefs.getId(), getDate.toString())
+            val getDrugId = dataManager!!.getDrugId(getDate.toString())
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
-               dataManager!!.insertDrugTime(DrugTime(userId = MyApp.prefs.getId(), hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+               dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
             }
 
             val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit

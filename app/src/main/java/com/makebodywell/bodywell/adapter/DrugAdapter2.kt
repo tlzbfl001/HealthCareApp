@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.adapter
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -40,12 +41,13 @@ class DrugAdapter2 (
       return ViewHolder(view)
    }
 
+   @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvType.text = itemList[position].type
       holder.tvName.text = itemList[position].name
       holder.tvCount.text = itemList[position].amount + itemList[position].unit
 
-      val getDrugTime = dataManager?.getDrugTime(MyApp.prefs.getId(), itemList[position].id)
+      val getDrugTime = dataManager?.getDrugTime(itemList[position].id)
 
       holder.tvPeriod.text = "${getDrugTime!!.size}일동안 ${itemList[position].count}회 복용"
 
@@ -67,10 +69,10 @@ class DrugAdapter2 (
          if (isChecked) {
             val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
             alarmReceiver.setAlarm(context, itemList[position].id, itemList[position].startDate, itemList[position].endDate, timeList, message)
-            dataManager!!.updateDrugSet(MyApp.prefs.getId(), 1)
+            dataManager!!.updateDrugSet(1)
          }else {
             alarmReceiver.cancelAlarm(context, itemList[position].id)
-            dataManager!!.updateDrugSet(MyApp.prefs.getId(), 0)
+            dataManager!!.updateDrugSet(0)
          }
       }
 
@@ -79,11 +81,11 @@ class DrugAdapter2 (
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                for(i in 0 until timeList.size) {
-                  dataManager!!.deleteItem(DBHelper.TABLE_DRUG_CHECK, MyApp.prefs.getId(), "drugTimeId", timeList[i].id)
+                  dataManager!!.deleteItem(DBHelper.TABLE_DRUG_CHECK, "drugTimeId", timeList[i].id)
                }
 
-               dataManager!!.deleteItem(DBHelper.TABLE_DRUG_TIME, MyApp.prefs.getId(), "drugId", itemList[position].id)
-               dataManager!!.deleteItem(DBHelper.TABLE_DRUG, MyApp.prefs.getId(), "id", itemList[position].id)
+               dataManager!!.deleteItem(DBHelper.TABLE_DRUG_TIME, "drugId", itemList[position].id)
+               dataManager!!.deleteItem(DBHelper.TABLE_DRUG, "id", itemList[position].id)
 
                alarmReceiver.cancelAlarm(context, itemList[position].id)
 

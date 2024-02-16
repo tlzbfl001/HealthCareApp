@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.report
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,9 +39,12 @@ class ReportBodyFragment : Fragment() {
    private var calendarDate = LocalDate.now()
    private var dateType = 0
 
+   @SuppressLint("SimpleDateFormat")
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -147,7 +151,7 @@ class ReportBodyFragment : Fragment() {
       val itemList2 = ArrayList<Body>()
       val itemList3 = ArrayList<Body>()
 
-      val getBody = dataManager!!.getBody(MyApp.prefs.getId())
+      val getBody = dataManager!!.getBody()
       for(i in 0 until getBody.size) {
          if (getBody[i].weight > 0) {
             itemList1.add(Body(weight = getBody[i].weight, regDate = format2.format(format1.parse(getBody[i].regDate)!!)))
@@ -229,7 +233,7 @@ class ReportBodyFragment : Fragment() {
       val itemList3 = ArrayList<Body>()
 
       val weekArray = weekArray(calendarDate)
-      val getData = dataManager!!.getBody(MyApp.prefs.getId(), weekArray[0].toString(), weekArray[6].toString())
+      val getData = dataManager!!.getBody(weekArray[0].toString(), weekArray[6].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
@@ -311,7 +315,7 @@ class ReportBodyFragment : Fragment() {
       val itemList3 = ArrayList<Body>()
 
       val monthArray = monthArray2(calendarDate)
-      val getData = dataManager!!.getBody(MyApp.prefs.getId(), monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getData = dataManager!!.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))

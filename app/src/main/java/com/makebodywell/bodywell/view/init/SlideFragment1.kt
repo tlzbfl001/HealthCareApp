@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.makebodywell.bodywell.databinding.FragmentSlide1Binding
+import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 
 class SlideFragment1 : Fragment() {
@@ -20,6 +21,7 @@ class SlideFragment1 : Fragment() {
       _binding = FragmentSlide1Binding.inflate(layoutInflater)
 
       binding.ivLogo.setOnClickListener {
+//         MyApp.prefs.setPrefs("userId", 1)
          startActivity(Intent(context, MainActivity::class.java))
       }
 

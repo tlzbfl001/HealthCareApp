@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.exercise
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -111,6 +112,7 @@ class ExerciseFragment : Fragment() {
       return binding.root
    }
 
+   @SuppressLint("SetTextI18n")
    private fun settingGoal() {
       // 목표 설정
       val dialog = Dialog(requireActivity())
@@ -129,7 +131,7 @@ class ExerciseFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateGoal("exerciseGoal",  et.text.toString().toInt(), MyApp.prefs.getId(), calendarDate.toString())
+               dataManager!!.updateGoal("exerciseGoal",  et.text.toString().toInt(), calendarDate.toString())
             }
 
             binding.pbExercise.max = et.text.toString().toInt()
@@ -151,6 +153,7 @@ class ExerciseFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun dailyView() {
       // 목표 초기화
       binding.pbExercise.max = 0
@@ -160,7 +163,7 @@ class ExerciseFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       sum = getExerciseCalories(requireActivity(), calendarDate.toString())
 
       if(sum > 0) {
@@ -180,7 +183,7 @@ class ExerciseFragment : Fragment() {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate.toString())
+      val getExercise = dataManager!!.getExercise(calendarDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

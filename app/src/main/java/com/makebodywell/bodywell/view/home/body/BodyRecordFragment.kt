@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.body
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ class BodyRecordFragment : Fragment() {
    private var exerciseLevel = 1
    private var gender = "MALE"
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -44,7 +46,7 @@ class BodyRecordFragment : Fragment() {
       dataManager!!.open()
 
       val calendarDate = arguments?.getString("calendarDate").toString()
-      val getBody = dataManager!!.getBody(MyApp.prefs.getId(), calendarDate)
+      val getBody = dataManager!!.getBody(calendarDate)
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
       if (getBody.regDate != "") {
@@ -151,7 +153,7 @@ class BodyRecordFragment : Fragment() {
          if(bmr == "") bmr = "0.0"
 
          if(getBody.regDate == "") {
-            dataManager!!.insertBody(Body(userId = MyApp.prefs.getId(), height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender, exerciseLevel = exerciseLevel,
+            dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender, exerciseLevel = exerciseLevel,
                fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = calendarDate))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {

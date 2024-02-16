@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.exercise
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ class ExerciseListFragment : Fragment() {
 
    private var calendarDate = ""
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -54,7 +56,7 @@ class ExerciseListFragment : Fragment() {
          replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
       }
 
-      val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate)
+      val getExercise = dataManager!!.getExercise(calendarDate)
 
       val adapter = ExerciseListAdapter(requireActivity(), getExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

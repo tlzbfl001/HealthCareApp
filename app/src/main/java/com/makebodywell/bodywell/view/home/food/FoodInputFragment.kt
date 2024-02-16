@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.hardware.input.InputManager
@@ -14,6 +15,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodInputBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.util.MyApp
 
 class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
@@ -21,6 +23,7 @@ class FoodInputFragment : Fragment() {
 
    private var bundle = Bundle()
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -37,7 +40,7 @@ class FoodInputFragment : Fragment() {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      val dataManager = DataManager(activity)
+      val dataManager = DataManager(requireActivity())
       dataManager.open()
 
       val calendarDate = arguments?.getString("calendarDate").toString()
@@ -113,20 +116,20 @@ class FoodInputFragment : Fragment() {
 
          when(type) {
             "1" -> {
-               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
-                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 1, regDate = calendarDate))
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal,
+                  carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt, sugar = sugar, type = 1, regDate = calendarDate))
             }
             "2" -> {
-               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
-                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 2, regDate = calendarDate))
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal,
+                  carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt, sugar = sugar, type = 2, regDate = calendarDate))
             }
             "3" -> {
-               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
-                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 3, regDate = calendarDate))
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal,
+                  carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt, sugar = sugar, type = 3, regDate = calendarDate))
             }
             "4" -> {
-               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal, carbohydrate = carbohydrate,
-                  protein = protein, fat = fat, salt = salt, sugar = sugar, type = 4, regDate = calendarDate))
+               dataManager.insertFood(Food(name = name, unit = unit, amount = amount, count = 1, kcal = kcal,
+                  carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt, sugar = sugar, type = 4, regDate = calendarDate))
             }
          }
 

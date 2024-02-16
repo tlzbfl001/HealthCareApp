@@ -85,10 +85,10 @@ class FoodRecord1Fragment : Fragment() {
       var dataList = ArrayList<Food>()
 
       when(type) {
-         "1" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 1, calendarDate)
-         "2" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 2, calendarDate)
-         "3" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 3, calendarDate)
-         "4" -> dataList = dataManager!!.getFood(MyApp.prefs.getId(), 4, calendarDate)
+         "1" -> dataList = dataManager!!.getFood(1, calendarDate)
+         "2" -> dataList = dataManager!!.getFood(2, calendarDate)
+         "3" -> dataList = dataManager!!.getFood(3, calendarDate)
+         "4" -> dataList = dataManager!!.getFood(4, calendarDate)
       }
 
       if(dataList.size > 0) {

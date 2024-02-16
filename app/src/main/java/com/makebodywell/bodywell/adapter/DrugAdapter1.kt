@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -34,6 +35,7 @@ class DrugAdapter1 (
         return ViewHolder(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvTime.text = itemList[position].time
         holder.tvName.text = itemList[position].name
@@ -64,11 +66,11 @@ class DrugAdapter1 (
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheck = dataManager!!.getDrugCheck(MyApp.prefs.getId(), itemList[position].id, itemList[position].date)
+            val getDrugCheck = dataManager!!.getDrugCheck(itemList[position].id, itemList[position].date)
             if(holder.tvCheck.isChecked) {
                 check += 1
                 if(getDrugCheck.regDate == "") {
-                    dataManager!!.insertDrugCheck(MyApp.prefs.getId(), 1, itemList[position].id, itemList[position].date)
+                    dataManager!!.insertDrugCheck(1, itemList[position].id, itemList[position].date)
                 }else {
                     dataManager!!.updateDrugCheck(DrugCheck(checked = 1, drugTimeId = itemList[position].id, regDate = itemList[position].date))
                 }

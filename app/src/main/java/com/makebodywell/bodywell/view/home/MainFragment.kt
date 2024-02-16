@@ -64,11 +64,11 @@ class MainFragment : Fragment() {
 
       val getUser = dataManager!!.getUser(MyApp.prefs.getId())
 
-      if(getUser.name != "" && getUser.name != null) {
+      if(getUser.name != "") {
          binding.tvName.text = getUser.name + " 님"
       }
 
-      if(getUser.profileImage != "" && getUser.profileImage != null) {
+      if(getUser.profileImage != "") {
          binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
       }
 
@@ -206,6 +206,7 @@ class MainFragment : Fragment() {
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
    }
 
+   @SuppressLint("SetTextI18n")
    private fun recordView() {
       // 프로그래스바 초기화
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
@@ -220,12 +221,12 @@ class MainFragment : Fragment() {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
       // 프로그래스바 설정
-      val getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), selectedDate.toString())
+      val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
       val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
-      val getWater = dataManager!!.getWater(MyApp.prefs.getId(), selectedDate.toString())
+      val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
-      val getBody = dataManager!!.getBody(MyApp.prefs.getId(), selectedDate.toString())
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount(MyApp.prefs.getId(), selectedDate.toString())
+      val getBody = dataManager!!.getBody(selectedDate.toString())
+      val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))

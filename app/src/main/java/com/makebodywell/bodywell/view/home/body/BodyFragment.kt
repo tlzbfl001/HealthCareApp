@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.body
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -46,6 +47,7 @@ class BodyFragment : Fragment() {
    private var calendarDate = LocalDate.now()
    private var isExpand = false
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -177,7 +179,7 @@ class BodyFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble()))
             }else {
-               dataManager!!.updateDouble(TABLE_BODY, "bodyGoal", et.text.toString().toDouble(), MyApp.prefs.getId(), getDailyData.id)
+               dataManager!!.updateDouble(TABLE_BODY, "bodyGoal", et.text.toString().toDouble(), getDailyData.id)
             }
 
             dailyGoal()
@@ -191,6 +193,7 @@ class BodyFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       binding.pbBody.max = 0
       binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
@@ -199,7 +202,7 @@ class BodyFragment : Fragment() {
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
 
       val goal = getDailyData.bodyGoal
       if (goal > 0) {
@@ -212,7 +215,7 @@ class BodyFragment : Fragment() {
          }
       }
 
-      getBody = dataManager!!.getBody(MyApp.prefs.getId(), calendarDate.toString())
+      getBody = dataManager!!.getBody(calendarDate.toString())
 
       if (getBody.weight > 0) {
          binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
@@ -237,6 +240,7 @@ class BodyFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun dailyList() {
       binding.tvBmi.text = getBody.bmi.toString()
       binding.tvFat.text = "${getBody.fat} %"

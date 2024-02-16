@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.exercise
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -29,6 +30,7 @@ class ExerciseRecord1Fragment : Fragment() {
 
    private var calendarDate = ""
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -70,7 +72,7 @@ class ExerciseRecord1Fragment : Fragment() {
    }
 
    private fun listView() {
-      val dataList = dataManager!!.getExercise(MyApp.prefs.getId(), calendarDate)
+      val dataList = dataManager!!.getExercise(calendarDate)
 
       if(dataList.size > 0) {
          binding.tvEmpty.visibility = View.GONE

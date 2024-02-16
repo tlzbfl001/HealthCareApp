@@ -117,7 +117,7 @@ class NoteFragment : Fragment() {
 
             // 소비 칼로리 계산
             var total = 0
-            val getExercise = dataManager!!.getExercise(MyApp.prefs.getId(), selectedDate.toString())
+            val getExercise = dataManager!!.getExercise(selectedDate.toString())
             for(i in 0 until getExercise.size) {
                total += getExercise[i].calories
             }
@@ -168,9 +168,9 @@ class NoteFragment : Fragment() {
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
 
-      val getNote = dataManager!!.getNote(MyApp.prefs.getId(), selectedDate.toString())
-      if(getNote.string1 != "") {
-         binding.tvTitle.text = getNote.string1
+      val getNote = dataManager!!.getNote(selectedDate.toString())
+      if(getNote.regDate != "") {
+         binding.tvTitle.text = getNote.title
       }else {
          binding.tvTitle.text = "제목"
       }
@@ -182,7 +182,7 @@ class NoteFragment : Fragment() {
    }
 
    private fun setImageView() {
-      val dataList = dataManager!!.getImage(MyApp.prefs.getId(), 5, selectedDate.toString())
+      val dataList = dataManager!!.getImage(5, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
       binding.viewPager.setPadding(180, 0, 180, 0)
@@ -264,7 +264,7 @@ class NoteFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
 
-                  dataManager!!.insertImage(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()
 
                   dialog!!.dismiss()
@@ -274,10 +274,10 @@ class NoteFragment : Fragment() {
                uri = data!!.data
                if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
                   val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  dataManager!!.insertImage(Image(userId = MyApp.prefs.getId(), imageUri = uriParse!!, type = 5, regDate = selectedDate.toString()))
+                  dataManager!!.insertImage(Image(imageUri = uriParse!!, type = 5, regDate = selectedDate.toString()))
                   setImageView()
                }else {
-                  dataManager!!.insertImage(Image(userId = MyApp.prefs.getId(), imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()
                }
 

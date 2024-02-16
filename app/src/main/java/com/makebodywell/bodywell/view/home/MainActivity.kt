@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
       }
 
       mainViewModel = ViewModelProvider(this, ViewModelFactory(this))[MainViewModel::class.java]
-      mainViewModel.updateData()
+      mainViewModel.updateData(this)
    }
 
    class ViewModelFactory(private val context: Context) :

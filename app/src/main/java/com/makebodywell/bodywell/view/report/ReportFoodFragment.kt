@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.report
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -47,9 +48,12 @@ class ReportFoodFragment : Fragment() {
    private var calendarDate = LocalDate.now()
    private var dateType = 0
 
+   @SuppressLint("SimpleDateFormat")
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
 
+   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -152,7 +156,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_FOOD)
+      val getDates = dataManager!!.getDates(TABLE_FOOD)
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -167,7 +171,7 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater(MyApp.prefs.getId())
+      val getWater = dataManager!!.getWater()
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
@@ -188,7 +192,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -203,7 +207,7 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater(MyApp.prefs.getId(), weekArray[0].toString(), weekArray[6].toString())
+      val getWater = dataManager!!.getWater(weekArray[0].toString(), weekArray[6].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
@@ -224,7 +228,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(MyApp.prefs.getId(), TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
@@ -240,7 +244,7 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater(MyApp.prefs.getId(), monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getWater = dataManager!!.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE

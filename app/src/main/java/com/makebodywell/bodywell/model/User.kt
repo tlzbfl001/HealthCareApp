@@ -19,11 +19,11 @@ data class User(
     var gender: String? = "",
     var birthday: String? = "",
     var profileImage: String? = "",
-    var height: String? = "",
-    var weight: String? = "",
-    var weightGoal: String? = "",
-    var kcalGoal: String? = "",
-    var waterGoal: String? = "",
-    var waterUnit: String? = "",
+    var height: String? = "0",
+    var weight: String? = "0",
+    var weightGoal: String? = "0",
+    var kcalGoal: String? = "0",
+    var waterGoal: String? = "0",
+    var waterUnit: String? = "0",
     var regDate: String? = ""
 ) : Parcelable

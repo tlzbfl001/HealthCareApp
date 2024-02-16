@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.sleep
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -42,6 +43,7 @@ class SleepFragment : Fragment() {
 
    private var calendarDate: LocalDate? = null
 
+   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -111,6 +113,7 @@ class SleepFragment : Fragment() {
       return binding.root
    }
 
+   @SuppressLint("SetTextI18n")
    private fun settingGoal() {
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_sleep)
@@ -138,7 +141,7 @@ class SleepFragment : Fragment() {
          if(getDaily.regDate == "") {
             dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = calendarDate.toString()))
          }else {
-            dataManager!!.updateGoal("sleepGoal", total, MyApp.prefs.getId(), calendarDate.toString())
+            dataManager!!.updateGoal("sleepGoal", total, calendarDate.toString())
          }
 
          binding.pbSleep.max = total
@@ -160,9 +163,10 @@ class SleepFragment : Fragment() {
       }
    }
 
+   @SuppressLint("SetTextI18n")
    private fun dailyView() {
-      getSleep = dataManager!!.getSleep(MyApp.prefs.getId(), calendarDate.toString())
-      getDaily = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
+      getSleep = dataManager!!.getSleep(calendarDate.toString())
+      getDaily = dataManager!!.getDailyData(calendarDate.toString())
 
       binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
       binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"

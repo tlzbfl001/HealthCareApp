@@ -93,7 +93,7 @@ class DrugFragment : Fragment() {
             if(getDailyData.regDate == "") {
                dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
             }else {
-               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), MyApp.prefs.getId(), calendarDate.toString())
+               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), calendarDate.toString())
             }
             recordView()
          }
@@ -160,20 +160,20 @@ class DrugFragment : Fragment() {
       itemList.clear()
       check = 0
 
-      getDailyData = dataManager!!.getDailyData(MyApp.prefs.getId(), calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
       binding.pbDrug.max = getDailyData.drugGoal
       binding.tvGoal.text = "${getDailyData.drugGoal}회"
 
       // 약복용 체크값 초기화
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount(MyApp.prefs.getId(), calendarDate.toString())
+      val getDrugCheckCount = dataManager!!.getDrugCheckCount( calendarDate.toString())
       check = getDrugCheckCount
 
       // 약복용 리스트 생성
-      val getDrugDaily = dataManager!!.getDrugDaily(MyApp.prefs.getId(), calendarDate.toString())
+      val getDrugDaily = dataManager!!.getDrugDaily(calendarDate.toString())
       for(i in 0 until getDrugDaily.size) {
-         val getDrugTime = dataManager!!.getDrugTime(MyApp.prefs.getId(), getDrugDaily[i].id)
+         val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
-            val getDrugCheck = dataManager!!.getDrugCheck(MyApp.prefs.getId(), getDrugTime[j].id, calendarDate.toString())
+            val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, calendarDate.toString())
             itemList.add(DrugList(id = getDrugTime[j].id, date = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
                unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
                initCheck = check, checked = getDrugCheck.checked)
