@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.util
 import android.app.Application
 import com.makebodywell.bodywell.R
 import com.kakao.sdk.common.KakaoSdk
+import com.makebodywell.bodywell.BuildConfig
 
 class MyApp : Application() {
    companion object {
@@ -13,7 +14,7 @@ class MyApp : Application() {
       super.onCreate()
 
       // KaKao SDK  초기화
-      KakaoSdk.init(this, getString(R.string.nativeAppKey))
+      KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
 
       prefs = PreferenceUtil(applicationContext)
    }

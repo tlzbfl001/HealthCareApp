@@ -62,7 +62,7 @@ class MainFragment : Fragment() {
 
       selectedDate = LocalDate.now()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+      val getUser = dataManager!!.getUser()
 
       if(getUser.name != "") {
          binding.tvName.text = getUser.name + " 님"

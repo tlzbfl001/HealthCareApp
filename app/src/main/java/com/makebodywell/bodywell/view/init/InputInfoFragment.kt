@@ -78,7 +78,7 @@ class InputInfoFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+      val getUser = dataManager!!.getUser()
 
       binding.ivProfile.setOnClickListener {
          if(cameraRequest(requireActivity())) {
@@ -150,12 +150,12 @@ class InputInfoFragment : Fragment() {
          val getToken = dataManager!!.getToken()
 
          lifecycleScope.launch{
-            val response = apolloClient.mutation(UpdateUserProfileMutation(
-               userId = getUser.userId!!, UpdateUserProfileInput(birth = Optional.present(birthday), name = Optional.present(name))
-            )).addHttpHeader(
-               "Authorization",
-               "Bearer ${getToken.accessToken}"
-            ).execute()
+//            val response = apolloClient.mutation(UpdateUserProfileMutation(
+//               userId = getUser.userId!!, UpdateUserProfileInput(birth = Optional.present(birthday), name = Optional.present(name))
+//            )).addHttpHeader(
+//               "Authorization",
+//               "Bearer ${getToken.accessToken}"
+//            ).execute()
 
             dataManager!!.updateUserInfo(User(id = getUser.id, name = name, birthday = birthday, profileImage = profileImage!!))
 

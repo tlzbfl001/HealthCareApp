@@ -28,7 +28,7 @@ class InputGoalFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+      val getUser = dataManager!!.getUser()
 
       binding.ivBack.setOnClickListener {
          replaceLoginFragment1(requireActivity(), InputBodyFragment())

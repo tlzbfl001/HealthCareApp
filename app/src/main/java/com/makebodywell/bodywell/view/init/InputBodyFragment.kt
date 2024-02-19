@@ -39,7 +39,7 @@ class InputBodyFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+      val getUser = dataManager!!.getUser()
 
       binding.ivBack.setOnClickListener {
          replaceLoginFragment1(requireActivity(), InputInfoFragment())
@@ -85,12 +85,12 @@ class InputBodyFragment : Fragment() {
          }
 
          lifecycleScope.launch{
-            val response = apolloClient.mutation(UpdateUserProfileMutation(
-               userId = getUser.userId!!, UpdateUserProfileInput(gender = Optional.present(gender), height = Optional.present(height), weight = Optional.present(weight))
-            )).addHttpHeader(
-               "Authorization",
-               "Bearer ${getToken.accessToken}"
-            ).execute()
+//            val response = apolloClient.mutation(UpdateUserProfileMutation(
+//               userId = getUser.userId!!, UpdateUserProfileInput(gender = Optional.present(gender), height = Optional.present(height), weight = Optional.present(weight))
+//            )).addHttpHeader(
+//               "Authorization",
+//               "Bearer ${getToken.accessToken}"
+//            ).execute()
 
             dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
             dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)

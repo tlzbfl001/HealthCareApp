@@ -41,6 +41,18 @@ class DataManager(private var context: Context?) {
       return this
    }
 
+   fun getUserCount() : Int {
+      val db = dbHelper!!.readableDatabase
+      var data = 0
+      val sql = "select count(id) from $TABLE_USER"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data = cursor.getInt(0)
+      }
+      cursor.close()
+      return data
+   }
+
    fun getUser(type: String, email: String) : User {
       val db = dbHelper!!.readableDatabase
       val data = User()
@@ -73,10 +85,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getUser(id: Int) : User {
+   fun getUser() : User {
       val db = dbHelper!!.readableDatabase
       val data = User()
-      val sql = "select * from $TABLE_USER where id = $id"
+      val sql = "select * from $TABLE_USER where id = ${MyApp.prefs.getId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
@@ -776,8 +788,7 @@ class DataManager(private var context: Context?) {
 
    fun updateNote(data: Note){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_NOTE set title='${data.title}', content='${data.content}' " +
-         "where userId = ${MyApp.prefs.getId()} and regDate='${data.regDate}'"
+      val sql = "update $TABLE_NOTE set title='${data.title}', content='${data.content}' where userId = ${MyApp.prefs.getId()} and regDate='${data.regDate}'"
       db.execSQL(sql)
       db.close()
    }

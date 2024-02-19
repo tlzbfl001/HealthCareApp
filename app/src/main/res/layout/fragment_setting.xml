@@ -417,18 +417,21 @@
                   app:layout_constraintTop_toBottomOf="@+id/ivFaq"
                   app:layout_constraintStart_toStartOf="parent"/>
                <TextView
-                  android:layout_width="wrap_content"
+                  android:id="@+id/tvVer"
+                  android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:layout_marginLeft="10dp"
                   android:text="버정정보"
                   android:textSize="16dp"
                   android:textColor="@color/black"
                   app:layout_constraintTop_toTopOf="@id/ivInfo"
+                  app:layout_constraintEnd_toStartOf="@id/iv7"
                   app:layout_constraintStart_toEndOf="@id/ivInfo"
                   app:layout_constraintBottom_toBottomOf="@id/ivInfo"/>
                <ImageView
-                   android:layout_width="12dp"
-                   android:layout_height="12dp"
+                  android:id="@+id/iv7"
+                  android:layout_width="12dp"
+                  android:layout_height="12dp"
                   android:src="@drawable/arrow_right_round"
                   app:tint="#9E9E9E"
                   app:layout_constraintTop_toTopOf="@id/ivInfo"

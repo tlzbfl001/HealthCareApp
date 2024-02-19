@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.init
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -30,6 +31,7 @@ import com.makebodywell.bodywell.LoginUserKakaoMutation
 import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.MeQuery
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.RemoveUserMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputTermsBinding
@@ -48,6 +50,7 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -145,10 +148,11 @@ class InputTermsFragment : Fragment() {
 
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            when(user.type) {
-               "google" -> googleSignIn()
-               "naver" -> naverSignIn()
-               "kakao" -> kakaoSignIn()
+            dataManager!!.insertUser(user) // 사용자 정보 저장
+            val getUser = dataManager!!.getUser(user.type!!, user.email!!)
+            if(getUser.id != 0) {
+               MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
+               signInDialog()
             }
          }else {
             Toast.makeText(requireActivity(), "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
@@ -156,172 +160,6 @@ class InputTermsFragment : Fragment() {
       }
 
       return binding.root
-   }
-
-   private fun googleSignIn() {
-      lifecycleScope.launch{
-         val signIn = apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
-            idToken = user.idToken.toString()
-         ))).execute()
-
-         if(signIn.data == null) {
-            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            val login = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
-               idToken = user.idToken.toString()
-            ))).execute()
-
-            if(login.data == null) {
-               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-            }else {
-               createUser(login.data!!.loginUserGoogle.accessToken!!, login.data!!.loginUserGoogle.refreshToken!!)
-            }
-         }
-      }
-   }
-
-   private fun naverSignIn() {
-      lifecycleScope.launch{
-         val signIn = apolloClient.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
-            accessToken = NaverIdLoginSDK.getAccessToken().toString()
-         ))).execute()
-
-         if(signIn.data == null) {
-            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요1.", Toast.LENGTH_SHORT).show()
-         }else {
-            val login = apolloClient.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
-               accessToken = user.idToken.toString()
-            ))).execute()
-
-            if(login.data == null) {
-               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요2.", Toast.LENGTH_SHORT).show()
-            }else {
-               createUser(login.data!!.loginUserNaver.accessToken!!, login.data!!.loginUserNaver.refreshToken!!)
-            }
-         }
-      }
-   }
-
-   private fun kakaoSignIn() {
-      lifecycleScope.launch{
-         val signIn = apolloClient.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
-            idToken = user.idToken.toString()
-         ))).execute()
-
-         if(signIn.data == null) {
-            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            val login = apolloClient.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
-               idToken = user.idToken.toString()
-            ))).execute()
-
-            if(login.data == null) {
-               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_SHORT).show()
-            }else {
-               createUser(login.data!!.loginUserKakao.accessToken!!, login.data!!.loginUserKakao.refreshToken!!)
-            }
-         }
-      }
-   }
-
-   @SuppressLint("HardwareIds")
-   private suspend fun createUser(access: String, refresh: String) {
-      val me1 = apolloClient.query(MeQuery()).addHttpHeader(
-         "Authorization",
-         "Bearer $access"
-      ).execute()
-
-      if(me1.data == null) {
-         Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요3.", Toast.LENGTH_SHORT).show()
-      }else {
-         val userId = me1.data!!.me.user.userId
-         val device = if(Settings.Secure.getString(requireActivity().contentResolver, Settings.Secure.ANDROID_ID) != null) {
-            Settings.Secure.getString(requireActivity().contentResolver, Settings.Secure.ANDROID_ID)} else ""
-         val model = if(Build.MODEL != null) {Build.MODEL} else ""
-         val manufacturer = if(Build.MANUFACTURER != null) {Build.MANUFACTURER} else ""
-         val ver = if(Build.VERSION.RELEASE != null) {Build.VERSION.RELEASE} else ""
-
-         Log.d(TAG, "access: $access")
-         Log.d(TAG, "userId: $userId")
-         Log.d(TAG, "deviceLabel: $device")
-         Log.d(TAG, "deviceHardwareVersion: $ver")
-         Log.d(TAG, "deviceManufacturer: $manufacturer")
-         Log.d(TAG, "deviceModel: $model")
-         Log.d(TAG, "deviceName: $manufacturer")
-         Log.d(TAG, "deviceSoftwareVersion: $ver")
-
-         val createDevice = apolloClient.mutation(CreateDeviceMutation(userId = userId, CreateDeviceInput(
-            deviceHardwareVersion = ver, deviceLabel = device, deviceManufacturer = manufacturer, deviceModel = model, deviceName = manufacturer, deviceSoftwareVersion = ver
-         ))).addHttpHeader(
-            "Authorization", "Bearer $access"
-         ).execute()
-
-         if(createDevice.data == null) {
-            Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요4.", Toast.LENGTH_SHORT).show()
-         }else {
-            val createHealth = apolloClient.mutation(CreateHealthMutation(userId = userId)).addHttpHeader(
-               "Authorization", "Bearer $access"
-            ).execute()
-
-            if(createHealth.data == null){
-               Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요45.", Toast.LENGTH_SHORT).show()
-            }else{
-               val me2 = apolloClient.query(MeQuery()).addHttpHeader(
-                  "Authorization",
-                  "Bearer $access"
-               ).execute()
-
-               if(me2.data == null) {
-                  Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요5.", Toast.LENGTH_SHORT).show()
-               }else {
-                  val healthId = me2.data!!.me.user.health!!.healthId
-                  val deviceId = me2.data!!.me.user.devices[0].deviceId
-
-                  val createActivity = apolloClient.mutation(CreateActivityMutation(
-                     healthId = healthId, deviceId = deviceId,
-                     CreateActivityInput(startedAt = LocalDate.now().toString(), endedAt = LocalDate.now().toString())
-                  )).addHttpHeader(
-                     "Authorization", "Bearer $access"
-                  ).execute()
-
-                  val createBodyMeasurement = apolloClient.mutation(CreateBodyMeasurementMutation(
-                     healthId = me2.data!!.me.user.health!!.healthId, deviceId = me2.data!!.me.user.devices[0].deviceId,
-                     CreateBodyMeasurementInput(startedAt = LocalDate.now().toString(), endedAt = LocalDate.now().toString())
-                  )).addHttpHeader(
-                     "Authorization", "Bearer $access"
-                  ).execute()
-
-                  if(createActivity.data == null || createBodyMeasurement.data == null) {
-                     Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요6.", Toast.LENGTH_SHORT).show()
-                  }else {
-                     val me3 = apolloClient.query(MeQuery()).addHttpHeader(
-                        "Authorization",
-                        "Bearer $access"
-                     ).execute()
-
-                     if(me3.data == null) {
-                        Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요7.", Toast.LENGTH_SHORT).show()
-                     }else {
-                        dataManager!!.insertUser(user) // 사용자 정보 저장
-                        val getUser = dataManager!!.getUser(user.type!!, user.email!!)
-
-                        if(getUser.id != 0) {
-                           MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
-                           dataManager!!.insertToken(Token(userId = getUser.id, accessToken = access, refreshToken = refresh, regDate = LocalDate.now().toString())) // 토큰 저장
-                           dataManager!!.updateUser(User(id = getUser.id, userId = userId, deviceId = deviceId, healthId = healthId,
-                              activityId = me3.data!!.me.user.health!!.activities[0].activityId,
-                              bodyMeasurementId = me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId)) // 사용자정보 저장
-                        }else {
-                           Toast.makeText(requireActivity(), "오류가 발생하였습니다. 관리자에게 문의해주세요8.", Toast.LENGTH_SHORT).show()
-                        }
-                     }
-                  }
-               }
-
-               signInDialog()
-            }
-         }
-      }
    }
 
    private fun signInDialog() {

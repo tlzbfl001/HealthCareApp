@@ -6,53 +6,34 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.apollographql.apollo3.ApolloClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.kakao.sdk.user.UserApiClient
-import com.makebodywell.bodywell.CreateBodyMeasurementMutation
-import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.RemoveActivityMutation
-import com.makebodywell.bodywell.RemoveBodyMeasurementMutation
-import com.makebodywell.bodywell.RemoveDeviceMutation
+import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.RemoveUserMutation
-import com.makebodywell.bodywell.RemoveUserProfileMutation
-import com.makebodywell.bodywell.database.DBHelper
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_DATA
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_NOTE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_TOKEN
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_WATER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSettingBinding
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.type.CreateBodyMeasurementInput
-import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
+import com.makebodywell.bodywell.util.CustomUtil.Companion.removeData
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.init.LoginActivity
 import com.navercorp.nid.NaverIdLoginSDK
-import com.nhn.android.naverlogin.OAuthLogin
+import com.navercorp.nid.oauth.NidOAuthLogin
+import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.util.Calendar
-import java.util.TreeSet
+
 
 class SettingFragment : Fragment() {
    private var _binding: FragmentSettingBinding? = null
@@ -92,38 +73,30 @@ class SettingFragment : Fragment() {
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 로그아웃하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+               val getUser = dataManager!!.getUser()
 
                when(getUser.type) {
                   "google" -> {
-                     val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
-                     if(account != null) {
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                           .requestIdToken(getString(R.string.googleWebClientId))
-                           .requestEmail()
-                           .build()
-                        val gsc = GoogleSignIn.getClient(requireActivity(), gso)
+                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                        .requestEmail()
+                        .build()
+                     val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
-                        gsc.signOut().addOnCompleteListener {
-                           if (it.isSuccessful) {
-                              MyApp.prefs.removePrefs("userId")
-
-                              Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                              startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                              requireActivity().finish()
-                           } else {
-                              Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
-                           }
+                     gsc.signOut().addOnCompleteListener {
+                        if (it.isSuccessful) {
+                           MyApp.prefs.removePrefs("userId")
+                           Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                           startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                           requireActivity().finish()
+                        } else {
+                           Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                         }
                      }
                   }
                   "naver" -> {
-                     NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
-                        R.string.app_name))
                      NaverIdLoginSDK.logout()
-
                      MyApp.prefs.removePrefs("userId")
-
                      Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                      startActivity(Intent(requireActivity(), LoginActivity::class.java))
                      requireActivity().finish()
@@ -134,7 +107,6 @@ class SettingFragment : Fragment() {
                            Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show()
                         }else {
                            MyApp.prefs.removePrefs("userId")
-
                            Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
                            startActivity(Intent(requireActivity(), LoginActivity::class.java))
                            requireActivity().finish()
@@ -153,27 +125,120 @@ class SettingFragment : Fragment() {
          val dialog = AlertDialog.Builder(context)
             .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               getUser = dataManager!!.getUser(MyApp.prefs.getId())
+               getUser = dataManager!!.getUser()
                getToken = dataManager!!.getToken()
 
                when(getUser.type) {
                   "google" -> {
+                     val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
 
-                  }
-                  "naver" -> {
+                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                        .requestEmail()
+                        .build()
+                     val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
-                  }
-                  "kakao" -> {
-                     UserApiClient.instance.unlink { error ->
-                        lifecycleScope.launch{
-                           if(error != null || !removeUser()) {
+                     if(account == null) {
+                        Toast.makeText(context, "재로그인 후 탈퇴할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                     }else {
+                        lifecycleScope.launch {
+                           if(!removeUser()) {
                               Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                            }else {
-                              removeData()
+                              gsc.revokeAccess().addOnCompleteListener {
+                                 if (it.isSuccessful) {
+                                    removeData(requireActivity())
+                                    MyApp.prefs.removePrefs("userId")
+                                    Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                    requireActivity().finish()
+                                 } else {
+                                    Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+                  "naver" -> {
+                     if(NaverIdLoginSDK.getAccessToken() == null) {
+                        NidOAuthLogin().callRefreshAccessTokenApi(requireActivity(), object : OAuthLoginCallback {
+                           override fun onSuccess() {
+                              NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
+                                 override fun onSuccess() {
+                                    removeData(requireActivity())
+                                    MyApp.prefs.removePrefs("userId")
 
-                              Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-                              startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                              requireActivity().finish()
+                                    Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                    requireActivity().finish()
+                                 }
+                                 override fun onFailure(httpStatus: Int, message: String) {
+                                    Log.d(TAG, "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
+                                    Toast.makeText(context, "재로그인 후 탈퇴할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                                 }
+                                 override fun onError(errorCode: Int, message: String) {
+                                    onFailure(errorCode, message)
+                                 }
+                              })
+                           }
+
+                           override fun onFailure(httpStatus: Int, message: String) {
+                              Log.d(TAG, "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
+                              Toast.makeText(context, "재로그인 후 탈퇴할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                           }
+
+                           override fun onError(errorCode: Int, message: String) {
+                              onFailure(errorCode, message)
+                           }
+                        })
+                     }else {
+                        lifecycleScope.launch {
+                           if(!removeUser()) {
+                              Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                           }else {
+                              NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
+                                 override fun onSuccess() {
+                                    removeData(requireActivity())
+                                    MyApp.prefs.removePrefs("userId")
+
+                                    Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                    requireActivity().finish()
+                                 }
+                                 override fun onFailure(httpStatus: Int, message: String) {
+                                    Log.d(TAG, "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
+                                    Toast.makeText(context, "재로그인 후 탈퇴할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                                 }
+                                 override fun onError(errorCode: Int, message: String) {
+                                    onFailure(errorCode, message)
+                                 }
+                              })
+                           }
+                        }
+                     }
+                  }
+                  "kakao" -> {
+                     UserApiClient.instance.accessTokenInfo { token, error ->
+                        if(error != null) {
+                           Toast.makeText(context, "재로그인 후 탈퇴할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                        }else if (token != null) {
+                           lifecycleScope.launch{
+                              if(!removeUser()) {
+                                 Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              }else {
+                                 UserApiClient.instance.unlink { error ->
+                                    if(error != null) {
+                                       Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                                    }else {
+                                       removeData(requireActivity())
+                                       MyApp.prefs.removePrefs("userId")
+                                       Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                       requireActivity().finish()
+                                    }
+                                 }
+                              }
                            }
                         }
                      }
@@ -189,66 +254,13 @@ class SettingFragment : Fragment() {
       return binding.root
    }
 
-   private fun logoutTest() {
-      when(MyApp.prefs.getId()) {
-         1 -> {
-            val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
-            if(account != null) {
-               val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                  .requestIdToken(getString(R.string.googleWebClientId))
-                  .requestEmail()
-                  .build()
-               val gsc = GoogleSignIn.getClient(requireActivity(), gso)
-
-               gsc.signOut().addOnCompleteListener {
-                  if (it.isSuccessful) {
-                     MyApp.prefs.removePrefs("userId")
-                     Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                     startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                     requireActivity().finish()
-                  } else {
-                     Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
-                  }
-               }
-            }
-         }
-         2 -> {
-            NaverIdLoginSDK.initialize(requireActivity(), getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(
-               R.string.app_name))
-            NaverIdLoginSDK.logout()
-
-            MyApp.prefs.removePrefs("userId")
-            Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(requireActivity(), LoginActivity::class.java))
-            requireActivity().finish()
-         }
-         3 -> {
-            UserApiClient.instance.logout { error ->
-               if (error != null) {
-                  Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show()
-               }else {
-                  MyApp.prefs.removePrefs("userId")
-
-                  Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                  startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                  requireActivity().finish()
-               }
-            }
-         }
-      }
-   }
-
    @SuppressLint("SetTextI18n")
    private fun userProfile() {
-      val getUser = dataManager!!.getUser(MyApp.prefs.getId())
+      val getUser = dataManager!!.getUser()
 
-      if(getUser.name != "") {
-         binding.tvName.text = getUser.name
-      }
+      if(getUser.name != "") binding.tvName.text = getUser.name
 
-      if(getUser.profileImage != "") {
-         binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
-      }
+      if(getUser.profileImage != "") binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
 
       if(getUser.birthday != "") {
          val current = Calendar.getInstance()
@@ -260,7 +272,7 @@ class SettingFragment : Fragment() {
          if (getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay)
             age--
 
-         val gender = if(getUser.gender == "FEMALE") "여" else "남"
+         val gender = if(getUser.gender == "MALE" || getUser.gender == "M") "남" else "여"
 
          binding.tvAge.text = "만${age}세 / $gender"
       }
@@ -289,22 +301,5 @@ class SettingFragment : Fragment() {
       ).execute()
 
       return removeUser.data != null
-   }
-
-   private fun removeData() {
-      dataManager!!.deleteAll(TABLE_USER)
-      dataManager!!.deleteAll(TABLE_TOKEN)
-      dataManager!!.deleteAll(TABLE_FOOD)
-      dataManager!!.deleteAll(TABLE_WATER)
-      dataManager!!.deleteAll(TABLE_EXERCISE)
-      dataManager!!.deleteAll(TABLE_BODY)
-      dataManager!!.deleteAll(TABLE_DRUG)
-      dataManager!!.deleteAll(TABLE_DRUG_TIME)
-      dataManager!!.deleteAll(TABLE_DRUG_CHECK)
-      dataManager!!.deleteAll(TABLE_NOTE)
-      dataManager!!.deleteAll(TABLE_SLEEP)
-      dataManager!!.deleteAll(TABLE_DAILY_DATA)
-      dataManager!!.deleteAll(TABLE_IMAGE)
-      MyApp.prefs.removePrefs("userId")
    }
 }

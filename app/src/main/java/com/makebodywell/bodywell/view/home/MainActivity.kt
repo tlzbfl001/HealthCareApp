@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity() {
    private var _binding: ActivityMainBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var mainViewModel: MainViewModel
+   private val mainViewModel: MainViewModel by viewModels()
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -45,17 +46,6 @@ class MainActivity : AppCompatActivity() {
          true
       }
 
-      mainViewModel = ViewModelProvider(this, ViewModelFactory(this))[MainViewModel::class.java]
-      mainViewModel.updateData(this)
-   }
-
-   class ViewModelFactory(private val context: Context) :
-      ViewModelProvider.NewInstanceFactory() {
-      override fun <T : ViewModel> create(modelClass: Class<T>): T {
-         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(context) as T
-         }
-         throw IllegalArgumentException("Unknown ViewModel class")
-      }
+      mainViewModel.updateData()
    }
 }

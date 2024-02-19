@@ -6,6 +6,9 @@ plugins {
     id("com.apollographql.apollo3").version("3.7.3")
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     namespace 'com.makebodywell.bodywell'
     compileSdk 33
@@ -17,6 +20,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", properties['googleWebClientId']
+        buildConfigField "String", "KAKAO_NATIVE_APP_KEY", properties['kakaoNativeAppKey']
+        buildConfigField "String", "NAVER_CLIENT_ID", properties['naverClientId']
+        buildConfigField "String", "NAVER_CLIENT_SECRET", properties['naverClientSecret']
+        resValue "string", "kakao_oauth_host", properties['kakaoOauthHost']
     }
 
     buildTypes {

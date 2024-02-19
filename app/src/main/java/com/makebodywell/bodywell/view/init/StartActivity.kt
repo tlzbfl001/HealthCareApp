@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.kakao.sdk.user.UserApiClient
+import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.util.MyApp
@@ -23,28 +24,28 @@ class StartActivity : AppCompatActivity() {
          statusBarColor = Color.TRANSPARENT
       }
 
-      if(MyApp.prefs.getId() == -1) {
+      val dataManager = DataManager(this)
+      dataManager.open()
+
+      if(MyApp.prefs.getId() == -1 && dataManager.getUserCount() == 0) {
          startActivity(Intent(this, InitActivity::class.java))
       }else {
-         val dataManager = DataManager(this)
-         dataManager.open()
-
-         val getUser = dataManager.getUser(MyApp.prefs.getId())
+         val getUser = dataManager.getUser()
 
          when(getUser.type) {
             "google" -> {
                val gsa = GoogleSignIn.getLastSignedInAccount(this)
 
-               if(gsa == null) {
+               if(gsa == null) { // refresh token == null 일때 이동
                   startActivity(Intent(this, LoginActivity::class.java))
                }else {
                   startActivity(Intent(this, MainActivity::class.java))
                }
             }
             "naver" -> {
-               NaverIdLoginSDK.initialize(this, getString(R.string.naverClientId), getString(R.string.naverClientSecret), getString(R.string.app_name))
+               NaverIdLoginSDK.initialize(this, BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(R.string.app_name))
 
-               if(NaverIdLoginSDK.getAccessToken() == null) {
+               if(NaverIdLoginSDK.getRefreshToken() == null) {
                   startActivity(Intent(this, LoginActivity::class.java))
                }else {
                   startActivity(Intent(this, MainActivity::class.java))
@@ -52,7 +53,7 @@ class StartActivity : AppCompatActivity() {
             }
             "kakao" -> {
                UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-                  if (error != null) {
+                  if (error != null) { // refresh token == null 일때 이동
                      startActivity(Intent(this, LoginActivity::class.java))
                   }else if (tokenInfo != null) {
                      startActivity(Intent(this, MainActivity::class.java))
