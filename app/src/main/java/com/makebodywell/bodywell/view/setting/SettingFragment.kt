@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.setting
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -18,13 +19,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.RemoveUserMutation
+import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSettingBinding
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
-import com.makebodywell.bodywell.util.CustomUtil.Companion.removeData
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.init.LoginActivity
@@ -33,7 +34,6 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
 import java.util.Calendar
-
 
 class SettingFragment : Fragment() {
    private var _binding: FragmentSettingBinding? = null
@@ -147,7 +147,7 @@ class SettingFragment : Fragment() {
                            }else {
                               gsc.revokeAccess().addOnCompleteListener {
                                  if (it.isSuccessful) {
-                                    removeData(requireActivity())
+                                    removeData()
                                     MyApp.prefs.removePrefs("userId")
                                     Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
                                     startActivity(Intent(requireActivity(), LoginActivity::class.java))
@@ -166,7 +166,7 @@ class SettingFragment : Fragment() {
                            override fun onSuccess() {
                               NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
                                  override fun onSuccess() {
-                                    removeData(requireActivity())
+                                    removeData()
                                     MyApp.prefs.removePrefs("userId")
 
                                     Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
@@ -199,7 +199,7 @@ class SettingFragment : Fragment() {
                            }else {
                               NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
                                  override fun onSuccess() {
-                                    removeData(requireActivity())
+                                    removeData()
                                     MyApp.prefs.removePrefs("userId")
 
                                     Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
@@ -231,8 +231,9 @@ class SettingFragment : Fragment() {
                                     if(error != null) {
                                        Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                     }else {
-                                       removeData(requireActivity())
+                                       removeData()
                                        MyApp.prefs.removePrefs("userId")
+
                                        Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
                                        startActivity(Intent(requireActivity(), LoginActivity::class.java))
                                        requireActivity().finish()
@@ -291,6 +292,22 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvHeight.text = "${height}cm / ${weight}kg"
+   }
+
+   private fun removeData() {
+      dataManager!!.deleteAll(DBHelper.TABLE_USER, "id")
+      dataManager!!.deleteAll(DBHelper.TABLE_TOKEN, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_FOOD, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_WATER, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_EXERCISE, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_BODY, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_DRUG, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_DRUG_TIME, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_DRUG_CHECK, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_NOTE, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_SLEEP, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_DAILY_DATA, "userId")
+      dataManager!!.deleteAll(DBHelper.TABLE_IMAGE, "userId")
    }
 
    private suspend fun removeUser(): Boolean {

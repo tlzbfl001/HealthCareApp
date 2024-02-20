@@ -46,13 +46,11 @@ import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
     private val bundle = Bundle()
-
     private var dataManager: DataManager? = null
 
     private var gsc: GoogleSignInClient? = null
@@ -207,8 +205,8 @@ class LoginFragment : Fragment() {
                 val getUser1 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString()) // 사용자 가입여부 체크
 
                 if(getUser1.regDate == "") { // 초기 가입 작업
-                    val user2 = User(type = "kakao", idToken = token.idToken!!, email = user!!.kakaoAccount?.email!!, name = user.kakaoAccount?.name!!,
-                        nickname = user.kakaoAccount?.profile?.nickname!!, profileImage = user.kakaoAccount?.profile?.profileImageUrl!!, regDate = LocalDate.now().toString())
+                    val user2 = User(type = "kakao", idToken = token.idToken!!, email = user!!.kakaoAccount?.email!!, name = user.kakaoAccount?.name,
+                        nickname = user.kakaoAccount?.profile?.nickname, profileImage = user.kakaoAccount?.profile?.profileImageUrl, regDate = LocalDate.now().toString())
                     bundle.putParcelable("user", user2)
 
                     replaceLoginFragment2(requireActivity(), InputTermsFragment(), bundle)

@@ -15,7 +15,8 @@ class CalendarAdapter1 (
    private val type: Int = 0
 ) : RecyclerView.Adapter<CalendarAdapter1.ViewHolder>() {
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_calendar_day, parent, false)
+      val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_date1, parent, false)
+
       return ViewHolder(view)
    }
 

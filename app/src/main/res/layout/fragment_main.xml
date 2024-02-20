@@ -38,14 +38,15 @@
          android:layout_height="wrap_content"
          android:layout_marginTop="25dp"
          android:layout_marginRight="25dp"
-         app:cardCornerRadius="10dp"
+         app:cardCornerRadius="11dp"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintEnd_toEndOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#A38FF1"
-            android:padding="3dp">
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
             <TextView
                android:id="@+id/tvYear"
                android:layout_width="wrap_content"
@@ -195,8 +196,8 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="18dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="14dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/calWeek"
@@ -206,8 +207,6 @@
    <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_marginTop="25dp"
-      android:layout_marginBottom="25dp"
       app:layout_constraintTop_toBottomOf="@id/cl1"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
@@ -216,28 +215,27 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clRow1"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
+         android:layout_height="wrap_content"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toTopOf="@id/clRow2"
-         app:layout_constraintVertical_weight="1">
+         app:layout_constraintBottom_toTopOf="@id/clRow2">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clFood"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clWater">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbFood"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="138dp"
+               android:layout_height="138dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#26DF9EAD"
                app:progress_style="solid_line"
-               app:progress_stroke_width="10dp"
+               app:progress_stroke_width="12.5dp"
                app:progress_start_color="#F97D7D"
                app:progress_end_color="#F97D7D"
                app:progress_start_degree="120"
@@ -247,7 +245,7 @@
                app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_height="wrap_content"
                android:layout_margin="12dp"
                android:padding="5dp"
                android:background="@drawable/oval"
@@ -284,20 +282,20 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clWater"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clFood"
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbWater"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="138dp"
+               android:layout_height="138dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#2685DBFF"
                app:progress_style="solid_line"
-               app:progress_stroke_width="10dp"
+               app:progress_stroke_width="12.5dp"
                app:progress_start_color="#4AC0F2"
                app:progress_end_color="#4AC0F2"
                app:progress_start_degree="120"
@@ -306,8 +304,8 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
                android:layout_margin="12dp"
                android:padding="5dp"
                android:background="@drawable/oval"
@@ -346,28 +344,27 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clRow2"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
+         android:layout_height="wrap_content"
          app:layout_constraintTop_toBottomOf="@id/clRow1"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toTopOf="@id/clRow3"
-         app:layout_constraintVertical_weight="1">
+         app:layout_constraintBottom_toTopOf="@id/clRow3">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clExercise"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clBody">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbExercise"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="138dp"
+               android:layout_height="138dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#26DC921A"
                app:progress_style="solid_line"
-               app:progress_stroke_width="10dp"
+               app:progress_stroke_width="12.5dp"
                app:progress_start_color="#FFB846"
                app:progress_end_color="#FFB846"
                app:progress_start_degree="120"
@@ -376,8 +373,8 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
                android:layout_margin="12dp"
                android:padding="5dp"
                android:background="@drawable/oval"
@@ -414,20 +411,20 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clBody"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clExercise"
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbBody"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="138dp"
+               android:layout_height="138dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#2681C335"
                app:progress_style="solid_line"
-               app:progress_stroke_width="10dp"
+               app:progress_stroke_width="12.5dp"
                app:progress_start_color="#AED77D"
                app:progress_end_color="#AED77D"
                app:progress_start_degree="120"
@@ -436,8 +433,8 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
                android:layout_margin="12dp"
                android:padding="5dp"
                android:background="@drawable/oval"
@@ -476,28 +473,27 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clRow3"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
+         android:layout_height="wrap_content"
          app:layout_constraintTop_toBottomOf="@id/clRow2"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toBottomOf="parent"
-         app:layout_constraintVertical_weight="1">
+         app:layout_constraintBottom_toBottomOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clSleep"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clDrug">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbSleep"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="138dp"
+               android:layout_height="138dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#264F949E"
                app:progress_style="solid_line"
-               app:progress_stroke_width="10dp"
+               app:progress_stroke_width="12.5dp"
                app:progress_start_color="#667D99"
                app:progress_end_color="#667D99"
                app:progress_start_degree="120"
@@ -506,8 +502,8 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
                android:layout_margin="12dp"
                android:padding="5dp"
                android:background="@drawable/oval"
@@ -544,20 +540,20 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clDrug"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clSleep"
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbDrug"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="138dp"
+               android:layout_height="138dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#1AE961FF"
                app:progress_style="solid_line"
-               app:progress_stroke_width="10dp"
+               app:progress_stroke_width="12.5dp"
                app:progress_start_color="#9E63FC"
                app:progress_end_color="#9E63FC"
                app:progress_start_degree="120"
@@ -566,8 +562,8 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
                android:layout_margin="12dp"
                android:padding="5dp"
                android:background="@drawable/oval"

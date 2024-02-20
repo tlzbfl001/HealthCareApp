@@ -150,24 +150,5 @@ class CustomUtil {
       fun setDrugTimeList(h: Int, m: Int) {
          drugTimeList.add(DrugTime(hour = h, minute = m))
       }
-
-      fun removeData(context: Context) {
-         val dataManager = DataManager(context)
-         dataManager.open()
-
-         dataManager.deleteAll(DBHelper.TABLE_USER)
-         dataManager.deleteAll(DBHelper.TABLE_TOKEN)
-         dataManager.deleteAll(DBHelper.TABLE_FOOD)
-         dataManager.deleteAll(DBHelper.TABLE_WATER)
-         dataManager.deleteAll(DBHelper.TABLE_EXERCISE)
-         dataManager.deleteAll(DBHelper.TABLE_BODY)
-         dataManager.deleteAll(DBHelper.TABLE_DRUG)
-         dataManager.deleteAll(DBHelper.TABLE_DRUG_TIME)
-         dataManager.deleteAll(DBHelper.TABLE_DRUG_CHECK)
-         dataManager.deleteAll(DBHelper.TABLE_NOTE)
-         dataManager.deleteAll(DBHelper.TABLE_SLEEP)
-         dataManager.deleteAll(DBHelper.TABLE_DAILY_DATA)
-         dataManager.deleteAll(DBHelper.TABLE_IMAGE)
-      }
    }
 }

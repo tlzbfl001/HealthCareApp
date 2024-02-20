@@ -24,13 +24,13 @@ import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.MyApp
+
 
 class DataManager(private var context: Context?) {
    private var dbHelper: DBHelper? = null
@@ -517,6 +517,7 @@ class DataManager(private var context: Context?) {
          data.bodyGoal = cursor.getDouble(5)
          data.sleepGoal = cursor.getInt(6)
          data.drugGoal = cursor.getInt(7)
+         data.regDate = cursor.getString(8)
       }
       cursor.close()
       return data
@@ -750,7 +751,7 @@ class DataManager(private var context: Context?) {
    fun updateToken(data: Token){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_TOKEN set accessToken = '${data.accessToken}', refreshToken = '${data.refreshToken}', regDate = '${data.regDate}' " +
-              "where userId=${MyApp.prefs.getId()}"
+         "where userId=${MyApp.prefs.getId()}"
       db.execSQL(sql)
       db.close()
    }
@@ -815,17 +816,17 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun deleteAll(table: String): Boolean {
+   fun deleteAll(table: String, column: String) {
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(table, "userId=${MyApp.prefs.getId()}",null)
+      val delete = "delete from $table where $column=${MyApp.prefs.getId()}"
+      db.execSQL(delete)
       db.close()
-      return (Integer.parseInt("$success") != -1)
    }
 
-   fun deleteItem(table: String, column: String, id: Int): Boolean {
+   fun deleteItem(table: String, column: String, id: Int) {
       val db = dbHelper!!.writableDatabase
-      val success = db!!.delete(table, "userId=${MyApp.prefs.getId()} and $column=$id",null)
+      val delete = "delete from $table where userId=${MyApp.prefs.getId()} and $column=$id"
+      db.execSQL(delete)
       db.close()
-      return (Integer.parseInt("$success") != -1)
    }
 }

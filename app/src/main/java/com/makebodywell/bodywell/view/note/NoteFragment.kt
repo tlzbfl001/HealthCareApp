@@ -3,17 +3,14 @@ package com.makebodywell.bodywell.view.note
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -31,25 +28,16 @@ import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteBinding
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
-import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -90,6 +78,22 @@ class NoteFragment : Fragment() {
 
       setWeekView()
       setImageView()
+
+      binding.ivDown.setOnClickListener {
+         val dialog = NoteCalendarDialog(requireActivity())
+         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+         dialog.window?.setGravity(Gravity.TOP)
+
+         dialog.setOnDismissListener {
+            setWeekView()
+            setImageView()
+         }
+
+         dialog.show()
+
+         val window = dialog.window
+         window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+      }
 
       binding.ivWrite.setOnClickListener {
          replaceFragment1(requireActivity(), NoteWriteFragment())

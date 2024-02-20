@@ -16,7 +16,7 @@ class CalendarAdapter2 (
    private val days: ArrayList<LocalDate?>
 ) : RecyclerView.Adapter<CalendarAdapter2.ViewHolder>() {
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_calendar_day2, parent, false)
+      val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_date2, parent, false)
       return ViewHolder(view)
    }
 

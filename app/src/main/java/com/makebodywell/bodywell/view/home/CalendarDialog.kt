@@ -19,7 +19,6 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.MyApp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -39,7 +38,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
-      setContentView(R.layout.dialog_calendar)
+      setContentView(R.layout.dialog_calendar1)
 
       dataManager = DataManager(context)
       dataManager!!.open()

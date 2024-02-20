@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -10,6 +11,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
@@ -29,38 +31,13 @@ class StartActivity : AppCompatActivity() {
 
       if(MyApp.prefs.getId() == -1 && dataManager.getUserCount() == 0) {
          startActivity(Intent(this, InitActivity::class.java))
+         Log.d(TAG, "StartActivity1")
+      }else if(MyApp.prefs.getId() == -1) {
+         startActivity(Intent(this, LoginActivity::class.java))
+         Log.d(TAG, "StartActivity2")
       }else {
-         val getUser = dataManager.getUser()
-
-         when(getUser.type) {
-            "google" -> {
-               val gsa = GoogleSignIn.getLastSignedInAccount(this)
-
-               if(gsa == null) { // refresh token == null 일때 이동
-                  startActivity(Intent(this, LoginActivity::class.java))
-               }else {
-                  startActivity(Intent(this, MainActivity::class.java))
-               }
-            }
-            "naver" -> {
-               NaverIdLoginSDK.initialize(this, BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(R.string.app_name))
-
-               if(NaverIdLoginSDK.getRefreshToken() == null) {
-                  startActivity(Intent(this, LoginActivity::class.java))
-               }else {
-                  startActivity(Intent(this, MainActivity::class.java))
-               }
-            }
-            "kakao" -> {
-               UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
-                  if (error != null) { // refresh token == null 일때 이동
-                     startActivity(Intent(this, LoginActivity::class.java))
-                  }else if (tokenInfo != null) {
-                     startActivity(Intent(this, MainActivity::class.java))
-                  }
-               }
-            }
-         }
+         startActivity(Intent(this, MainActivity::class.java))
+         Log.d(TAG, "StartActivity3")
       }
    }
 }

@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
    private var _binding: ActivityMainBinding? = null
    private val binding get() = _binding!!
 
-   private val mainViewModel: MainViewModel by viewModels()
+   private lateinit var viewModel: MainViewModel
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -46,6 +46,6 @@ class MainActivity : AppCompatActivity() {
          true
       }
 
-      mainViewModel.updateData()
+      viewModel = ViewModelProvider(this)[MainViewModel::class.java]
    }
 }

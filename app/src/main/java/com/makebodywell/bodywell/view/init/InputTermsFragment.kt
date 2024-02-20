@@ -1,14 +1,9 @@
 package com.makebodywell.bodywell.view.init
 
-import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -18,43 +13,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.makebodywell.bodywell.CreateActivityMutation
-import com.makebodywell.bodywell.CreateBodyMeasurementMutation
-import com.makebodywell.bodywell.CreateDeviceMutation
-import com.makebodywell.bodywell.CreateHealthMutation
-import com.makebodywell.bodywell.CreateUserGoogleMutation
-import com.makebodywell.bodywell.CreateUserKakaoMutation
-import com.makebodywell.bodywell.CreateUserNaverMutation
-import com.makebodywell.bodywell.LoginUserGoogleMutation
-import com.makebodywell.bodywell.LoginUserKakaoMutation
-import com.makebodywell.bodywell.LoginUserNaverMutation
-import com.makebodywell.bodywell.MeQuery
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.RemoveUserMutation
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputTermsBinding
-import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.type.CreateActivityInput
-import com.makebodywell.bodywell.type.CreateBodyMeasurementInput
-import com.makebodywell.bodywell.type.CreateDeviceInput
-import com.makebodywell.bodywell.type.CreateGoogleOauthInput
-import com.makebodywell.bodywell.type.CreateKakaoOauthInput
-import com.makebodywell.bodywell.type.CreateNaverOauthInput
-import com.makebodywell.bodywell.type.LoginGoogleOauthInput
-import com.makebodywell.bodywell.type.LoginKakaoOauthInput
-import com.makebodywell.bodywell.type.LoginNaverOauthInput
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.navercorp.nid.NaverIdLoginSDK
-import kotlinx.coroutines.launch
-import java.time.LocalDate
-import kotlin.math.log
 
 class InputTermsFragment : Fragment() {
    private var _binding: FragmentInputTermsBinding? = null

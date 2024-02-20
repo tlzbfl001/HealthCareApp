@@ -63,7 +63,7 @@
        android:id="@+id/clMenuBar"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
-       android:layout_marginTop="25dp"
+       android:layout_marginTop="20dp"
        app:layout_constraintTop_toBottomOf="@id/tvCalTitle"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toEndOf="parent">
@@ -162,14 +162,14 @@
        android:id="@+id/clMenu"
        android:layout_width="match_parent"
        android:layout_height="34dp"
-       android:layout_marginTop="25dp"
+       android:layout_marginTop="20dp"
        android:background="@drawable/rec_half_report"
        app:layout_constraintEnd_toEndOf="parent"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintTop_toBottomOf="@id/clMenuBar">
       <TextView
           android:id="@+id/tvDaily"
-          android:layout_width="64dp"
+          android:layout_width="62dp"
           android:layout_height="34dp"
           android:gravity="center"
           android:background="@drawable/rec_5_purple"
@@ -182,7 +182,7 @@
           app:layout_constraintBottom_toBottomOf="parent" />
       <TextView
           android:id="@+id/tvWeekly"
-          android:layout_width="64dp"
+          android:layout_width="62dp"
           android:layout_height="34dp"
           android:gravity="center"
           android:background="@drawable/rec_5_border_gray"
@@ -194,7 +194,7 @@
           app:layout_constraintEnd_toEndOf="parent"/>
       <TextView
           android:id="@+id/tvMonthly"
-          android:layout_width="64dp"
+          android:layout_width="62dp"
           android:layout_height="34dp"
           android:gravity="center"
           android:background="@drawable/rec_5_border_gray"
@@ -227,6 +227,7 @@
              android:text="복용약"
              android:textSize="16dp"
              android:textColor="@color/black"
+             android:textStyle="bold"
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintStart_toStartOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
@@ -364,6 +365,7 @@
              android:text="복용 달성도(%)"
              android:textSize="16dp"
              android:textColor="@color/black"
+             android:textStyle="bold"
              app:layout_constraintTop_toTopOf="parent"
              app:layout_constraintStart_toStartOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>

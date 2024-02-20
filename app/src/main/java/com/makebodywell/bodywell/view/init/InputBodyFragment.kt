@@ -72,7 +72,6 @@ class InputBodyFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         val getToken = dataManager!!.getToken()
          var height = 0.0
          var weight = 0.0
 
@@ -84,20 +83,11 @@ class InputBodyFragment : Fragment() {
             weight = binding.etWeight.text.toString().toDouble()
          }
 
-         lifecycleScope.launch{
-//            val response = apolloClient.mutation(UpdateUserProfileMutation(
-//               userId = getUser.userId!!, UpdateUserProfileInput(gender = Optional.present(gender), height = Optional.present(height), weight = Optional.present(weight))
-//            )).addHttpHeader(
-//               "Authorization",
-//               "Bearer ${getToken.accessToken}"
-//            ).execute()
+         dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
+         dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
+         dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
 
-            dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
-            dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
-            dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
-
-            replaceLoginFragment1(requireActivity(), InputGoalFragment())
-         }
+         replaceLoginFragment1(requireActivity(), InputGoalFragment())
       }
 
       return binding.root
