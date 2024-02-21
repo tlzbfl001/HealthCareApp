@@ -1,11 +1,3 @@
-mutation CreateUserKakao($createKakaoLoginInput: CreateKakaoOauthInput!) {
-  createUserKakao(createKakaoLoginInput: $createKakaoLoginInput) {
-    code
-    message
-    success
-  }
-}
-
 mutation CreateUserGoogle($createGoogleInput: CreateGoogleOauthInput!) {
   createUserGoogle(createGoogleInput: $createGoogleInput) {
     code
@@ -22,20 +14,10 @@ mutation CreateUserNaver($createNaverLoginInput: CreateNaverOauthInput!) {
   }
 }
 
-mutation CreateUserApple($createAppleLoginInput: CreateAppleOauthInput!) {
-  createUserApple(createAppleLoginInput: $createAppleLoginInput) {
+mutation CreateUserKakao($createKakaoLoginInput: CreateKakaoOauthInput!) {
+  createUserKakao(createKakaoLoginInput: $createKakaoLoginInput) {
     code
     message
-    success
-  }
-}
-
-mutation LoginUserKakao($loginKakaoLoginInput: LoginKakaoOauthInput!) {
-  loginUserKakao(loginKakaoLoginInput: $loginKakaoLoginInput) {
-    accessToken
-    code
-    message
-    refreshToken
     success
   }
 }
@@ -60,13 +42,22 @@ mutation LoginUserNaver($loginNaverLoginInput: LoginNaverOauthInput!) {
   }
 }
 
-mutation LoginUserApple($loginAppleLoginInput: LoginAppleOauthInput!) {
-  loginUserApple(loginAppleLoginInput: $loginAppleLoginInput) {
+mutation LoginUserKakao($loginKakaoLoginInput: LoginKakaoOauthInput!) {
+  loginUserKakao(loginKakaoLoginInput: $loginKakaoLoginInput) {
     accessToken
     code
     message
     refreshToken
     success
+  }
+}
+
+mutation RefreshToken {
+  refreshToken {
+    code
+    message
+    success
+    accessToken
   }
 }
 

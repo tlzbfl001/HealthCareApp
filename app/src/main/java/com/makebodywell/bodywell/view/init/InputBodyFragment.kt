@@ -3,25 +3,15 @@ package com.makebodywell.bodywell.view.init
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
-import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputBodyBinding
 import com.makebodywell.bodywell.type.Gender
-import com.makebodywell.bodywell.type.UpdateUserProfileInput
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
-import com.makebodywell.bodywell.util.MyApp
-import kotlinx.coroutines.launch
 
 class InputBodyFragment : Fragment() {
    private var _binding: FragmentInputBodyBinding? = null

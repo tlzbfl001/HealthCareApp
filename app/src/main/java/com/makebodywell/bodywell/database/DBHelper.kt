@@ -29,7 +29,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, regDate text);"
       db.execSQL(user)
 
-      val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, accessToken text, refreshToken text, regDate text);"
+      val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, accessToken text, refreshToken text, accessTokenRegDate text, " +
+         "refreshTokenRegDate text);"
       db.execSQL(token)
 
       val food = "create table $TABLE_FOOD(id integer primary key autoincrement, userId integer, name text, unit text, amount integer, count integer, kcal integer," +

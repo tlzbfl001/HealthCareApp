@@ -31,13 +31,10 @@ class StartActivity : AppCompatActivity() {
 
       if(MyApp.prefs.getId() == -1 && dataManager.getUserCount() == 0) {
          startActivity(Intent(this, InitActivity::class.java))
-         Log.d(TAG, "StartActivity1")
       }else if(MyApp.prefs.getId() == -1) {
          startActivity(Intent(this, LoginActivity::class.java))
-         Log.d(TAG, "StartActivity2")
       }else {
          startActivity(Intent(this, MainActivity::class.java))
-         Log.d(TAG, "StartActivity3")
       }
    }
 }

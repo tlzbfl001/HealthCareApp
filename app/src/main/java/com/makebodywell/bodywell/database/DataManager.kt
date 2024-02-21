@@ -127,7 +127,8 @@ class DataManager(private var context: Context?) {
          data.userId=cursor.getInt(1)
          data.accessToken=cursor.getString(2)
          data.refreshToken = cursor.getString(3)
-         data.regDate = cursor.getString(4)
+         data.accessTokenRegDate = cursor.getString(4)
+         data.refreshTokenRegDate = cursor.getString(5)
       }
       cursor.close()
       return data
@@ -568,7 +569,8 @@ class DataManager(private var context: Context?) {
       values.put("userId", MyApp.prefs.getId())
       values.put("accessToken", data.accessToken)
       values.put("refreshToken", data.refreshToken)
-      values.put("regDate", data.regDate)
+      values.put("accessTokenRegDate", data.accessTokenRegDate)
+      values.put("refreshTokenRegDate", data.refreshTokenRegDate)
       db!!.insert(TABLE_TOKEN, null, values)
    }
 
@@ -750,8 +752,15 @@ class DataManager(private var context: Context?) {
 
    fun updateToken(data: Token){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_TOKEN set accessToken = '${data.accessToken}', refreshToken = '${data.refreshToken}', regDate = '${data.regDate}' " +
-         "where userId=${MyApp.prefs.getId()}"
+      val sql = "update $TABLE_TOKEN set accessToken='${data.accessToken}', refreshToken='${data.refreshToken}', accessTokenRegDate='${data.accessTokenRegDate}', " +
+         "refreshTokenRegDate='${data.refreshTokenRegDate}' where userId=${MyApp.prefs.getId()}"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateAccessToken(data: Token){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $TABLE_TOKEN set accessToken='${data.accessToken}', accessTokenRegDate='${data.accessTokenRegDate}' where userId=${MyApp.prefs.getId()}"
       db.execSQL(sql)
       db.close()
    }

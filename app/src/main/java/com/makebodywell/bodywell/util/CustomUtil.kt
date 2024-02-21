@@ -2,12 +2,13 @@ package com.makebodywell.bodywell.util
 
 import android.app.Activity
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.apollographql.apollo3.ApolloClient
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Food
@@ -53,6 +54,20 @@ class CustomUtil {
             addToBackStack(null)
             commit()
          }
+      }
+
+      fun networkStatusCheck(context: Context): Boolean {
+         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+         val networkCapabilities = connectivityManager.activeNetwork ?: return false
+         val activeNetwork = connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+         val result = when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+         }
+
+         return result
       }
 
       fun getFoodKcal(context: Context, date:String) : Item {

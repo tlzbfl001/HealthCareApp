@@ -2,9 +2,6 @@ package com.makebodywell.bodywell.util
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
@@ -24,6 +21,7 @@ import com.makebodywell.bodywell.LoginUserGoogleMutation
 import com.makebodywell.bodywell.LoginUserKakaoMutation
 import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.MeQuery
+import com.makebodywell.bodywell.RefreshTokenMutation
 import com.makebodywell.bodywell.RemoveUserMutation
 import com.makebodywell.bodywell.UpdateBodyMeasurementMutation
 import com.makebodywell.bodywell.database.DataManager
@@ -41,9 +39,12 @@ import com.makebodywell.bodywell.type.LoginNaverOauthInput
 import com.makebodywell.bodywell.type.UpdateBodyMeasurementInput
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
+import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
    @SuppressLint("StaticFieldLeak")
@@ -51,8 +52,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private var dataManager: DataManager? = null
    private var user = User()
    private var token = Token()
-   private var access = ""
+   private var userId = ""
    private var bodyMeasurementId = ""
+   private var access = ""
+   private var refresh = ""
+   private var accessCheck = false
+   private var loginCheck = false
 
    init {
       dataManager = DataManager(context)
@@ -61,73 +66,66 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       user = dataManager!!.getUser()
       token = dataManager!!.getToken()
 
-      if(user.userId == null || user.userId == "" || user.deviceId == null || user.deviceId == "" || user.healthId == null ||
-         user.healthId == "" || user.activityId == null || user.activityId == "" || user.bodyMeasurementId == null || user.bodyMeasurementId == "") {
-         if(getNetWorkStatusCheck(context)){
-            createUser()
+      if(user.userId == null || user.userId == "" || user.deviceId == null || user.deviceId == "" || user.healthId == null || user.healthId == "" ||
+         user.activityId == null || user.activityId == "" || user.bodyMeasurementId == null || user.bodyMeasurementId == "" || token.accessToken == "") {
+         if(networkStatusCheck(context)){
+            register()
          }
       }else {
+         userId = user.userId!!
          bodyMeasurementId = user.bodyMeasurementId!!
          access = token.accessToken
+         refresh = token.refreshToken
+
          updateData()
       }
    }
 
-   fun updateData(){
-      viewModelScope.launch {
-         while(true) {
-            if(getNetWorkStatusCheck(context)){
-               val body = dataManager!!.getBody(LocalDate.now().toString())
+   private fun updateData() = viewModelScope.launch {
+      while(true) {
+         if(networkStatusCheck(context)){
+            val body = dataManager!!.getBody(LocalDate.now().toString())
+            val accessDiff = Duration.between(LocalDateTime.parse(token.accessTokenRegDate), LocalDateTime.now())
+            val refreshDiff = Duration.between(LocalDateTime.parse(token.refreshTokenRegDate), LocalDateTime.now())
 
-               if(body.regDate != "") {
-                  val updateBody = apolloClient.mutation(UpdateBodyMeasurementMutation(
-                     bodyMeasurementId = bodyMeasurementId,
-                     UpdateBodyMeasurementInput(
-                        bodyFatPercentage = Optional.present(body.fat), height = Optional.present(body.height),
-                        startedAt = Optional.present(LocalDate.now().toString()), endedAt = Optional.present(LocalDate.now().toString())
-                     )
-                  )).addHttpHeader(
-                     "Authorization", "Bearer $access"
-                  ).execute()
-
-                  val test = apolloClient.query(BodyMeasurementQuery(
-                     bodyMeasurementId = bodyMeasurementId
-                  )).addHttpHeader(
-                     "Authorization",
-                     "Bearer $access"
-                  ).execute()
-
-                  if(test.data != null){ // access token 확인필요
-                     Toast.makeText(context, "${test.data!!.bodyMeasurement}", Toast.LENGTH_SHORT).show()
-                  }
-
-
-                  /*val response = apolloClient.mutation(UpdateUserProfileMutation(
-                     userId = getUser.userId!!, UpdateUserProfileInput(birth = Optional.present(birthday), name = Optional.present(name))
-                  )).addHttpHeader(
-                     "Authorization",
-                     "Bearer ${getToken.accessToken}"
-                  ).execute()
-
-                  val response = apolloClient.mutation(UpdateUserProfileMutation(
-                     userId = getUser.userId!!, UpdateUserProfileInput(gender = Optional.present(gender), height = Optional.present(height), weight = Optional.present(weight))
-                  )).addHttpHeader(
-                     "Authorization",
-                     "Bearer ${getToken.accessToken}"
-                  ).execute()*/
-               }
+            if(accessDiff.toHours() >= 1 && !accessCheck) {
+               accessCheck = refreshToken()
             }
 
-            delay(5000)
+            if(refreshDiff.toHours() >= 336 && !loginCheck) {
+               loginCheck = login()
+            }
+
+            if(body.regDate != "") {
+               apolloClient.mutation(UpdateBodyMeasurementMutation(bodyMeasurementId = bodyMeasurementId, UpdateBodyMeasurementInput(height = Optional.present(body.height),
+                  bodyFatPercentage = Optional.present(body.fat), startedAt = Optional.present(LocalDate.now().toString()), endedAt = Optional.present(LocalDate.now().toString()))
+               )).addHttpHeader(
+                  "Authorization", "Bearer $access"
+               ).execute()
+
+               val test = apolloClient.query(BodyMeasurementQuery(
+                  bodyMeasurementId = bodyMeasurementId
+               )).addHttpHeader(
+                  "Authorization",
+                  "Bearer $access"
+               ).execute()
+
+               if(test.data != null){
+                  Toast.makeText(context, "${test.data!!.bodyMeasurement.bodyMeasurement.height}/" +
+                     "${test.data!!.bodyMeasurement.bodyMeasurement.bodyFatPercentage}", Toast.LENGTH_SHORT).show()
+               }
+            }
          }
+
+         delay(5000)
       }
    }
 
-   private fun createUser() {
+   private fun register() {
       when(user.type) {
          "google" -> {
             viewModelScope.launch {
-               val createUser = apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
+               apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
                   idToken = user.idToken.toString()
                ))).execute()
 
@@ -142,32 +140,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   ).execute()
 
                   if(me.data != null) {
-                     val removeUser = apolloClient.mutation(RemoveUserMutation(
+                     apolloClient.mutation(RemoveUserMutation(
                         userId = me.data!!.me.user.userId
                      )).addHttpHeader(
                         "Authorization", "Bearer ${loginUser.data!!.loginUserGoogle.accessToken}"
                      ).execute()
 
-                     val createUser = apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
+                     apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
                         idToken = user.idToken.toString()
                      ))).execute()
 
-                     val loginUser2 = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
-                        idToken = user.idToken.toString()
-                     ))).execute()
-
-                     if(loginUser2.data != null) {
-                        val accessToken = loginUser2.data!!.loginUserGoogle.accessToken
-                        val refreshToken = loginUser2.data!!.loginUserGoogle.refreshToken
-
-                        val getToken = dataManager!!.getToken()
-                        if(getToken.regDate == "") {
-                           dataManager!!.insertToken(Token(accessToken = accessToken!!, refreshToken = refreshToken!!, regDate = LocalDate.now().toString()))
-                        }else {
-                           dataManager!!.updateToken(Token(accessToken = accessToken!!, refreshToken = refreshToken!!, regDate = LocalDate.now().toString()))
-                        }
-
-                        createData(accessToken)
+                     if(login()) {
+                        createData()
                      }
                   }
                }
@@ -175,7 +159,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          }
          "naver" -> {
             viewModelScope.launch {
-               val createUser = apolloClient.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
+               apolloClient.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
                   accessToken = user.idToken.toString()
                ))).execute()
 
@@ -190,32 +174,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   ).execute()
 
                   if(me.data != null) {
-                     val removeUser = apolloClient.mutation(RemoveUserMutation(
+                     apolloClient.mutation(RemoveUserMutation(
                         userId = me.data!!.me.user.userId
                      )).addHttpHeader(
                         "Authorization", "Bearer ${loginUser.data!!.loginUserNaver.accessToken}"
                      ).execute()
 
-                     val createUser = apolloClient.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
+                     apolloClient.mutation(CreateUserNaverMutation(CreateNaverOauthInput(
                         accessToken = user.idToken.toString()
                      ))).execute()
 
-                     val loginUser2 = apolloClient.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
-                        accessToken = user.idToken.toString()
-                     ))).execute()
-
-                     if(loginUser2.data != null) {
-                        val accessToken = loginUser2.data!!.loginUserNaver.accessToken
-                        val refreshToken = loginUser2.data!!.loginUserNaver.refreshToken
-
-                        val getToken = dataManager!!.getToken()
-                        if(getToken.regDate == "") {
-                           dataManager!!.insertToken(Token(accessToken = accessToken!!, refreshToken = refreshToken!!, regDate = LocalDate.now().toString()))
-                        }else {
-                           dataManager!!.updateToken(Token(accessToken = accessToken!!, refreshToken = refreshToken!!, regDate = LocalDate.now().toString()))
-                        }
-
-                        createData(accessToken)
+                     if(login()) {
+                        createData()
                      }
                   }
                }
@@ -223,7 +193,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          }
          "kakao" -> {
             viewModelScope.launch {
-               val createUser = apolloClient.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
+               apolloClient.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
                   idToken = user.idToken.toString()
                ))).execute()
 
@@ -238,32 +208,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   ).execute()
 
                   if(me.data != null) {
-                     val removeUser = apolloClient.mutation(RemoveUserMutation(
+                     apolloClient.mutation(RemoveUserMutation(
                         userId = me.data!!.me.user.userId
                      )).addHttpHeader(
                         "Authorization", "Bearer ${loginUser.data!!.loginUserKakao.accessToken}"
                      ).execute()
 
-                     val createUser = apolloClient.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
+                     apolloClient.mutation(CreateUserKakaoMutation(CreateKakaoOauthInput(
                         idToken = user.idToken.toString()
                      ))).execute()
 
-                     val loginUser2 = apolloClient.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
-                        idToken = user.idToken.toString()
-                     ))).execute()
-
-                     if(loginUser2.data != null) {
-                        val accessToken = loginUser2.data!!.loginUserKakao.accessToken
-                        val refreshToken = loginUser2.data!!.loginUserKakao.refreshToken
-
-                        val getToken = dataManager!!.getToken()
-                        if(getToken.regDate == "") {
-                           dataManager!!.insertToken(Token(accessToken = accessToken!!, refreshToken = refreshToken!!, regDate = LocalDate.now().toString()))
-                        }else {
-                           dataManager!!.updateToken(Token(accessToken = accessToken!!, refreshToken = refreshToken!!, regDate = LocalDate.now().toString()))
-                        }
-
-                        createData(accessToken)
+                     if(login()) {
+                        createData()
                      }
                   }
                }
@@ -272,10 +228,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       }
    }
 
-   private suspend fun createData(accessToken: String) {
+   private suspend fun login(): Boolean {
+      var result = false
+
+      val loginUser = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+         idToken = user.idToken.toString()
+      ))).execute()
+
+      if(loginUser.data != null) {
+         access = loginUser.data!!.loginUserGoogle.accessToken!!
+         refresh = loginUser.data!!.loginUserGoogle.refreshToken!!
+
+         if(access != "" && refresh != "") {
+            if(token.accessToken == "") {
+               dataManager!!.insertToken(Token(accessToken = access, refreshToken = refresh,
+                  accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
+            }else {
+               dataManager!!.updateToken(Token(accessToken = access, refreshToken = refresh,
+                  accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
+            }
+
+            result = true
+         }
+      }
+
+      return result
+   }
+
+   private suspend fun createData() {
       val me1 = apolloClient.query(MeQuery()).addHttpHeader(
          "Authorization",
-         "Bearer $accessToken"
+         "Bearer $access"
       ).execute()
 
       if(me1.data != null) {
@@ -297,18 +280,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             CreateDeviceInput(deviceHardwareVersion = ver, deviceLabel = device, deviceManufacturer = manufacturer,
                deviceModel = model, deviceName = manufacturer, deviceSoftwareVersion = ver
          ))).addHttpHeader(
-            "Authorization", "Bearer $accessToken"
+            "Authorization", "Bearer $access"
          ).execute()
 
          if(createDevice.data != null) {
             val createHealth = apolloClient.mutation(CreateHealthMutation(userId = userId)).addHttpHeader(
-               "Authorization", "Bearer $accessToken"
+               "Authorization", "Bearer $access"
             ).execute()
 
             if(createHealth.data != null) {
                val me2 = apolloClient.query(MeQuery()).addHttpHeader(
                   "Authorization",
-                  "Bearer $accessToken"
+                  "Bearer $access"
                ).execute()
 
                if(me2.data != null) {
@@ -316,38 +299,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   val deviceId = me2.data!!.me.user.devices[0].deviceId
 
                   val createActivity = apolloClient.mutation(CreateActivityMutation(
-                     healthId = healthId, deviceId = deviceId, CreateActivityInput(startedAt = LocalDate.now().toString(),
-                        endedAt = LocalDate.now().toString())
+                     healthId = healthId, deviceId = deviceId, CreateActivityInput(startedAt = LocalDate.now().toString(), endedAt = LocalDate.now().toString())
                   )).addHttpHeader(
-                     "Authorization", "Bearer $accessToken"
+                     "Authorization", "Bearer $access"
                   ).execute()
 
                   val createBodyMeasurement = apolloClient.mutation(CreateBodyMeasurementMutation(
                      healthId = me2.data!!.me.user.health!!.healthId, deviceId = me2.data!!.me.user.devices[0].deviceId,
                      CreateBodyMeasurementInput(startedAt = LocalDate.now().toString(), endedAt = LocalDate.now().toString())
                   )).addHttpHeader(
-                     "Authorization", "Bearer $accessToken"
+                     "Authorization", "Bearer $access"
                   ).execute()
 
                   if(createActivity.data != null || createBodyMeasurement.data != null) {
                      val me3 = apolloClient.query(MeQuery()).addHttpHeader(
                         "Authorization",
-                        "Bearer $accessToken"
+                        "Bearer $access"
                      ).execute()
 
                      if(me3.data != null) {
                         val getUser = dataManager!!.getUser(user.type!!, user.email!!)
                         if(getUser.id != 0) {
-                           Log.d(TAG, "access: $accessToken")
-                           Log.d(TAG, "userId: $userId")
-                           Log.d(TAG, "deviceId: $deviceId")
-                           Log.d(TAG, "healthId: $healthId")
-                           Log.d(TAG, "activityId: ${me3.data!!.me.user.health!!.activities[0].activityId}")
-                           Log.d(TAG, "bodyMeasurementId: ${me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId}")
+                           Log.d(TAG,  "access: $access\n" +
+                              "userId: $userId\n" +
+                              "deviceId: $deviceId\n" +
+                              "healthId: $healthId\n" +
+                              "activityId: ${me3.data!!.me.user.health!!.activities[0].activityId}\n" +
+                              "bodyMeasurementId: ${me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId}")
 
                            dataManager!!.updateUser(User(id = getUser.id, userId = userId, deviceId = deviceId, healthId = healthId,
                               activityId = me3.data!!.me.user.health!!.activities[0].activityId,
                               bodyMeasurementId = me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId)) // 사용자정보 저장
+
+                           updateData()
                         }
                      }
                   }
@@ -357,10 +341,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       }
    }
 
-   private fun getNetWorkStatusCheck(context : Context): Boolean {
-      val connectManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-      val networkStatus : NetworkInfo? = connectManager.activeNetworkInfo
-      val connectCheck : Boolean = networkStatus?.isConnectedOrConnecting == true
-      return connectCheck
+   private suspend fun refreshToken(): Boolean {
+      var result = false
+
+      val refreshToken = apolloClient.mutation(RefreshTokenMutation()).addHttpHeader(
+         "Authorization",
+         "Bearer $refresh"
+      ).execute()
+
+      if(refreshToken.data != null) {
+         dataManager!!.updateAccessToken(Token(accessToken = refreshToken.data!!.refreshToken.accessToken, accessTokenRegDate = LocalDateTime.now().toString()))
+         token = dataManager!!.getToken()
+         access = token.accessToken
+
+         result = true
+      }
+
+      return result
    }
 }

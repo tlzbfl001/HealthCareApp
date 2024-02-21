@@ -219,9 +219,4 @@ class LoginFragment : Fragment() {
             }
         }
     }
-
-    private fun getKeyHash() {
-        val keyHash = Utility.getKeyHash(applicationContext)
-        Log.d(TAG, keyHash)
-    }
 }

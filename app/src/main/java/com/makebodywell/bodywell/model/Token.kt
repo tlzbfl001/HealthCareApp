@@ -5,5 +5,6 @@ data class Token (
     var userId: Int = 0,
     var accessToken: String = "",
     var refreshToken: String = "",
-    var regDate: String = ""
+    var accessTokenRegDate: String = "",
+    var refreshTokenRegDate: String = ""
 )
