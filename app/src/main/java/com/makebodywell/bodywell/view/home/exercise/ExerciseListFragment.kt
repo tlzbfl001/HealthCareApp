@@ -22,7 +22,6 @@ class ExerciseListFragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-
    private var calendarDate = ""
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")

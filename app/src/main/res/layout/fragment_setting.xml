@@ -143,8 +143,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:text="사용 환경"
-            android:textSize="17dp"
+            android:textSize="16dp"
             android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/ivSetting"
             app:layout_constraintTop_toTopOf="@id/ivSetting"
             app:layout_constraintBottom_toBottomOf="@id/ivSetting"/>
@@ -239,8 +240,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:text="내 기기"
-            android:textSize="17dp"
+            android:textSize="16dp"
             android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/ivDevice"
             app:layout_constraintTop_toTopOf="@id/ivDevice"
             app:layout_constraintBottom_toBottomOf="@id/ivDevice"/>
@@ -308,8 +310,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="이용 정보"
-            android:textSize="17dp"
+            android:textSize="16dp"
             android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="@id/ivNote"
             app:layout_constraintStart_toEndOf="@id/ivNote"
             app:layout_constraintBottom_toBottomOf="@id/ivNote"/>

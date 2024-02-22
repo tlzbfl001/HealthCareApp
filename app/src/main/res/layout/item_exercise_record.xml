@@ -10,7 +10,7 @@
         android:background="@color/white"
         android:paddingBottom="20dp"
         android:text="text"
-        android:textSize="17dp"
+        android:textSize="16dp"
         android:textColor="#B4B4B5"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

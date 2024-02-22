@@ -26,7 +26,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -86,14 +85,18 @@ class FoodFragment : Fragment() {
          calendarDate = calendarDate!!.minusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
 
-         dailyView()
+         dailyGoal()
+         photoView()
+         listView()
       }
 
       binding.clNext.setOnClickListener {
          calendarDate = calendarDate!!.plusDays(1)
          binding.tvDate.text = dateFormat(calendarDate)
 
-         dailyView()
+         dailyGoal()
+         photoView()
+         listView()
       }
 
       binding.cvWater.setOnClickListener {
@@ -173,7 +176,9 @@ class FoodFragment : Fragment() {
          }
       }
 
-      dailyView()
+      dailyGoal()
+      photoView()
+      listView()
 
       return binding.root
    }
@@ -214,17 +219,6 @@ class FoodFragment : Fragment() {
       binding.clGoal.setOnClickListener {
          dialog.show()
       }
-   }
-
-   private fun dailyView() {
-      // 목표 설정
-      dailyGoal()
-
-      // 이미지뷰
-      photoView()
-
-      // 리스트뷰
-      listView()
    }
 
    @SuppressLint("SetTextI18n")

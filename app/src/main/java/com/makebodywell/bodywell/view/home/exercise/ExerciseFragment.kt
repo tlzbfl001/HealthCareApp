@@ -39,7 +39,6 @@ class ExerciseFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var adapter: ExerciseAdapter? = null
    private var getDailyData = DailyData()
-
    private var calendarDate = LocalDate.now()
    private var sum = 0
 

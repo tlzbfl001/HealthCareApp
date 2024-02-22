@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -23,16 +25,17 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.adapter.ReportAdapter
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -41,9 +44,9 @@ class ReportExerciseFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-
+   private var adapter: ReportAdapter? = null
    private var calendarDate = LocalDate.now()
-   private var dateType = 0
+   private var dateType = 1
 
    @SuppressLint("SimpleDateFormat")
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
@@ -86,17 +89,17 @@ class ReportExerciseFragment : Fragment() {
 
       binding.clPrev.setOnClickListener {
          when(dateType) {
-            0->{
+            1->{
                calendarDate = calendarDate!!.minusDays(1)
                binding.tvCalTitle.text = dateFormat(calendarDate)
                dailyView()
             }
-            1->{
+            2->{
                calendarDate = calendarDate!!.minusWeeks(1)
                binding.tvCalTitle.text = weekFormat(calendarDate)
                weeklyView()
             }
-            2->{
+            3->{
                calendarDate = calendarDate!!.minusMonths(1)
                binding.tvCalTitle.text = monthFormat(calendarDate)
                monthlyView()
@@ -106,17 +109,17 @@ class ReportExerciseFragment : Fragment() {
 
       binding.clNext.setOnClickListener {
          when(dateType) {
-            0->{
+            1->{
                calendarDate = calendarDate!!.plusDays(1)
                binding.tvCalTitle.text = dateFormat(calendarDate)
                dailyView()
             }
-            1->{
+            2->{
                calendarDate = calendarDate!!.plusWeeks(1)
                binding.tvCalTitle.text = weekFormat(calendarDate)
                weeklyView()
             }
-            2->{
+            3->{
                calendarDate = calendarDate!!.plusMonths(1)
                binding.tvCalTitle.text = monthFormat(calendarDate)
                monthlyView()
@@ -151,7 +154,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
-      dateType = 0
+      dateType = 1
 
       val getDates = dataManager!!.getDates(TABLE_EXERCISE)
       if(getDates.size > 0) {
@@ -168,7 +171,7 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      countView(getDates)
+      rankView(dateType, "", "")
    }
 
    private fun weeklyView() {
@@ -178,7 +181,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvWeekly.setTextColor(Color.WHITE)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
-      dateType = 1
+      dateType = 2
 
       val weekArray = weekArray(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
@@ -196,7 +199,7 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      countView(getDates)
+      rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
    }
 
    private fun monthlyView() {
@@ -206,7 +209,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
-      dateType = 2
+      dateType = 3
 
       val monthArray = monthArray2(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
@@ -224,7 +227,7 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      countView(getDates)
+      rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
    }
 
    private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
@@ -403,28 +406,46 @@ class ReportExerciseFragment : Fragment() {
       }
    }
 
-   @SuppressLint("SetTextI18n")
-   private fun countView(data: ArrayList<String>) {
-      var running = 0
-      var soccer = 0
-      var yoga = 0
-      var basketball = 0
+   private fun rankView(type: Int, start: String, end: String) {
+      val itemList = ArrayList<Item>()
 
-      for(i in 0 until data.size){
-         val getExercise = dataManager!!.getExercise(data[i])
-         for(j in 0 until getExercise.size) {
-            when(getExercise[j].name) {
-               "달리기" -> running++
-               "축구" -> soccer++
-               "요가" -> yoga++
-               "농구" -> basketball++
-            }
-         }
+      val getData = when(type) {
+         1 -> dataManager!!.getRanking(TABLE_EXERCISE)
+         else -> dataManager!!.getRanking(TABLE_EXERCISE, start, end)
       }
 
-      binding.tvRunning.text = "${running}회"
-      binding.tvSoccer.text = "${soccer}회"
-      binding.tvYoga.text = "${yoga}회"
-      binding.tvBasketball.text = "${basketball}회"
+      if(getData.size > 0) {
+         binding.tvEmpty.visibility = View.GONE
+         binding.recyclerView.visibility = View.VISIBLE
+
+         for(i in 0 until getData.size) {
+            itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
+         }
+
+         when(getData.size) {
+            1 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+            2 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+            3 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+            4 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+         }
+
+         adapter = ReportAdapter(itemList)
+         binding.recyclerView.adapter = adapter
+      }else {
+         binding.tvEmpty.visibility = View.VISIBLE
+         binding.recyclerView.visibility = View.GONE
+      }
    }
 }

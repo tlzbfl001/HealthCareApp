@@ -2,48 +2,33 @@ package com.makebodywell.bodywell.view.init
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.Scopes
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
-import com.makebodywell.bodywell.LoginUserGoogleMutation
-import com.makebodywell.bodywell.LoginUserKakaoMutation
-import com.makebodywell.bodywell.LoginUserNaverMutation
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentLoginBinding
-import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.type.LoginGoogleOauthInput
-import com.makebodywell.bodywell.type.LoginKakaoOauthInput
-import com.makebodywell.bodywell.type.LoginNaverOauthInput
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment2
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.NaverIdLoginSDK.applicationContext
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class LoginFragment : Fragment() {
@@ -65,6 +50,10 @@ class LoginFragment : Fragment() {
 
         dataManager = DataManager(requireActivity())
         dataManager!!.open()
+
+        binding.tv1.setOnClickListener {
+            replaceLoginFragment1(requireActivity(), InputTermsFragment())
+        }
 
         // 구글 로그인
         binding.clGoogle.setOnClickListener {

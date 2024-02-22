@@ -39,6 +39,7 @@ class CustomUtil {
          }
       }
 
+
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             replace(R.id.mainFrame, fragment!!)

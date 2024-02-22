@@ -10,7 +10,7 @@
       android:layout_height="wrap_content"
       android:paddingBottom="15dp"
       android:text="text"
-      android:textSize="17dp"
+      android:textSize="16dp"
       android:textColor="@color/black"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"

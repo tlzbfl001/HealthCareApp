@@ -224,7 +224,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#ddd"
-            android:textSize="17dp"
+            android:textSize="16dp"
             android:textColor="@color/black"
             android:hint="제목."
             android:textColorHint="#ddd"

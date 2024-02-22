@@ -25,7 +25,9 @@ import com.makebodywell.bodywell.databinding.FragmentDrugBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -39,13 +41,12 @@ class DrugFragment : Fragment() {
    private var _binding: FragmentDrugBinding? = null
    val binding get() = _binding!!
 
-   private var calendarDate = LocalDate.now()
-
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter1? = null
    private val itemList = ArrayList<DrugList>()
    private var getDailyData = DailyData()
-
+   private var calendarDate = LocalDate.now()
    private var check = 0
 
    override fun onCreateView(
@@ -67,42 +68,11 @@ class DrugFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      initView()
-      recordView()
+      if(arguments?.getString("calendarDate") != null) {
+         calendarDate = LocalDate.parse(arguments?.getString("calendarDate"))
+      }
 
-      return binding.root
-   }
-
-   private fun initView() {
       binding.tvDate.text = dateFormat(calendarDate)
-
-      // 목표 설정
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
-      val et = dialog.findViewById<TextView>(R.id.et)
-      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-      tvTitle.text = "약복용 / 하루 복용 횟수"
-      tvUnit.text = "회"
-      btnSave.setCardBackgroundColor(Color.parseColor("#8F6FF5"))
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() != "") {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }else {
-               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), calendarDate.toString())
-            }
-            recordView()
-         }
-         dialog.dismiss()
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -122,7 +92,8 @@ class DrugFragment : Fragment() {
 
       binding.clRecord.setOnClickListener {
          if(requestPermission()) {
-            replaceFragment1(requireActivity(), DrugRecordFragment())
+            bundle.putString("calendarDate", calendarDate.toString())
+            replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
          }
       }
 
@@ -148,6 +119,40 @@ class DrugFragment : Fragment() {
 
       binding.cvDrug.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
+      }
+
+      settingGoal()
+      recordView()
+
+      return binding.root
+   }
+
+   private fun settingGoal() {
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
+      val et = dialog.findViewById<TextView>(R.id.et)
+      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+      tvTitle.text = "약복용 / 하루 복용 횟수"
+      tvUnit.text = "회"
+      btnSave.setCardBackgroundColor(Color.parseColor("#8F6FF5"))
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() != "") {
+            if(getDailyData.regDate == "") {
+               dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+            }else {
+               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), calendarDate.toString())
+            }
+            recordView()
+         }
+         dialog.dismiss()
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
       }
    }
 

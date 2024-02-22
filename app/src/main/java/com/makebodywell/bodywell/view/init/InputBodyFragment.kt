@@ -18,7 +18,7 @@ class InputBodyFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var gender = Gender.FEMALE
+   private var gender = "MALE"
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -39,17 +39,6 @@ class InputBodyFragment : Fragment() {
          replaceLoginFragment1(requireActivity(), InputGoalFragment())
       }
 
-      binding.cvWoman.setOnClickListener {
-         binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
-         binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
-         binding.tvMan.setTextColor(Color.BLACK)
-         binding.cvWoman.setCardBackgroundColor(Color.parseColor("#9F98FF"))
-         binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.WHITE)
-         binding.tvWoman.setTextColor(Color.WHITE)
-
-         gender = Gender.FEMALE
-      }
-
       binding.cvMan.setOnClickListener {
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#9F98FF"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
@@ -58,7 +47,18 @@ class InputBodyFragment : Fragment() {
          binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvWoman.setTextColor(Color.BLACK)
 
-         gender = Gender.MALE
+         gender = "MALE"
+      }
+
+      binding.cvWoman.setOnClickListener {
+         binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
+         binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
+         binding.tvMan.setTextColor(Color.BLACK)
+         binding.cvWoman.setCardBackgroundColor(Color.parseColor("#9F98FF"))
+         binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.WHITE)
+         binding.tvWoman.setTextColor(Color.WHITE)
+
+         gender = "FEMALE"
       }
 
       binding.cvContinue.setOnClickListener {
@@ -73,7 +73,7 @@ class InputBodyFragment : Fragment() {
             weight = binding.etWeight.text.toString().toDouble()
          }
 
-         dataManager?.updateString(TABLE_USER, "gender", gender.toString(), getUser.id)
+         dataManager?.updateString(TABLE_USER, "gender", gender, getUser.id)
          dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
          dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
 

@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.home.drug
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +12,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.DrugAdapter2
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugRecordBinding
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 
 class DrugRecordFragment : Fragment() {
    private var _binding: FragmentDrugRecordBinding? = null
    private val binding get() = _binding!!
 
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter2? = null
+   private var calendarDate = ""
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -41,15 +47,19 @@ class DrugRecordFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
+      calendarDate = arguments?.getString("calendarDate").toString()
+
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
+         bundle.putString("calendarDate", calendarDate)
+         replaceFragment2(requireActivity(), DrugFragment(), bundle)
       }
 
       binding.tvAdd.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugAddFragment())
+         bundle.putString("calendarDate", calendarDate)
+         replaceFragment2(requireActivity(), DrugAddFragment(), bundle)
       }
 
-      val getDrug = dataManager!!.getDrug()
+      val getDrug = dataManager!!.getDrug(calendarDate)
 
       adapter = DrugAdapter2(requireActivity(), getDrug)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

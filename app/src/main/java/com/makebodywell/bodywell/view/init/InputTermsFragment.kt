@@ -25,7 +25,7 @@ class InputTermsFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var user = User()
+   private var user: User? = null
    private var isAll = true
 
    override fun onCreateView(
@@ -37,7 +37,7 @@ class InputTermsFragment : Fragment() {
       dataManager = DataManager(requireActivity())
       dataManager!!.open()
 
-      user = arguments?.getParcelable("user")!!
+      user = arguments?.getParcelable("user")
 
       binding.ivBack.setOnClickListener {
         replaceLoginFragment1(requireActivity(), LoginFragment())
@@ -111,15 +111,19 @@ class InputTermsFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            dataManager!!.insertUser(user) // 사용자 정보 저장
-            val getUser = dataManager!!.getUser(user.type!!, user.email!!)
-            if(getUser.id != 0) {
-               MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
-               signInDialog()
-            }
+         if(user == null) {
+            signInDialog()
          }else {
-            Toast.makeText(requireActivity(), "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
+            if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
+               dataManager!!.insertUser(user!!) // 사용자 정보 저장
+               val getUser = dataManager!!.getUser(user!!.type!!, user!!.email!!)
+               if(getUser.id != 0) {
+                  MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
+                  signInDialog()
+               }
+            }else {
+               Toast.makeText(requireActivity(), "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
+            }
          }
       }
 

@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
@@ -24,10 +26,12 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.adapter.ReportAdapter
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportDrugBinding
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
@@ -35,7 +39,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -44,9 +47,9 @@ class ReportDrugFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-
+   private var adapter: ReportAdapter? = null
    private var calendarDate = LocalDate.now()
-   private var dateType = 0
+   private var dateType = 1
 
    @SuppressLint("SimpleDateFormat")
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
@@ -89,37 +92,37 @@ class ReportDrugFragment : Fragment() {
 
       binding.clPrev.setOnClickListener {
          when(dateType) {
-            0->{
+            1->{
                calendarDate = calendarDate!!.minusDays(1)
                binding.tvCalTitle.text = dateFormat(calendarDate)
                dailyView()
             }
-            1->{
+            2->{
                calendarDate = calendarDate!!.minusWeeks(1)
                binding.tvCalTitle.text = weekFormat(calendarDate)
-//               weeklyView()
+               weeklyView()
             }
-            2->{
+            3->{
                calendarDate = calendarDate!!.minusMonths(1)
                binding.tvCalTitle.text = monthFormat(calendarDate)
-//               monthlyView()
+               monthlyView()
             }
          }
       }
 
       binding.clNext.setOnClickListener {
          when(dateType) {
-            0->{
+            1->{
                calendarDate = calendarDate!!.plusDays(1)
                binding.tvCalTitle.text = dateFormat(calendarDate)
                dailyView()
             }
-            1->{
+            2->{
                calendarDate = calendarDate!!.plusWeeks(1)
                binding.tvCalTitle.text = weekFormat(calendarDate)
                weeklyView()
             }
-            2->{
+            3->{
                calendarDate = calendarDate!!.plusMonths(1)
                binding.tvCalTitle.text = monthFormat(calendarDate)
                monthlyView()
@@ -154,19 +157,19 @@ class ReportDrugFragment : Fragment() {
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
-      dateType = 0
+      dateType = 1
 
       val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK)
       if(getDates.size > 0) {
          binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.GONE
          settingChart(binding.chart, getDates)
       }else {
          binding.chart.visibility = View.GONE
-         binding.tvEmpty.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      countView(getDates)
+      rankView(dateType, "", "")
    }
 
    private fun weeklyView() {
@@ -176,20 +179,20 @@ class ReportDrugFragment : Fragment() {
       binding.tvWeekly.setTextColor(Color.WHITE)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
-      dateType = 1
+      dateType = 2
 
       val weekArray = weekArray(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.GONE
          settingChart(binding.chart, getDates)
       }else {
          binding.chart.visibility = View.GONE
-         binding.tvEmpty.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      countView(getDates)
+      rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
    }
 
    private fun monthlyView() {
@@ -199,20 +202,20 @@ class ReportDrugFragment : Fragment() {
       binding.tvWeekly.setTextColor(Color.BLACK)
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
-      dateType = 2
+      dateType = 3
 
       val monthArray = monthArray2(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.GONE
          settingChart(binding.chart, getDates)
       }else {
          binding.chart.visibility = View.GONE
-         binding.tvEmpty.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      countView(getDates)
+      rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
    }
 
    private fun settingChart(chart: CombinedChart, getData: ArrayList<String>) {
@@ -230,11 +233,10 @@ class ReportDrugFragment : Fragment() {
       var num = -1
 
       for(i in 0 until getData.size){
-         Log.d(TAG, "getData: ${getData}")
          val getDailyData = dataManager!!.getDailyData(getData[i])
          val count = dataManager!!.getDrugCheckCount(getData[i])
 
-         if(getDailyData.regDate != "" && count > 0) {
+         if(count > 0) {
             num++
 
             val pt = when(getDailyData.drugGoal) {
@@ -242,7 +244,7 @@ class ReportDrugFragment : Fragment() {
                else -> (count.toFloat() / getDailyData.drugGoal.toFloat()) * 100
             }
 
-            xVal += format2.format(format1.parse(getDailyData.regDate)!!)
+            xVal += format2.format(format1.parse(getData[i])!!)
             lineList += pt
             barEntries.add(BarEntry(num.toFloat(), pt))
          }
@@ -331,28 +333,46 @@ class ReportDrugFragment : Fragment() {
       }
    }
 
-   @SuppressLint("SetTextI18n")
-   private fun countView(data: ArrayList<String>) {
-      var drug1 = 0
-      var drug2 = 0
-      var drug3 = 0
-      var drug4 = 0
+   private fun rankView(type: Int, start: String, end: String) {
+      val itemList = ArrayList<Item>()
 
-      for(i in 0 until data.size){
-         val getDrug = dataManager!!.getDrug(data[i])
-         for(j in 0 until getDrug.size) {
-            when(getDrug[j]) {
-               "혈압약" -> drug1++
-               "비타민" -> drug2++
-               "감기약" -> drug3++
-               "오메가" -> drug4++
-            }
-         }
+      val getData = when(type) {
+         1 -> dataManager!!.getRanking(TABLE_DRUG)
+         else -> dataManager!!.getRanking(TABLE_DRUG, start, end)
       }
 
-      binding.tvDrug1.text = "${drug1}회"
-      binding.tvDrug2.text = "${drug2}회"
-      binding.tvDrug3.text = "${drug3}회"
-      binding.tvDrug4.text = "${drug4}회"
+      if(getData.size > 0) {
+         binding.tvEmpty1.visibility = View.GONE
+         binding.recyclerView.visibility = View.VISIBLE
+
+         for(i in 0 until getData.size) {
+            itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
+         }
+
+         when(getData.size) {
+            1 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+            2 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+            3 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+            4 -> {
+               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
+               binding.recyclerView.layoutManager = layoutManager
+            }
+         }
+
+         adapter = ReportAdapter(itemList)
+         binding.recyclerView.adapter = adapter
+      }else {
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.recyclerView.visibility = View.GONE
+      }
    }
 }

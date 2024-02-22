@@ -17,8 +17,10 @@ import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
 import com.makebodywell.bodywell.util.MyApp
 import java.time.LocalDate
@@ -28,12 +30,12 @@ class DrugAddFragment : Fragment() {
    private var _binding: FragmentDrugAddBinding? = null
    private val binding get() = _binding!!
 
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
-
-   private val getDate = LocalDate.now()
+   private var calendarDate = ""
    private var unit = "정"
    private var count = 1
 
@@ -59,16 +61,11 @@ class DrugAddFragment : Fragment() {
 
       alarmReceiver = AlarmReceiver()
 
-      initView()
-      settingTime()
-      showTimeList()
+      calendarDate = arguments?.getString("calendarDate").toString()
+      bundle.putString("calendarDate", calendarDate)
 
-      return binding.root
-   }
-
-   private fun initView() {
       binding.clX.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugRecordFragment())
+         replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
       }
 
       binding.clUnit1.setOnClickListener {
@@ -111,14 +108,14 @@ class DrugAddFragment : Fragment() {
          if(itemList.size == 0) {
             Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
-            val startDate = getDate.toString()
-            val endDate = getDate.plusDays(count.toLong() - 1).toString()
+            val startDate = calendarDate
+            val endDate = LocalDate.parse(calendarDate).plusDays(count.toLong() - 1).toString()
 
             // 약 데이터 저장
-            dataManager!!.insertDrug(Drug(type = binding.etType.text.toString(), name = binding.etName.text.toString(), amount = binding.etAmount.text.toString(),
-               unit = unit, startDate = startDate, endDate = endDate, count = count, isSet = 1, regDate = getDate.toString()))
+            dataManager!!.insertDrug(Drug(type = binding.etType.text.toString().trim(), name = binding.etName.text.toString().trim(), amount = binding.etAmount.text.toString().trim(),
+               unit = unit, startDate = startDate, endDate = endDate, count = count, isSet = 1, regDate = calendarDate))
 
-            val getDrugId = dataManager!!.getDrugId(getDate.toString())
+            val getDrugId = dataManager!!.getDrugId(calendarDate)
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
@@ -130,9 +127,14 @@ class DrugAddFragment : Fragment() {
             alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, startDate, endDate, drugTimeList, message)
 
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment1(requireActivity(), DrugRecordFragment())
+            replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
          }
       }
+
+      settingTime()
+      showTimeList()
+
+      return binding.root
    }
 
    private fun settingTime() {

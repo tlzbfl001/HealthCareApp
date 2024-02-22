@@ -24,6 +24,7 @@ import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.model.Token
@@ -305,6 +306,38 @@ class DataManager(private var context: Context?) {
       return data
    }
 
+   fun getRanking(table: String) : ArrayList<Item> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Item>()
+      val sql = "select count(name) as ranking, name from $table where userId = ${MyApp.prefs.getId()} " +
+         "group by name order by ranking desc limit 4"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Item()
+         data.string1=cursor.getString(0)
+         data.string2=cursor.getString(1)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getRanking(table: String, start: String, end: String) : ArrayList<Item> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Item>()
+      val sql = "select count(name) as ranking, name from $table where userId = ${MyApp.prefs.getId()} and regDate BETWEEN '$start' and '$end' " +
+         "group by name order by ranking desc limit 4"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val data = Item()
+         data.string1=cursor.getString(0)
+         data.string2=cursor.getString(1)
+         list.add(data)
+      }
+      cursor.close()
+      return list
+   }
+
    fun getBody() : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
@@ -361,10 +394,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getDrug() : ArrayList<Drug> {
+   fun getDrug(date: String) : ArrayList<Drug> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Drug>()
-      val sql = "select * from $TABLE_DRUG where userId = ${MyApp.prefs.getId()}"
+      val sql = "select * from $TABLE_DRUG where userId = ${MyApp.prefs.getId()} and '$date' BETWEEN startDate and endDate"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val data = Drug()
@@ -379,18 +412,6 @@ class DataManager(private var context: Context?) {
          data.isSet = cursor.getInt(9)
          data.regDate = cursor.getString(10)
          list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getDrug(date: String) : ArrayList<String> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<String>()
-      val sql = "select name from $TABLE_DRUG where userId = ${MyApp.prefs.getId()} and regDate = '$date'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         list.add(cursor.getString(0))
       }
       cursor.close()
       return list
@@ -428,8 +449,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheck(dataId: Int, date: String) : DrugCheck {
       val db = dbHelper!!.readableDatabase
       val data = DrugCheck()
-      val sql = "select checked, drugTimeId, regDate from $TABLE_DRUG_CHECK " +
-         "where userId = ${MyApp.prefs.getId()} and drugTimeId = $dataId and regDate = '$date'"
+      val sql = "select checked, drugTimeId, regDate from $TABLE_DRUG_CHECK where userId=${MyApp.prefs.getId()} and drugTimeId=$dataId and regDate='$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.checked = cursor.getInt(0)
@@ -527,7 +547,7 @@ class DataManager(private var context: Context?) {
    fun getDates(table: String) : ArrayList<String> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<String>()
-      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()}"
+      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()} order by regDate"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          list.add(cursor.getString(0))
@@ -539,7 +559,7 @@ class DataManager(private var context: Context?) {
    fun getDates(table: String, start: String, end: String) : ArrayList<String> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<String>()
-      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()} and regDate BETWEEN '$start' and '$end'"
+      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()} and regDate BETWEEN '$start' and '$end' order by regDate"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          list.add(cursor.getString(0))
