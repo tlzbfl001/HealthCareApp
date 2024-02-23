@@ -8,22 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteWriteBinding
-import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
-
    private var dataManager: DataManager? = null
+   private var status = 1
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -46,7 +45,6 @@ class NoteWriteFragment : Fragment() {
       dataManager!!.open()
 
       val getNote = dataManager!!.getNote(selectedDate.toString())
-
       bundle.putString("data", "note")
 
       binding.clBack.setOnClickListener {
@@ -63,14 +61,42 @@ class NoteWriteFragment : Fragment() {
          settingData()
       }
 
+      binding.ivFace1.setOnClickListener {
+         binding.ivFace.setImageResource(R.drawable.face1)
+         status = 1
+      }
+
+      binding.ivFace2.setOnClickListener {
+         binding.ivFace.setImageResource(R.drawable.face2)
+         status = 2
+      }
+
+      binding.ivFace3.setOnClickListener {
+         binding.ivFace.setImageResource(R.drawable.face3)
+         status = 3
+      }
+
+      binding.ivFace4.setOnClickListener {
+         binding.ivFace.setImageResource(R.drawable.face4)
+         status = 4
+      }
+
+      binding.ivFace5.setOnClickListener {
+         binding.ivFace.setImageResource(R.drawable.face5)
+         status = 5
+      }
+
       binding.cvSave.setOnClickListener {
          if(getNote.regDate == "") {
-            dataManager!!.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
+            dataManager!!.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+               status = status, regDate = selectedDate.toString()))
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), regDate = selectedDate.toString()))
+            dataManager!!.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+               status = status, regDate = selectedDate.toString()))
             Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          }
+
          replaceFragment2(requireActivity(), NoteFragment(), bundle)
       }
 
@@ -83,14 +109,22 @@ class NoteWriteFragment : Fragment() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
       val getNote = dataManager!!.getNote(selectedDate.toString())
-      if(getNote.id != 0) {
+      if(getNote.regDate != "") {
          binding.etTitle.setText(getNote.title)
          binding.etContent.setText(getNote.content)
+         when(getNote.status) {
+            1 -> binding.ivFace.setImageResource(R.drawable.face1)
+            2 -> binding.ivFace.setImageResource(R.drawable.face2)
+            3 -> binding.ivFace.setImageResource(R.drawable.face3)
+            4 -> binding.ivFace.setImageResource(R.drawable.face4)
+            5 -> binding.ivFace.setImageResource(R.drawable.face5)
+         }
       }else {
          binding.etTitle.setText("")
          binding.etContent.setText("")
          binding.etTitle.hint = "제목."
          binding.etContent.hint = "내용입력"
+         binding.ivFace.setImageResource(R.drawable.face1)
       }
    }
 }

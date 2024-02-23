@@ -222,7 +222,7 @@
              android:id="@+id/tvTitle1"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:layout_marginTop="20dp"
+             android:layout_marginTop="15dp"
              android:layout_marginLeft="25dp"
              android:text="섭취 칼로리(kcal)"
             android:textSize="16dp"
@@ -490,7 +490,7 @@
           android:layout_marginTop="5dp"
           android:layout_marginLeft="25dp"
           android:layout_marginRight="25dp"
-          android:layout_marginBottom="20dp"
+          android:layout_marginBottom="25dp"
           app:cardBackgroundColor="@color/white"
           app:cardElevation="3dp"
           app:cardCornerRadius="10dp">

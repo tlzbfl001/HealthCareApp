@@ -54,16 +54,12 @@ class CalendarDialog(context: Context) : Dialog(context) {
       ivPrev?.setOnClickListener {
          selectedDate = selectedDate.minusMonths(1)
          setMonthView()
-         setImageView()
       }
 
       ivNext?.setOnClickListener {
          selectedDate = selectedDate.plusMonths(1)
          setMonthView()
-         setImageView()
       }
-
-      setMonthView()
 
       val gestureListener: SwipeGesture = SwipeGesture(rv!!)
       val gestureDetector = GestureDetector(context, gestureListener)
@@ -80,8 +76,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
          })
       )
 
-      // 이미지 뷰
-      setImageView()
+      setMonthView()
    }
 
    private fun setMonthView() {
@@ -94,6 +89,8 @@ class CalendarDialog(context: Context) : Dialog(context) {
 
       rv?.layoutManager = layoutManager
       rv?.adapter = adapter
+
+      setImageView()
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -110,6 +107,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
                   } else {
                      selectedDate = selectedDate.plusMonths(1)
                      setMonthView()
+
                   }
                }
             }
@@ -190,7 +188,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
 
          val adapter = PhotoSlideAdapter(context, itemList)
          viewPager?.adapter = adapter
-         viewPager?.setPadding(0, 0, 250, 0)
+         viewPager?.setPadding(0, 0, 240, 0)
       }else {
          viewPager?.visibility = View.GONE
          tvStatus?.visibility = View.VISIBLE

@@ -196,7 +196,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="14dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -230,8 +230,8 @@
             app:layout_constraintEnd_toStartOf="@id/clWater">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbFood"
-               android:layout_width="138dp"
-               android:layout_height="138dp"
+               android:layout_width="134dp"
+               android:layout_height="134dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#26DF9EAD"
                app:progress_style="solid_line"
@@ -271,7 +271,7 @@
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
                   android:text="0/0 kcal"
-                  android:textSize="14dp"
+                  android:textSize="13dp"
                   android:textColor="@color/black"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tvFoodTitle"
@@ -290,8 +290,8 @@
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbWater"
-               android:layout_width="138dp"
-               android:layout_height="138dp"
+               android:layout_width="134dp"
+               android:layout_height="134dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#2685DBFF"
                app:progress_style="solid_line"
@@ -331,7 +331,7 @@
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
                   android:text="0/0 잔"
-                  android:textSize="14dp"
+                  android:textSize="13dp"
                   android:textColor="@color/black"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tvWaterTitle"
@@ -359,8 +359,8 @@
             app:layout_constraintEnd_toStartOf="@id/clBody">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbExercise"
-               android:layout_width="138dp"
-               android:layout_height="138dp"
+               android:layout_width="134dp"
+               android:layout_height="134dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#26DC921A"
                app:progress_style="solid_line"
@@ -400,7 +400,7 @@
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
                   android:text="0/0 kcal"
-                  android:textSize="14dp"
+                  android:textSize="13dp"
                   android:textColor="@color/black"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tvExerciseTitle"
@@ -419,8 +419,8 @@
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbBody"
-               android:layout_width="138dp"
-               android:layout_height="138dp"
+               android:layout_width="134dp"
+               android:layout_height="134dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#2681C335"
                app:progress_style="solid_line"
@@ -460,7 +460,7 @@
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
                   android:text="0/0 kg"
-                  android:textSize="14dp"
+                  android:textSize="13dp"
                   android:textColor="@color/black"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tvBodyTitle"
@@ -488,8 +488,8 @@
             app:layout_constraintEnd_toStartOf="@id/clDrug">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbSleep"
-               android:layout_width="138dp"
-               android:layout_height="138dp"
+               android:layout_width="134dp"
+               android:layout_height="134dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#264F949E"
                app:progress_style="solid_line"
@@ -529,7 +529,7 @@
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
                   android:text="0/0"
-                  android:textSize="14dp"
+                  android:textSize="13dp"
                   android:textColor="@color/black"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tvSleepTitle"
@@ -548,8 +548,8 @@
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbDrug"
-               android:layout_width="138dp"
-               android:layout_height="138dp"
+               android:layout_width="134dp"
+               android:layout_height="134dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#1AE961FF"
                app:progress_style="solid_line"
@@ -589,7 +589,7 @@
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
                   android:text="0/0 회"
-                  android:textSize="14dp"
+                  android:textSize="13dp"
                   android:textColor="@color/black"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tvDrugTitle"

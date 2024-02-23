@@ -7,5 +7,6 @@ data class Note (
    var userId: Int = 0,
    var title: String = "",
    var content: String = "",
+   var status: Int = 1,
    var regDate: String = ""
 )

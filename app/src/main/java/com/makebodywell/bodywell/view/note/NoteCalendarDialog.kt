@@ -18,6 +18,7 @@ import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -53,16 +54,12 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
       ivPrev?.setOnClickListener {
          CalendarUtil.selectedDate = CalendarUtil.selectedDate.minusMonths(1)
          setMonthView()
-         setImageView()
       }
 
       ivNext?.setOnClickListener {
          CalendarUtil.selectedDate = CalendarUtil.selectedDate.plusMonths(1)
          setMonthView()
-         setImageView()
       }
-
-      setMonthView()
 
       val gestureListener: SwipeGesture = SwipeGesture(rv!!)
       val gestureDetector = GestureDetector(context, gestureListener)
@@ -76,16 +73,14 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
             CalendarUtil.selectedDate = days[position]!!
             setMonthView()
          }
-      })
-      )
+      }))
 
-      // 이미지 뷰
-      setImageView()
+      setMonthView()
    }
 
    private fun setMonthView() {
-      tvYear?.text = CalendarUtil.selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
-      tvMonth?.text = CalendarUtil.selectedDate.format(DateTimeFormatter.ofPattern("M"))
+      tvYear?.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
+      tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
 
       days = CalendarUtil.monthArray()
       val adapter = CalendarAdapter1(days, 2)
@@ -93,6 +88,8 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
 
       rv?.layoutManager = layoutManager
       rv?.adapter = adapter
+
+      setImageView()
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -104,10 +101,10 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
             if (abs(diffX) > abs(diffY)) {
                if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                   if (diffX > 0) {
-                     CalendarUtil.selectedDate = CalendarUtil.selectedDate.minusMonths(1)
+                     selectedDate = selectedDate.minusMonths(1)
                      setMonthView()
                   } else {
-                     CalendarUtil.selectedDate = CalendarUtil.selectedDate.plusMonths(1)
+                     selectedDate = selectedDate.plusMonths(1)
                      setMonthView()
                   }
                }
@@ -164,23 +161,23 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
       val itemList = ArrayList<Image>()
 
       // 데이터 가져오기
-      val getImage1 = dataManager!!.getImage(1, CalendarUtil.selectedDate.toString())
-      val getImage2 = dataManager!!.getImage(2, CalendarUtil.selectedDate.toString())
-      val getImage3 = dataManager!!.getImage(3, CalendarUtil.selectedDate.toString())
-      val getImage4 = dataManager!!.getImage(4, CalendarUtil.selectedDate.toString())
+      val getImage1 = dataManager!!.getImage(1, selectedDate.toString())
+      val getImage2 = dataManager!!.getImage(2, selectedDate.toString())
+      val getImage3 = dataManager!!.getImage(3, selectedDate.toString())
+      val getImage4 = dataManager!!.getImage(4, selectedDate.toString())
 
       // 리스트에 데이터 저장
       for (i in 0 until getImage1.size) {
-         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, regDate = CalendarUtil.selectedDate.toString()))
+         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, regDate = selectedDate.toString()))
       }
       for (i in 0 until getImage2.size) {
-         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, regDate = CalendarUtil.selectedDate.toString()))
+         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, regDate = selectedDate.toString()))
       }
       for (i in 0 until getImage3.size) {
-         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, regDate = CalendarUtil.selectedDate.toString()))
+         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, regDate = selectedDate.toString()))
       }
       for (i in 0 until getImage4.size) {
-         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, regDate = CalendarUtil.selectedDate.toString()))
+         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, regDate = selectedDate.toString()))
       }
 
       if (itemList.size > 0) {
@@ -189,7 +186,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
 
          val adapter = PhotoSlideAdapter(context, itemList)
          viewPager?.adapter = adapter
-         viewPager?.setPadding(0, 0, 250, 0)
+         viewPager?.setPadding(0, 0, 240, 0)
       }else {
          viewPager?.visibility = View.GONE
          tvStatus?.visibility = View.VISIBLE

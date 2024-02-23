@@ -504,7 +504,8 @@ class DataManager(private var context: Context?) {
          data.id = cursor.getInt(0)
          data.title = cursor.getString(2)
          data.content = cursor.getString(3)
-         data.regDate = cursor.getString(4)
+         data.status = cursor.getInt(4)
+         data.regDate = cursor.getString(5)
       }
       cursor.close()
       return data
@@ -705,6 +706,7 @@ class DataManager(private var context: Context?) {
       values.put("userId", MyApp.prefs.getId())
       values.put("title", data.title)
       values.put("content", data.content)
+      values.put("status", data.status)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_NOTE, null, values)
    }
@@ -818,7 +820,8 @@ class DataManager(private var context: Context?) {
 
    fun updateNote(data: Note){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_NOTE set title='${data.title}', content='${data.content}' where userId = ${MyApp.prefs.getId()} and regDate='${data.regDate}'"
+      val sql = "update $TABLE_NOTE set title='${data.title}', content='${data.content}', status=${data.status} " +
+         "where userId = ${MyApp.prefs.getId()} and regDate='${data.regDate}'"
       db.execSQL(sql)
       db.close()
    }

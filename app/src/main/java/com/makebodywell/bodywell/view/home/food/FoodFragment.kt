@@ -128,7 +128,7 @@ class FoodFragment : Fragment() {
          if(itemList1.size > 0) {
             if (isExpand1) {
                binding.clView1.visibility = View.GONE
-               binding.ivExpand1.setImageResource(R.drawable.arrow_down_note)
+               binding.ivExpand1.setImageResource(R.drawable.arrow_down)
             } else {
                binding.clView1.visibility = View.VISIBLE
                binding.ivExpand1.setImageResource(R.drawable.arrow_up)
@@ -141,7 +141,7 @@ class FoodFragment : Fragment() {
          if(itemList2.size > 0) {
             if (isExpand2) {
                binding.clView2.visibility = View.GONE
-               binding.ivExpand2.setImageResource(R.drawable.arrow_down_note)
+               binding.ivExpand2.setImageResource(R.drawable.arrow_down)
             } else {
                binding.clView2.visibility = View.VISIBLE
                binding.ivExpand2.setImageResource(R.drawable.arrow_up)
@@ -154,7 +154,7 @@ class FoodFragment : Fragment() {
          if(itemList3.size > 0) {
             if (isExpand3) {
                binding.clView3.visibility = View.GONE
-               binding.ivExpand3.setImageResource(R.drawable.arrow_down_note)
+               binding.ivExpand3.setImageResource(R.drawable.arrow_down)
             } else {
                binding.clView3.visibility = View.VISIBLE
                binding.ivExpand3.setImageResource(R.drawable.arrow_up)
@@ -167,7 +167,7 @@ class FoodFragment : Fragment() {
          if(itemList4.size > 0) {
             if (isExpand4) {
                binding.clView4.visibility = View.GONE
-               binding.ivExpand4.setImageResource(R.drawable.arrow_down_note)
+               binding.ivExpand4.setImageResource(R.drawable.arrow_down)
             } else {
                binding.clView4.visibility = View.VISIBLE
                binding.ivExpand4.setImageResource(R.drawable.arrow_up)
@@ -231,7 +231,7 @@ class FoodFragment : Fragment() {
       binding.tvRemain.text = "0 kcal"
 
       getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-      sum = getFoodKcal(requireActivity(), calendarDate.toString()).int1
+      sum = getFoodKcal(requireActivity(), calendarDate.toString()).int5
 
       if(sum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))

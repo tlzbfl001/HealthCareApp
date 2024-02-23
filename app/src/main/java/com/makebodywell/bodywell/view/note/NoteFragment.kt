@@ -77,16 +77,14 @@ class NoteFragment : Fragment() {
       }
 
       setWeekView()
-      setImageView()
 
-      binding.ivDown.setOnClickListener {
+      binding.clExpand.setOnClickListener {
          val dialog = NoteCalendarDialog(requireActivity())
          dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
          dialog.window?.setGravity(Gravity.TOP)
 
          dialog.setOnDismissListener {
             setWeekView()
-            setImageView()
          }
 
          dialog.show()
@@ -129,7 +127,6 @@ class NoteFragment : Fragment() {
             binding.tvKcal2.text = "$total kcal"
 
             setWeekView()
-            setImageView()
          }
       }))
 
@@ -175,21 +172,31 @@ class NoteFragment : Fragment() {
       val getNote = dataManager!!.getNote(selectedDate.toString())
       if(getNote.regDate != "") {
          binding.tvTitle.text = getNote.title
+         when(getNote.status) {
+            1 -> binding.ivFace.setImageResource(R.drawable.face1)
+            2 -> binding.ivFace.setImageResource(R.drawable.face2)
+            3 -> binding.ivFace.setImageResource(R.drawable.face3)
+            4 -> binding.ivFace.setImageResource(R.drawable.face4)
+            5 -> binding.ivFace.setImageResource(R.drawable.face5)
+         }
       }else {
          binding.tvTitle.text = "제목"
+         binding.ivFace.setImageResource(R.drawable.face1)
       }
 
       // 달력 설정
       days = weekArray(selectedDate)
       val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
+
+      setImageView()
    }
 
    private fun setImageView() {
       val dataList = dataManager!!.getImage(5, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
-      binding.viewPager.setPadding(180, 0, 180, 0)
+      binding.viewPager.setPadding(150, 0, 150, 0)
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -203,11 +210,9 @@ class NoteFragment : Fragment() {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
-                     setImageView()
                   } else {
                      selectedDate = selectedDate.plusWeeks(1)
                      setWeekView()
-                     setImageView()
                   }
                }
             }

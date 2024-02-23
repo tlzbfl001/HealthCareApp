@@ -17,7 +17,6 @@ import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 
 class FoodRecord1Fragment : Fragment() {
    private var _binding: FragmentFoodRecord1Binding? = null
@@ -28,7 +27,6 @@ class FoodRecord1Fragment : Fragment() {
    private val itemList = ArrayList<Item>()
    private val searchList = ArrayList<Item>()
    private val originalList = ArrayList<Item>()
-
    private var calendarDate = ""
    private var type = ""
 
