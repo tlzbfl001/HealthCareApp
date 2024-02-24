@@ -103,7 +103,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="15dp"
       android:text="오늘의 기분?"
-      android:textSize="15dp"
+      android:textSize="14.5dp"
       android:textColor="#73BC60"
       app:layout_constraintTop_toBottomOf="@id/clBox1"
       app:layout_constraintStart_toStartOf="@id/cl1"

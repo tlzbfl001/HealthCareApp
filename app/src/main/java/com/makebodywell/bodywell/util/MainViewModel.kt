@@ -221,27 +221,53 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
    private suspend fun login(): Boolean {
       var result = false
+      var access = ""
+      var refresh = ""
 
-      val loginUser = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
-         idToken = user.idToken.toString()
-      ))).execute()
+      when(user.type) {
+         "google" -> {
+            val loginUser = apolloClient.mutation(LoginUserGoogleMutation(LoginGoogleOauthInput(
+               idToken = user.idToken.toString()
+            ))).execute()
 
-      if(loginUser.data != null) {
-         val access = loginUser.data!!.loginUserGoogle.accessToken!!
-         val refresh = loginUser.data!!.loginUserGoogle.refreshToken!!
-
-         if(access != "" && refresh != "") {
-            if(token.accessToken == "") {
-               dataManager!!.insertToken(Token(accessToken = access, refreshToken = refresh,
-                  accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
-            }else {
-               dataManager!!.updateToken(Token(accessToken = access, refreshToken = refresh,
-                  accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
+            if(loginUser.data != null) {
+               access = loginUser.data!!.loginUserGoogle.accessToken!!
+               refresh = loginUser.data!!.loginUserGoogle.refreshToken!!
             }
-
-            token = dataManager!!.getToken()
-            result = true
          }
+         "naver" -> {
+            val loginUser = apolloClient.mutation(LoginUserNaverMutation(LoginNaverOauthInput(
+               accessToken = user.idToken.toString()
+            ))).execute()
+
+            if(loginUser.data != null) {
+               access = loginUser.data!!.loginUserNaver.accessToken!!
+               refresh = loginUser.data!!.loginUserNaver.refreshToken!!
+            }
+         }
+         "kakao" -> {
+            val loginUser = apolloClient.mutation(LoginUserKakaoMutation(LoginKakaoOauthInput(
+               idToken = user.idToken.toString()
+            ))).execute()
+
+            if(loginUser.data != null) {
+               access = loginUser.data!!.loginUserKakao.accessToken!!
+               refresh = loginUser.data!!.loginUserKakao.refreshToken!!
+            }
+         }
+      }
+
+      if(access != "" && refresh != "") {
+         if(token.accessToken == "") {
+            dataManager!!.insertToken(Token(accessToken = access, refreshToken = refresh,
+               accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
+         }else {
+            dataManager!!.updateToken(Token(accessToken = access, refreshToken = refresh,
+               accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
+         }
+
+         token = dataManager!!.getToken()
+         result = true
       }
 
       return result
