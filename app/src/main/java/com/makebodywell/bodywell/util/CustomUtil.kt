@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.apollographql.apollo3.ApolloClient
@@ -39,7 +41,6 @@ class CustomUtil {
          }
       }
 
-
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             replace(R.id.mainFrame, fragment!!)
@@ -69,6 +70,13 @@ class CustomUtil {
          }
 
          return result
+      }
+
+      fun hideKeyboard(activity: Activity) {
+         if(activity.currentFocus != null) {
+            val inputManager: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+         }
       }
 
       fun getFoodKcal(context: Context, date:String) : Item {

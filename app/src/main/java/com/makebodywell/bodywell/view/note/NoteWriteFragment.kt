@@ -14,6 +14,7 @@ import com.makebodywell.bodywell.databinding.FragmentNoteWriteBinding
 import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
 class NoteWriteFragment : Fragment() {
@@ -24,7 +25,7 @@ class NoteWriteFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var status = 1
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
+   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -46,6 +47,11 @@ class NoteWriteFragment : Fragment() {
 
       val getNote = dataManager!!.getNote(selectedDate.toString())
       bundle.putString("data", "note")
+
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment2(requireActivity(), NoteFragment(), bundle)

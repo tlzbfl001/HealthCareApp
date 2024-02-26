@@ -19,6 +19,7 @@ import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
@@ -39,7 +40,7 @@ class DrugAddFragment : Fragment() {
    private var unit = "정"
    private var count = 1
 
-   @SuppressLint("InternalInsetResource", "DiscouragedApi")
+   @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -63,6 +64,16 @@ class DrugAddFragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       bundle.putString("calendarDate", calendarDate)
+
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.linear.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clX.setOnClickListener {
          replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)

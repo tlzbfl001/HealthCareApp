@@ -12,6 +12,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
 import java.time.LocalDate
@@ -25,7 +27,7 @@ class BodyRecordFragment : Fragment() {
    private var exerciseLevel = 1
    private var gender = "MALE"
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
+   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -84,6 +86,16 @@ class BodyRecordFragment : Fragment() {
                exerciseLevel = 5
             }
          }
+      }
+
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.constraint.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
       }
 
       binding.clBack.setOnClickListener {

@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.exercise
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseInputBinding
 import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDate
@@ -25,6 +27,7 @@ class ExerciseInputFragment : Fragment() {
 
    private var calendarDate = ""
 
+   @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -46,6 +49,11 @@ class ExerciseInputFragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate").toString()
       bundle.putString("calendarDate", calendarDate)
+
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clX.setOnClickListener {
          replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

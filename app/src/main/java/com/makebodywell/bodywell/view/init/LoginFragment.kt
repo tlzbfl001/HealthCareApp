@@ -20,6 +20,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentLoginBinding
 import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment2
 import com.makebodywell.bodywell.util.MyApp
@@ -57,17 +59,29 @@ class LoginFragment : Fragment() {
 
         // 구글 로그인
         binding.clGoogle.setOnClickListener {
-            googleLogin()
+            if(!networkStatusCheck(requireActivity())){
+                Toast.makeText(context, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            }else {
+                googleLogin()
+            }
         }
 
         // 네이버 로그인
         binding.clNaver.setOnClickListener {
-            naverLogin()
+            if(!networkStatusCheck(requireActivity())){
+                Toast.makeText(context, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            }else {
+                naverLogin()
+            }
         }
 
         // 카카오 로그인
         binding.clKakao.setOnClickListener {
-            kakaoLogin()
+            if(!networkStatusCheck(requireActivity())){
+                Toast.makeText(context, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            }else {
+                kakaoLogin()
+            }
         }
 
         return binding.root

@@ -12,6 +12,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseEditBinding
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
 class ExerciseEditFragment : Fragment() {
@@ -23,7 +25,7 @@ class ExerciseEditFragment : Fragment() {
     private var intensity = "상"
     private var calendarDate = ""
 
-    @SuppressLint("InternalInsetResource", "DiscouragedApi")
+    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,6 +56,11 @@ class ExerciseEditFragment : Fragment() {
         binding.tvName.text = getExercise.name
         binding.etTime.setText(getExercise.workoutTime)
         binding.etKcal.setText(getExercise.calories.toString())
+
+        binding.mainLayout.setOnTouchListener { view, motionEvent ->
+            hideKeyboard(requireActivity())
+            true
+        }
 
         binding.clX.setOnClickListener {
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

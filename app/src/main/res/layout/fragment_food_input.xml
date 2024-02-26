@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFAFA"
+   android:focusableInTouchMode="true"
     android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/clBack"
@@ -46,8 +47,9 @@
        app:layout_constraintEnd_toEndOf="parent"
        app:layout_constraintBottom_toBottomOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
+         android:id="@+id/constraint"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">
          <androidx.cardview.widget.CardView
              android:id="@+id/box1"
              android:layout_width="match_parent"

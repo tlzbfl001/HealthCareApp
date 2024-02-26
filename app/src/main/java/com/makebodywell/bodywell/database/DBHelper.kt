@@ -6,19 +6,19 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
-      var DATABASE_VERSION = 1
       const val DATABASE_NAME = "app.db"
+      const val DATABASE_VERSION = 1
       const val TABLE_USER = "user"
       const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
       const val TABLE_BODY = "body"
+      const val TABLE_SLEEP = "sleep"
       const val TABLE_DRUG = "drug"
       const val TABLE_DRUG_TIME = "drugTime"
       const val TABLE_DRUG_CHECK = "drugCheck"
       const val TABLE_NOTE = "note"
-      const val TABLE_SLEEP = "sleep"
       const val TABLE_DAILY_DATA = "dailyData"
       const val TABLE_IMAGE = "image"
    }
@@ -47,6 +47,9 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
               "gender text, exerciseLevel integer, fat real, muscle real, bmi real, bmr real, regDate text);"
       db.execSQL(body)
 
+      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, userId integer, bedTime integer, wakeTime integer, sleepTime integer, regDate text);"
+      db.execSQL(sleep)
+
       val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, type text, name text, amount text, unit text, count integer," +
               "startDate text, endDate text, isSet integer, regDate text);"
       db.execSQL(drug)
@@ -59,9 +62,6 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
 
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, regDate text);"
       db.execSQL(note)
-
-      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, userId integer, bedTime integer, wakeTime integer, sleepTime integer, regDate text);"
-      db.execSQL(sleep)
 
       val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, userId integer, foodGoal integer, waterGoal integer, exerciseGoal integer," +
               "bodyGoal real, sleepGoal integer, drugGoal integer, regDate text);"

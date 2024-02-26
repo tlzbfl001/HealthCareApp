@@ -16,6 +16,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord2Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 
@@ -46,7 +47,7 @@ class FoodRecord2Fragment : Fragment() {
 
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
+         binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
 
       dataManager = DataManager(activity)
@@ -56,6 +57,16 @@ class FoodRecord2Fragment : Fragment() {
       type = arguments?.getString("type").toString()
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
+
+      binding.constraint.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.linear.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clBack.setOnClickListener {
          when(type) {

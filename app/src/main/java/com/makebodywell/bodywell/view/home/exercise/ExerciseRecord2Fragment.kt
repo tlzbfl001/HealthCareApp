@@ -15,6 +15,7 @@ import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseRecord2Binding
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 
@@ -30,7 +31,7 @@ class ExerciseRecord2Fragment : Fragment() {
 
    private var calendarDate = ""
 
-   @SuppressLint("InternalInsetResource", "DiscouragedApi")
+   @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -44,7 +45,7 @@ class ExerciseRecord2Fragment : Fragment() {
 
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
+         binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
 
       dataManager = DataManager(activity)
@@ -52,6 +53,16 @@ class ExerciseRecord2Fragment : Fragment() {
 
       calendarDate = arguments?.getString("calendarDate")!!
       bundle.putString("calendarDate", calendarDate)
+
+      binding.constraint.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.linear.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment2(requireActivity(), ExerciseListFragment(), bundle)

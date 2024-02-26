@@ -16,6 +16,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
 class FoodRecord1Fragment : Fragment() {
@@ -30,7 +31,7 @@ class FoodRecord1Fragment : Fragment() {
    private var calendarDate = ""
    private var type = ""
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
+   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -44,7 +45,7 @@ class FoodRecord1Fragment : Fragment() {
 
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cv1.setPadding(0, statusBarHeight, 0, 0)
+         binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
 
       dataManager = DataManager(activity)
@@ -55,6 +56,16 @@ class FoodRecord1Fragment : Fragment() {
 
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
+
+      binding.constraint.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.linear.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clBack.setOnClickListener {
          when(type) {

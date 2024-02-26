@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -30,6 +31,7 @@ import com.makebodywell.bodywell.databinding.FragmentNoteBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
@@ -76,7 +78,7 @@ class NoteFragment : Fragment() {
          selectedDate = LocalDate.now()
       }
 
-      setWeekView()
+      setDailyView()
 
       binding.clExpand.setOnClickListener {
          val dialog = NoteCalendarDialog(requireActivity())
@@ -84,7 +86,7 @@ class NoteFragment : Fragment() {
          dialog.window?.setGravity(Gravity.TOP)
 
          dialog.setOnDismissListener {
-            setWeekView()
+            setDailyView()
          }
 
          dialog.show()
@@ -116,6 +118,7 @@ class NoteFragment : Fragment() {
             // 섭취 칼로리 계산
             val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
             binding.tvKcal1.text = "${foodKcal.int5} kcal"
+            Log.d(TAG, "foodKcal: ${foodKcal.int5}")
 
             // 소비 칼로리 계산
             var total = 0
@@ -123,10 +126,11 @@ class NoteFragment : Fragment() {
             for(i in 0 until getExercise.size) {
                total += getExercise[i].calories
             }
+            Log.d(TAG, "getExercise: $getExercise")
 
             binding.tvKcal2.text = "$total kcal"
 
-            setWeekView()
+            setDailyView()
          }
       }))
 
@@ -164,7 +168,8 @@ class NoteFragment : Fragment() {
       return binding.root
    }
 
-   private fun setWeekView() {
+   @SuppressLint("SetTextI18n")
+   private fun setDailyView() {
       // 텍스트 초기화
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
@@ -189,6 +194,16 @@ class NoteFragment : Fragment() {
       val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
 
+      val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
+      binding.tvKcal1.text = "${foodKcal.int5} kcal"
+
+      var total = 0
+      val getExercise = dataManager!!.getExercise(selectedDate.toString())
+      for(i in 0 until getExercise.size) {
+         total += getExercise[i].calories
+      }
+      binding.tvKcal2.text = "$total kcal"
+
       setImageView()
    }
 
@@ -209,10 +224,10 @@ class NoteFragment : Fragment() {
                if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
-                     setWeekView()
+                     setDailyView()
                   } else {
                      selectedDate = selectedDate.plusWeeks(1)
-                     setWeekView()
+                     setDailyView()
                   }
                }
             }

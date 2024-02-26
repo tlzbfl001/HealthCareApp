@@ -1,21 +1,18 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
-import android.hardware.input.InputManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodInputBinding
 import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 
 class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
@@ -23,7 +20,7 @@ class FoodInputFragment : Fragment() {
 
    private var bundle = Bundle()
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
+   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -48,6 +45,16 @@ class FoodInputFragment : Fragment() {
       bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.constraint.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
+
       binding.clBack.setOnClickListener {
          when(type) {
             "1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
@@ -55,10 +62,6 @@ class FoodInputFragment : Fragment() {
             "3" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
             "4" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
          }
-      }
-
-      binding.root.setOnClickListener {
-         hideKeyboard()
       }
 
       binding.cvSave.setOnClickListener {
@@ -138,12 +141,5 @@ class FoodInputFragment : Fragment() {
       }
 
       return binding.root
-   }
-
-   private fun hideKeyboard() {
-      if(activity != null && requireActivity().currentFocus != null) {
-         val inputManager: InputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-         inputManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-      }
    }
 }

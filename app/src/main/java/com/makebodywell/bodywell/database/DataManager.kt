@@ -417,6 +417,18 @@ class DataManager(private var context: Context?) {
       return list
    }
 
+   fun getDrugId() : ArrayList<Int> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Int>()
+      val sql = "select id from $TABLE_DRUG where userId = ${MyApp.prefs.getId()}"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         list.add(cursor.getInt(0))
+      }
+      cursor.close()
+      return list
+   }
+
    fun getDrugId(date: String) : Drug {
       val db = dbHelper!!.readableDatabase
       val data = Drug()
