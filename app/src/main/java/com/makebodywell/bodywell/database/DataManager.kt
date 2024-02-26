@@ -748,7 +748,28 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_DAILY_DATA, null, values)
    }
 
-   fun updateString(table: String, column: String, data: String, id: Int){
+   fun updateUserStr(table: String, column: String, data: String){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set $column='$data' where id = ${MyApp.prefs.getId()}"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateUserInt(table: String, column: String, data: Int){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set $column=$data where id = ${MyApp.prefs.getId()}"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateUserDouble(table: String, column: String, data: Double){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set $column=$data where id = ${MyApp.prefs.getId()}"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateStr(table: String, column: String, data: String, id: Int){
       val db = dbHelper!!.writableDatabase
       val sql = "update $table set $column='$data' where userId = ${MyApp.prefs.getId()} and id=$id"
       db.execSQL(sql)
@@ -773,13 +794,6 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val sql = "update user set userId='${data.userId}', deviceId='${data.deviceId}', healthId='${data.healthId}', " +
          "activityId='${data.activityId}', bodyMeasurementId='${data.bodyMeasurementId}' where id=${data.id}"
-      db.execSQL(sql)
-      db.close()
-   }
-
-   fun updateUserInfo(data: User){
-      val db = dbHelper!!.writableDatabase
-      val sql = "update user set name='${data.name}', birthday='${data.birthday}', profileImage='${data.profileImage}' where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }

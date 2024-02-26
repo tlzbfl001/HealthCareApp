@@ -1,16 +1,24 @@
 package com.makebodywell.bodywell.view.setting
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -42,6 +50,12 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import com.makebodywell.bodywell.view.init.LoginActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
@@ -56,6 +70,7 @@ class SettingFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var getUser = User()
    private var getToken = Token()
+   private var dialog: Dialog? = null
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -78,6 +93,33 @@ class SettingFragment : Fragment() {
       dataManager!!.open()
 
       userProfile()
+
+      binding.ivUser.setOnClickListener {
+         if(cameraRequest(requireActivity())) {
+            dialog = Dialog(requireActivity())
+            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog!!.setContentView(R.layout.dialog_gallery)
+
+            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+
+            clCamera.setOnClickListener {
+               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+               startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            }
+
+            clGallery.setOnClickListener {
+               val intent = Intent(Intent.ACTION_PICK)
+               intent.type = MediaStore.Images.Media.CONTENT_TYPE
+               startActivityForResult(intent, STORAGE_REQUEST_CODE)
+            }
+
+            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog!!.window!!.setGravity(Gravity.BOTTOM)
+            dialog!!.show()
+         }
+      }
 
       binding.tvConnect.setOnClickListener {
          replaceFragment1(requireActivity(), ConnectFragment())
@@ -290,6 +332,45 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvHeight.text = "${height}cm / ${weight}kg"
+   }
+
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+      super.onActivityResult(requestCode, resultCode, data)
+
+      if(resultCode == Activity.RESULT_OK){
+         when(requestCode){
+            CAMERA_REQUEST_CODE -> {
+               if(data!!.extras?.get("data") != null){
+                  val img = data.extras?.get("data") as Bitmap
+                  val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+
+                  binding.ivUser.setImageURI(Uri.parse(uri.toString()))
+
+                  if(uri.toString() != "") {
+                     dataManager!!.updateUserStr(TABLE_USER, "profileImage", uri.toString())
+                  }
+
+                  dialog!!.dismiss()
+               }
+            }
+            STORAGE_REQUEST_CODE -> {
+               val uri = data!!.data
+               val image = if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
+                  getImageUriWithAuthority(requireActivity(), uri)
+               }else {
+                  uri.toString()
+               }
+
+               binding.ivUser.setImageURI(Uri.parse(uri.toString()))
+
+               if(image != "") {
+                  dataManager!!.updateUserStr(TABLE_USER, "profileImage", image.toString())
+               }
+
+               dialog!!.dismiss()
+            }
+         }
+      }
    }
 
    private fun removeData() {

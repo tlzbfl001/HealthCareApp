@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.init
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputBodyBinding
-import com.makebodywell.bodywell.type.Gender
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 
 class InputBodyFragment : Fragment() {
@@ -28,8 +29,6 @@ class InputBodyFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
-
-      val getUser = dataManager!!.getUser()
 
       binding.ivBack.setOnClickListener {
          replaceLoginFragment1(requireActivity(), InputInfoFragment())
@@ -62,20 +61,12 @@ class InputBodyFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         var height = 0.0
-         var weight = 0.0
+         val height = if(binding.etHeight.text.toString() == "") 0.0 else {binding.etHeight.text.toString().toDouble()}
+         val weight = if(binding.etWeight.text.toString() == "") 0.0 else {binding.etWeight.text.toString().toDouble()}
 
-         if(binding.etHeight.text.toString() != "") {
-            height = binding.etHeight.text.toString().toDouble()
-         }
-
-         if(binding.etWeight.text.toString() != "") {
-            weight = binding.etWeight.text.toString().toDouble()
-         }
-
-         dataManager?.updateString(TABLE_USER, "gender", gender, getUser.id)
-         dataManager?.updateDouble(TABLE_USER, "height", height, getUser.id)
-         dataManager?.updateDouble(TABLE_USER, "weight", weight, getUser.id)
+         dataManager?.updateUserStr(TABLE_USER, "gender", gender)
+         dataManager?.updateUserDouble(TABLE_USER, "height", height)
+         dataManager?.updateUserDouble(TABLE_USER, "weight", weight)
 
          replaceLoginFragment1(requireActivity(), InputGoalFragment())
       }

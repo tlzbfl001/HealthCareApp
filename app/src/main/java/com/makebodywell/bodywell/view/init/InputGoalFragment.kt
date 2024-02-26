@@ -10,7 +10,6 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 
 class InputGoalFragment : Fragment() {
@@ -28,8 +27,6 @@ class InputGoalFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val getUser = dataManager!!.getUser()
-
       binding.ivBack.setOnClickListener {
          replaceLoginFragment1(requireActivity(), InputBodyFragment())
       }
@@ -39,31 +36,15 @@ class InputGoalFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         var weightGoal = 0.0
-         var kcalGoal = 0
-         var waterUnit = 0
-         var waterGoal = 0
+         val weightGoal = if(binding.etWeightGoal.text.toString() == "") 0.0 else {binding.etWeightGoal.text.toString().toDouble()}
+         val kcalGoal = if(binding.etKcalGoal.text.toString() == "") 0 else {binding.etKcalGoal.text.toString().toInt()}
+         val waterUnit = if(binding.etWaterUnit.text.toString() == "") 0 else {binding.etWaterUnit.text.toString().toInt()}
+         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 0 else {binding.etWaterGoal.text.toString().toInt()}
 
-         if(binding.etWeightGoal.text.toString() != "") {
-            weightGoal = binding.etWeightGoal.text.toString().toDouble()
-         }
-
-         if(binding.etKcalGoal.text.toString() != "") {
-            kcalGoal = binding.etKcalGoal.text.toString().toInt()
-         }
-
-         if(binding.etWaterUnit.text.toString() != "") {
-            waterUnit = binding.etWaterUnit.text.toString().toInt()
-         }
-
-         if(binding.etWaterGoal.text.toString() != "") {
-            waterGoal = binding.etWaterGoal.text.toString().toInt()
-         }
-
-         dataManager?.updateDouble(TABLE_USER, "weightGoal", weightGoal, getUser.id)
-         dataManager?.updateInt(TABLE_USER, "kcalGoal", kcalGoal, getUser.id)
-         dataManager?.updateInt(TABLE_USER, "waterUnit", waterUnit, getUser.id)
-         dataManager?.updateInt(TABLE_USER, "waterGoal", waterGoal, getUser.id)
+         dataManager?.updateUserDouble(TABLE_USER, "weightGoal", weightGoal)
+         dataManager?.updateUserInt(TABLE_USER, "kcalGoal", kcalGoal)
+         dataManager?.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
+         dataManager?.updateUserInt(TABLE_USER, "waterGoal", waterGoal)
 
          startActivity(Intent(requireActivity(), MainActivity::class.java))
       }

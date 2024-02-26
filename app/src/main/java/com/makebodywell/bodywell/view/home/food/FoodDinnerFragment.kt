@@ -21,7 +21,6 @@ import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import java.util.stream.Collectors
 import kotlin.math.abs
 

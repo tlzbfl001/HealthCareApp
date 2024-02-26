@@ -156,14 +156,18 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val getDates = dataManager!!.getDates(TABLE_EXERCISE)
-      if(getDates.size > 0) {
+      val dates = ArrayList<String>()
+      val getExercise = dataManager!!.getExercise(calendarDate.toString())
+
+      if(getExercise.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
-         settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
+
+         dates.add(calendarDate.toString())
+         settingChart1(binding.chart1, dates)
+         settingChart2(binding.chart2, dates)
       }else {
          binding.chart1.visibility = View.GONE
          binding.tvEmpty1.visibility = View.VISIBLE

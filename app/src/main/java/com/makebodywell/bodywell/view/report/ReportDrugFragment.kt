@@ -159,15 +159,10 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK)
-      if(getDates.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-         settingChart(binding.chart, getDates)
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
-      }
+      val getDates = ArrayList<String>()
+      getDates.add(calendarDate.toString())
+
+      settingChart(binding.chart, getDates)
 
       rankView(dateType, "", "")
    }
@@ -250,66 +245,75 @@ class ReportDrugFragment : Fragment() {
          }
       }
 
-      for (index in lineList.indices) {
-         entries.add(Entry(index.toFloat(), lineList[index]))
+      if(barEntries.size > 0) {
+         binding.chart.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+
+         for (index in lineList.indices) {
+            entries.add(Entry(index.toFloat(), lineList[index]))
+         }
+
+         val lineDataSet = LineDataSet(entries, "Line DataSet")
+         lineDataSet.color = Color.parseColor("#BBBBBB")
+         lineDataSet.lineWidth = 1f
+         lineDataSet.setDrawCircles(false)
+         lineDataSet.setDrawValues(true)
+         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+         lineDataSet.valueFormatter = XValueFormatter()
+
+         lineData.addDataSet(lineDataSet)
+         data.setData(lineData)
+
+         val barDataSet = BarDataSet(barEntries, "")
+         barDataSet.color = Color.parseColor("#3C7A8A")
+         barDataSet.valueTextSize = 0f
+
+         val barData = BarData(barDataSet)
+         barData.barWidth = 0.27f
+
+         data.setData(barData)
+
+         chart.data = data
+         chart.invalidate()
+         chart.setVisibleXRangeMaximum(7f)
+         chart.isDragXEnabled = true
+         chart.description.isEnabled = false
+         chart.legend.isEnabled = false
+         chart.setScaleEnabled(false)
+         chart.isClickable = false
+         chart.isHighlightPerDragEnabled = false
+         chart.isHighlightPerTapEnabled = false
+         chart.setExtraOffsets(12f, 15f, 15f, 10f)
+
+         val xAxis = chart.xAxis
+         xAxis.axisLineColor = Color.BLACK
+         xAxis.axisLineWidth = 0.8f
+         xAxis.position = XAxis.XAxisPosition.BOTTOM
+         xAxis.spaceMax = 0.6f
+         xAxis.spaceMin = 0.6f
+         xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
+         xAxis.setDrawGridLines(false)
+         xAxis.isGranularityEnabled = true
+
+         val rightAxis = chart.axisRight
+         rightAxis.axisMinimum = 0f
+         rightAxis.axisMaximum = 100f
+         rightAxis.isEnabled = false
+
+         val leftAxis = chart.axisLeft
+         leftAxis.axisLineColor = Color.BLACK
+         leftAxis.axisLineWidth = 0.8f
+         leftAxis.gridColor = Color.parseColor("#bbbbbb")
+         leftAxis.enableGridDashedLine(10f, 15f, 0f)
+         leftAxis.axisMinimum = 0f
+         leftAxis.axisMaximum = 100f
+         leftAxis.valueFormatter = LeftAxisFormatter()
+      }else {
+         binding.chart.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
-
-      val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#BBBBBB")
-      lineDataSet.lineWidth = 0.5f
-      lineDataSet.setDrawCircles(false)
-      lineDataSet.setDrawValues(true)
-      lineDataSet.valueTextSize = 8f
-      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = XValueFormatter()
-
-      lineData.addDataSet(lineDataSet)
-      data.setData(lineData)
-
-      val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.color = Color.parseColor("#3C7A8A")
-      barDataSet.valueTextSize = 0f
-
-      val barData = BarData(barDataSet)
-      barData.barWidth = 0.27f
-
-      data.setData(barData)
-
-      chart.data = data
-      chart.invalidate()
-      chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = true
-
-      chart.description.isEnabled = false
-      chart.legend.isEnabled = false
-      chart.setScaleEnabled(false)
-      chart.isClickable = false
-      chart.isHighlightPerDragEnabled = false
-      chart.isHighlightPerTapEnabled = false
-      chart.setExtraOffsets(12f, 15f, 15f, 10f)
-
-      val xAxis = chart.xAxis
-      xAxis.axisLineColor = Color.BLACK
-      xAxis.axisLineWidth = 0.8f
-      xAxis.position = XAxis.XAxisPosition.BOTTOM
-      xAxis.spaceMax = 0.6f
-      xAxis.spaceMin = 0.6f
-      xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
-      xAxis.setDrawGridLines(false)
-      xAxis.isGranularityEnabled = true
-
-      val rightAxis = chart.axisRight
-      rightAxis.axisMinimum = 0f
-      rightAxis.isEnabled = false
-
-      val leftAxis = chart.axisLeft
-      leftAxis.axisLineColor = Color.BLACK
-      leftAxis.axisLineWidth = 0.8f
-      leftAxis.gridColor = Color.parseColor("#bbbbbb")
-      leftAxis.enableGridDashedLine(10f, 15f, 0f)
-      leftAxis.axisMinimum = 0f
-      leftAxis.valueFormatter = LeftAxisFormatter()
    }
 
    class XValueFormatter : IValueFormatter {

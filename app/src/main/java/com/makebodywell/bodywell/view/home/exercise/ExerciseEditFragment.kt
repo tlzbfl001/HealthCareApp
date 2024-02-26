@@ -12,7 +12,6 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseEditBinding
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
@@ -127,8 +126,8 @@ class ExerciseEditFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            dataManager!!.updateString(TABLE_EXERCISE, "intensity", intensity, getExercise.id)
-            dataManager!!.updateString(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), getExercise.id)
+            dataManager!!.updateStr(TABLE_EXERCISE, "intensity", intensity, getExercise.id)
+            dataManager!!.updateStr(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), getExercise.id)
             dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), getExercise.id)
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()

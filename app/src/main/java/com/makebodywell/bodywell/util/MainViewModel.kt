@@ -79,15 +79,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val accessDiff = Duration.between(LocalDateTime.parse(token.accessTokenRegDate), LocalDateTime.now())
             val refreshDiff = Duration.between(LocalDateTime.parse(token.refreshTokenRegDate), LocalDateTime.now())
 
+            Log.d(TAG, "accessDiff: ${accessDiff.toHours()}/${accessDiff.toMinutes()}/${accessDiff.seconds}")
+            Log.d(TAG, "refreshDiff: ${refreshDiff.toHours()}/${refreshDiff.toMinutes()}/${refreshDiff.seconds}")
             if(accessDiff.toHours() >= 1 && !accessCheck) {
-               accessCheck = refreshToken()
+               accessCheck = login()
             }
 
             if(refreshDiff.toHours() >= 336 && !loginCheck) {
                loginCheck = login()
             }
 
-            if(body.regDate != "") {
+            if(body.fat != 0.0) {
                apolloClient.mutation(UpdateBodyMeasurementMutation(bodyMeasurementId = user.bodyMeasurementId!!, UpdateBodyMeasurementInput(height = Optional.present(body.height),
                   bodyFatPercentage = Optional.present(body.fat), startedAt = Optional.present(LocalDate.now().toString()), endedAt = Optional.present(LocalDate.now().toString()))
                )).addHttpHeader(
@@ -141,9 +143,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         idToken = user.idToken.toString()
                      ))).execute()
 
-                     if(login()) {
-                        createData()
-                     }
+                     login()
+//                     if(login()) {
+//                        createData()
+//                     }
                   }
                }
             }
@@ -175,9 +178,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         accessToken = user.idToken.toString()
                      ))).execute()
 
-                     if(login()) {
-                        createData()
-                     }
+                     login()
+
+//                     if(login()) {
+//                        createData()
+//                     }
                   }
                }
             }
@@ -209,9 +214,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         idToken = user.idToken.toString()
                      ))).execute()
 
-                     if(login()) {
-                        createData()
-                     }
+                     login()
+
+//                     if(login()) {
+//                        createData()
+//                     }
                   }
                }
             }
@@ -267,6 +274,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          }
 
          token = dataManager!!.getToken()
+         createData()
          result = true
       }
 
@@ -279,7 +287,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          "Bearer ${token.accessToken}"
       ).execute()
 
+      Log.d(TAG,  "11")
       if(me1.data != null) {
+         Log.d(TAG,  "1")
          val userId = me1.data!!.me.user.userId
          val device = if(Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) != null) {
             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
@@ -302,17 +312,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          ).execute()
 
          if(createDevice.data != null) {
+            Log.d(TAG,  "2")
             val createHealth = apolloClient.mutation(CreateHealthMutation(userId = userId)).addHttpHeader(
                "Authorization", "Bearer ${token.accessToken}"
             ).execute()
 
             if(createHealth.data != null) {
+               Log.d(TAG,  "3")
                val me2 = apolloClient.query(MeQuery()).addHttpHeader(
                   "Authorization",
                   "Bearer ${token.accessToken}"
                ).execute()
 
                if(me2.data != null) {
+                  Log.d(TAG,  "4")
                   val healthId = me2.data!!.me.user.health!!.healthId
                   val deviceId = me2.data!!.me.user.devices[0].deviceId
 
@@ -330,12 +343,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   ).execute()
 
                   if(createActivity.data != null || createBodyMeasurement.data != null) {
+                     Log.d(TAG,  "5")
                      val me3 = apolloClient.query(MeQuery()).addHttpHeader(
                         "Authorization",
                         "Bearer ${token.accessToken}"
                      ).execute()
 
                      if(me3.data != null) {
+                        Log.d(TAG,  "6")
                         val getUser = dataManager!!.getUser(user.type!!, user.email!!)
                         if(getUser.id != 0) {
                            Log.d(TAG,  "access: ${token.accessToken}\n" +

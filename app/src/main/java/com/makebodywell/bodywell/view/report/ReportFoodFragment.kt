@@ -34,7 +34,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -156,14 +155,24 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_FOOD)
+      val getDates = dataManager!!.getDates(TABLE_FOOD, calendarDate.toString(), calendarDate.toString())
+
       if(getDates.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
          settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
+
+         val getNutrition = getNutrition(requireActivity(), calendarDate.toString())
+         if(getNutrition.salt > 0.0) {
+            binding.chart2.visibility = View.VISIBLE
+            binding.tvEmpty2.visibility = View.GONE
+            settingChart2(binding.chart2, getDates)
+         }else {
+            binding.chart2.visibility = View.GONE
+            binding.tvEmpty2.visibility = View.VISIBLE
+         }
       }else {
          binding.chart1.visibility = View.GONE
          binding.tvEmpty1.visibility = View.VISIBLE
@@ -171,10 +180,14 @@ class ReportFoodFragment : Fragment() {
          binding.tvEmpty2.visibility = View.VISIBLE
       }
 
-      val getWater = dataManager!!.getWater()
-      if(getWater.size > 0) {
+      val getWater = ArrayList<Water>()
+      val data = dataManager!!.getWater(calendarDate.toString())
+
+      if(data.water > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
+
+         getWater.add(data)
          settingChart3(binding.chart3, getWater)
       }else {
          binding.chart3.visibility = View.GONE
@@ -278,45 +291,57 @@ class ReportFoodFragment : Fragment() {
          )))
       }
 
-      for (index in lineList.indices) {
-         entries.add(Entry(index.toFloat(), lineList[index]))
+      if(barEntries.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+
+         for (index in lineList.indices) {
+            entries.add(Entry(index.toFloat(), lineList[index]))
+         }
+
+         val lineDataSet = LineDataSet(entries, "Line DataSet")
+         lineDataSet.color = Color.parseColor("#FB9797")
+         lineDataSet.lineWidth = 1f
+         lineDataSet.setDrawCircles(false)
+         lineDataSet.setDrawValues(true)
+         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+         lineDataSet.valueFormatter = DefaultValueFormatter(0)
+
+         lineData.addDataSet(lineDataSet)
+         data.setData(lineData)
+
+         val barColor = ArrayList<Int>()
+         barColor.add(Color.parseColor("#FFC6D7"))
+         barColor.add(Color.parseColor("#ABE764"))
+         barColor.add(Color.parseColor("#FFE500"))
+         barColor.add(Color.parseColor("#FE9A9A"))
+
+         val barDataSet = BarDataSet(barEntries, "")
+         barDataSet.colors = barColor
+         barDataSet.valueTextSize = 0f
+
+         val barData = BarData(barDataSet)
+         barData.barWidth = 0.27f
+
+         data.setData(barData)
+
+         chart.data = data
+         chart.notifyDataSetChanged()
+         chart.invalidate()
+         chart.setVisibleXRangeMaximum(7f)
+         chart.isDragXEnabled = true
+
+         chartCommon(chart, xVal)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
-
-      val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#FB9797")
-      lineDataSet.lineWidth = 0.5f
-      lineDataSet.setDrawCircles(false)
-      lineDataSet.setDrawValues(true)
-      lineDataSet.valueTextSize = 8f
-      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = DefaultValueFormatter(0)
-
-      lineData.addDataSet(lineDataSet)
-      data.setData(lineData)
-
-      val barColor = ArrayList<Int>()
-      barColor.add(Color.parseColor("#FFC6D7"))
-      barColor.add(Color.parseColor("#ABE764"))
-      barColor.add(Color.parseColor("#FFE500"))
-      barColor.add(Color.parseColor("#FE9A9A"))
-
-      val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.colors = barColor
-      barDataSet.valueTextSize = 0f
-
-      val barData = BarData(barDataSet)
-      barData.barWidth = 0.27f
-
-      data.setData(barData)
-
-      chart.data = data
-      chart.notifyDataSetChanged()
-      chart.invalidate()
-      chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = true
-
-      chartCommon(chart, xVal)
    }
 
    private fun settingChart2(chart: CombinedChart, getData: ArrayList<String>) {
@@ -335,50 +360,62 @@ class ReportFoodFragment : Fragment() {
       for(i in 0 until getData.size){
          val nutrition = getNutrition(requireActivity(), getData[i])
          xVal += format2.format(format1.parse(getData[i])!!)
-         lineList += nutrition.name.toFloat()
+         lineList += nutrition.salt.toFloat()
          barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
             nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat(), nutrition.sugar.toFloat()
          )))
       }
 
-      for (index in lineList.indices) {
-         entries.add(Entry(index.toFloat(), lineList[index]))
+      if(barEntries.size > 0) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+
+         for (index in lineList.indices) {
+            entries.add(Entry(index.toFloat(), lineList[index]))
+         }
+
+         val lineDataSet = LineDataSet(entries, "Line DataSet")
+         lineDataSet.color = Color.parseColor("#FFAD0D")
+         lineDataSet.lineWidth = 0.5f
+         lineDataSet.setDrawCircles(false)
+         lineDataSet.setDrawValues(true)
+         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+         lineDataSet.valueFormatter = MyValueFormatter()
+
+         lineData.addDataSet(lineDataSet)
+         data.setData(lineData)
+
+         val barColor = ArrayList<Int>()
+         barColor.add(Color.parseColor("#FAE498"))
+         barColor.add(Color.parseColor("#FBCE59"))
+         barColor.add(Color.parseColor("#FFAD0D"))
+         barColor.add(Color.parseColor("#DBA00A"))
+
+         val barDataSet = BarDataSet(barEntries, "")
+         barDataSet.colors = barColor
+         barDataSet.valueTextSize = 0f
+
+         val barData = BarData(barDataSet)
+         barData.barWidth = 0.27f
+
+         data.setData(barData)
+
+         chart.data = data
+         chart.invalidate()
+         chart.setVisibleXRangeMaximum(7f)
+         chart.isDragXEnabled = true
+
+         chartCommon(chart, xVal)
+      }else {
+         binding.chart1.visibility = View.GONE
+         binding.tvEmpty1.visibility = View.VISIBLE
+         binding.chart2.visibility = View.GONE
+         binding.tvEmpty2.visibility = View.VISIBLE
       }
-
-      val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#FFAD0D")
-      lineDataSet.lineWidth = 0.5f
-      lineDataSet.setDrawCircles(false)
-      lineDataSet.setDrawValues(true)
-      lineDataSet.valueTextSize = 8f
-      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = MyValueFormatter()
-
-      lineData.addDataSet(lineDataSet)
-      data.setData(lineData)
-
-      val barColor = ArrayList<Int>()
-      barColor.add(Color.parseColor("#FAE498"))
-      barColor.add(Color.parseColor("#FBCE59"))
-      barColor.add(Color.parseColor("#FFAD0D"))
-      barColor.add(Color.parseColor("#DBA00A"))
-
-      val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.colors = barColor
-      barDataSet.valueTextSize = 0f
-
-      val barData = BarData(barDataSet)
-      barData.barWidth = 0.27f
-
-      data.setData(barData)
-
-      chart.data = data
-      chart.invalidate()
-      chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = true
-
-      chartCommon(chart, xVal)
    }
 
    private fun settingChart3(chart: CombinedChart, getData: ArrayList<Water>) {
@@ -395,7 +432,7 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
 
       for(i in 0 until getData.size){
-         xVal += format2.format(format1.parse(getData[i].regDate))
+         xVal += format2.format(format1.parse(getData[i].regDate)!!)
          lineList += (getData[i].water * getData[i].volume).toFloat()
          barEntries.add(BarEntry(i.toFloat(), (getData[i].water * getData[i].volume).toFloat()))
       }

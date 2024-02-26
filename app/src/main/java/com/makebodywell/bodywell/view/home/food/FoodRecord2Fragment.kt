@@ -17,6 +17,7 @@ import com.makebodywell.bodywell.databinding.FragmentFoodRecord2Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 
@@ -33,7 +34,7 @@ class FoodRecord2Fragment : Fragment() {
    private var calendarDate = ""
    private var type = ""
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
+   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -59,12 +60,22 @@ class FoodRecord2Fragment : Fragment() {
       bundle.putString("type", type)
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
          true
       }
 
       binding.linear.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.rv1.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.rv2.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
          true
       }
 

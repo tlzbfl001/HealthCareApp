@@ -28,7 +28,6 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest

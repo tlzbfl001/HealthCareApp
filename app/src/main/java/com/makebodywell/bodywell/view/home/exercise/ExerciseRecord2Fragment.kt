@@ -16,6 +16,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseRecord2Binding
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 
@@ -55,12 +56,22 @@ class ExerciseRecord2Fragment : Fragment() {
       bundle.putString("calendarDate", calendarDate)
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
          true
       }
 
       binding.linear.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.rv1.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
+
+      binding.rv2.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
          true
       }
 

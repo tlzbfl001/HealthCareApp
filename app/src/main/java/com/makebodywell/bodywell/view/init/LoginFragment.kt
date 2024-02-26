@@ -39,7 +39,6 @@ class LoginFragment : Fragment() {
 
     private val bundle = Bundle()
     private var dataManager: DataManager? = null
-
     private var gsc: GoogleSignInClient? = null
     private var gso: GoogleSignInOptions? = null
     private var gsa: GoogleSignInAccount? = null

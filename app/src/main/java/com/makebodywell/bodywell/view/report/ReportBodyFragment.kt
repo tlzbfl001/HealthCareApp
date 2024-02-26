@@ -26,7 +26,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -147,34 +146,18 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val itemList1 = ArrayList<Body>()
-      val itemList2 = ArrayList<Body>()
-      val itemList3 = ArrayList<Body>()
+      val getBody = dataManager!!.getBody(calendarDate.toString())
 
-      val getBody = dataManager!!.getBody()
-      for(i in 0 until getBody.size) {
-         if (getBody[i].weight > 0) {
-            itemList1.add(Body(weight = getBody[i].weight, regDate = format2.format(format1.parse(getBody[i].regDate)!!)))
-         }
-         if (getBody[i].bmi > 0) {
-            itemList2.add(Body(bmi = getBody[i].bmi, regDate = format2.format(format1.parse(getBody[i].regDate)!!)))
-         }
-         if (getBody[i].fat > 0) {
-            itemList3.add(Body(fat = getBody[i].fat, regDate = format2.format(format1.parse(getBody[i].regDate)!!)))
-         }
-      }
-
-      if(itemList1.size > 0) {
+      if (getBody.weight > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.lineChart1.visibility = View.VISIBLE
 
          val entries = ArrayList<Entry>()
          val xValue = ArrayList<String>()
 
-         for(i in 0 until itemList1.size) {
-            entries.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
-            xValue.add(itemList1[i].regDate)
-         }
+         val date = format2.format(format1.parse(getBody.regDate)!!)
+         entries.add(Entry(0f, getBody.weight.toFloat()))
+         xValue.add(date)
 
          setupChart(binding.lineChart1, entries, xValue)
       }else {
@@ -182,17 +165,16 @@ class ReportBodyFragment : Fragment() {
          binding.lineChart1.visibility = View.GONE
       }
 
-      if(itemList2.size > 0) {
+      if (getBody.bmi > 0) {
          binding.tvEmpty2.visibility = View.GONE
          binding.lineChart2.visibility = View.VISIBLE
 
          val entries = ArrayList<Entry>()
          val xValue = ArrayList<String>()
 
-         for(i in 0 until itemList2.size) {
-            entries.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
-            xValue.add(itemList2[i].regDate)
-         }
+         val date = format2.format(format1.parse(getBody.regDate)!!)
+         entries.add(Entry(0f, getBody.bmi.toFloat()))
+         xValue.add(date)
 
          setupChart(binding.lineChart2, entries, xValue)
       }else {
@@ -200,17 +182,16 @@ class ReportBodyFragment : Fragment() {
          binding.lineChart2.visibility = View.GONE
       }
 
-      if(itemList3.size > 0) {
+      if (getBody.fat > 0) {
          binding.tvEmpty3.visibility = View.GONE
          binding.lineChart3.visibility = View.VISIBLE
 
          val entries = ArrayList<Entry>()
          val xValue = ArrayList<String>()
 
-         for(i in 0 until itemList3.size) {
-            entries.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
-            xValue.add(itemList3[i].regDate)
-         }
+         val date = format2.format(format1.parse(getBody.regDate)!!)
+         entries.add(Entry(0f, getBody.fat.toFloat()))
+         xValue.add(date)
 
          setupChart(binding.lineChart3, entries, xValue)
       }else {

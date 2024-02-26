@@ -4,15 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.ContentValues
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -22,42 +18,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.UpdateUserProfileMutation
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
-import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.type.UpdateUserProfileInput
-import com.makebodywell.bodywell.util.CalendarUtil
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
-import com.makebodywell.bodywell.util.MyApp
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_1
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_2
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_PERMISSION_3
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
-import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class InputInfoFragment : Fragment() {
@@ -125,29 +98,28 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         var name = if(getUser.name != "") {
+         val name = if(getUser.name != "") {
             getUser.name
+         }else if(binding.etName.text.toString() != "") {
+            binding.etName.text.toString()
          }else {
             "바디웰"
          }
 
-         var birthday = if(getUser.birthday != "") {
+         val birthday = if(getUser.birthday != "") {
             getUser.birthday
+         }else if(binding.tvBirthday.text.toString() != "") {
+            binding.tvBirthday.text.toString()
          }else {
             "1990-01-01"
          }
 
-         val profileImage = if(image != "" && image != null) image else ""
+         val profileImage = if(image != "") image else ""
 
-         if(binding.etName.text.toString() != "") {
-            name = binding.etName.text.toString()
-         }
+         dataManager?.updateUserStr(TABLE_USER, "name", name!!)
+         dataManager?.updateUserStr(TABLE_USER, "birthday", birthday!!)
+         dataManager?.updateUserStr(TABLE_USER, "profileImage", profileImage!!)
 
-         if(binding.tvBirthday.text.toString() != "") {
-            birthday = binding.tvBirthday.text.toString()
-         }
-
-         dataManager!!.updateUserInfo(User(id = getUser.id, name = name, birthday = birthday, profileImage = profileImage!!))
          replaceLoginFragment1(requireActivity(), InputBodyFragment())
       }
 
