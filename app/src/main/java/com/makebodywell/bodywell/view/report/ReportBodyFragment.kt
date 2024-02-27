@@ -138,6 +138,7 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun dailyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -160,9 +161,6 @@ class ReportBodyFragment : Fragment() {
          xValue.add(date)
 
          setupChart(binding.lineChart1, entries, xValue)
-      }else {
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.lineChart1.visibility = View.GONE
       }
 
       if (getBody.bmi > 0) {
@@ -177,9 +175,6 @@ class ReportBodyFragment : Fragment() {
          xValue.add(date)
 
          setupChart(binding.lineChart2, entries, xValue)
-      }else {
-         binding.tvEmpty2.visibility = View.VISIBLE
-         binding.lineChart2.visibility = View.GONE
       }
 
       if (getBody.fat > 0) {
@@ -194,13 +189,11 @@ class ReportBodyFragment : Fragment() {
          xValue.add(date)
 
          setupChart(binding.lineChart3, entries, xValue)
-      }else {
-         binding.tvEmpty3.visibility = View.VISIBLE
-         binding.lineChart3.visibility = View.GONE
       }
    }
 
    private fun weeklyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -240,9 +233,6 @@ class ReportBodyFragment : Fragment() {
          }
 
          setupChart(binding.lineChart1, entries, xValue)
-      }else {
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.lineChart1.visibility = View.GONE
       }
 
       if(itemList2.size > 0) {
@@ -258,9 +248,6 @@ class ReportBodyFragment : Fragment() {
          }
 
          setupChart(binding.lineChart2, entries, xValue)
-      }else {
-         binding.tvEmpty2.visibility = View.VISIBLE
-         binding.lineChart2.visibility = View.GONE
       }
 
       if(itemList3.size > 0) {
@@ -276,13 +263,11 @@ class ReportBodyFragment : Fragment() {
          }
 
          setupChart(binding.lineChart3, entries, xValue)
-      }else {
-         binding.tvEmpty3.visibility = View.VISIBLE
-         binding.lineChart3.visibility = View.GONE
       }
    }
 
    private fun monthlyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -322,9 +307,6 @@ class ReportBodyFragment : Fragment() {
          }
 
          setupChart(binding.lineChart1, entries, xValue)
-      }else {
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.lineChart1.visibility = View.GONE
       }
 
       if(itemList2.size > 0) {
@@ -340,9 +322,6 @@ class ReportBodyFragment : Fragment() {
          }
 
          setupChart(binding.lineChart2, entries, xValue)
-      }else {
-         binding.tvEmpty2.visibility = View.VISIBLE
-         binding.lineChart2.visibility = View.GONE
       }
 
       if(itemList3.size > 0) {
@@ -358,10 +337,16 @@ class ReportBodyFragment : Fragment() {
          }
 
          setupChart(binding.lineChart3, entries, xValue)
-      }else {
-         binding.tvEmpty3.visibility = View.VISIBLE
-         binding.lineChart3.visibility = View.GONE
       }
+   }
+
+   private fun resetChart() {
+      binding.tvEmpty1.visibility = View.VISIBLE
+      binding.lineChart1.visibility = View.GONE
+      binding.tvEmpty2.visibility = View.VISIBLE
+      binding.lineChart2.visibility = View.GONE
+      binding.tvEmpty3.visibility = View.VISIBLE
+      binding.lineChart3.visibility = View.GONE
    }
 
    private fun setupChart(

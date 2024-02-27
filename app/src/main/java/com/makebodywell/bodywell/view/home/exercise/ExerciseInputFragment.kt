@@ -13,6 +13,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseInputBinding
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDate
@@ -23,9 +24,8 @@ class ExerciseInputFragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private var intensity = "상"
-
    private var calendarDate = ""
+   private var intensity = "상"
 
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
@@ -51,7 +51,7 @@ class ExerciseInputFragment : Fragment() {
       bundle.putString("calendarDate", calendarDate)
 
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
          true
       }
 
@@ -90,12 +90,14 @@ class ExerciseInputFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         if(binding.etName.text.toString().trim() == "" || binding.etTime.text.toString().trim() == "" ||
-            binding.etKcal.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         val workoutTime = if(binding.etTime.text.toString() == "") 0 else binding.etTime.text.toString().trim().toInt()
+         val calories = if(binding.etKcal.text.toString() == "") 0 else binding.etKcal.text.toString().trim().toInt()
+
+         if(binding.etName.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity,
-               workoutTime = binding.etTime.text.toString().trim(), calories = binding.etKcal.text.toString().trim().toInt(), regDate = calendarDate))
+               workoutTime = workoutTime, calories = calories, regDate = calendarDate))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

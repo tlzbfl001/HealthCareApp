@@ -107,14 +107,6 @@ class SleepFragment : Fragment() {
          replaceFragment2(requireActivity(), SleepRecordFragment(), bundle)
       }
 
-      settingGoal()
-      dailyView()
-
-      return binding.root
-   }
-
-   @SuppressLint("SetTextI18n")
-   private fun settingGoal() {
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_sleep)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -124,18 +116,8 @@ class SleepFragment : Fragment() {
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
 
       btnSave.setOnClickListener {
-         val hour = if(etHour.text.toString().trim() == "") {
-            7
-         } else {
-            etHour.text.toString().toInt()
-         }
-
-         var minute = if(etMinute.text.toString().trim() == "") {
-            0
-         } else {
-            etMinute.text.toString().toInt()
-         }
-
+         val hour = if(etHour.text.toString().trim() == "") 7 else { etHour.text.toString().toInt() }
+         val minute = if(etMinute.text.toString().trim() == "") 0 else { etMinute.text.toString().toInt() }
          val total = hour * 60 + minute
 
          if(getDaily.regDate == "") {
@@ -144,16 +126,17 @@ class SleepFragment : Fragment() {
             dataManager!!.updateGoal("sleepGoal", total, calendarDate.toString())
          }
 
-         binding.pbSleep.max = total
-         binding.tvGoal.text = "${total / 60}h ${total % 60}m"
+//         binding.pbSleep.max = total
+//         binding.tvGoal.text = "${total / 60}h ${total % 60}m"
+//
+//         val remain = total - getSleep.sleepTime
+//         if(remain > 0) {
+//            binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
+//         }else {
+//            binding.tvRemain.text = "0h 0m"
+//         }
 
-         val remain = total - getSleep.sleepTime
-
-         if(remain > 0) {
-            binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
-         }else {
-            binding.tvRemain.text = "0h 0m"
-         }
+         dailyView()
 
          dialog.dismiss()
       }
@@ -161,23 +144,38 @@ class SleepFragment : Fragment() {
       binding.clGoal.setOnClickListener {
          dialog.show()
       }
+
+      dailyView()
+
+      return binding.root
    }
 
    @SuppressLint("SetTextI18n")
    private fun dailyView() {
+      // 목표 초기화
+      binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbSleep.setProgressEndColor(Color.TRANSPARENT)
+      binding.tvGoal.text = "0h 0m"
+      binding.tvRemain.text = "0h 0m"
+
       getSleep = dataManager!!.getSleep(calendarDate.toString())
       getDaily = dataManager!!.getDailyData(calendarDate.toString())
 
-      binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
-      binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"
-      binding.tvBedtime.text = "${getSleep.bedTime / 60}h ${getSleep.bedTime % 60}m"
-      binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
+      if(getSleep.sleepTime > 0) {
+         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
+         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
+         binding.pbSleep.max = getDaily.sleepGoal
+         binding.pbSleep.progress = getSleep.sleepTime
 
-      if(getDaily.sleepGoal > 0) {
          val result = (getDaily.sleepGoal - getSleep.sleepTime)
          if(result > 0) {
             binding.tvRemain.text = "${result / 60}h ${result % 60}m"
          }
       }
+
+      binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
+      binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"
+      binding.tvBedtime.text = "${getSleep.bedTime / 60}h ${getSleep.bedTime % 60}m"
+      binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
    }
 }

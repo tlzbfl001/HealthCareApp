@@ -1119,7 +1119,7 @@
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.cardview.widget.CardView
       android:id="@+id/cvContinue"
-      android:layout_width="250dp"
+      android:layout_width="230dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="15dp"
       android:layout_marginBottom="30dp"
@@ -1131,8 +1131,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:paddingTop="7dp"
-         android:paddingBottom="7dp"
+         android:paddingTop="8dp"
+         android:paddingBottom="8dp"
          android:paddingRight="20dp">
          <TextView
             android:id="@+id/textView2"
@@ -1142,7 +1142,7 @@
             android:paddingLeft="45dp"
             android:text="계속"
             android:textColor="@color/white"
-            android:textSize="16dp"
+            android:textSize="17dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.report
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -148,6 +150,7 @@ class ReportExerciseFragment : Fragment() {
    }
 
    private fun dailyView() {
+      chartReset()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -160,25 +163,16 @@ class ReportExerciseFragment : Fragment() {
       val getExercise = dataManager!!.getExercise(calendarDate.toString())
 
       if(getExercise.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-
          dates.add(calendarDate.toString())
          settingChart1(binding.chart1, dates)
          settingChart2(binding.chart2, dates)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
-      }
 
-      rankView(dateType, "", "")
+         rankView(dateType, "", "")
+      }
    }
 
    private fun weeklyView() {
+      chartReset()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -189,24 +183,17 @@ class ReportExerciseFragment : Fragment() {
 
       val weekArray = weekArray(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
+
       if(getDates.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
-      }
 
-      rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
+         rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
+      }
    }
 
    private fun monthlyView() {
+      chartReset()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -217,21 +204,22 @@ class ReportExerciseFragment : Fragment() {
 
       val monthArray = monthArray2(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+
       if(getDates.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
-      }
 
-      rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      }
+   }
+
+   private fun chartReset() {
+      binding.recyclerView.visibility = View.GONE
+      binding.tvEmpty.visibility = View.VISIBLE
+      binding.chart1.visibility = View.GONE
+      binding.tvEmpty1.visibility = View.VISIBLE
+      binding.chart2.visibility = View.GONE
+      binding.tvEmpty2.visibility = View.VISIBLE
    }
 
    private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
@@ -246,50 +234,63 @@ class ReportExerciseFragment : Fragment() {
       var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
+      var count = 0
 
       for(i in 0 until getData.size){
          var total = 0f
-         xVal += format2.format(format1.parse(getData[i])!!)
+
          val getExercise = dataManager!!.getExercise(getData[i])
          for(j in 0 until getExercise.size) {
-            total += getExercise[j].workoutTime.toFloat()
+            if(getExercise[j].workoutTime > 0) {
+               total += getExercise[j].workoutTime.toFloat()
+            }
          }
-         lineList += total
-         barEntries.add(BarEntry(i.toFloat(), total))
+
+         if(total > 0) {
+            lineList += total
+            barEntries.add(BarEntry(count.toFloat(), total))
+            xVal += format2.format(format1.parse(getData[i])!!)
+            count++
+         }
       }
 
-      for (index in lineList.indices) {
-         entries.add(Entry(index.toFloat(), lineList[index]))
+      if(lineList.isNotEmpty()) {
+         binding.chart1.visibility = View.VISIBLE
+         binding.tvEmpty1.visibility = View.GONE
+
+         for (index in lineList.indices) {
+            entries.add(Entry(index.toFloat(), lineList[index]))
+         }
+
+         val lineDataSet = LineDataSet(entries, "Line DataSet")
+         lineDataSet.color = Color.parseColor("#BBBBBB")
+         lineDataSet.lineWidth = 0.5f
+         lineDataSet.setDrawCircles(false)
+         lineDataSet.setDrawValues(true)
+         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+         lineDataSet.valueFormatter = XValueFormatter()
+
+         lineData.addDataSet(lineDataSet)
+         data.setData(lineData)
+
+         val barDataSet = BarDataSet(barEntries, "")
+         barDataSet.color = Color.parseColor("#D3B479")
+         barDataSet.valueTextSize = 0f
+
+         val barData = BarData(barDataSet)
+         barData.barWidth = 0.27f
+
+         data.setData(barData)
+
+         chart.data = data
+         chart.invalidate()
+         chart.setVisibleXRangeMaximum(7f)
+         chart.isDragXEnabled = true
+
+         chartCommon(chart, xVal, 1)
       }
-
-      val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#BBBBBB")
-      lineDataSet.lineWidth = 0.5f
-      lineDataSet.setDrawCircles(false)
-      lineDataSet.setDrawValues(true)
-      lineDataSet.valueTextSize = 8f
-      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-      lineDataSet.valueFormatter = XValueFormatter()
-
-      lineData.addDataSet(lineDataSet)
-      data.setData(lineData)
-
-      val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.color = Color.parseColor("#D3B479")
-      barDataSet.valueTextSize = 0f
-
-      val barData = BarData(barDataSet)
-      barData.barWidth = 0.27f
-
-      data.setData(barData)
-
-      chart.data = data
-      chart.invalidate()
-      chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = true
-
-      chartCommon(chart, xVal, 1)
    }
 
    private fun settingChart2(chart: CombinedChart, getData: ArrayList<String>) {
@@ -304,49 +305,62 @@ class ReportExerciseFragment : Fragment() {
       var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
+      var count = 0
 
       for(i in 0 until getData.size){
          var total = 0f
-         xVal += format2.format(format1.parse(getData[i])!!)
+
          val getExercise = dataManager!!.getExercise(getData[i])
          for(j in 0 until getExercise.size) {
-            total += getExercise[j].calories.toFloat()
+            if(getExercise[j].calories > 0) {
+               total += getExercise[j].calories.toFloat()
+            }
          }
-         lineList += total
-         barEntries.add(BarEntry(i.toFloat(), total))
+
+         if(total > 0) {
+            lineList += total
+            barEntries.add(BarEntry(count.toFloat(), total))
+            xVal += format2.format(format1.parse(getData[i])!!)
+            count++
+         }
       }
 
-      for (index in lineList.indices) {
-         entries.add(Entry(index.toFloat(), lineList[index]))
+      if(lineList.isNotEmpty()) {
+         binding.chart2.visibility = View.VISIBLE
+         binding.tvEmpty2.visibility = View.GONE
+
+         for (index in lineList.indices) {
+            entries.add(Entry(index.toFloat(), lineList[index]))
+         }
+
+         val lineDataSet = LineDataSet(entries, "Line DataSet")
+         lineDataSet.color = Color.parseColor("#BBBBBB")
+         lineDataSet.lineWidth = 0.5f
+         lineDataSet.setDrawCircles(false)
+         lineDataSet.setDrawValues(true)
+         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+
+         lineData.addDataSet(lineDataSet)
+         data.setData(lineData)
+
+         val barDataSet = BarDataSet(barEntries, "")
+         barDataSet.color = Color.parseColor("#8F8C6E")
+         barDataSet.valueTextSize = 0f
+
+         val barData = BarData(barDataSet)
+         barData.barWidth = 0.27f
+
+         data.setData(barData)
+
+         chart.data = data
+         chart.invalidate()
+         chart.setVisibleXRangeMaximum(7f)
+         chart.isDragXEnabled = true
+
+         chartCommon(chart, xVal, 2)
       }
-
-      val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#BBBBBB")
-      lineDataSet.lineWidth = 0.5f
-      lineDataSet.setDrawCircles(false)
-      lineDataSet.setDrawValues(true)
-      lineDataSet.valueTextSize = 8f
-      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-      lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-
-      lineData.addDataSet(lineDataSet)
-      data.setData(lineData)
-
-      val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.color = Color.parseColor("#8F8C6E")
-      barDataSet.valueTextSize = 0f
-
-      val barData = BarData(barDataSet)
-      barData.barWidth = 0.27f
-
-      data.setData(barData)
-
-      chart.data = data
-      chart.invalidate()
-      chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = true
-
-      chartCommon(chart, xVal, 2)
    }
 
    private fun chartCommon(chart: CombinedChart, xVal: Array<String>, type: Int) {
@@ -378,6 +392,7 @@ class ReportExerciseFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
+
       if(type == 1) {
          leftAxis.valueFormatter = LeftAxisFormatter()
       }
@@ -414,7 +429,7 @@ class ReportExerciseFragment : Fragment() {
       val itemList = ArrayList<Item>()
 
       val getData = when(type) {
-         1 -> dataManager!!.getRanking(TABLE_EXERCISE)
+         1 -> dataManager!!.getRanking(TABLE_EXERCISE, calendarDate.toString())
          else -> dataManager!!.getRanking(TABLE_EXERCISE, start, end)
       }
 
@@ -447,9 +462,6 @@ class ReportExerciseFragment : Fragment() {
 
          adapter = ReportAdapter(itemList)
          binding.recyclerView.adapter = adapter
-      }else {
-         binding.tvEmpty.visibility = View.VISIBLE
-         binding.recyclerView.visibility = View.GONE
       }
    }
 }

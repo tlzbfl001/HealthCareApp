@@ -485,7 +485,7 @@
                android:layout_height="match_parent"
                android:layout_gravity="bottom"
                android:layout_marginTop="22dp"
-               android:layout_marginBottom="40dp">
+               android:layout_marginBottom="30dp">
                <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
@@ -509,8 +509,8 @@
                   <androidx.constraintlayout.widget.ConstraintLayout
                      android:layout_width="match_parent"
                      android:layout_height="match_parent"
-                     android:paddingTop="7dp"
-                     android:paddingBottom="7dp">
+                     android:paddingTop="8dp"
+                     android:paddingBottom="8dp">
                      <TextView
                         android:id="@+id/tvStart"
                         android:layout_width="0dp"
@@ -518,7 +518,7 @@
                         android:gravity="center"
                         android:text="저장"
                         android:textColor="@color/white"
-                        android:textSize="16.5dp"
+                        android:textSize="17dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"

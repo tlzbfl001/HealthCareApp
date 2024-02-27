@@ -40,7 +40,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, water integer, volume integer, regDate text);"
       db.execSQL(water)
 
-      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, name text, intensity text, workoutTime text, calories integer, regDate text);"
+      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, name text, intensity text, workoutTime integer, calories integer, regDate text);"
       db.execSQL(exercise)
 
       val body = "create table $TABLE_BODY(id integer primary key autoincrement, userId integer, height real, weight real, age integer, " +

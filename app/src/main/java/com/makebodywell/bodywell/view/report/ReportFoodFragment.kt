@@ -147,6 +147,7 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun dailyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -158,26 +159,8 @@ class ReportFoodFragment : Fragment() {
       val getDates = dataManager!!.getDates(TABLE_FOOD, calendarDate.toString(), calendarDate.toString())
 
       if(getDates.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
          settingChart1(binding.chart1, getDates)
-
-         val getNutrition = getNutrition(requireActivity(), calendarDate.toString())
-         if(getNutrition.salt > 0.0) {
-            binding.chart2.visibility = View.VISIBLE
-            binding.tvEmpty2.visibility = View.GONE
-            settingChart2(binding.chart2, getDates)
-         }else {
-            binding.chart2.visibility = View.GONE
-            binding.tvEmpty2.visibility = View.VISIBLE
-         }
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
+         settingChart2(binding.chart2, getDates)
       }
 
       val getWater = ArrayList<Water>()
@@ -186,7 +169,6 @@ class ReportFoodFragment : Fragment() {
       if(data.water > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
-
          getWater.add(data)
          settingChart3(binding.chart3, getWater)
       }else {
@@ -196,6 +178,7 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun weeklyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -207,17 +190,8 @@ class ReportFoodFragment : Fragment() {
       val weekArray = weekArray(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
       }
 
       val getWater = dataManager!!.getWater(weekArray[0].toString(), weekArray[6].toString())
@@ -232,6 +206,7 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun monthlyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -243,30 +218,26 @@ class ReportFoodFragment : Fragment() {
       val monthArray = monthArray2(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
       }
 
       val getWater = dataManager!!.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
-
          settingChart3(binding.chart3, getWater)
       }else {
          binding.chart3.visibility = View.GONE
          binding.tvEmpty3.visibility = View.VISIBLE
       }
+   }
+
+   private fun resetChart() {
+      binding.chart1.visibility = View.GONE
+      binding.tvEmpty1.visibility = View.VISIBLE
+      binding.chart2.visibility = View.GONE
+      binding.tvEmpty2.visibility = View.VISIBLE
    }
 
    private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
@@ -281,21 +252,23 @@ class ReportFoodFragment : Fragment() {
       var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
+      var count = 0
 
       for(i in 0 until getData.size){
          val foodKcal = getFoodKcal(requireActivity(), getData[i])
-         xVal += format2.format(format1.parse(getData[i])!!)
-         lineList += foodKcal.int5.toFloat()
-         barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-            foodKcal.int4.toFloat(), foodKcal.int3.toFloat(), foodKcal.int2.toFloat(), foodKcal.int1.toFloat()
-         )))
+         if(foodKcal.int5 > 0) {
+            xVal += format2.format(format1.parse(getData[i])!!)
+            lineList += foodKcal.int5.toFloat()
+            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(
+               foodKcal.int4.toFloat(), foodKcal.int3.toFloat(), foodKcal.int2.toFloat(), foodKcal.int1.toFloat()
+            )))
+            count++
+         }
       }
 
       if(barEntries.size > 0) {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
 
          for (index in lineList.indices) {
             entries.add(Entry(index.toFloat(), lineList[index]))
@@ -336,11 +309,6 @@ class ReportFoodFragment : Fragment() {
          chart.isDragXEnabled = true
 
          chartCommon(chart, xVal)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
       }
    }
 
@@ -356,19 +324,21 @@ class ReportFoodFragment : Fragment() {
       var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
+      var count = 0
 
       for(i in 0 until getData.size){
          val nutrition = getNutrition(requireActivity(), getData[i])
-         xVal += format2.format(format1.parse(getData[i])!!)
-         lineList += nutrition.salt.toFloat()
-         barEntries.add(BarEntry(i.toFloat(), floatArrayOf(
-            nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat(), nutrition.sugar.toFloat()
-         )))
+         if(nutrition.salt > 0) {
+            xVal += format2.format(format1.parse(getData[i])!!)
+            lineList += nutrition.salt.toFloat()
+            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(
+               nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat(), nutrition.sugar.toFloat()
+            )))
+            count++
+         }
       }
 
       if(barEntries.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
 
@@ -410,11 +380,6 @@ class ReportFoodFragment : Fragment() {
          chart.isDragXEnabled = true
 
          chartCommon(chart, xVal)
-      }else {
-         binding.chart1.visibility = View.GONE
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.chart2.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
       }
    }
 

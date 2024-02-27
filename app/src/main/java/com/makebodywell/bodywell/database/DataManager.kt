@@ -221,23 +221,6 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getWater() : ArrayList<Water> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Water> = ArrayList()
-      val sql = "select * from $TABLE_WATER where userId = ${MyApp.prefs.getId()}"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Water()
-         data.id=cursor.getInt(0)
-         data.water=cursor.getInt(2)
-         data.volume=cursor.getInt(3)
-         data.regDate = cursor.getString(4)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getWater(start: String, end: String) : ArrayList<Water> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Water>()
@@ -280,7 +263,7 @@ class DataManager(private var context: Context?) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(2)
          data.intensity=cursor.getString(3)
-         data.workoutTime= cursor.getString(4)
+         data.workoutTime= cursor.getInt(4)
          data.calories= cursor.getInt(5)
          data.regDate= cursor.getString(6)
          list.add(data)
@@ -298,7 +281,7 @@ class DataManager(private var context: Context?) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(2)
          data.intensity=cursor.getString(3)
-         data.workoutTime= cursor.getString(4)
+         data.workoutTime= cursor.getInt(4)
          data.calories= cursor.getInt(5)
          data.regDate= cursor.getString(6)
       }
@@ -306,10 +289,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getRanking(table: String) : ArrayList<Item> {
+   fun getRanking(table: String, date: String) : ArrayList<Item> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Item>()
-      val sql = "select count(name) as ranking, name from $table where userId = ${MyApp.prefs.getId()} " +
+      val sql = "select count(name) as ranking, name from $table where userId = ${MyApp.prefs.getId()} and regDate = '$date' " +
          "group by name order by ranking desc limit 4"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
@@ -332,23 +315,6 @@ class DataManager(private var context: Context?) {
          val data = Item()
          data.string1=cursor.getString(0)
          data.string2=cursor.getString(1)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getBody() : ArrayList<Body> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Body>()
-      val sql = "select weight, fat, bmi, regDate from $TABLE_BODY where userId = ${MyApp.prefs.getId()}"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Body()
-         data.weight = cursor.getDouble(0)
-         data.fat = cursor.getDouble(1)
-         data.bmi = cursor.getDouble(2)
-         data.regDate = cursor.getString(3)
          list.add(data)
       }
       cursor.close()
@@ -555,18 +521,6 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return data
-   }
-
-   fun getDates(table: String) : ArrayList<String> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<String>()
-      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()} order by regDate"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         list.add(cursor.getString(0))
-      }
-      cursor.close()
-      return list
    }
 
    fun getDates(table: String, start: String, end: String) : ArrayList<String> {

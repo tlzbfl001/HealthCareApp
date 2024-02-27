@@ -151,6 +151,7 @@ class ReportDrugFragment : Fragment() {
    }
 
    private fun dailyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -159,15 +160,17 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val getDates = ArrayList<String>()
-      getDates.add(calendarDate.toString())
-
-      settingChart(binding.chart, getDates)
-
-      rankView(dateType, "", "")
+      val getDrugCheckCount = dataManager!!.getDrugCheckCount(calendarDate.toString())
+      if(getDrugCheckCount > 0) {
+         val getDates = ArrayList<String>()
+         getDates.add(calendarDate.toString())
+         settingChart(binding.chart, getDates)
+         rankView(dateType, "", "")
+      }
    }
 
    private fun weeklyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -179,18 +182,13 @@ class ReportDrugFragment : Fragment() {
       val weekArray = weekArray(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
          settingChart(binding.chart, getDates)
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
+         rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
       }
-
-      rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
    }
 
    private fun monthlyView() {
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -202,15 +200,16 @@ class ReportDrugFragment : Fragment() {
       val monthArray = monthArray2(calendarDate)
       val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
          settingChart(binding.chart, getDates)
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
+         rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       }
+   }
 
-      rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+   private fun resetChart() {
+      binding.recyclerView.visibility = View.GONE
+      binding.tvEmpty1.visibility = View.VISIBLE
+      binding.chart.visibility = View.GONE
+      binding.tvEmpty2.visibility = View.VISIBLE
    }
 
    private fun settingChart(chart: CombinedChart, getData: ArrayList<String>) {
@@ -225,23 +224,23 @@ class ReportDrugFragment : Fragment() {
       var lineList = floatArrayOf()
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
-      var num = -1
+      var count = 0
 
       for(i in 0 until getData.size){
          val getDailyData = dataManager!!.getDailyData(getData[i])
-         val count = dataManager!!.getDrugCheckCount(getData[i])
+         val getDrugCheckCount = dataManager!!.getDrugCheckCount(getData[i])
 
-         if(count > 0) {
-            num++
-
+         if(getDrugCheckCount > 0) {
             val pt = when(getDailyData.drugGoal) {
                0 -> 100f
-               else -> (count.toFloat() / getDailyData.drugGoal.toFloat()) * 100
+               else -> (getDrugCheckCount.toFloat() / getDailyData.drugGoal.toFloat()) * 100
             }
 
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += pt
-            barEntries.add(BarEntry(num.toFloat(), pt))
+            barEntries.add(BarEntry(count.toFloat(), pt))
+
+            count++
          }
       }
 
@@ -310,9 +309,6 @@ class ReportDrugFragment : Fragment() {
          leftAxis.axisMinimum = 0f
          leftAxis.axisMaximum = 100f
          leftAxis.valueFormatter = LeftAxisFormatter()
-      }else {
-         binding.chart.visibility = View.GONE
-         binding.tvEmpty2.visibility = View.VISIBLE
       }
    }
 
@@ -341,7 +337,7 @@ class ReportDrugFragment : Fragment() {
       val itemList = ArrayList<Item>()
 
       val getData = when(type) {
-         1 -> dataManager!!.getRanking(TABLE_DRUG)
+         1 -> dataManager!!.getRanking(TABLE_DRUG, calendarDate.toString())
          else -> dataManager!!.getRanking(TABLE_DRUG, start, end)
       }
 
@@ -374,9 +370,6 @@ class ReportDrugFragment : Fragment() {
 
          adapter = ReportAdapter(itemList)
          binding.recyclerView.adapter = adapter
-      }else {
-         binding.tvEmpty1.visibility = View.VISIBLE
-         binding.recyclerView.visibility = View.GONE
       }
    }
 }
