@@ -23,6 +23,7 @@ class CustomUtil {
       const val TAG = "testTag"
       var drugTimeList = ArrayList<DrugTime>()
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
+      var measureHeight = 0
 
       fun replaceLoginFragment1(activity: FragmentActivity, fragment: Fragment?) {
          (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {

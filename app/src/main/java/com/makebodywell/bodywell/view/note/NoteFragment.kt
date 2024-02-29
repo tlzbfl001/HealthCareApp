@@ -211,7 +211,7 @@ class NoteFragment : Fragment() {
       val dataList = dataManager!!.getImage(5, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
-      binding.viewPager.setPadding(150, 0, 150, 0)
+      binding.viewPager.setPadding(140, 0, 140, 0)
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {

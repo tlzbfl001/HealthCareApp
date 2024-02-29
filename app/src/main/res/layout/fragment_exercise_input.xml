@@ -244,11 +244,11 @@
       <TextView
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_marginTop="12dp"
+         android:layout_marginTop="15dp"
          android:layout_marginLeft="25dp"
          android:layout_marginRight="25dp"
          android:text="· 운동 직접 입력의 경우 자동 칼로리 계산이 되지 않습니다."
-         android:textSize="12dp"
+         android:textSize="12.5dp"
          android:textColor="@color/black"
          app:layout_constraintTop_toBottomOf="@id/cv"
          app:layout_constraintStart_toStartOf="parent"

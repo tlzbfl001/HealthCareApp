@@ -57,7 +57,7 @@
        android:layout_width="match_parent"
        android:layout_height="0dp"
        android:fillViewport="true"
-       android:layout_marginTop="5dp"
+       android:layout_marginTop="12dp"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintTop_toBottomOf="@+id/tvInput"
        app:layout_constraintEnd_toEndOf="parent"
@@ -70,8 +70,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="10dp"/>
+            android:layout_weight="1"/>
          <androidx.cardview.widget.CardView
             android:id="@+id/cvAdd"
             android:layout_width="230dp"

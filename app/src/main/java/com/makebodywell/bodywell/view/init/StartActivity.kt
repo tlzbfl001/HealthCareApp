@@ -5,15 +5,19 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.navercorp.nid.NaverIdLoginSDK
 
 class StartActivity : AppCompatActivity() {

@@ -63,7 +63,7 @@ class ReportBodyFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      binding.tvCalTitle.text = dateFormat(calendarDate)
+      binding.tvDate.text = dateFormat(calendarDate)
 
       binding.clMenu2.setOnClickListener {
          replaceFragment1(requireActivity(), ReportFoodFragment())
@@ -81,17 +81,17 @@ class ReportBodyFragment : Fragment() {
          when(dateType) {
             0->{
                calendarDate = calendarDate!!.minusDays(1)
-               binding.tvCalTitle.text = dateFormat(calendarDate)
+               binding.tvDate.text = dateFormat(calendarDate)
                dailyView()
             }
             1->{
                calendarDate = calendarDate!!.minusWeeks(1)
-               binding.tvCalTitle.text = weekFormat(calendarDate)
+               binding.tvDate.text = weekFormat(calendarDate)
                weeklyView()
             }
             2->{
                calendarDate = calendarDate!!.minusMonths(1)
-               binding.tvCalTitle.text = monthFormat(calendarDate)
+               binding.tvDate.text = monthFormat(calendarDate)
                monthlyView()
             }
          }
@@ -101,34 +101,34 @@ class ReportBodyFragment : Fragment() {
          when(dateType) {
             0->{
                calendarDate = calendarDate!!.plusDays(1)
-               binding.tvCalTitle.text = dateFormat(calendarDate)
+               binding.tvDate.text = dateFormat(calendarDate)
                dailyView()
             }
             1->{
                calendarDate = calendarDate!!.plusWeeks(1)
-               binding.tvCalTitle.text = weekFormat(calendarDate)
+               binding.tvDate.text = weekFormat(calendarDate)
                weeklyView()
             }
             2->{
                calendarDate = calendarDate!!.plusMonths(1)
-               binding.tvCalTitle.text = monthFormat(calendarDate)
+               binding.tvDate.text = monthFormat(calendarDate)
                monthlyView()
             }
          }
       }
 
       binding.tvDaily.setOnClickListener {
-         binding.tvCalTitle.text = dateFormat(calendarDate)
+         binding.tvDate.text = dateFormat(calendarDate)
          dailyView()
       }
 
       binding.tvWeekly.setOnClickListener {
-         binding.tvCalTitle.text = weekFormat(calendarDate)
+         binding.tvDate.text = weekFormat(calendarDate)
          weeklyView()
       }
 
       binding.tvMonthly.setOnClickListener {
-         binding.tvCalTitle.text = monthFormat(calendarDate)
+         binding.tvDate.text = monthFormat(calendarDate)
          monthlyView()
       }
 

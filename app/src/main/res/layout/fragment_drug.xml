@@ -33,23 +33,22 @@
          android:id="@+id/clPrev"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:paddingTop="5dp"
-         android:paddingBottom="5dp"
-         app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintTop_toTopOf="@id/tvDate"
          app:layout_constraintBottom_toBottomOf="@id/tvDate"
-         app:layout_constraintEnd_toStartOf="@id/tvDate"
-         app:layout_constraintHorizontal_chainStyle="packed">
+         app:layout_constraintEnd_toStartOf="@id/tvDate">
          <ImageView
+            android:id="@+id/ivPrev"
             android:layout_width="9dp"
-            android:layout_height="22dp"
-            android:src="@drawable/arrow_left_triangle"
+            android:layout_height="19dp"
+            android:background="@drawable/arrow_left_triangle"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="10dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginRight="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
       <TextView
          android:id="@+id/tvDate"
@@ -57,31 +56,32 @@
          android:layout_height="wrap_content"
          android:layout_marginTop="20dp"
          android:text="2023년 7월 23일"
+         android:gravity="center_vertical"
          android:textColor="@color/black"
          android:textSize="17dp"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintEnd_toStartOf="@id/clNext"
-         app:layout_constraintStart_toEndOf="@id/clPrev"/>
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"/>
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clNext"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:paddingTop="5dp"
-         android:paddingBottom="5dp"
-         app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintStart_toEndOf="@id/tvDate"
          app:layout_constraintTop_toTopOf="@id/tvDate"
          app:layout_constraintBottom_toBottomOf="@id/tvDate">
          <ImageView
+            android:id="@+id/ivNext"
             android:layout_width="9dp"
-            android:layout_height="22dp"
-            android:src="@drawable/arrow_right_triangle"
-            android:layout_marginLeft="10dp"
+            android:layout_height="19dp"
+            android:background="@drawable/arrow_right_triangle"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="30dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
       <HorizontalScrollView
          android:id="@+id/horizontalScroll"
@@ -242,7 +242,7 @@
                   android:paddingLeft="3dp"
                   android:text="목표설정"
                   android:textColor="@color/black"
-                  android:textSize="15dp"
+                  android:textSize="15.2dp"
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -382,7 +382,7 @@
                   android:layout_marginLeft="25dp"
                   android:text="하루 약복용"
                   android:textColor="@color/black"
-                  android:textSize="16dp"
+                  android:textSize="17dp"
                   android:textStyle="bold"
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="parent"/>
@@ -410,7 +410,7 @@
                      android:layout_height="wrap_content"
                      android:text="약복용 기록"
                      android:textColor="@color/black"
-                     android:textSize="15dp"
+                     android:textSize="15.2dp"
                      app:layout_constraintBottom_toBottomOf="parent"
                      app:layout_constraintEnd_toEndOf="parent"
                      app:layout_constraintTop_toTopOf="parent"

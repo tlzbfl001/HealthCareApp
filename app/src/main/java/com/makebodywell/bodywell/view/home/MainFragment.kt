@@ -1,40 +1,30 @@
 package com.makebodywell.bodywell.view.home
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
 import android.view.ViewGroup.LayoutParams
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.cardview.widget.CardView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
-import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
-import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
-import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
+import com.makebodywell.bodywell.util.CustomUtil.Companion.measureHeight
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -46,9 +36,10 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+
 class MainFragment : Fragment() {
    private var _binding: FragmentMainBinding? = null
-   private val binding get() = _binding!!
+   val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
    private lateinit var adapter: CalendarAdapter1
@@ -72,6 +63,18 @@ class MainFragment : Fragment() {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      if(measureHeight == 0) {
+         binding.cl2.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+               measureHeight = binding.clRow1.height
+               setLayout()
+               binding.cl2.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+         })
+      }
+
+      setLayout()
 
       dataManager = DataManager(activity)
       dataManager!!.open()
@@ -147,6 +150,15 @@ class MainFragment : Fragment() {
       recordView()
 
       return binding.root
+   }
+
+   private fun setLayout() {
+      binding.pbFood.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
+      binding.pbWater.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
+      binding.pbExercise.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
+      binding.pbBody.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
+      binding.pbSleep.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
+      binding.pbDrug.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
    }
 
    @SuppressLint("ClickableViewAccessibility")
@@ -327,42 +339,6 @@ class MainFragment : Fragment() {
       binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
       binding.tvBody.text = "$weight/$bodyGoal kg"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyData.drugGoal}회"
-   }
-
-   private fun setImageView() {
-//      val itemList = ArrayList<Image>()
-
-      // 데이터 가져오기
-      val getImage1 = dataManager!!.getImage(1, selectedDate.toString())
-      val getImage2 = dataManager!!.getImage(2, selectedDate.toString())
-      val getImage3 = dataManager!!.getImage(3, selectedDate.toString())
-      val getImage4 = dataManager!!.getImage(4, selectedDate.toString())
-
-      // 리스트에 데이터 저장
-      for (i in 0 until getImage1.size) {
-         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, regDate = selectedDate.toString()))
-      }
-      for (i in 0 until getImage2.size) {
-         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, regDate = selectedDate.toString()))
-      }
-      for (i in 0 until getImage3.size) {
-         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, regDate = selectedDate.toString()))
-      }
-      for (i in 0 until getImage4.size) {
-         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, regDate = selectedDate.toString()))
-      }
-
-//      if (itemList.size > 0) {
-//         viewPager?.visibility = View.VISIBLE
-//         tvStatus?.visibility = View.GONE
-//
-//         val adapter = PhotoSlideAdapter(context, itemList)
-//         viewPager?.adapter = adapter
-//         viewPager?.setPadding(0, 0, 250, 0)
-//      }else {
-//         viewPager?.visibility = View.GONE
-//         tvStatus?.visibility = View.VISIBLE
-//      }
    }
 
    companion object {

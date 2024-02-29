@@ -9,9 +9,9 @@
       android:id="@+id/clPrev"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toTopOf="@id/tvCalTitle"
-      app:layout_constraintBottom_toBottomOf="@id/tvCalTitle"
-      app:layout_constraintEnd_toStartOf="@id/tvCalTitle">
+      app:layout_constraintTop_toTopOf="@id/tvDate"
+      app:layout_constraintBottom_toBottomOf="@id/tvDate"
+      app:layout_constraintEnd_toStartOf="@id/tvDate">
       <ImageView
          android:id="@+id/ivPrev"
          android:layout_width="10dp"
@@ -27,7 +27,7 @@
          app:layout_constraintBottom_toBottomOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <TextView
-       android:id="@+id/tvCalTitle"
+       android:id="@+id/tvDate"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:layout_marginTop="20dp"
@@ -42,9 +42,9 @@
       android:id="@+id/clNext"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:layout_constraintStart_toEndOf="@id/tvCalTitle"
-      app:layout_constraintTop_toTopOf="@id/tvCalTitle"
-      app:layout_constraintBottom_toBottomOf="@id/tvCalTitle">
+      app:layout_constraintStart_toEndOf="@id/tvDate"
+      app:layout_constraintTop_toTopOf="@id/tvDate"
+      app:layout_constraintBottom_toBottomOf="@id/tvDate">
       <ImageView
          android:id="@+id/ivNext"
          android:layout_width="10dp"
@@ -64,14 +64,14 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:layout_marginTop="20dp"
-       app:layout_constraintTop_toBottomOf="@id/tvCalTitle"
+       app:layout_constraintTop_toBottomOf="@id/tvDate"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toEndOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
           android:id="@+id/clMenu1"
-         android:layout_width="52dp"
-         android:layout_height="50dp"
-          android:layout_marginRight="16dp"
+         android:layout_width="53dp"
+         android:layout_height="51dp"
+          android:layout_marginRight="15dp"
           android:background="@drawable/oval"
           android:backgroundTint="#6A6A6A"
           app:layout_constraintTop_toTopOf="parent"
@@ -93,10 +93,10 @@
       </androidx.constraintlayout.widget.ConstraintLayout>
       <androidx.constraintlayout.widget.ConstraintLayout
           android:id="@+id/clMenu2"
-         android:layout_width="52dp"
-         android:layout_height="50dp"
+         android:layout_width="53dp"
+         android:layout_height="51dp"
           android:background="@drawable/oval_border_gray"
-          android:layout_marginRight="16dp"
+         android:layout_marginRight="15dp"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintStart_toEndOf="@id/clMenu1"
           app:layout_constraintBottom_toBottomOf="parent"
@@ -115,10 +115,10 @@
       </androidx.constraintlayout.widget.ConstraintLayout>
       <androidx.constraintlayout.widget.ConstraintLayout
           android:id="@+id/clMenu3"
-         android:layout_width="52dp"
-         android:layout_height="50dp"
+         android:layout_width="53dp"
+         android:layout_height="51dp"
           android:background="@drawable/oval_border_gray"
-          android:layout_marginRight="16dp"
+         android:layout_marginRight="15dp"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintStart_toEndOf="@id/clMenu2"
           app:layout_constraintEnd_toStartOf="@id/clMenu4"
@@ -137,8 +137,8 @@
       </androidx.constraintlayout.widget.ConstraintLayout>
       <androidx.constraintlayout.widget.ConstraintLayout
           android:id="@+id/clMenu4"
-         android:layout_width="52dp"
-         android:layout_height="50dp"
+         android:layout_width="53dp"
+         android:layout_height="51dp"
           android:background="@drawable/oval_border_gray"
           app:layout_constraintTop_toTopOf="parent"
           app:layout_constraintStart_toEndOf="@id/clMenu3"
@@ -220,7 +220,7 @@
           android:layout_marginTop="15dp"
           android:layout_marginLeft="25dp"
           android:text="체중(kg)"
-         android:textSize="15dp"
+         android:textSize="15.3dp"
           android:textColor="@color/black"
           android:textStyle="bold"
           app:layout_constraintTop_toTopOf="parent"
@@ -266,7 +266,7 @@
           android:layout_marginTop="15dp"
           android:layout_marginLeft="25dp"
           android:text="BMI(체질량지수)"
-         android:textSize="15dp"
+         android:textSize="15.3dp"
           android:textColor="@color/black"
           android:textStyle="bold"
           app:layout_constraintTop_toBottomOf="@id/box1"
@@ -312,7 +312,7 @@
           android:layout_marginTop="15dp"
           android:layout_marginLeft="25dp"
           android:text="체지방률(%)"
-         android:textSize="15dp"
+         android:textSize="15.3dp"
           android:textColor="@color/black"
           android:textStyle="bold"
           app:layout_constraintTop_toBottomOf="@id/box2"

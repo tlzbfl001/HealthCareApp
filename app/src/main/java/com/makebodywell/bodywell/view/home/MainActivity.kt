@@ -2,17 +2,18 @@ package com.makebodywell.bodywell.view.home
 
 import android.content.Context
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.view.LayoutInflater
+import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.databinding.ActivityMainBinding
+import com.makebodywell.bodywell.util.CustomUtil.Companion.measureHeight
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MainViewModel
 import com.makebodywell.bodywell.view.note.NoteFragment
-import com.makebodywell.bodywell.view.setting.SettingFragment
 import com.makebodywell.bodywell.view.report.ReportBodyFragment
+import com.makebodywell.bodywell.view.setting.SettingFragment
 
 class MainActivity : AppCompatActivity() {
    private var _binding: ActivityMainBinding? = null
