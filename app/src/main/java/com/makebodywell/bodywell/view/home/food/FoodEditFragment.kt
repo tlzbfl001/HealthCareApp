@@ -22,7 +22,6 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SEARCH
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
 import com.makebodywell.bodywell.model.Food
@@ -49,6 +48,7 @@ class FoodEditFragment : Fragment() {
    private var dialog: Dialog? = null
    private var type = "1"
    private var dataId = -1
+   private var count = 1
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -71,15 +71,26 @@ class FoodEditFragment : Fragment() {
       dataManager!!.open()
 
       type = arguments?.getString("type").toString()
-//      dataId = arguments?.getString("dataId").toString().toInt()
+      dataId = arguments?.getString("dataId").toString().toInt()
       bundle.putString("type", type)
 
-      getFood = dataManager!!.getFood(dataId)
+      getFood = dataManager!!.getDailyFood(dataId)
 
-      dataTextView()
+      binding.tvName.text = getFood.name
+      count = getFood.count
+
+      val getImage = dataManager!!.getImage(dataId)
+      for(i in 0 until getImage.size) {
+         imageList.add(getImage[i])
+      }
 
       binding.clBack.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+         when(type) {
+            "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+            "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+            "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+            "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
+         }
       }
 
       binding.clPhoto.setOnClickListener {
@@ -109,6 +120,18 @@ class FoodEditFragment : Fragment() {
          }
       }
 
+      binding.ivMinus.setOnClickListener {
+         while(count > 1) {
+            count--
+         }
+         dataTextView()
+      }
+
+      binding.ivPlus.setOnClickListener {
+         count++
+         dataTextView()
+      }
+
       binding.cvSave.setOnClickListener {
          dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataId)
 
@@ -116,19 +139,7 @@ class FoodEditFragment : Fragment() {
             dataManager!!.insertImage(imageList[i])
          }
 
-         val getDailyFood = dataManager!!.getDailyFood(type = type.toInt(), name = getFood.name, selectedDate.toString())
-         if(getDailyFood.regDate == "") {
-            dataManager!!.insertDailyFood(Food(type = type.toInt(), name = getFood.name, unit = getFood.unit, amount = getFood.amount,
-               kcal = getFood.kcal, carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt,
-               sugar = getFood.sugar, count = 1, regDate = LocalDate.now().toString()))
-         }else {
-            dataManager!!.updateInt(TABLE_DAILY_FOOD, "count", getDailyFood.count + 1, getDailyFood.id)
-         }
-
-//         dataManager!!.updateInt(TABLE_FOOD, "count", count, dataId)
-
-         val getSearch = dataManager!!.getSearch("food", getFood.name)
-         dataManager!!.updateInt(TABLE_SEARCH, "count", getSearch.count + 1, getSearch.id)
+         dataManager!!.updateInt(TABLE_DAILY_FOOD, "count", count, dataId)
 
          when(type) {
             "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
@@ -140,24 +151,21 @@ class FoodEditFragment : Fragment() {
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
       }
 
-      val getData = dataManager!!.getImage(dataId)
-      for(i in 0 until getData.size) {
-         imageList.add(getData[i])
-      }
-
       photoView()
+      dataTextView()
 
       return binding.root
    }
 
    private fun dataTextView() {
-      if(getFood.name != "") binding.tvName.text = getFood.name
-      if(getFood.amount > 0) binding.tvAmount.text = getFood.kcal.toString()
-      if(getFood.carbohydrate > 0.0) binding.tvCar.text = String.format("%.1f", getFood.carbohydrate)
-      if(getFood.protein > 0.0) binding.tvProtein.text = String.format("%.1f", getFood.protein)
-      if(getFood.fat > 0.0) binding.tvFat.text = String.format("%.1f", getFood.fat)
-      if(getFood.salt > 0.0) binding.tvSalt.text = String.format("%.1f", getFood.salt)
-      if(getFood.sugar > 0.0) binding.tvSugar.text = String.format("%.1f", getFood.sugar)
+      binding.tvCount.text = count.toString()
+      binding.tvAmount.text = (getFood.amount * count).toString()
+      binding.tvKcal.text = (getFood.kcal * count).toString()
+      binding.tvCar.text = String.format("%.1f", (getFood.carbohydrate * count))
+      binding.tvProtein.text = String.format("%.1f", (getFood.protein * count))
+      binding.tvFat.text = String.format("%.1f", (getFood.fat * count))
+      binding.tvSalt.text = String.format("%.1f", (getFood.salt * count))
+      binding.tvSugar.text = String.format("%.1f", (getFood.sugar * count))
    }
 
    private fun photoView() {

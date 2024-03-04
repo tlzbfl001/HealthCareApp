@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
+import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord2Binding
 import com.makebodywell.bodywell.model.Food
@@ -24,6 +25,8 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class FoodRecord2Fragment : Fragment() {
    private var _binding: FragmentFoodRecord2Binding? = null
@@ -31,9 +34,9 @@ class FoodRecord2Fragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private val itemList = ArrayList<Search>()
-   private val searchList = ArrayList<Search>()
-   private val originalList = ArrayList<Search>()
+   private var itemList = ArrayList<Food>()
+   private val originalList = ArrayList<Food>()
+   private val searchList = ArrayList<Item>()
    private var type = ""
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
@@ -101,20 +104,11 @@ class FoodRecord2Fragment : Fragment() {
    }
 
    private fun listView() {
-      var dataList = ArrayList<Food>()
+      itemList.clear()
 
-      when(type) {
-         "1" -> dataList = dataManager!!.getFood(1, selectedDate.toString())
-         "2" -> dataList = dataManager!!.getFood(2, selectedDate.toString())
-         "3" -> dataList = dataManager!!.getFood(3, selectedDate.toString())
-         "4" -> dataList = dataManager!!.getFood(4, selectedDate.toString())
-      }
+      itemList = dataManager!!.getSearchFood("useDate")
 
-      if(dataList.size > 0) {
-         for(i in 0 until dataList.size) {
-            itemList.add(Search(name = dataList[i].name, id = dataList[i].id))
-         }
-
+      if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
@@ -123,8 +117,8 @@ class FoodRecord2Fragment : Fragment() {
 
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("id", dataList[pos].id.toString())
-               replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
+               bundle.putString("dataId", itemList[pos].id.toString())
+               replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
             }
          })
 
@@ -154,7 +148,7 @@ class FoodRecord2Fragment : Fragment() {
                // 검색 단어를 포함하는지 확인
                for(i in 0 until itemList.size) {
                   if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(originalList[i])
+                     searchList.add(Item(int1 = originalList[i].id, string1 = originalList[i].name))
                   }
                   adapter.setItems(searchList)
                }
@@ -168,8 +162,8 @@ class FoodRecord2Fragment : Fragment() {
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("id", searchList[pos].id.toString())
-            replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
+            bundle.putString("dataId", searchList[pos].int1.toString())
+            replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
          }
       })
    }

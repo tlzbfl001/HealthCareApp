@@ -22,6 +22,7 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
@@ -156,7 +157,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_FOOD, calendarDate.toString(), calendarDate.toString())
+      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -188,7 +189,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_FOOD, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
@@ -216,7 +217,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)

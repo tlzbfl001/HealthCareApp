@@ -22,8 +22,8 @@
          app:layout_constraintBottom_toTopOf="@id/clCalendar">
          <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivUser"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:background="@drawable/oval"
             android:src="@drawable/user_white"
             android:layout_marginLeft="25dp"
@@ -34,9 +34,9 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="8dp"
             android:text="바디웰 님"
-            android:textSize="17dp"
+            android:textSize="16dp"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@id/ivUser"
             app:layout_constraintTop_toTopOf="@id/ivUser"
@@ -232,8 +232,7 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clRow1"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
-         android:layout_marginTop="30dp"
+         android:layout_height="wrap_content"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
@@ -248,8 +247,8 @@
             app:layout_constraintEnd_toStartOf="@id/clWater">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbFood"
-               android:layout_width="115dp"
-               android:layout_height="115dp"
+               android:layout_width="144dp"
+               android:layout_height="144dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#26DF9EAD"
                app:progress_style="solid_line"
@@ -308,8 +307,8 @@
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbWater"
-               android:layout_width="110dp"
-               android:layout_height="110dp"
+               android:layout_width="144dp"
+               android:layout_height="144dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#2685DBFF"
                app:progress_style="solid_line"
@@ -362,8 +361,7 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clRow2"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
-         android:layout_marginTop="30dp"
+         android:layout_height="wrap_content"
          app:layout_constraintTop_toBottomOf="@id/clRow1"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
@@ -378,10 +376,10 @@
             app:layout_constraintEnd_toStartOf="@id/clBody">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbExercise"
-               android:layout_width="110dp"
-               android:layout_height="110dp"
+               android:layout_width="144dp"
+               android:layout_height="144dp"
                app:progress_stroke_cap="round"
-               app:progress_background_color="#26DC921A"
+               app:progress_background_color="#26F3A21E"
                app:progress_style="solid_line"
                app:progress_stroke_width="14dp"
                app:progress_start_color="#FFB846"
@@ -438,8 +436,8 @@
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbBody"
-               android:layout_width="110dp"
-               android:layout_height="110dp"
+               android:layout_width="144dp"
+               android:layout_height="144dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#2681C335"
                app:progress_style="solid_line"
@@ -492,9 +490,7 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clRow3"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
-         android:layout_marginTop="30dp"
-         android:layout_marginBottom="30dp"
+         android:layout_height="wrap_content"
          app:layout_constraintTop_toBottomOf="@id/clRow2"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
@@ -509,10 +505,10 @@
             app:layout_constraintEnd_toStartOf="@id/clDrug">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbSleep"
-               android:layout_width="110dp"
-               android:layout_height="110dp"
+               android:layout_width="144dp"
+               android:layout_height="144dp"
                app:progress_stroke_cap="round"
-               app:progress_background_color="#264F949E"
+               app:progress_background_color="#1A4F949E"
                app:progress_style="solid_line"
                app:progress_stroke_width="14dp"
                app:progress_start_color="#667D99"
@@ -569,8 +565,8 @@
             app:layout_constraintEnd_toEndOf="parent">
             <com.dinuscxj.progressbar.CircleProgressBar
                android:id="@+id/pbDrug"
-               android:layout_width="110dp"
-               android:layout_height="110dp"
+               android:layout_width="144dp"
+               android:layout_height="144dp"
                app:progress_stroke_cap="round"
                app:progress_background_color="#1AE961FF"
                app:progress_style="solid_line"

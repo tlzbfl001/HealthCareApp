@@ -8,15 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodSearchBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil
-import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class FoodSearchFragment : Fragment() {
 	private var _binding: FragmentFoodSearchBinding? = null
@@ -25,7 +27,6 @@ class FoodSearchFragment : Fragment() {
 	private var bundle = Bundle()
 	private var dataManager: DataManager? = null
 	private var getFood = Food()
-	private var imageList = ArrayList<Image>()
 	private var type = "1"
 	private var dataId = -1
 
@@ -67,23 +68,20 @@ class FoodSearchFragment : Fragment() {
 		}
 
 		binding.cvSave.setOnClickListener {
-			dataManager!!.deleteItem(DBHelper.TABLE_IMAGE, "dataId", dataId)
+			val getDailyFood = dataManager!!.getDailyFood(type = type.toInt(), name = getFood.name, selectedDate.toString())
 
-			for(i in 0 until imageList.size) {
-				dataManager!!.insertImage(imageList[i])
-			}
-
-			val getDailyFood = dataManager!!.getDailyFood(type = type.toInt(), name = getFood.name, CalendarUtil.selectedDate.toString())
 			if(getDailyFood.regDate == "") {
 				dataManager!!.insertDailyFood(Food(type = type.toInt(), name = getFood.name, unit = getFood.unit, amount = getFood.amount,
 					kcal = getFood.kcal, carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt,
 					sugar = getFood.sugar, count = 1, regDate = LocalDate.now().toString()))
 			}else {
-				dataManager!!.updateInt(DBHelper.TABLE_DAILY_FOOD, "count", getDailyFood.count + 1, getDailyFood.id)
+				dataManager!!.updateInt(TABLE_DAILY_FOOD, "count", getDailyFood.count + 1, getDailyFood.id)
 			}
 
-			val getSearch = dataManager!!.getSearch("food", getFood.name)
-			dataManager!!.updateInt(DBHelper.TABLE_SEARCH, "count", getSearch.count + 1, getSearch.id)
+			dataManager!!.updateInt(TABLE_FOOD, "searchCount", getFood.searchCount + 1, getFood.id)
+			dataManager!!.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), getFood.id)
+
+			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 
 			when(type) {
 				"1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
@@ -91,13 +89,6 @@ class FoodSearchFragment : Fragment() {
 				"3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
 				"4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
 			}
-
-			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-		}
-
-		val getData = dataManager!!.getImage(dataId)
-		for(i in 0 until getData.size) {
-			imageList.add(getData[i])
 		}
 
 		return binding.root

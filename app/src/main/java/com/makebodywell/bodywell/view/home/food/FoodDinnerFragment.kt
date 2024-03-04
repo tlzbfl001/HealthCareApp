@@ -60,7 +60,7 @@ class FoodDinnerFragment : Fragment() {
             replaceFragment1(requireActivity(), FoodFragment())
         }
 
-        binding.tvInput.setOnClickListener {
+        binding.cvInput.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("type", "$type")
             replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
@@ -157,7 +157,7 @@ class FoodDinnerFragment : Fragment() {
 
         if(dataList.size != 0) {
             // 섭취한 식단 설정
-            intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList)
+            intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList, type)
             binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
             intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {

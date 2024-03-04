@@ -13,6 +13,8 @@ data class Food(
     var fat: Double = 0.0,
     var salt: Double = 0.0,
     var sugar: Double = 0.0,
-    var count: Int = 0,
+    var count: Int = 1,
+    var searchCount: Int = 0,
     var regDate: String = "",
+    var useDate: String = ""
 )

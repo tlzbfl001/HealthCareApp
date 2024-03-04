@@ -48,7 +48,7 @@ class ExerciseListFragment : Fragment() {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
-      val getExercise = dataManager!!.getExercise(selectedDate.toString())
+      val getExercise = dataManager!!.getDailyExercise(selectedDate.toString())
 
       val adapter = ExerciseListAdapter(requireActivity(), getExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

@@ -13,18 +13,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DBHelper
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SEARCH
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
-import com.makebodywell.bodywell.model.Search
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class FoodRecord1Fragment : Fragment() {
@@ -33,9 +31,9 @@ class FoodRecord1Fragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private val itemList = ArrayList<Search>()
-   private val searchList = ArrayList<Search>()
-   private val originalList = ArrayList<Search>()
+   private var itemList = ArrayList<Food>()
+   private val originalList = ArrayList<Food>()
+   private val searchList = ArrayList<Item>()
    private var type = ""
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
@@ -107,11 +105,7 @@ class FoodRecord1Fragment : Fragment() {
    private fun listView() {
       itemList.clear()
 
-      val getSearch = dataManager!!.getSearch("count")
-      for (i in 0 until getSearch.size) {
-         val getFood = dataManager!!.getFood(getSearch[i].name)
-         itemList.add(Search(id = getFood.id, name = getFood.name, count = getFood.count))
-      }
+      itemList = dataManager!!.getSearchFood("searchCount")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
@@ -152,7 +146,7 @@ class FoodRecord1Fragment : Fragment() {
             }else {
                for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
                   if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(originalList[i])
+                     searchList.add(Item(int1 = originalList[i].id, string1 = originalList[i].name))
                   }
                   adapter.setItems(searchList)
                }
@@ -165,7 +159,7 @@ class FoodRecord1Fragment : Fragment() {
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("dataId", searchList[pos].id.toString())
+            bundle.putString("dataId", searchList[pos].int1.toString())
             replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
          }
       })

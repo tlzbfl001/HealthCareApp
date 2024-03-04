@@ -10,10 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.makebodywell.bodywell.adapter.ExerciseRecordAdapter
 import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseRecord2Binding
+import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Search
 import com.makebodywell.bodywell.util.CalendarUtil
@@ -30,9 +32,9 @@ class ExerciseRecord2Fragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private val itemList = ArrayList<Search>()
-   private val searchList = ArrayList<Search>()
-   private val originalList = ArrayList<Search>()
+   private var itemList = ArrayList<Exercise>()
+   private val originalList = ArrayList<Exercise>()
+   private val searchList = ArrayList<Item>()
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -53,6 +55,8 @@ class ExerciseRecord2Fragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
+
+      bundle.putString("type", "insert")
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
@@ -95,22 +99,18 @@ class ExerciseRecord2Fragment : Fragment() {
    private fun listView() {
       itemList.clear()
 
-      val dataList = dataManager!!.getExercise(selectedDate.toString())
+      itemList = dataManager!!.getSearchExercise("useDate")
 
-      if(dataList.size > 0) {
+      if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         for(i in 0 until dataList.size) {
-            itemList.add(Search(name = dataList[i].name, id = dataList[i].id))
-         }
-
-         val adapter = FoodRecordAdapter(itemList)
+         val adapter = ExerciseRecordAdapter(itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-         adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
+         adapter.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("id", dataList[pos].id.toString())
+               bundle.putString("id", itemList[pos].id.toString())
                replaceFragment2(requireActivity(), ExerciseEditFragment(), bundle)
             }
          })
@@ -141,7 +141,7 @@ class ExerciseRecord2Fragment : Fragment() {
                // 검색 단어를 포함하는지 확인
                for(i in 0 until itemList.size) {
                   if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(originalList[i])
+                     searchList.add(Item(int1 = originalList[i].id, string1 = originalList[i].name))
                   }
                   adapter.setItems(searchList)
                }
@@ -154,7 +154,7 @@ class ExerciseRecord2Fragment : Fragment() {
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("id", searchList[pos].id.toString())
+            bundle.putString("id", searchList[pos].int1.toString())
             replaceFragment2(requireActivity(), ExerciseEditFragment(), bundle)
          }
       })

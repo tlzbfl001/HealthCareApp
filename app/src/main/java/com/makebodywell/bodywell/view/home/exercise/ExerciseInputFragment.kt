@@ -19,12 +19,12 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ExerciseInputFragment : Fragment() {
    private var _binding: FragmentExerciseInputBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var intensity = "상"
 
@@ -94,11 +94,12 @@ class ExerciseInputFragment : Fragment() {
          if(binding.etName.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity,
-               workoutTime = workoutTime, calories = calories, regDate = selectedDate.toString()))
+            dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString().trim(), searchCount = 1, useDate = LocalDateTime.now().toString()))
+            dataManager!!.insertDailyExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
+               calories = calories, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
+            replaceFragment1(requireActivity(), ExerciseFragment())
          }
       }
 

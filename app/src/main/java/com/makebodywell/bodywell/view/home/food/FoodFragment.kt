@@ -300,10 +300,10 @@ class FoodFragment : Fragment() {
       itemList3.clear()
       itemList4.clear()
 
-      val getFood1 = dataManager!!.getFood(1, selectedDate.toString())
-      val getFood2 = dataManager!!.getFood(2, selectedDate.toString())
-      val getFood3 = dataManager!!.getFood(3, selectedDate.toString())
-      val getFood4 = dataManager!!.getFood(4, selectedDate.toString())
+      val getFood1 = dataManager!!.getDailyFood(1, selectedDate.toString())
+      val getFood2 = dataManager!!.getDailyFood(2, selectedDate.toString())
+      val getFood3 = dataManager!!.getDailyFood(3, selectedDate.toString())
+      val getFood4 = dataManager!!.getDailyFood(4, selectedDate.toString())
 
       var kcal1 = 0
       var carbohydrate1 = 0.0

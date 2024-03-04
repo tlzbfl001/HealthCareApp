@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.home.food
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,9 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Search
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class FoodInputFragment : Fragment() {
@@ -125,11 +128,19 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "같은 이름의 데이터가 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager.insertFood(Food(type = type.toInt(), name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-               protein = protein, fat = fat, salt = salt, sugar = sugar, regDate = selectedDate.toString()))
-            dataManager.insertSearch(Search(type = "food", name = name, count = 1, useDate = LocalDateTime.now().toString()))
+               protein = protein, fat = fat, salt = salt, sugar = sugar, searchCount = 1, useDate = LocalDateTime.now().toString()))
+
+            dataManager.insertDailyFood(Food(type = type.toInt(), name = name, unit = unit, amount = amount, kcal = kcal,
+               carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, regDate = selectedDate.toString()))
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+
+            when(type) {
+               "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+               "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+               "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+               "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
+            }
          }
       }
 

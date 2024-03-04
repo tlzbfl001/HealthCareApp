@@ -9,18 +9,31 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseEditBinding
+import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
+import com.makebodywell.bodywell.view.home.food.FoodDinnerFragment
+import com.makebodywell.bodywell.view.home.food.FoodLunchFragment
+import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ExerciseEditFragment : Fragment() {
     private var _binding: FragmentExerciseEditBinding? = null
     private val binding get() = _binding!!
 
-    private var bundle = Bundle()
     private var dataManager: DataManager? = null
+    private var getExercise = Exercise()
     private var intensity = "상"
 
     @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
@@ -44,13 +57,22 @@ class ExerciseEditFragment : Fragment() {
         dataManager!!.open()
 
         val id = arguments?.getString("id")!!.toInt()
+        val type = arguments?.getString("type")
 
-        val getExercise = dataManager!!.getExercise(id)
-
-        // 텍스트 설정
-        binding.tvName.text = getExercise.name
-        if(getExercise.workoutTime > 0) binding.etTime.setText(getExercise.workoutTime.toString())
-        if(getExercise.calories > 0) binding.etKcal.setText(getExercise.calories.toString())
+        when(type) {
+            "insert" -> {
+                getExercise = dataManager!!.getExercise(id)
+                binding.tvName.text = getExercise.name
+                binding.etTime.setText(getExercise.workoutTime.toString())
+                binding.etKcal.setText(getExercise.calories.toString())
+            }
+            else -> {
+                getExercise = dataManager!!.getDailyExercise(id)
+                binding.tvName.text = getExercise.name
+                binding.etTime.setText(getExercise.workoutTime.toString())
+                binding.etKcal.setText(getExercise.calories.toString())
+            }
+        }
 
         binding.mainLayout.setOnTouchListener { view, motionEvent ->
             hideKeyboard(requireActivity())
@@ -58,7 +80,10 @@ class ExerciseEditFragment : Fragment() {
         }
 
         binding.clX.setOnClickListener {
-            replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
+            when(type) {
+                "insert" -> replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+                else -> replaceFragment1(requireActivity(), ExerciseListFragment())
+            }
         }
 
         when(getExercise.intensity) {
@@ -122,16 +147,29 @@ class ExerciseEditFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            dataManager!!.updateStr(TABLE_EXERCISE, "intensity", intensity, getExercise.id)
-            if(binding.etTime.text.toString() != "") {
-                dataManager!!.updateInt(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString().toInt(), getExercise.id)
-            }
-            if(binding.etKcal.text.toString() != "") {
-                dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), getExercise.id)
-            }
+            val workoutTime = if(binding.etTime.text.toString().trim() != "") binding.etTime.text.toString().toInt() else 0
+            val calories = if(binding.etKcal.text.toString().trim() != "") binding.etKcal.text.toString().toInt() else 0
 
-            Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
+            if(type != null) {
+                if(type == "insert") {
+                    dataManager!!.insertDailyExercise(Exercise(name = getExercise.name, intensity = intensity, workoutTime = workoutTime,
+                        calories = calories, regDate = selectedDate.toString()))
+
+                    Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+                }else {
+                    dataManager!!.updateDailyExercise(Exercise(name = getExercise.name, intensity = intensity, workoutTime = workoutTime,
+                        calories = calories, regDate = selectedDate.toString()))
+
+                    Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+
+                dataManager!!.updateInt(TABLE_EXERCISE, "searchCount", getExercise.searchCount + 1, id)
+                dataManager!!.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), id)
+
+                replaceFragment1(requireActivity(), ExerciseListFragment())
+            }else {
+                Toast.makeText(requireActivity(), "오류 발생.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         return binding.root

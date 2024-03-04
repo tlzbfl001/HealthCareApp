@@ -60,18 +60,6 @@ class MainFragment : Fragment() {
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      if(measureHeight == 0) {
-         binding.cl2.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-               measureHeight = binding.clRow1.height
-               setLayout()
-               binding.cl2.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-         })
-      }
-
-      setLayout()
-
       dataManager = DataManager(activity)
       dataManager!!.open()
 
@@ -146,15 +134,6 @@ class MainFragment : Fragment() {
       recordView()
 
       return binding.root
-   }
-
-   private fun setLayout() {
-      binding.pbFood.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
-      binding.pbWater.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
-      binding.pbExercise.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
-      binding.pbBody.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
-      binding.pbSleep.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
-      binding.pbDrug.layoutParams = LinearLayout.LayoutParams(measureHeight, measureHeight)
    }
 
    @SuppressLint("ClickableViewAccessibility")

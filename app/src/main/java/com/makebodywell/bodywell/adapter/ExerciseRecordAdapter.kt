@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.Exercise
 
-class FoodRecordAdapter (
-   private var itemList: ArrayList<Food> = ArrayList<Food>()
-) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
+class ExerciseRecordAdapter (
+   private var itemList: ArrayList<Exercise> = ArrayList<Exercise>()
+) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
    private var onItemClickListener: OnItemClickListener? = null
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -1,8 +1,10 @@
 package com.makebodywell.bodywell.adapter
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +13,19 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
 
 class ExerciseListAdapter (
-   private val context: Context,
+   private val context: Activity,
    private val itemList: ArrayList<Exercise>
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
 
    init {
@@ -33,18 +39,24 @@ class ExerciseListAdapter (
    }
 
    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.tvName.text = itemList[position].name
-      holder.tvTime.text = "${itemList[position].workoutTime}분"
-      holder.tvKcal.text = "${itemList[position].calories} kcal"
+   override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+      holder.tvName.text = itemList[pos].name
+      holder.tvTime.text = "${itemList[pos].workoutTime}분"
+      holder.tvKcal.text = "${itemList[pos].calories} kcal"
+
+      holder.cl.setOnClickListener {
+         bundle.putString("id", itemList[pos].id.toString())
+         bundle.putString("type", "edit")
+         replaceFragment2(context, ExerciseEditFragment(), bundle)
+      }
 
       holder.clX.setOnClickListener {
          val dialog = AlertDialog.Builder(context)
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
+               dataManager!!.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)
 
-               itemList.removeAt(position)
+               itemList.removeAt(pos)
                notifyDataSetChanged()
 
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
@@ -60,6 +72,7 @@ class ExerciseListAdapter (
    }
 
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+      val cl: ConstraintLayout = itemView.findViewById(R.id.cl)
       val tvName: TextView = itemView.findViewById(R.id.tvName)
       val tvTime: TextView = itemView.findViewById(R.id.tvTime)
       val tvKcal: TextView = itemView.findViewById(R.id.tvKcal)

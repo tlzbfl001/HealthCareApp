@@ -156,12 +156,12 @@
                app:layout_constraintStart_toEndOf="@id/tv3"/>
             <TextView
                android:id="@+id/tv5"
-               android:layout_width="wrap_content"
+               android:layout_width="45dp"
                android:layout_height="wrap_content"
-               android:layout_marginLeft="15dp"
                android:text="분"
                android:textSize="16dp"
                android:textColor="@color/black"
+               android:textAlignment="textEnd"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintStart_toEndOf="@id/etTime"
                app:layout_constraintTop_toTopOf="@id/etTime"
@@ -210,11 +210,11 @@
                app:layout_constraintStart_toEndOf="@id/tv4"/>
             <TextView
                android:id="@+id/tv6"
-               android:layout_width="wrap_content"
+               android:layout_width="45dp"
                android:layout_height="wrap_content"
-               android:layout_marginLeft="15dp"
                android:text="kcal"
                android:textSize="16dp"
+               android:textAlignment="textEnd"
                android:textColor="@color/black"
                app:layout_constraintStart_toEndOf="@id/etKcal"
                app:layout_constraintEnd_toEndOf="parent"
