@@ -12,6 +12,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseInputBinding
 import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -24,7 +26,6 @@ class ExerciseInputFragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private var calendarDate = ""
    private var intensity = "상"
 
    @SuppressLint("ClickableViewAccessibility")
@@ -47,16 +48,13 @@ class ExerciseInputFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      calendarDate = arguments?.getString("calendarDate").toString()
-      bundle.putString("calendarDate", calendarDate)
-
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
          true
       }
 
       binding.clX.setOnClickListener {
-         replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)
+         replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
       binding.tvIntensity1.setOnClickListener {
@@ -97,7 +95,7 @@ class ExerciseInputFragment : Fragment() {
             Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity,
-               workoutTime = workoutTime, calories = calories, regDate = calendarDate))
+               workoutTime = workoutTime, calories = calories, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

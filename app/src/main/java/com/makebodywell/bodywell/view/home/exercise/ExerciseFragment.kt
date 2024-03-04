@@ -19,6 +19,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -35,11 +36,9 @@ class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: ExerciseAdapter? = null
    private var getDailyData = DailyData()
-   private var calendarDate = LocalDate.now()
    private var sum = 0
 
    override fun onCreateView(
@@ -61,23 +60,58 @@ class ExerciseFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      binding.tvDate.text = dateFormat(calendarDate)
+      binding.tvDate.text = dateFormat(selectedDate)
 
-      settingGoal()
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
+      val et = dialog.findViewById<TextView>(R.id.et)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      tvTitle.text = "운동 / 목표 칼로리 입력"
+      btnSave.setCardBackgroundColor(Color.parseColor("#FFA511"))
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            }else {
+               dataManager!!.updateGoal("exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
+            }
+
+            binding.pbExercise.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kcal"
+
+            val remain = et.text.toString().toInt() - sum
+            if(remain > 0) {
+               binding.tvRemain.text = "$remain kcal"
+            }else {
+               binding.tvRemain.text = "0 kcal"
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
       binding.clPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          dailyView()
       }
 
       binding.clNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          dailyView()
       }
 
@@ -102,8 +136,7 @@ class ExerciseFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         bundle.putString("calendarDate", calendarDate.toString())
-         replaceFragment2(requireActivity(), ExerciseListFragment(), bundle)
+         replaceFragment1(requireActivity(), ExerciseListFragment())
       }
 
       dailyView()
@@ -112,58 +145,16 @@ class ExerciseFragment : Fragment() {
    }
 
    @SuppressLint("SetTextI18n")
-   private fun settingGoal() {
-      // 목표 설정
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
-      val et = dialog.findViewById<TextView>(R.id.et)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      tvTitle.text = "운동 / 목표 칼로리 입력"
-      btnSave.setCardBackgroundColor(Color.parseColor("#FFA511"))
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }else {
-               dataManager!!.updateGoal("exerciseGoal",  et.text.toString().toInt(), calendarDate.toString())
-            }
-
-            binding.pbExercise.max = et.text.toString().toInt()
-            binding.tvGoal.text = "${et.text} kcal"
-
-            val remain = et.text.toString().toInt() - sum
-            if(remain > 0) {
-               binding.tvRemain.text = "$remain kcal"
-            }else {
-               binding.tvRemain.text = "0 kcal"
-            }
-
-            dialog.dismiss()
-         }
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
-   }
-
-   @SuppressLint("SetTextI18n")
    private fun dailyView() {
       // 목표 초기화
-      binding.pbExercise.max = 0
       binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
       binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
       binding.tvConsume.text = "0 kcal"
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-      sum = getExerciseCalories(requireActivity(), calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+      sum = getExerciseCalories(requireActivity(), selectedDate.toString())
 
       if(sum > 0) {
          binding.pbExercise.setProgressStartColor(Color.parseColor("#FFB846"))
@@ -182,7 +173,7 @@ class ExerciseFragment : Fragment() {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager!!.getExercise(calendarDate.toString())
+      val getExercise = dataManager!!.getExercise(selectedDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

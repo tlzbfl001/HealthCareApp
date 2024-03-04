@@ -20,7 +20,9 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.model.DailyData
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainFragment
@@ -40,8 +42,6 @@ class BodyFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var getDailyData = DailyData()
    private var getBody = Body()
-
-   private var calendarDate = LocalDate.now()
    private var isExpand = false
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
@@ -64,24 +64,57 @@ class BodyFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      binding.tvDate.text = dateFormat(calendarDate)
+      binding.tvDate.text = dateFormat(selectedDate)
 
-      settingGoal()
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+      tvUnit.text = "kg"
+      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+            }else {
+               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+            }
+
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble()))
+            }else {
+               dataManager!!.updateDouble(TABLE_BODY, "bodyGoal", et.text.toString().toDouble(), getDailyData.id)
+            }
+
+            dailyGoal()
+         }
+
+         dialog.dismiss()
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
       binding.clPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          dailyGoal()
          dailyList()
       }
 
       binding.clNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          dailyGoal()
          dailyList()
       }
@@ -107,8 +140,7 @@ class BodyFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         bundle.putString("calendarDate", calendarDate.toString())
-         replaceFragment2(requireActivity(), BodyRecordFragment(), bundle)
+         replaceFragment1(requireActivity(), BodyRecordFragment())
       }
 
       binding.clBmi.setOnClickListener {
@@ -153,53 +185,15 @@ class BodyFragment : Fragment() {
       return binding.root
    }
 
-   private fun settingGoal() {
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val et = dialog.findViewById<EditText>(R.id.et)
-      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-      tvUnit.text = "kg"
-      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
-            }else {
-               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = calendarDate.toString()))
-            }
-
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble()))
-            }else {
-               dataManager!!.updateDouble(TABLE_BODY, "bodyGoal", et.text.toString().toDouble(), getDailyData.id)
-            }
-
-            dailyGoal()
-         }
-
-         dialog.dismiss()
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
-   }
-
    @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
-      binding.pbBody.max = 0
       binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
       binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
       binding.tvWeight.text = "0 kg"
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
 
       val goal = getDailyData.bodyGoal
       if (goal > 0) {
@@ -212,7 +206,7 @@ class BodyFragment : Fragment() {
          }
       }
 
-      getBody = dataManager!!.getBody(calendarDate.toString())
+      getBody = dataManager!!.getBody(selectedDate.toString())
 
       if (getBody.weight > 0) {
          binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))

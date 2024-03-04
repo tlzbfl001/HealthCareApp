@@ -19,6 +19,8 @@ import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.util.stream.Collectors
@@ -28,15 +30,11 @@ class FoodDinnerFragment : Fragment() {
     private var _binding: FragmentFoodDinnerBinding? = null
     val binding get() = _binding!!
 
-    private var bundle = Bundle()
-
-    private var calendarDate = ""
-    private var type = 3
-
     private var dataManager: DataManager? = null
     private var photoAdapter: PhotoViewAdapter? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
     private var imageData: ArrayList<Image>? = null
+    private var type = 3
 
     @SuppressLint("InternalInsetResource", "DiscouragedApi")
     override fun onCreateView(
@@ -58,33 +56,31 @@ class FoodDinnerFragment : Fragment() {
         dataManager = DataManager(activity)
         dataManager!!.open()
 
-        calendarDate = arguments?.getString("calendarDate").toString()
-        bundle.putString("calendarDate", calendarDate)
-        bundle.putString("type", "$type")
-
         binding.clBack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodFragment())
         }
 
         binding.tvInput.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("type", "$type")
             replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
         }
 
         binding.tvBreakfast.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+            replaceFragment1(requireActivity(), FoodBreakfastFragment())
         }
 
         binding.tvLunch.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
+            replaceFragment1(requireActivity(), FoodLunchFragment())
         }
 
         binding.tvSnack.setOnClickListener {
-            replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            replaceFragment1(requireActivity(), FoodSnackFragment())
         }
 
         binding.cvSave.setOnClickListener {
-            val getFoodData = intakeAdapter!!.getFoodData()
-            dataManager!!.updateInt(DBHelper.TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
+//            val getFoodData = intakeAdapter!!.getFoodData()
+//            dataManager!!.updateInt(DBHelper.TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())
@@ -97,7 +93,7 @@ class FoodDinnerFragment : Fragment() {
     }
 
     private fun photoView() {
-        imageData = dataManager!!.getImage(type, calendarDate)
+        imageData = dataManager!!.getImage(type, selectedDate.toString())
 
         if(imageData!!.size > 0) {
             photoAdapter = PhotoViewAdapter(imageData!!)
@@ -157,7 +153,7 @@ class FoodDinnerFragment : Fragment() {
     }
 
     private fun listView() {
-        val dataList = dataManager!!.getFood(type, calendarDate)
+        val dataList = dataManager!!.getFood(type, selectedDate.toString())
 
         if(dataList.size != 0) {
             // 섭취한 식단 설정

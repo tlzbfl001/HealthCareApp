@@ -15,8 +15,12 @@ import com.makebodywell.bodywell.adapter.SearchAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseRecord1Binding
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.model.Search
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 
@@ -26,11 +30,9 @@ class ExerciseRecord1Fragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private val itemList = ArrayList<Item>()
-   private val searchList = ArrayList<Item>()
-   private val originalList = ArrayList<Item>()
-
-   private var calendarDate = ""
+   private val itemList = ArrayList<Search>()
+   private val searchList = ArrayList<Search>()
+   private val originalList = ArrayList<Search>()
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -51,9 +53,6 @@ class ExerciseRecord1Fragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
-
-      calendarDate = arguments?.getString("calendarDate")!!
-      bundle.putString("calendarDate", calendarDate)
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
@@ -76,15 +75,15 @@ class ExerciseRecord1Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment2(requireActivity(), ExerciseListFragment(), bundle)
+         replaceFragment1(requireActivity(), ExerciseListFragment())
       }
 
       binding.tvBtn2.setOnClickListener {
-         replaceFragment2(requireActivity(), ExerciseRecord2Fragment(), bundle)
+         replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
       }
 
       binding.tvBtn3.setOnClickListener {
-         replaceFragment2(requireActivity(), ExerciseInputFragment(), bundle)
+         replaceFragment1(requireActivity(), ExerciseInputFragment())
       }
 
       listView()
@@ -94,14 +93,15 @@ class ExerciseRecord1Fragment : Fragment() {
    }
 
    private fun listView() {
-      val dataList = dataManager!!.getExercise(calendarDate)
+      itemList.clear()
 
+      val dataList = dataManager!!.getExercise(selectedDate.toString())
       if(dataList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
          for(i in 0 until dataList.size) {
-            itemList.add(Item(string1 = dataList[i].name, int1 = dataList[i].id))
+            itemList.add(Search(name = dataList[i].name, id = dataList[i].id))
          }
 
          val adapter = FoodRecordAdapter(itemList)
@@ -119,7 +119,7 @@ class ExerciseRecord1Fragment : Fragment() {
    }
 
    private fun searchView() {
-      var adapter = SearchAdapter()
+      val adapter = SearchAdapter()
 
       for(i in 0 until itemList.size) {
          originalList.add(itemList[i])
@@ -137,9 +137,8 @@ class ExerciseRecord1Fragment : Fragment() {
                binding.rv2.visibility = View.GONE
                adapter.clearItems()
             }else {
-               // 검색 단어를 포함하는지 확인
-               for(i in 0 until itemList.size) {
-                  if(originalList[i].string1.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+               for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
+                  if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
                      searchList.add(originalList[i])
                   }
                   adapter.setItems(searchList)
@@ -148,13 +147,12 @@ class ExerciseRecord1Fragment : Fragment() {
          }
       })
 
-      adapter = SearchAdapter()
       binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv2.adapter = adapter
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("id", searchList[pos].int1.toString())
+            bundle.putString("id", searchList[pos].id.toString())
             replaceFragment2(requireActivity(), ExerciseEditFragment(), bundle)
          }
       })

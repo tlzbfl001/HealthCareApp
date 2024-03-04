@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.view.ViewGroup.LayoutParams
 import android.widget.LinearLayout
@@ -20,7 +18,6 @@ import com.makebodywell.bodywell.databinding.FragmentMainBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.measureHeight
@@ -35,7 +32,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
-
 
 class MainFragment : Fragment() {
    private var _binding: FragmentMainBinding? = null
@@ -95,6 +91,10 @@ class MainFragment : Fragment() {
          replaceFragment1(requireActivity(), FoodFragment())
       }
 
+      binding.clWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
       binding.clExercise.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseFragment())
       }
@@ -105,10 +105,6 @@ class MainFragment : Fragment() {
 
       binding.clSleep.setOnClickListener {
          replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.clWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
       }
 
       binding.clDrug.setOnClickListener {
@@ -251,6 +247,8 @@ class MainFragment : Fragment() {
       binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
       binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
       binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
+      binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
+      binding.pbSleep.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
@@ -260,6 +258,7 @@ class MainFragment : Fragment() {
       val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       val getBody = dataManager!!.getBody(selectedDate.toString())
+      val getSleep = dataManager!!.getSleep(selectedDate.toString())
       val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {
@@ -322,6 +321,18 @@ class MainFragment : Fragment() {
          }
       }
 
+      if(getSleep.sleepTime > 0) {
+         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
+         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
+         if(getDailyData.sleepGoal > 0) {
+            binding.pbSleep.max = getDailyData.sleepGoal
+            binding.pbSleep.progress = getSleep.sleepTime
+         }else if(getDailyData.drugGoal == 0) {
+            binding.pbSleep.max = getSleep.sleepTime
+            binding.pbSleep.progress = getSleep.sleepTime
+         }
+      }
+
       if(getDrugCheckCount > 0) {
          binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
          binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
@@ -334,10 +345,18 @@ class MainFragment : Fragment() {
          }
       }
 
+      val sleepGoal = if(getDailyData.sleepGoal % 60 == 0) {
+         "${getDailyData.sleepGoal / 60}h"
+      }else {
+         "${getDailyData.sleepGoal / 60}h${getDailyData.sleepGoal % 60}m"
+      }
+
       binding.tvFood.text = "$foodSum/${getDailyData.foodGoal} kcal"
       binding.tvWater.text = "${getWater.water}/${getDailyData.waterGoal}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyData.exerciseGoal} kcal"
       binding.tvBody.text = "$weight/$bodyGoal kg"
+      binding.tvSleep.text = "${getSleep.sleepTime / 60}h${getSleep.sleepTime % 60}m/$sleepGoal"
+
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyData.drugGoal}회"
    }
 

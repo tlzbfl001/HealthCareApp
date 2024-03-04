@@ -12,13 +12,20 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SEARCH
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.model.Search
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import java.time.LocalDateTime
 
 class FoodRecord1Fragment : Fragment() {
    private var _binding: FragmentFoodRecord1Binding? = null
@@ -26,10 +33,9 @@ class FoodRecord1Fragment : Fragment() {
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
-   private val itemList = ArrayList<Item>()
-   private val searchList = ArrayList<Item>()
-   private val originalList = ArrayList<Item>()
-   private var calendarDate = ""
+   private val itemList = ArrayList<Search>()
+   private val searchList = ArrayList<Search>()
+   private val originalList = ArrayList<Search>()
    private var type = ""
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
@@ -52,10 +58,7 @@ class FoodRecord1Fragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      calendarDate = arguments?.getString("calendarDate").toString()
       type = arguments?.getString("type").toString()
-
-      bundle.putString("calendarDate", calendarDate)
       bundle.putString("type", type)
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
@@ -80,10 +83,10 @@ class FoodRecord1Fragment : Fragment() {
 
       binding.clBack.setOnClickListener {
          when(type) {
-            "1" -> replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
-            "2" -> replaceFragment2(requireActivity(), FoodLunchFragment(), bundle)
-            "3" -> replaceFragment2(requireActivity(), FoodDinnerFragment(), bundle)
-            "4" -> replaceFragment2(requireActivity(), FoodSnackFragment(), bundle)
+            "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+            "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+            "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+            "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
          }
       }
 
@@ -102,20 +105,15 @@ class FoodRecord1Fragment : Fragment() {
    }
 
    private fun listView() {
-      var dataList = ArrayList<Food>()
+      itemList.clear()
 
-      when(type) {
-         "1" -> dataList = dataManager!!.getFood(1, calendarDate)
-         "2" -> dataList = dataManager!!.getFood(2, calendarDate)
-         "3" -> dataList = dataManager!!.getFood(3, calendarDate)
-         "4" -> dataList = dataManager!!.getFood(4, calendarDate)
+      val getSearch = dataManager!!.getSearch("count")
+      for (i in 0 until getSearch.size) {
+         val getFood = dataManager!!.getFood(getSearch[i].name)
+         itemList.add(Search(id = getFood.id, name = getFood.name, count = getFood.count))
       }
 
-      if(dataList.size > 0) {
-         for(i in 0 until dataList.size) {
-            itemList.add(Item(string1 = dataList[i].name, int1 = dataList[i].id))
-         }
-
+      if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
@@ -124,8 +122,8 @@ class FoodRecord1Fragment : Fragment() {
 
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("dataId", dataList[pos].id.toString())
-               replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
+               bundle.putString("dataId", itemList[pos].id.toString())
+               replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
             }
          })
 
@@ -153,7 +151,7 @@ class FoodRecord1Fragment : Fragment() {
                adapter.clearItems()
             }else {
                for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
-                  if(originalList[i].string1.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+                  if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
                      searchList.add(originalList[i])
                   }
                   adapter.setItems(searchList)
@@ -167,8 +165,8 @@ class FoodRecord1Fragment : Fragment() {
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("dataId", searchList[pos].int1.toString())
-            replaceFragment2(requireActivity(), FoodEditFragment(), bundle)
+            bundle.putString("dataId", searchList[pos].id.toString())
+            replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
          }
       })
 

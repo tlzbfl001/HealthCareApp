@@ -12,6 +12,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -23,7 +25,6 @@ class BodyRecordFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-
    private var exerciseLevel = 1
    private var gender = "MALE"
 
@@ -47,17 +48,16 @@ class BodyRecordFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      val calendarDate = arguments?.getString("calendarDate").toString()
-      val getBody = dataManager!!.getBody(calendarDate)
+      val getBody = dataManager!!.getBody(selectedDate.toString())
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
       if (getBody.regDate != "") {
-         binding.etBmi.setText(getBody.bmi.toString())
-         binding.etFat.setText(getBody.fat.toString())
-         binding.etMuscle.setText(getBody.muscle.toString())
-         binding.etHeight.setText(getBody.height.toString())
-         binding.etWeight.setText(getBody.weight.toString())
-         binding.etAge.setText(getBody.age.toString())
+         if(getBody.bmi > 0.0) binding.etBmi.setText(getBody.bmi.toString())
+         if(getBody.fat > 0.0) binding.etFat.setText(getBody.fat.toString())
+         if(getBody.muscle > 0.0) binding.etMuscle.setText(getBody.muscle.toString())
+         if(getBody.height > 0.0) binding.etHeight.setText(getBody.height.toString())
+         if(getBody.weight > 0.0) binding.etWeight.setText(getBody.weight.toString())
+         if(getBody.age > 0) binding.etAge.setText(getBody.age.toString())
 
          when(getBody.gender) {
             "MALE" -> genderUI1()
@@ -166,7 +166,7 @@ class BodyRecordFragment : Fragment() {
 
          if(getBody.regDate == "") {
             dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender, exerciseLevel = exerciseLevel,
-               fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = calendarDate))
+               fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = selectedDate.toString()))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager!!.updateBody(Body(id = getBody.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender,

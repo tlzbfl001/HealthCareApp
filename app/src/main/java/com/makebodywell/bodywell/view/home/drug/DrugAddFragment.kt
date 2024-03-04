@@ -17,6 +17,8 @@ import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
@@ -36,7 +38,6 @@ class DrugAddFragment : Fragment() {
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
-   private var calendarDate = ""
    private var unit = "정"
    private var count = 1
 
@@ -61,9 +62,6 @@ class DrugAddFragment : Fragment() {
       dataManager!!.open()
 
       alarmReceiver = AlarmReceiver()
-
-      calendarDate = arguments?.getString("calendarDate").toString()
-      bundle.putString("calendarDate", calendarDate)
 
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
@@ -119,14 +117,13 @@ class DrugAddFragment : Fragment() {
          if(itemList.size == 0) {
             Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
-            val startDate = calendarDate
-            val endDate = LocalDate.parse(calendarDate).plusDays(count.toLong() - 1).toString()
+            val endDate = selectedDate.plusDays(count.toLong() - 1).toString()
 
             // 약 데이터 저장
             dataManager!!.insertDrug(Drug(type = binding.etType.text.toString().trim(), name = binding.etName.text.toString().trim(), amount = binding.etAmount.text.toString().trim(),
-               unit = unit, startDate = startDate, endDate = endDate, count = count, isSet = 1, regDate = calendarDate))
+               unit = unit, startDate = selectedDate.toString(), endDate = endDate, count = count, isSet = 1, regDate = selectedDate.toString()))
 
-            val getDrugId = dataManager!!.getDrugId(calendarDate)
+            val getDrugId = dataManager!!.getDrugId(selectedDate.toString())
 
             // 시간 데이터 저장
             for(i in 0 until drugTimeList.size) {
@@ -135,7 +132,7 @@ class DrugAddFragment : Fragment() {
 
             val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
 
-            alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, startDate, endDate, drugTimeList, message)
+            alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, message)
 
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
@@ -149,6 +146,7 @@ class DrugAddFragment : Fragment() {
    }
 
    private fun settingTime() {
+      drugTimeList.clear()
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.requestLayout()
 

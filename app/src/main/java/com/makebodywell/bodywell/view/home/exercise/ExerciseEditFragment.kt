@@ -22,7 +22,6 @@ class ExerciseEditFragment : Fragment() {
     private var bundle = Bundle()
     private var dataManager: DataManager? = null
     private var intensity = "상"
-    private var calendarDate = ""
 
     @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
     override fun onCreateView(
@@ -44,17 +43,14 @@ class ExerciseEditFragment : Fragment() {
         dataManager = DataManager(activity)
         dataManager!!.open()
 
-        calendarDate = arguments?.getString("calendarDate")!!
-        bundle.putString("calendarDate", calendarDate)
-
         val id = arguments?.getString("id")!!.toInt()
 
         val getExercise = dataManager!!.getExercise(id)
 
         // 텍스트 설정
         binding.tvName.text = getExercise.name
-        binding.etTime.setText(getExercise.workoutTime)
-        binding.etKcal.setText(getExercise.calories.toString())
+        if(getExercise.workoutTime > 0) binding.etTime.setText(getExercise.workoutTime.toString())
+        if(getExercise.calories > 0) binding.etKcal.setText(getExercise.calories.toString())
 
         binding.mainLayout.setOnTouchListener { view, motionEvent ->
             hideKeyboard(requireActivity())
@@ -127,8 +123,12 @@ class ExerciseEditFragment : Fragment() {
 
         binding.cvSave.setOnClickListener {
             dataManager!!.updateStr(TABLE_EXERCISE, "intensity", intensity, getExercise.id)
-            dataManager!!.updateStr(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString(), getExercise.id)
-            dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), getExercise.id)
+            if(binding.etTime.text.toString() != "") {
+                dataManager!!.updateInt(TABLE_EXERCISE, "workoutTime", binding.etTime.text.toString().toInt(), getExercise.id)
+            }
+            if(binding.etKcal.text.toString() != "") {
+                dataManager!!.updateInt(TABLE_EXERCISE, "calories", binding.etKcal.text.toString().toInt(), getExercise.id)
+            }
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment2(requireActivity(), ExerciseRecord1Fragment(), bundle)

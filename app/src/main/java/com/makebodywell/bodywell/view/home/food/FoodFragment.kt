@@ -22,7 +22,9 @@ import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
+import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -38,20 +40,17 @@ class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var getDailyData = DailyData()
    private val itemList1 = ArrayList<Food>()
    private val itemList2 = ArrayList<Food>()
    private val itemList3 = ArrayList<Food>()
    private val itemList4 = ArrayList<Food>()
-
-   private var calendarDate: LocalDate? = null
-   private var sum = 0
    private var isExpand1 = false
    private var isExpand2 = false
    private var isExpand3 = false
    private var isExpand4 = false
+   private var sum = 0
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -72,8 +71,7 @@ class FoodFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      calendarDate = LocalDate.now()
-      binding.tvDate.text = dateFormat(calendarDate)
+      binding.tvDate.text = dateFormat(selectedDate)
 
       settingGoal()
 
@@ -82,8 +80,8 @@ class FoodFragment : Fragment() {
       }
 
       binding.clPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
 
          dailyGoal()
          photoView()
@@ -91,8 +89,8 @@ class FoodFragment : Fragment() {
       }
 
       binding.clNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
 
          dailyGoal()
          photoView()
@@ -120,8 +118,7 @@ class FoodFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         bundle.putString("calendarDate", calendarDate.toString())
-         replaceFragment2(requireActivity(), FoodBreakfastFragment(), bundle)
+         replaceFragment1(requireActivity(), FoodBreakfastFragment())
       }
 
       binding.clExpand1.setOnClickListener {
@@ -197,9 +194,9 @@ class FoodFragment : Fragment() {
             Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
+               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), calendarDate.toString())
+               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), selectedDate.toString())
             }
 
             binding.pbFood.max = et.text.toString().toInt()
@@ -230,8 +227,8 @@ class FoodFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
-      sum = getFoodKcal(requireActivity(), calendarDate.toString()).int5
+      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+      sum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
 
       if(sum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
@@ -243,7 +240,7 @@ class FoodFragment : Fragment() {
       binding.tvGoal.text = "${getDailyData.foodGoal} kcal"
       binding.tvIntake.text = "$sum kcal"
 
-      val remain = getDailyData.foodGoal  - sum
+      val remain = getDailyData.foodGoal - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {
@@ -254,10 +251,10 @@ class FoodFragment : Fragment() {
    private fun photoView() {
       val imageList: ArrayList<Image> = ArrayList()
 
-      val getData1 = dataManager!!.getImage(1, calendarDate.toString())
-      val getData2 = dataManager!!.getImage(2, calendarDate.toString())
-      val getData3 = dataManager!!.getImage(3, calendarDate.toString())
-      val getData4 = dataManager!!.getImage(4, calendarDate.toString())
+      val getData1 = dataManager!!.getImage(1, selectedDate.toString())
+      val getData2 = dataManager!!.getImage(2, selectedDate.toString())
+      val getData3 = dataManager!!.getImage(3, selectedDate.toString())
+      val getData4 = dataManager!!.getImage(4, selectedDate.toString())
 
       for(i in 0 until getData1.size) {
          imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
@@ -303,10 +300,10 @@ class FoodFragment : Fragment() {
       itemList3.clear()
       itemList4.clear()
 
-      val getFood1 = dataManager!!.getFood(1, calendarDate.toString())
-      val getFood2 = dataManager!!.getFood(2, calendarDate.toString())
-      val getFood3 = dataManager!!.getFood(3, calendarDate.toString())
-      val getFood4 = dataManager!!.getFood(4, calendarDate.toString())
+      val getFood1 = dataManager!!.getFood(1, selectedDate.toString())
+      val getFood2 = dataManager!!.getFood(2, selectedDate.toString())
+      val getFood3 = dataManager!!.getFood(3, selectedDate.toString())
+      val getFood4 = dataManager!!.getFood(4, selectedDate.toString())
 
       var kcal1 = 0
       var carbohydrate1 = 0.0
@@ -318,8 +315,7 @@ class FoodFragment : Fragment() {
          protein1 += getFood1[i].protein * getFood1[i].count
          fat1 += getFood1[i].fat * getFood1[i].count
 
-         itemList1.add(
-            Food(id = getFood1[i].id, name = getFood1[i].name, unit = getFood1[i].unit, amount = getFood1[i].amount, count = getFood1[i].count,
+         itemList1.add(Food(id = getFood1[i].id, name = getFood1[i].name, unit = getFood1[i].unit, amount = getFood1[i].amount, count = getFood1[i].count,
                kcal = getFood1[i].kcal, carbohydrate = getFood1[i].carbohydrate, protein = getFood1[i].protein, fat = getFood1[i].fat,
                salt = getFood1[i].salt, sugar = getFood1[i].sugar, type = getFood1[i].type, regDate = getFood1[i].regDate)
          )
@@ -335,8 +331,7 @@ class FoodFragment : Fragment() {
          protein2 += getFood2[i].protein * getFood2[i].count
          fat2 += getFood2[i].fat * getFood2[i].count
 
-         itemList2.add(
-            Food(id = getFood2[i].id, name = getFood2[i].name, unit = getFood2[i].unit, amount = getFood2[i].amount, count = getFood2[i].count,
+         itemList2.add(Food(id = getFood2[i].id, name = getFood2[i].name, unit = getFood2[i].unit, amount = getFood2[i].amount, count = getFood2[i].count,
                kcal = getFood2[i].kcal, carbohydrate = getFood2[i].carbohydrate, protein = getFood2[i].protein, fat = getFood2[i].fat,
                salt = getFood2[i].salt, sugar = getFood2[i].sugar, type = getFood2[i].type, regDate = getFood2[i].regDate)
          )
@@ -352,8 +347,7 @@ class FoodFragment : Fragment() {
          protein3 += getFood3[i].protein * getFood3[i].count
          fat3 += getFood3[i].fat * getFood3[i].count
 
-         itemList3.add(
-            Food(id = getFood3[i].id, name = getFood3[i].name, unit = getFood3[i].unit, amount = getFood3[i].amount, count = getFood3[i].count,
+         itemList3.add(Food(id = getFood3[i].id, name = getFood3[i].name, unit = getFood3[i].unit, amount = getFood3[i].amount, count = getFood3[i].count,
                kcal = getFood3[i].kcal, carbohydrate = getFood3[i].carbohydrate, protein = getFood3[i].protein, fat = getFood3[i].fat,
                salt = getFood3[i].salt, sugar = getFood3[i].sugar, type = getFood3[i].type, regDate = getFood3[i].regDate)
          )
@@ -369,8 +363,7 @@ class FoodFragment : Fragment() {
          protein4 += getFood4[i].protein * getFood4[i].count
          fat4 += getFood4[i].fat * getFood4[i].count
 
-         itemList4.add(
-            Food(id = getFood4[i].id, name = getFood4[i].name, unit = getFood4[i].unit, amount = getFood4[i].amount, count = getFood4[i].count,
+         itemList4.add(Food(id = getFood4[i].id, name = getFood4[i].name, unit = getFood4[i].unit, amount = getFood4[i].amount, count = getFood4[i].count,
                kcal = getFood4[i].kcal, carbohydrate = getFood4[i].carbohydrate, protein = getFood4[i].protein, fat = getFood4[i].fat,
                salt = getFood4[i].salt, sugar = getFood4[i].sugar, type = getFood4[i].type, regDate = getFood4[i].regDate)
          )

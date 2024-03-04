@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.DrugAdapter2
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugRecordBinding
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -25,7 +27,6 @@ class DrugRecordFragment : Fragment() {
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter2? = null
-   private var calendarDate = ""
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -47,19 +48,15 @@ class DrugRecordFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      calendarDate = arguments?.getString("calendarDate").toString()
-
       binding.clBack.setOnClickListener {
-         bundle.putString("calendarDate", calendarDate)
-         replaceFragment2(requireActivity(), DrugFragment(), bundle)
+         replaceFragment1(requireActivity(), DrugFragment())
       }
 
       binding.tvAdd.setOnClickListener {
-         bundle.putString("calendarDate", calendarDate)
-         replaceFragment2(requireActivity(), DrugAddFragment(), bundle)
+         replaceFragment1(requireActivity(), DrugAddFragment())
       }
 
-      val getDrug = dataManager!!.getDrug(calendarDate)
+      val getDrug = dataManager!!.getDrug(selectedDate.toString())
 
       adapter = DrugAdapter2(requireActivity(), getDrug)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

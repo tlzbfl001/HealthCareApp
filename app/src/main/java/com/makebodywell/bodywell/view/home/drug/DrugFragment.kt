@@ -25,6 +25,7 @@ import com.makebodywell.bodywell.databinding.FragmentDrugBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -41,12 +42,10 @@ class DrugFragment : Fragment() {
    private var _binding: FragmentDrugBinding? = null
    val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter1? = null
    private val itemList = ArrayList<DrugList>()
    private var getDailyData = DailyData()
-   private var calendarDate = LocalDate.now()
    private var check = 0
 
    override fun onCreateView(
@@ -68,32 +67,54 @@ class DrugFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      if(arguments?.getString("calendarDate") != null) {
-         calendarDate = LocalDate.parse(arguments?.getString("calendarDate"))
-      }
-
-      binding.tvDate.text = dateFormat(calendarDate)
+      binding.tvDate.text = dateFormat(selectedDate)
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
+      val et = dialog.findViewById<TextView>(R.id.et)
+      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+      tvTitle.text = "약복용 / 하루 복용 횟수"
+      tvUnit.text = "회"
+      btnSave.setCardBackgroundColor(Color.parseColor("#8F6FF5"))
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() != "") {
+            if(getDailyData.regDate == "") {
+               dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            }else {
+               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), selectedDate.toString())
+            }
+            recordView()
+         }
+         dialog.dismiss()
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
+
       binding.clPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          recordView()
       }
 
       binding.clNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          recordView()
       }
 
       binding.clRecord.setOnClickListener {
          if(requestPermission()) {
-            bundle.putString("calendarDate", calendarDate.toString())
-            replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
+            replaceFragment1(requireActivity(), DrugRecordFragment())
          }
       }
 
@@ -121,65 +142,35 @@ class DrugFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      settingGoal()
       recordView()
 
       return binding.root
    }
 
-   private fun settingGoal() {
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
-      val et = dialog.findViewById<TextView>(R.id.et)
-      val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-      tvTitle.text = "약복용 / 하루 복용 횟수"
-      tvUnit.text = "회"
-      btnSave.setCardBackgroundColor(Color.parseColor("#8F6FF5"))
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() != "") {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = calendarDate.toString()))
-            }else {
-               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), calendarDate.toString())
-            }
-            recordView()
-         }
-         dialog.dismiss()
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
-   }
-
    private fun recordView() {
+      itemList.clear()
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
-      itemList.clear()
       check = 0
 
-      getDailyData = dataManager!!.getDailyData(calendarDate.toString())
+      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
       binding.pbDrug.max = getDailyData.drugGoal
       binding.tvGoal.text = "${getDailyData.drugGoal}회"
 
       // 약복용 체크값 초기화
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount( calendarDate.toString())
+      val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
       check = getDrugCheckCount
 
       // 약복용 리스트 생성
-      val getDrugDaily = dataManager!!.getDrugDaily(calendarDate.toString())
+      val getDrugDaily = dataManager!!.getDrugDaily(selectedDate.toString())
       for(i in 0 until getDrugDaily.size) {
          val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
-            val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, calendarDate.toString())
-            itemList.add(DrugList(id = getDrugTime[j].id, date = calendarDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
+            val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
+            itemList.add(DrugList(id = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
                unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
                initCheck = check, checked = getDrugCheck.checked)
             )

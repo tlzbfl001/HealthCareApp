@@ -20,6 +20,7 @@ import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
@@ -41,8 +42,6 @@ class SleepFragment : Fragment() {
    private var getDaily = DailyData()
    private var getSleep = Sleep()
 
-   private var calendarDate: LocalDate? = null
-
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -63,22 +62,21 @@ class SleepFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      calendarDate = LocalDate.now()
-      binding.tvDate.text = dateFormat(calendarDate)
+      binding.tvDate.text = dateFormat(selectedDate)
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
       }
 
       binding.clPrev.setOnClickListener {
-         calendarDate = calendarDate!!.minusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          dailyView()
       }
 
       binding.clNext.setOnClickListener {
-         calendarDate = calendarDate!!.plusDays(1)
-         binding.tvDate.text = dateFormat(calendarDate)
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
          dailyView()
       }
 
@@ -103,8 +101,7 @@ class SleepFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         bundle.putString("calendarDate", calendarDate.toString())
-         replaceFragment2(requireActivity(), SleepRecordFragment(), bundle)
+         replaceFragment1(requireActivity(), SleepRecordFragment())
       }
 
       val dialog = Dialog(requireActivity())
@@ -121,20 +118,10 @@ class SleepFragment : Fragment() {
          val total = hour * 60 + minute
 
          if(getDaily.regDate == "") {
-            dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = calendarDate.toString()))
+            dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = selectedDate.toString()))
          }else {
-            dataManager!!.updateGoal("sleepGoal", total, calendarDate.toString())
+            dataManager!!.updateGoal("sleepGoal", total, selectedDate.toString())
          }
-
-//         binding.pbSleep.max = total
-//         binding.tvGoal.text = "${total / 60}h ${total % 60}m"
-//
-//         val remain = total - getSleep.sleepTime
-//         if(remain > 0) {
-//            binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
-//         }else {
-//            binding.tvRemain.text = "0h 0m"
-//         }
 
          dailyView()
 
@@ -158,8 +145,8 @@ class SleepFragment : Fragment() {
       binding.tvGoal.text = "0h 0m"
       binding.tvRemain.text = "0h 0m"
 
-      getSleep = dataManager!!.getSleep(calendarDate.toString())
-      getDaily = dataManager!!.getDailyData(calendarDate.toString())
+      getSleep = dataManager!!.getSleep(selectedDate.toString())
+      getDaily = dataManager!!.getDailyData(selectedDate.toString())
 
       if(getSleep.sleepTime > 0) {
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))

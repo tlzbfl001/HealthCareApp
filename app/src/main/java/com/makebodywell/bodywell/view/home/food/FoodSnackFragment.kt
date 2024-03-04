@@ -84,8 +84,8 @@ class FoodSnackFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            val getFoodData = intakeAdapter!!.getFoodData()
-            dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
+//            val getFoodData = intakeAdapter!!.getFoodData()
+//            dataManager!!.updateInt(TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), FoodFragment())

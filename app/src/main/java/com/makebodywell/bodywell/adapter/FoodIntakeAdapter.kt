@@ -1,18 +1,21 @@
 package com.makebodywell.bodywell.adapter
 
-import android.content.Context
+import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.food.FoodEditFragment
+import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
 
 class FoodIntakeAdapter (
-    private val context: Context,
+    private val context: Activity,
     private var itemList: ArrayList<Food> = ArrayList()
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var onItemClickListener: OnItemClickListener? = null
@@ -30,8 +33,7 @@ class FoodIntakeAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // 섭취한 식단 카운트하기
-        var count = itemList[position].count
+        val count = itemList[position].count
         val kcal = itemList[position].kcal
         val amount = itemList[position].amount
         foodData.id = itemList[position].id
@@ -39,38 +41,19 @@ class FoodIntakeAdapter (
 
         holder.tvName.text = itemList[position].name
         holder.tvKcal.text = "${kcal * count} kcal"
-        holder.tvCount.text = count.toString()
         holder.tvDesc.text = "${count}개/${amount * count}${itemList[position].unit}"
 
-        holder.ivMinus.setOnClickListener {
-            if (count > 1) {
-                count -= 1
-                holder.tvCount.text = count.toString()
-                holder.tvKcal.text = "${kcal * count} kcal"
-                holder.tvDesc.text = "${count}개/${amount * count}g"
-                foodData.count = count
-            }
-        }
-
-        holder.ivPlus.setOnClickListener {
-            count += 1
-            holder.tvCount.text = count.toString()
-            holder.tvKcal.text = "${kcal * count} kcal"
-            holder.tvDesc.text = "${count}개/${amount * count}g"
-            foodData.count = count
-        }
-
-        holder.ivDelete.setOnClickListener {
+        holder.cvDelete.setOnClickListener {
             onItemClickListener!!.onItemClick(position)
+        }
+
+        holder.cvEdit.setOnClickListener {
+            replaceFragment1(context, FoodEditFragment())
         }
     }
 
     override fun getItemCount(): Int {
         return itemList.count()
-    }
-
-    fun getFoodData(): Food {
-        return foodData
     }
 
     interface OnItemClickListener {
@@ -85,9 +68,7 @@ class FoodIntakeAdapter (
         val tvName: TextView = itemView.findViewById(R.id.tvName)
         val tvDesc: TextView = itemView.findViewById(R.id.tvDesc)
         val tvKcal: TextView = itemView.findViewById(R.id.tvKcal)
-        val tvCount: TextView = itemView.findViewById(R.id.tvCount)
-        val ivMinus: ImageView = itemView.findViewById(R.id.ivMinus)
-        val ivPlus: ImageView = itemView.findViewById(R.id.ivPlus)
-        val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
+        val cvDelete: CardView = itemView.findViewById(R.id.cvDelete)
+        val cvEdit: CardView = itemView.findViewById(R.id.cvEdit)
     }
 }

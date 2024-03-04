@@ -25,5 +25,6 @@ data class User(
     var kcalGoal: String? = "0",
     var waterGoal: String? = "0",
     var waterUnit: String? = "0",
+    var measureHeight: Int = 0,
     var regDate: String? = ""
 ) : Parcelable

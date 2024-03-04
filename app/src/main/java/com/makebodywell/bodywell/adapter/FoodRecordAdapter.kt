@@ -7,9 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.Item
+import com.makebodywell.bodywell.model.Search
 
 class FoodRecordAdapter (
-   private var itemList: ArrayList<Item> = ArrayList()
+   private var itemList: ArrayList<Search> = ArrayList<Search>()
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
    private var onItemClickListener: OnItemClickListener? = null
 
@@ -19,7 +20,7 @@ class FoodRecordAdapter (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.textView.text = itemList[position].string1
+      holder.textView.text = itemList[position].name
 
       holder.textView.setOnClickListener {
          onItemClickListener!!.onItemClick(position)

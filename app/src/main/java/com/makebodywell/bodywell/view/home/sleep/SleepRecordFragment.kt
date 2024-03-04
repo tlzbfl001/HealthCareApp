@@ -16,6 +16,8 @@ import com.google.android.material.timepicker.TimeFormat
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSleepRecordBinding
 import com.makebodywell.bodywell.model.Sleep
+import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
@@ -28,7 +30,6 @@ class SleepRecordFragment : Fragment() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-
    private var bedHour = 0
    private var bedMinute = 0
    private var wakeHour = 0
@@ -85,20 +86,19 @@ class SleepRecordFragment : Fragment() {
       })
 
       binding.cvSave.setOnClickListener {
-         val calendarDate = arguments?.getString("calendarDate").toString()
-         val getSleep = dataManager!!.getSleep(calendarDate)
+         val getSleep = dataManager!!.getSleep(selectedDate.toString())
 
          val bedTime = bedHour * 60 + bedMinute
          val wakeTime = wakeHour * 60 + wakeMinute
          val sleepTime = sleepHour * 60 + sleepMinute
 
          if(getSleep.regDate == "") {
-            dataManager!!.insertSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = calendarDate))
+            dataManager!!.insertSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
          }else {
-            dataManager!!.updateSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = calendarDate))
+            dataManager!!.updateSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
