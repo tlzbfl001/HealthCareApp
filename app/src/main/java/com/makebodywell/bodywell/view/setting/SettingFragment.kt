@@ -19,6 +19,8 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -62,6 +64,7 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.system.exitProcess
 
 class SettingFragment : Fragment() {
    private var _binding: FragmentSettingBinding? = null
@@ -121,6 +124,10 @@ class SettingFragment : Fragment() {
          }
       }
 
+      binding.tvAlarm.setOnClickListener {
+         Log.d(TAG,"tvAlarm: ${NotificationManagerCompat.from(requireActivity()).areNotificationsEnabled()}")
+      }
+
       binding.tvConnect.setOnClickListener {
          replaceFragment1(requireActivity(), ConnectFragment())
       }
@@ -143,13 +150,14 @@ class SettingFragment : Fragment() {
                         val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
                         gsc.signOut().addOnCompleteListener {
-                           if (it.isSuccessful) {
+                           if(it.isSuccessful) {
                               MyApp.prefs.removePrefs("userId")
 
                               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                              finishAffinity(requireActivity())
                               startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                              requireActivity().finish()
-                           } else {
+                              exitProcess(0)
+                           }else {
                               Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
@@ -161,19 +169,21 @@ class SettingFragment : Fragment() {
                         MyApp.prefs.removePrefs("userId")
 
                         Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                        finishAffinity(requireActivity())
                         startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                        requireActivity().finish()
+                        exitProcess(0)
                      }
                      "kakao" -> {
                         UserApiClient.instance.logout { error ->
-                           if (error != null) {
+                           if(error != null) {
                               Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show()
                            }else {
                               MyApp.prefs.removePrefs("userId")
 
                               Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+                              finishAffinity(requireActivity())
                               startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                              requireActivity().finish()
+                              exitProcess(0)
                            }
                         }
                      }
@@ -219,8 +229,9 @@ class SettingFragment : Fragment() {
                                        MyApp.prefs.removePrefs("userId")
 
                                        Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       finishAffinity(requireActivity())
                                        startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                                       requireActivity().finish()
+                                       exitProcess(0)
                                     } else {
                                        Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                     }
@@ -232,7 +243,6 @@ class SettingFragment : Fragment() {
                      "naver" -> {
                         NaverIdLoginSDK.initialize(requireActivity(), BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(
                            R.string.app_name))
-
                         if(NaverIdLoginSDK.getAccessToken() == null) {
                            Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         }else {
@@ -246,8 +256,9 @@ class SettingFragment : Fragment() {
                                        MyApp.prefs.removePrefs("userId")
 
                                        Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       finishAffinity(requireActivity())
                                        startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                                       requireActivity().finish()
+                                       exitProcess(0)
                                     }
                                     override fun onFailure(httpStatus: Int, message: String) {
                                        Log.e(TAG, "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
@@ -275,8 +286,9 @@ class SettingFragment : Fragment() {
                                        MyApp.prefs.removePrefs("userId")
 
                                        Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       finishAffinity(requireActivity())
                                        startActivity(Intent(requireActivity(), LoginActivity::class.java))
-                                       requireActivity().finish()
+                                       exitProcess(0)
                                     }
                                  }
                               }

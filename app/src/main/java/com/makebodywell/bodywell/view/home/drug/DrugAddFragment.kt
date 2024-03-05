@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.drug
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -26,20 +27,26 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class DrugAddFragment : Fragment() {
+class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentDrugAddBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
    private var unit = "정"
    private var count = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -74,7 +81,7 @@ class DrugAddFragment : Fragment() {
       }
 
       binding.clX.setOnClickListener {
-         replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
+         replaceFragment1(requireActivity(), DrugRecordFragment())
       }
 
       binding.clUnit1.setOnClickListener {
@@ -135,7 +142,7 @@ class DrugAddFragment : Fragment() {
             alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, message)
 
             Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment2(requireActivity(), DrugRecordFragment(), bundle)
+            replaceFragment1(requireActivity(), DrugRecordFragment())
          }
       }
 
@@ -287,5 +294,11 @@ class DrugAddFragment : Fragment() {
       binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit6.setTextColor(Color.WHITE)
       unit = "봉"
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), DrugRecordFragment())
    }
 }

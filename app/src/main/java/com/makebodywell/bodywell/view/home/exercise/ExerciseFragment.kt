@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.exercise
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -32,7 +34,7 @@ import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 
-class ExerciseFragment : Fragment() {
+class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
@@ -40,6 +42,11 @@ class ExerciseFragment : Fragment() {
    private var adapter: ExerciseAdapter? = null
    private var getDailyData = DailyData()
    private var sum = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -73,7 +80,7 @@ class ExerciseFragment : Fragment() {
       btnSave.setCardBackgroundColor(Color.parseColor("#FFA511"))
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
@@ -178,5 +185,11 @@ class ExerciseFragment : Fragment() {
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv.adapter = adapter
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), MainFragment())
    }
 }

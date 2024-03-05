@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.home.food
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -17,10 +18,11 @@ import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FoodSearchFragment : Fragment() {
+class FoodSearchFragment : Fragment(), MainActivity.OnBackPressedListener {
 	private var _binding: FragmentFoodSearchBinding? = null
 	val binding get() = _binding!!
 
@@ -29,6 +31,11 @@ class FoodSearchFragment : Fragment() {
 	private var getFood = Food()
 	private var type = "1"
 	private var dataId = -1
+
+	override fun onAttach(context: Context) {
+		super.onAttach(context)
+		(context as MainActivity).setOnBackPressedListener(this)
+	}
 
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
@@ -92,5 +99,11 @@ class FoodSearchFragment : Fragment() {
 		}
 
 		return binding.root
+	}
+
+	override fun onBackPressed() {
+		val activity = activity as MainActivity?
+		activity!!.setOnBackPressedListener(null)
+		replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
 	}
 }

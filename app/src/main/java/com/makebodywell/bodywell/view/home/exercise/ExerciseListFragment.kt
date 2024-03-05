@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.exercise
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,12 +14,19 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class ExerciseListFragment : Fragment() {
+class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentExerciseListBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -55,5 +63,11 @@ class ExerciseListFragment : Fragment() {
       binding.recyclerView.adapter = adapter
 
       return binding.root
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), ExerciseFragment())
    }
 }

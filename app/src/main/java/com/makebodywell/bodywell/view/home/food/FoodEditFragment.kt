@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -35,9 +36,10 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import com.makebodywell.bodywell.view.home.MainActivity
 import java.time.LocalDate
 
-class FoodEditFragment : Fragment() {
+class FoodEditFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodEditBinding? = null
    private val binding get() = _binding!!
 
@@ -49,6 +51,11 @@ class FoodEditFragment : Fragment() {
    private var type = "1"
    private var dataId = -1
    private var count = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -121,7 +128,7 @@ class FoodEditFragment : Fragment() {
       }
 
       binding.ivMinus.setOnClickListener {
-         while(count > 1) {
+         if(count > 1) {
             count--
          }
          dataTextView()
@@ -232,6 +239,18 @@ class FoodEditFragment : Fragment() {
                dialog!!.dismiss()
             }
          }
+      }
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+
+      when(type) {
+         "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+         "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+         "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+         "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
       }
    }
 }

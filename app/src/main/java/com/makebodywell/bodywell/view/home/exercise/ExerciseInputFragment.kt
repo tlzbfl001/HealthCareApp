@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.exercise
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,15 +19,22 @@ import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class ExerciseInputFragment : Fragment() {
+class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentExerciseInputBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
    private var intensity = "상"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
@@ -99,10 +107,16 @@ class ExerciseInputFragment : Fragment() {
                calories = calories, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment1(requireActivity(), ExerciseFragment())
+            replaceFragment1(requireActivity(), ExerciseListFragment())
          }
       }
 
       return binding.root
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
    }
 }

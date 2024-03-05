@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.drug
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -19,14 +20,20 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class DrugRecordFragment : Fragment() {
+class DrugRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentDrugRecordBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter2? = null
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -64,5 +71,11 @@ class DrugRecordFragment : Fragment() {
       binding.recyclerView.adapter = adapter
 
       return binding.root
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), DrugFragment())
    }
 }

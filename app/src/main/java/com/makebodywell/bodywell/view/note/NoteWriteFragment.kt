@@ -93,17 +93,21 @@ class NoteWriteFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         if(getNote.regDate == "") {
-            dataManager!!.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-               status = status, regDate = selectedDate.toString()))
-            Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         if(binding.etTitle.text.toString().contains("'") || binding.etContent.text.toString().contains("'")) {
+            Toast.makeText(activity, "특수문자 '는 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-               status = status, regDate = selectedDate.toString()))
-            Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-         }
+            if(getNote.regDate == "") {
+               dataManager!!.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+                  status = status, regDate = selectedDate.toString()))
+               Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               dataManager!!.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+                  status = status, regDate = selectedDate.toString()))
+               Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            }
 
-         replaceFragment2(requireActivity(), NoteFragment(), bundle)
+            replaceFragment2(requireActivity(), NoteFragment(), bundle)
+         }
       }
 
       settingData()

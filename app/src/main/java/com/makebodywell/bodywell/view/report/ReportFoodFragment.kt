@@ -23,7 +23,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportFoodBinding
 import com.makebodywell.bodywell.model.Water
@@ -32,7 +31,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.DecimalFormat
@@ -256,7 +255,7 @@ class ReportFoodFragment : Fragment() {
       var count = 0
 
       for(i in 0 until getData.size){
-         val foodKcal = getFoodKcal(requireActivity(), getData[i])
+         val foodKcal = getFoodCalories(requireActivity(), getData[i])
          if(foodKcal.int5 > 0) {
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += foodKcal.int5.toFloat()

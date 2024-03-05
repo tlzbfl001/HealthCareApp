@@ -204,7 +204,7 @@
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>
             <TextView
-               android:id="@+id/tvPermission"
+               android:id="@+id/tvAlarm"
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_marginLeft="12dp"

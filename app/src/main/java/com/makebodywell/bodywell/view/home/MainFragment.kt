@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.ViewGroup.LayoutParams
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,8 +18,7 @@ import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
-import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
-import com.makebodywell.bodywell.util.CustomUtil.Companion.measureHeight
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -233,7 +231,7 @@ class MainFragment : Fragment() {
 
       // 프로그래스바 설정
       val getDailyData = dataManager!!.getDailyData(selectedDate.toString())
-      val foodSum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
+      val foodSum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
       val getWater = dataManager!!.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
       val getBody = dataManager!!.getBody(selectedDate.toString())

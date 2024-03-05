@@ -32,7 +32,7 @@ import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
@@ -116,7 +116,7 @@ class NoteFragment : Fragment() {
             selectedDate = days[position]!!
 
             // 섭취 칼로리 계산
-            val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
+            val foodKcal = getFoodCalories(requireActivity(), selectedDate.toString())
             binding.tvKcal1.text = "${foodKcal.int5} kcal"
             Log.d(TAG, "foodKcal: ${foodKcal.int5}")
 
@@ -194,7 +194,7 @@ class NoteFragment : Fragment() {
       val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
 
-      val foodKcal = getFoodKcal(requireActivity(), selectedDate.toString())
+      val foodKcal = getFoodCalories(requireActivity(), selectedDate.toString())
       binding.tvKcal1.text = "${foodKcal.int5} kcal"
 
       var total = 0

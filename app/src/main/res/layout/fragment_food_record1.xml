@@ -140,26 +140,23 @@
             android:id="@+id/rv1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_marginTop="12dp"/>
          <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_marginTop="12dp"/>
          <TextView
             android:id="@+id/tvEmpty"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="30dp"
             android:gravity="center"
             android:text="입력된 음식이 없습니다."
             android:textSize="16dp"
             android:textColor="#cccccc"/>
-         <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"/>
       </LinearLayout>
    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

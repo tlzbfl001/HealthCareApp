@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.water
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -32,7 +34,7 @@ import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import java.time.LocalDate
 
-class WaterFragment : Fragment() {
+class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentWaterBinding? = null
    private val binding get() = _binding!!
 
@@ -41,8 +43,13 @@ class WaterFragment : Fragment() {
    private var getWater = Water()
    private var adapter: WaterAdapter? = null
    private var goal = 0
-   private var volume = 0
+   private var volume = 200
    private var count = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "SetTextI18n")
    override fun onCreateView(
@@ -74,13 +81,16 @@ class WaterFragment : Fragment() {
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
 
       btnSave.setOnClickListener {
-         if(etVolume.text.toString().trim() == "" || etGoal.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+         if(etGoal.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else if(etVolume.text.toString().trim() == "0"  || etGoal.text.toString().trim() == "0") {
             Toast.makeText(requireActivity(), "1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             goal = etGoal.text.toString().toInt()
-            volume = etVolume.text.toString().toInt()
+
+            if(etVolume.text.toString() != "") {
+               volume = etVolume.text.toString().toInt()
+            }
 
             if(getDailyData.regDate == "") {
                dataManager!!.insertDailyData(DailyData(waterGoal = goal, regDate = selectedDate.toString()))
@@ -277,5 +287,11 @@ class WaterFragment : Fragment() {
             dataManager!!.updateWater(Water(water = count, volume = getWater.volume, regDate = selectedDate.toString()))
          }
       }
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), MainFragment())
    }
 }

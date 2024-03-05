@@ -33,10 +33,8 @@ class StartActivity : AppCompatActivity() {
       val dataManager = DataManager(this)
       dataManager.open()
 
-      if(MyApp.prefs.getId() == -1 && dataManager.getUserCount() == 0) {
+      if(MyApp.prefs.getId() == -1 || dataManager.getUserCount() == 0 || (MyApp.prefs.getId() > -1 && dataManager.getUserById() == 0)) {
          startActivity(Intent(this, InitActivity::class.java))
-      }else if(MyApp.prefs.getId() == -1 || dataManager.getUserCount() == 0 || (MyApp.prefs.getId() > -1 && dataManager.getUserById() == 0)) {
-         startActivity(Intent(this, LoginActivity::class.java))
       }else {
          startActivity(Intent(this, MainActivity::class.java))
       }

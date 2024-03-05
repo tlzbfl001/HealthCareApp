@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.sleep
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.format.DateFormat.is24HourFormat
@@ -21,11 +22,12 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import nl.joery.timerangepicker.TimeRangePicker
 import java.util.Calendar
 
-class SleepRecordFragment : Fragment() {
+class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentSleepRecordBinding? = null
    private val binding get() = _binding!!
 
@@ -36,6 +38,11 @@ class SleepRecordFragment : Fragment() {
    private var wakeMinute = 0
    private var sleepHour = 0
    private var sleepMinute = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -106,5 +113,11 @@ class SleepRecordFragment : Fragment() {
       }
 
       return binding.root
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), SleepFragment())
    }
 }

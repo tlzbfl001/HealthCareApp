@@ -2,10 +2,12 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,21 +24,20 @@ import com.makebodywell.bodywell.databinding.FragmentFoodBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodKcal
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.time.LocalDate
 
-class FoodFragment : Fragment() {
+class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
@@ -51,6 +52,11 @@ class FoodFragment : Fragment() {
    private var isExpand3 = false
    private var isExpand4 = false
    private var sum = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -73,7 +79,40 @@ class FoodFragment : Fragment() {
 
       binding.tvDate.text = dateFormat(selectedDate)
 
-      settingGoal()
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_input)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+      val et = dialog.findViewById<EditText>(R.id.et)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      btnSave.setOnClickListener {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            if(getDailyData.regDate == "") {
+               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            }else {
+               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), selectedDate.toString())
+            }
+
+            binding.pbFood.max = et.text.toString().toInt()
+            binding.tvGoal.text = "${et.text} kcal"
+
+            val remain = et.text.toString().toInt() - sum
+            if(remain > 0) {
+               binding.tvRemain.text = "$remain kcal"
+            }else {
+               binding.tvRemain.text = "0 kcal"
+            }
+
+            dialog.dismiss()
+         }
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -181,44 +220,6 @@ class FoodFragment : Fragment() {
    }
 
    @SuppressLint("SetTextI18n")
-   private fun settingGoal() {
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_input)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-      val et = dialog.findViewById<EditText>(R.id.et)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      btnSave.setOnClickListener {
-         if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
-            }else {
-               dataManager!!.updateGoal("foodGoal", et.text.toString().toInt(), selectedDate.toString())
-            }
-
-            binding.pbFood.max = et.text.toString().toInt()
-            binding.tvGoal.text = "${et.text} kcal"
-
-            val remain = et.text.toString().toInt() - sum
-            if(remain > 0) {
-               binding.tvRemain.text = "$remain kcal"
-            }else {
-               binding.tvRemain.text = "0 kcal"
-            }
-
-            dialog.dismiss()
-         }
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
-   }
-
-   @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       // 목표 초기화
       binding.pbFood.max = 0
@@ -228,7 +229,7 @@ class FoodFragment : Fragment() {
       binding.tvRemain.text = "0 kcal"
 
       getDailyData = dataManager!!.getDailyData(selectedDate.toString())
-      sum = getFoodKcal(requireActivity(), selectedDate.toString()).int5
+      sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
 
       if(sum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
@@ -249,7 +250,8 @@ class FoodFragment : Fragment() {
    }
 
    private fun photoView() {
-      val imageList: ArrayList<Image> = ArrayList()
+      val imageList = ArrayList<Image>()
+      binding.viewPager.adapter = null
 
       val getData1 = dataManager!!.getImage(1, selectedDate.toString())
       val getData2 = dataManager!!.getImage(2, selectedDate.toString())
@@ -295,6 +297,15 @@ class FoodFragment : Fragment() {
 
    @SuppressLint("SetTextI18n")
    private fun listView() {
+      binding.clView1.visibility = View.GONE
+      binding.ivExpand1.setImageResource(R.drawable.arrow_down)
+      binding.clView2.visibility = View.GONE
+      binding.ivExpand2.setImageResource(R.drawable.arrow_down)
+      binding.clView3.visibility = View.GONE
+      binding.ivExpand3.setImageResource(R.drawable.arrow_down)
+      binding.clView4.visibility = View.GONE
+      binding.ivExpand4.setImageResource(R.drawable.arrow_down)
+
       itemList1.clear()
       itemList2.clear()
       itemList3.clear()
@@ -403,5 +414,11 @@ class FoodFragment : Fragment() {
       val adapter4 = FoodTextAdapter(itemList4)
       binding.rv4.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv4.adapter = adapter4
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), MainFragment())
    }
 }

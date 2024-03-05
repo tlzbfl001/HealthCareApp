@@ -3,6 +3,8 @@ package com.makebodywell.bodywell.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Process
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -17,6 +19,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.adapter.SectionPageAdapter
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityInitBinding
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.MyApp
 import kotlin.system.exitProcess
 
@@ -25,6 +28,7 @@ class InitActivity : AppCompatActivity() {
    private val binding get() = _binding!!
 
    private var backWait:Long = 0
+   private var pressedTime: Long = 0
 
    private var adapter: SectionPageAdapter = SectionPageAdapter(supportFragmentManager)
 
@@ -86,14 +90,22 @@ class InitActivity : AppCompatActivity() {
       })
    }
 
+   @Deprecated("Deprecated in Java")
    override fun onBackPressed() {
-      if(System.currentTimeMillis() - backWait >=2000 ) {
-         backWait = System.currentTimeMillis()
-         Toast.makeText(this, "뒤로가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+      if (pressedTime == 0L) {
+         Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+         pressedTime = System.currentTimeMillis()
       } else {
-         ActivityCompat.finishAffinity(this)
-         System.runFinalization()
-         exitProcess(0)
+         val seconds = (System.currentTimeMillis() - pressedTime).toInt()
+         if (seconds > 2000) {
+            Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            pressedTime = 0
+         } else {
+            super.onBackPressed()
+            finishAffinity()
+            System.runFinalization()
+            exitProcess(0)
+         }
       }
    }
 }

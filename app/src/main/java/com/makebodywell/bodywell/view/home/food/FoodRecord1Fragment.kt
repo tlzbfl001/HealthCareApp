@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -22,10 +23,11 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FoodRecord1Fragment : Fragment() {
+class FoodRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodRecord1Binding? = null
    private val binding get() = _binding!!
 
@@ -35,6 +37,11 @@ class FoodRecord1Fragment : Fragment() {
    private val originalList = ArrayList<Food>()
    private val searchList = ArrayList<Item>()
    private var type = ""
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -165,5 +172,17 @@ class FoodRecord1Fragment : Fragment() {
       })
 
       binding.rv2.adapter = adapter
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+
+      when(type) {
+         "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+         "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+         "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+         "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
+      }
    }
 }

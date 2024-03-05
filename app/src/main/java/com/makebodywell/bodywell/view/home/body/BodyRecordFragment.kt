@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.body
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -18,15 +19,22 @@ import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 import java.time.LocalDate
 
-class BodyRecordFragment : Fragment() {
+class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentBodyRecordBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
    private var exerciseLevel = 1
    private var gender = "MALE"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -194,5 +202,11 @@ class BodyRecordFragment : Fragment() {
       binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
       binding.tvWoman.setTextColor(Color.WHITE)
       gender = "FEMALE"
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), BodyFragment())
    }
 }

@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.drug
 
 import android.Manifest
 import android.app.Dialog
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -12,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,6 +32,7 @@ import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -38,7 +41,7 @@ import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 
-class DrugFragment : Fragment() {
+class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentDrugBinding? = null
    val binding get() = _binding!!
 
@@ -47,6 +50,11 @@ class DrugFragment : Fragment() {
    private val itemList = ArrayList<DrugList>()
    private var getDailyData = DailyData()
    private var check = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -85,15 +93,19 @@ class DrugFragment : Fragment() {
       btnSave.setCardBackgroundColor(Color.parseColor("#8F6FF5"))
 
       btnSave.setOnClickListener {
-         if(et.text.toString().trim() != "") {
+         if(et.text.toString().trim() == "") {
+            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
+         }else {
             if(getDailyData.regDate == "") {
                dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
                dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), selectedDate.toString())
             }
+
             recordView()
+
+            dialog.dismiss()
          }
-         dialog.dismiss()
       }
 
       binding.clGoal.setOnClickListener {
@@ -204,5 +216,11 @@ class DrugFragment : Fragment() {
 
    companion object {
       private const val REQUEST_CODE = 1
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), MainFragment())
    }
 }

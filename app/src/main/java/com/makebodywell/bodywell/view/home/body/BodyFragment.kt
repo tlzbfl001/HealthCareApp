@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.body
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -34,15 +36,19 @@ import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
-class BodyFragment : Fragment() {
+class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentBodyBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var getDailyData = DailyData()
    private var getBody = Body()
    private var isExpand = false
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -77,7 +83,7 @@ class BodyFragment : Fragment() {
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyData.regDate == "") {
                dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
@@ -92,9 +98,9 @@ class BodyFragment : Fragment() {
             }
 
             dailyGoal()
-         }
 
-         dialog.dismiss()
+            dialog.dismiss()
+         }
       }
 
       binding.clGoal.setOnClickListener {
@@ -381,5 +387,11 @@ class BodyFragment : Fragment() {
             binding.tvMuscleStatus.text = "높음"
          }
       }
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), MainFragment())
    }
 }

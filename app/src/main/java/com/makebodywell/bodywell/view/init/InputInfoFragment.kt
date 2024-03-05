@@ -11,7 +11,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +22,6 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
@@ -120,7 +117,10 @@ class InputInfoFragment : Fragment() {
          dataManager?.updateUserStr(TABLE_USER, "birthday", birthday!!)
          dataManager?.updateUserStr(TABLE_USER, "profileImage", profileImage!!)
 
-         replaceLoginFragment1(requireActivity(), InputBodyFragment())
+         requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.inputFrame, InputBodyFragment())
+            commit()
+         }
       }
 
       return binding.root

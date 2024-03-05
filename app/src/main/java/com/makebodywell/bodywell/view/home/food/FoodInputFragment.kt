@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -17,15 +18,21 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FoodInputFragment : Fragment() {
+class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodInputBinding? = null
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
    private var type = ""
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -61,12 +68,7 @@ class FoodInputFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         when(type) {
-            "1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-            "2" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-            "3" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-            "4" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-         }
+         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
       binding.cvSave.setOnClickListener {
@@ -145,5 +147,11 @@ class FoodInputFragment : Fragment() {
       }
 
       return binding.root
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
    }
 }

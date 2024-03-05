@@ -2,8 +2,10 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +24,15 @@ import com.makebodywell.bodywell.databinding.FragmentFoodBreakfastBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.util.stream.Collectors
 import kotlin.math.abs
 
-class FoodBreakfastFragment : Fragment() {
+class FoodBreakfastFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodBreakfastBinding? = null
    val binding get() = _binding!!
 
@@ -35,8 +40,12 @@ class FoodBreakfastFragment : Fragment() {
    private var photoAdapter: PhotoViewAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
    private var imageData = ArrayList<Image>()
-//   private var imageData2 = ArrayList<Image>()
    private var type = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -89,7 +98,6 @@ class FoodBreakfastFragment : Fragment() {
 
    private fun photoView() {
       imageData = dataManager!!.getImage(type, selectedDate.toString())
-//      imageData2 = dataManager!!.getImage(type, selectedDate.toString())
 
       if(imageData.size > 0) {
          photoAdapter = PhotoViewAdapter(imageData)
@@ -151,6 +159,7 @@ class FoodBreakfastFragment : Fragment() {
 
    private fun listView() {
       val dataList = dataManager!!.getDailyFood(type, selectedDate.toString())
+      
       if(dataList.size > 0) {
          intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList, type)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
@@ -185,5 +194,11 @@ class FoodBreakfastFragment : Fragment() {
 
          binding.rv.adapter = intakeAdapter
       }
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), FoodFragment())
    }
 }

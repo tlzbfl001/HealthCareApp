@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.sleep
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -24,6 +25,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -33,14 +35,18 @@ import com.makebodywell.bodywell.view.home.water.WaterFragment
 import java.time.LocalDate
 import java.util.Calendar
 
-class SleepFragment : Fragment() {
+class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentSleepBinding? = null
    private val binding get() = _binding!!
 
-   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var getDaily = DailyData()
    private var getSleep = Sleep()
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -63,6 +69,34 @@ class SleepFragment : Fragment() {
       dataManager!!.open()
 
       binding.tvDate.text = dateFormat(selectedDate)
+
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_sleep)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+      val etHour = dialog.findViewById<EditText>(R.id.etHour)
+      val etMinute = dialog.findViewById<EditText>(R.id.etMinute)
+      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+
+      btnSave.setOnClickListener {
+         val hour = if(etHour.text.toString().trim() == "") 7 else { etHour.text.toString().toInt() }
+         val minute = if(etMinute.text.toString().trim() == "") 0 else { etMinute.text.toString().toInt() }
+         val total = hour * 60 + minute
+
+         if(getDaily.regDate == "") {
+            dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = selectedDate.toString()))
+         }else {
+            dataManager!!.updateGoal("sleepGoal", total, selectedDate.toString())
+         }
+
+         dailyView()
+
+         dialog.dismiss()
+      }
+
+      binding.clGoal.setOnClickListener {
+         dialog.show()
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -104,34 +138,6 @@ class SleepFragment : Fragment() {
          replaceFragment1(requireActivity(), SleepRecordFragment())
       }
 
-      val dialog = Dialog(requireActivity())
-      dialog.setContentView(R.layout.dialog_sleep)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-      val etHour = dialog.findViewById<EditText>(R.id.etHour)
-      val etMinute = dialog.findViewById<EditText>(R.id.etMinute)
-      val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
-      btnSave.setOnClickListener {
-         val hour = if(etHour.text.toString().trim() == "") 7 else { etHour.text.toString().toInt() }
-         val minute = if(etMinute.text.toString().trim() == "") 0 else { etMinute.text.toString().toInt() }
-         val total = hour * 60 + minute
-
-         if(getDaily.regDate == "") {
-            dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = selectedDate.toString()))
-         }else {
-            dataManager!!.updateGoal("sleepGoal", total, selectedDate.toString())
-         }
-
-         dailyView()
-
-         dialog.dismiss()
-      }
-
-      binding.clGoal.setOnClickListener {
-         dialog.show()
-      }
-
       dailyView()
 
       return binding.root
@@ -164,5 +170,11 @@ class SleepFragment : Fragment() {
       binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"
       binding.tvBedtime.text = "${getSleep.bedTime / 60}h ${getSleep.bedTime % 60}m"
       binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment1(requireActivity(), MainFragment())
    }
 }

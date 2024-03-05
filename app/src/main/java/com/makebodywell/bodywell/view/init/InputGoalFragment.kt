@@ -1,22 +1,30 @@
 package com.makebodywell.bodywell.view.init
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class InputGoalFragment : Fragment() {
+class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
    private var _binding: FragmentInputGoalBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as InputActivity).setOnBackPressedListener(this)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -28,7 +36,10 @@ class InputGoalFragment : Fragment() {
       dataManager!!.open()
 
       binding.ivBack.setOnClickListener {
-         replaceLoginFragment1(requireActivity(), InputBodyFragment())
+         requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.inputFrame, InputBodyFragment())
+            commit()
+         }
       }
 
       binding.tvSkip.setOnClickListener {
@@ -50,5 +61,15 @@ class InputGoalFragment : Fragment() {
       }
 
       return binding.root
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as InputActivity?
+      activity!!.setOnBackPressedListener(null)
+
+      requireActivity().supportFragmentManager.beginTransaction().apply {
+         replace(R.id.inputFrame, InputBodyFragment())
+         commit()
+      }
    }
 }

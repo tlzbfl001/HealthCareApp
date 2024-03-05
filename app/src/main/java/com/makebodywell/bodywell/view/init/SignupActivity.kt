@@ -1,46 +1,54 @@
 package com.makebodywell.bodywell.view.init
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.databinding.FragmentInputTermsBinding
+import com.makebodywell.bodywell.databinding.ActivitySignupBinding
 import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceLoginFragment1
 import com.makebodywell.bodywell.util.MyApp
 
-class InputTermsFragment : Fragment() {
-   private var _binding: FragmentInputTermsBinding? = null
+class SignupActivity : AppCompatActivity() {
+   private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
    private var user: User? = null
    private var isAll = true
 
-   override fun onCreateView(
-      inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?
-   ): View {
-      _binding = FragmentInputTermsBinding.inflate(layoutInflater)
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      _binding = ActivitySignupBinding.inflate(layoutInflater)
+      setContentView(binding.root)
 
-      dataManager = DataManager(requireActivity())
+      window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
+
+      dataManager = DataManager(this)
       dataManager!!.open()
 
-      user = arguments?.getParcelable("user")
+      user = intent!!.getParcelableExtra("user")
 
       binding.ivBack.setOnClickListener {
-        replaceLoginFragment1(requireActivity(), LoginFragment())
+         startActivity(Intent(this, LoginActivity::class.java))
       }
 
       binding.cbAll.setOnCheckedChangeListener { _, isChecked ->
@@ -122,23 +130,21 @@ class InputTermsFragment : Fragment() {
                   signInDialog()
                }
             }else {
-               Toast.makeText(requireActivity(), "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
+               Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
             }
          }
       }
-
-      return binding.root
    }
 
    private fun signInDialog() {
-      val dialog = Dialog(requireActivity())
+      val dialog = Dialog(this)
       dialog.setContentView(R.layout.dialog_signup)
       dialog.setCancelable(false)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
       val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
 
       btnConfirm.setOnClickListener {
-         replaceLoginFragment1(requireActivity(), InputInfoFragment())
+         startActivity(Intent(this, InputActivity::class.java))
          dialog.dismiss()
       }
 
@@ -146,7 +152,7 @@ class InputTermsFragment : Fragment() {
    }
 
    private fun showTermsDialog(title: String, id: Int) {
-      val dialog = Dialog(requireActivity())
+      val dialog = Dialog(this)
       dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
       dialog.setContentView(R.layout.dialog_terms)
 

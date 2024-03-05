@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -16,6 +15,7 @@ import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.init.InputActivity
 import com.makebodywell.bodywell.view.init.LoginActivity
 
 class CustomUtil {
@@ -23,29 +23,10 @@ class CustomUtil {
       const val TAG = "testTag"
       var drugTimeList = ArrayList<DrugTime>()
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
-      var measureHeight = 0
-
-      fun replaceLoginFragment1(activity: FragmentActivity, fragment: Fragment?) {
-         (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
-            replace(R.id.loginFrame, fragment!!)
-            addToBackStack(null)
-            commit()
-         }
-      }
-
-      fun replaceLoginFragment2(activity: FragmentActivity, fragment: Fragment?, bundle: Bundle?) {
-         (activity as LoginActivity).supportFragmentManager.beginTransaction().apply {
-            fragment?.arguments = bundle
-            add(R.id.loginFrame, fragment!!)
-            addToBackStack(null)
-            commit()
-         }
-      }
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             replace(R.id.mainFrame, fragment!!)
-            addToBackStack(null)
             commit()
          }
       }
@@ -54,7 +35,6 @@ class CustomUtil {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             fragment?.arguments = bundle
             replace(R.id.mainFrame, fragment!!)
-            addToBackStack(null)
             commit()
          }
       }
@@ -80,7 +60,7 @@ class CustomUtil {
          }
       }
 
-      fun getFoodKcal(context: Context, date:String) : Item {
+      fun getFoodCalories(context: Context, date:String) : Item {
          val dataManager = DataManager(context)
          dataManager.open()
 

@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,10 +24,11 @@ import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
 import java.util.stream.Collectors
 import kotlin.math.abs
 
-class FoodDinnerFragment : Fragment() {
+class FoodDinnerFragment : Fragment(), MainActivity.OnBackPressedListener {
     private var _binding: FragmentFoodDinnerBinding? = null
     val binding get() = _binding!!
 
@@ -35,6 +37,11 @@ class FoodDinnerFragment : Fragment() {
     private var intakeAdapter: FoodIntakeAdapter? = null
     private var imageData: ArrayList<Image>? = null
     private var type = 3
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context as MainActivity).setOnBackPressedListener(this)
+    }
 
     @SuppressLint("InternalInsetResource", "DiscouragedApi")
     override fun onCreateView(
@@ -76,14 +83,6 @@ class FoodDinnerFragment : Fragment() {
 
         binding.tvSnack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodSnackFragment())
-        }
-
-        binding.cvSave.setOnClickListener {
-//            val getFoodData = intakeAdapter!!.getFoodData()
-//            dataManager!!.updateInt(DBHelper.TABLE_FOOD, "count", getFoodData.count, getFoodData.id)
-
-            Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment1(requireActivity(), FoodFragment())
         }
 
         photoView()
@@ -153,7 +152,7 @@ class FoodDinnerFragment : Fragment() {
     }
 
     private fun listView() {
-        val dataList = dataManager!!.getFood(type, selectedDate.toString())
+        val dataList = dataManager!!.getDailyFood(type, selectedDate.toString())
 
         if(dataList.size != 0) {
             // 섭취한 식단 설정
@@ -190,5 +189,11 @@ class FoodDinnerFragment : Fragment() {
 
             binding.rv.adapter = intakeAdapter
         }
+    }
+
+    override fun onBackPressed() {
+        val activity = activity as MainActivity?
+        activity!!.setOnBackPressedListener(null)
+        replaceFragment1(requireActivity(), FoodFragment())
     }
 }
