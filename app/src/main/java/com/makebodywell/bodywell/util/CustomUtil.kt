@@ -98,10 +98,10 @@ class CustomUtil {
          val dataManager = DataManager(context)
          dataManager.open()
 
-         val getFood1 = dataManager.getFood(1, date)
-         val getFood2 = dataManager.getFood(2, date)
-         val getFood3 = dataManager.getFood(3, date)
-         val getFood4 = dataManager.getFood(4, date)
+         val getFood1 = dataManager.getDailyFood(1, date)
+         val getFood2 = dataManager.getDailyFood(2, date)
+         val getFood3 = dataManager.getDailyFood(3, date)
+         val getFood4 = dataManager.getDailyFood(4, date)
 
          var carbohydrate = 0.0
          var protein = 0.0

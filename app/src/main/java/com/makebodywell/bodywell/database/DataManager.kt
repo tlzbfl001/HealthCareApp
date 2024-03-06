@@ -196,31 +196,6 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getFood(type: Int, date: String) : ArrayList<Food> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Food> = ArrayList()
-      val sql = "select * from $TABLE_FOOD where userId = ${MyApp.prefs.getId()} and useDate = '$date'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Food()
-         data.id=cursor.getInt(0)
-         data.name=cursor.getString(2)
-         data.unit=cursor.getString(3)
-         data.amount= cursor.getInt(4)
-         data.kcal= cursor.getInt(5)
-         data.carbohydrate= cursor.getDouble(6)
-         data.protein= cursor.getDouble(7)
-         data.fat= cursor.getDouble(8)
-         data.salt= cursor.getDouble(9)
-         data.sugar= cursor.getDouble(10)
-         data.searchCount= cursor.getInt(11)
-         data.useDate = cursor.getString(12)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getSearchFood(column: String) : ArrayList<Food> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Food>()

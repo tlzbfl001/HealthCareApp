@@ -11,18 +11,18 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_USER = "user"
       const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
-      const val TABLE_DAILY_FOOD = "dailyFood"
       const val TABLE_WATER = "water"
       const val TABLE_EXERCISE = "exercise"
-      const val TABLE_DAILY_EXERCISE = "dailyExercise"
       const val TABLE_BODY = "body"
       const val TABLE_SLEEP = "sleep"
       const val TABLE_DRUG = "drug"
       const val TABLE_DRUG_TIME = "drugTime"
       const val TABLE_DRUG_CHECK = "drugCheck"
       const val TABLE_NOTE = "note"
-      const val TABLE_DAILY_DATA = "dailyData"
       const val TABLE_IMAGE = "image"
+      const val TABLE_DAILY_DATA = "dailyData"
+      const val TABLE_DAILY_FOOD = "dailyFood"
+      const val TABLE_DAILY_EXERCISE = "dailyExercise"
    }
 
    override fun onCreate(db: SQLiteDatabase) {
@@ -39,19 +39,11 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, searchCount integer, useDate text);"
       db.execSQL(food)
 
-      val dailyFood = "create table $TABLE_DAILY_FOOD(id integer primary key autoincrement, userId integer, type integer, name text, unit text, amount integer, " +
-         "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, regDate text);"
-      db.execSQL(dailyFood)
-
       val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, water integer, volume integer, regDate text);"
       db.execSQL(water)
 
       val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, name text, searchCount integer, useDate text);"
       db.execSQL(exercise)
-
-      val dailyExercise = "create table $TABLE_DAILY_EXERCISE(id integer primary key autoincrement, userId integer, name text, " +
-         "intensity text, workoutTime integer, calories integer, regDate text);"
-      db.execSQL(dailyExercise)
 
       val body = "create table $TABLE_BODY(id integer primary key autoincrement, userId integer, height real, weight real, age integer, " +
          "gender text, exerciseLevel integer, fat real, muscle real, bmi real, bmr real, regDate text);"
@@ -73,30 +65,38 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, regDate text);"
       db.execSQL(note)
 
+      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, imageUri text, type integer, dataId integer, regDate text);"
+      db.execSQL(image)
+
       val dailyData = "create table $TABLE_DAILY_DATA(id integer primary key autoincrement, userId integer, foodGoal integer, waterGoal integer, exerciseGoal integer," +
          "bodyGoal real, sleepGoal integer, drugGoal integer, regDate text);"
       db.execSQL(dailyData)
 
-      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, imageUri text, type integer, dataId integer, regDate text);"
-      db.execSQL(image)
+      val dailyFood = "create table $TABLE_DAILY_FOOD(id integer primary key autoincrement, userId integer, type integer, name text, unit text, amount integer, " +
+         "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, regDate text);"
+      db.execSQL(dailyFood)
+
+      val dailyExercise = "create table $TABLE_DAILY_EXERCISE(id integer primary key autoincrement, userId integer, name text, " +
+         "intensity text, workoutTime integer, calories integer, regDate text);"
+      db.execSQL(dailyExercise)
    }
 
    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
       db.execSQL("drop table if exists $TABLE_USER")
       db.execSQL("drop table if exists $TABLE_TOKEN")
       db.execSQL("drop table if exists $TABLE_FOOD")
-      db.execSQL("drop table if exists $TABLE_DAILY_FOOD")
       db.execSQL("drop table if exists $TABLE_WATER")
       db.execSQL("drop table if exists $TABLE_EXERCISE")
-      db.execSQL("drop table if exists $TABLE_DAILY_EXERCISE")
       db.execSQL("drop table if exists $TABLE_BODY")
       db.execSQL("drop table if exists $TABLE_DRUG")
       db.execSQL("drop table if exists $TABLE_DRUG_TIME")
       db.execSQL("drop table if exists $TABLE_DRUG_CHECK")
       db.execSQL("drop table if exists $TABLE_NOTE")
       db.execSQL("drop table if exists $TABLE_SLEEP")
-      db.execSQL("drop table if exists $TABLE_DAILY_DATA")
       db.execSQL("drop table if exists $TABLE_IMAGE")
+      db.execSQL("drop table if exists $TABLE_DAILY_DATA")
+      db.execSQL("drop table if exists $TABLE_DAILY_FOOD")
+      db.execSQL("drop table if exists $TABLE_DAILY_EXERCISE")
       onCreate(db)
    }
 }

@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
       _binding = ActivityLoginBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      window?.apply {
+      this.window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
@@ -65,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
       // 구글 로그인
       binding.clGoogle.setOnClickListener {
          if(!networkStatusCheck(this)){
-            Toast.makeText(this, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
             googleLogin()
          }
@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
       // 네이버 로그인
       binding.clNaver.setOnClickListener {
          if(!networkStatusCheck(this)){
-            Toast.makeText(this, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
             naverLogin()
          }
@@ -83,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
       // 카카오 로그인
       binding.clKakao.setOnClickListener {
          if(!networkStatusCheck(this)){
-            Toast.makeText(this, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
             kakaoLogin()
          }
