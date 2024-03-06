@@ -682,10 +682,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getDates(table: String, start: String, end: String) : ArrayList<String> {
+   fun getDates(table: String, column: String, start: String, end: String) : ArrayList<String> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<String>()
-      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()} and regDate BETWEEN '$start' and '$end' order by regDate"
+      val sql = "select distinct $column from $table where userId = ${MyApp.prefs.getId()} and $column BETWEEN '$start' and '$end' order by $column"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          list.add(cursor.getString(0))

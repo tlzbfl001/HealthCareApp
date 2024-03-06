@@ -125,7 +125,10 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvAlarm.setOnClickListener {
-         Log.d(TAG,"tvAlarm: ${NotificationManagerCompat.from(requireActivity()).areNotificationsEnabled()}")
+         val intent = Intent()
+         intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+         intent.putExtra("android.provider.extra.APP_PACKAGE", requireActivity().packageName)
+         startActivity(intent)
       }
 
       binding.tvConnect.setOnClickListener {

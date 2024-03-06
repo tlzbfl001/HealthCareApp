@@ -27,6 +27,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.ReportAdapter
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
@@ -182,7 +183,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager!!.getDates(TABLE_DAILY_EXERCISE, weekArray[0].toString(), weekArray[6].toString(), "useDate")
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -203,7 +204,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 3
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager!!.getDates(TABLE_DAILY_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString(), "useDate")
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
