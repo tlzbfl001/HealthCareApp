@@ -37,7 +37,6 @@ import com.makebodywell.bodywell.type.LoginGoogleOauthInput
 import com.makebodywell.bodywell.type.LoginKakaoOauthInput
 import com.makebodywell.bodywell.type.LoginNaverOauthInput
 import com.makebodywell.bodywell.type.UpdateBodyMeasurementInput
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import kotlinx.coroutines.delay
@@ -78,8 +77,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val body = dataManager!!.getBody(LocalDate.now().toString())
             val accessDiff = Duration.between(LocalDateTime.parse(token.accessTokenRegDate), LocalDateTime.now())
             val refreshDiff = Duration.between(LocalDateTime.parse(token.refreshTokenRegDate), LocalDateTime.now())
-            Log.d(TAG, "accessDiff: ${accessDiff.toHours()}/${accessDiff.toMinutes()}/${accessDiff.seconds}")
-            Log.d(TAG, "refreshDiff: ${refreshDiff.toHours()}/${refreshDiff.toMinutes()}/${refreshDiff.seconds}")
+            Log.d("ttt", "accessDiff: ${accessDiff.toHours()}/${accessDiff.toMinutes()}/${accessDiff.seconds}")
+            Log.d("ttt", "refreshDiff: ${refreshDiff.toHours()}/${refreshDiff.toMinutes()}/${refreshDiff.seconds}")
 
             if(accessDiff.toHours() >= 1 && !accessCheck) {
                accessCheck = refreshToken()
@@ -101,7 +100,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   register()
                }
 
-               Log.d(TAG, "updateBody: ${updateBody.data}")
+               Log.d("ttt", "updateBody: ${updateBody.data}")
 
                val test = apolloClient.query(BodyMeasurementQuery(
                   bodyMeasurementId = user.bodyMeasurementId!!
@@ -125,7 +124,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       when(user.type) {
          "google" -> {
             viewModelScope.launch {
-               apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
+               val createUser = apolloClient.mutation(CreateUserGoogleMutation(CreateGoogleOauthInput(
                   idToken = user.idToken.toString()
                ))).execute()
 
@@ -339,7 +338,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                      if(me3.data != null) {
                         val getUser = dataManager!!.getUser(user.type!!, user.email!!)
                         if(getUser.id > 0) {
-                           Log.d(TAG,  "access: ${token.accessToken}\n" +
+                           Log.d("ttt",  "access: ${token.accessToken}\n" +
                               "userId: $userId\n" +
                               "deviceId: $deviceId\n" +
                               "healthId: $healthId\n" +

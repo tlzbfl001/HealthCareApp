@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +17,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainActivity
@@ -25,6 +29,8 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var dataManager: DataManager? = null
    private var level = 1
    private var gender = "FEMALE"
+   private var isDecimal = false
+   private var isThreeDigit = false
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -104,6 +110,145 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), BodyFragment())
       }
+
+      binding.etBmi.addTextChangedListener(object : TextWatcher {
+         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if(s.length == 1 && s[0].toString() == ".") {
+               binding.etBmi.setText("")
+            }
+
+            if(s.length < 3) {
+               isDecimal = false
+            }
+
+            if(!isDecimal && s.length == 3) {
+               val text = if (s[1].toString() == ".") {
+                  s[0].toString()+s[2].toString()+".0"
+               }else if(s[2].toString() == "."){
+                  s[0].toString()+s[1].toString()+".0"
+               }else {
+                  s[0].toString()+s[1].toString()+"."+s[2].toString()
+               }
+
+               binding.etBmi.setText(text)
+               binding.etBmi.setSelection(text.length)
+               isDecimal = true
+            }
+         }
+
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {}
+      })
+
+      binding.etFat.addTextChangedListener(object : TextWatcher {
+         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if(s.length == 1 && s[0].toString() == ".") {
+               binding.etFat.setText("")
+            }
+
+            if(s.length < 3) {
+               isDecimal = false
+            }
+
+            if(!isDecimal && s.length == 3) {
+               val text = if (s[1].toString() == ".") {
+                  s[0].toString()+s[2].toString()+".0"
+               }else if(s[2].toString() == "."){
+                  s[0].toString()+s[1].toString()+".0"
+               }else {
+                  s[0].toString()+s[1].toString()+"."+s[2].toString()
+               }
+
+               binding.etFat.setText(text)
+               binding.etFat.setSelection(text.length)
+               isDecimal = true
+            }
+         }
+
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {}
+      })
+
+      binding.etMuscle.addTextChangedListener(object : TextWatcher {
+         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if(s.length == 1 && s[0].toString() == ".") {
+               binding.etMuscle.setText("")
+            }
+
+            if(s.length < 3) {
+               isDecimal = false
+            }
+
+            if(!isDecimal && s.length == 3) {
+               val text = if (s[1].toString() == ".") {
+                  s[0].toString()+s[2].toString()+".0"
+               }else if(s[2].toString() == "."){
+                  s[0].toString()+s[1].toString()+".0"
+               }else {
+                  s[0].toString()+s[1].toString()+"."+s[2].toString()
+               }
+
+               binding.etMuscle.setText(text)
+               binding.etMuscle.setSelection(text.length)
+               isDecimal = true
+            }
+         }
+
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {}
+      })
+
+      binding.etHeight.addTextChangedListener(object : TextWatcher {
+         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if(s.length == 1 && s[0].toString() == ".") {
+               binding.etHeight.setText("")
+            }
+
+            if(s.length < 3) {
+               isDecimal = false
+               isThreeDigit = false
+            }
+
+            if(!isDecimal && s.length == 3) {
+               val text = if (s[1].toString() == ".") {
+                  s[0].toString()+s[2].toString()+".0"
+               }else if(s[2].toString() == "."){
+                  s[0].toString()+s[1].toString()+".0"
+               }else {
+                  s[0].toString()+s[1].toString()+"."+s[2].toString()
+               }
+
+               binding.etHeight.setText(text)
+               binding.etHeight.setSelection(text.length)
+               isDecimal = true
+               isThreeDigit=true
+            }
+
+            if(isThreeDigit && s.length == 4) {
+               val text = if (s[1].toString() == ".") {
+                  s[0].toString()+s[2].toString()+s[3].toString()+".0"
+               }else if(s[2].toString() == "."){
+                  s[0].toString()+s[1].toString()+s[3].toString()+".0"
+               }else {
+                  s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
+               }
+
+               binding.etHeight.setText(text)
+               binding.etHeight.setSelection(text.length)
+               isThreeDigit = false
+            }
+
+            if(s.length == 5) {
+               val text = s[0].toString()+s[1].toString()+s[3].toString()+"."+s[4].toString()
+
+               binding.etHeight.setText(text)
+               binding.etHeight.setSelection(text.length)
+            }
+         }
+
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {}
+      })
 
       binding.tvMan.setOnClickListener {
          genderUI1()
