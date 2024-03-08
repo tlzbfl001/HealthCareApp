@@ -28,7 +28,7 @@ class CalendarAdapter1 (
       }else {
          holder.tvDate.text = date.dayOfMonth.toString()
          if (date == selectedDate) {
-            holder.tvDate.setBackgroundResource(R.drawable.oval_cal_select1)
+            holder.tvDate.setBackgroundResource(R.drawable.oval_cal_select)
             holder.tvDate.setTextColor(Color.WHITE)
          }
       }

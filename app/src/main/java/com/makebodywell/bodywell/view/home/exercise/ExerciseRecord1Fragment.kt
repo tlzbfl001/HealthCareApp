@@ -100,7 +100,7 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private fun listView() {
       itemList.clear()
 
-      itemList = dataManager!!.getSearchExercise("searchCount")
+      itemList = dataManager!!.getSearchExercise("useCount")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE

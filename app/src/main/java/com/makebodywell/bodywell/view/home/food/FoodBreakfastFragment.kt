@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
@@ -73,7 +74,7 @@ class FoodBreakfastFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       binding.cvInput.setOnClickListener {
          val bundle = Bundle()
-         bundle.putString("type", "$type")
+         bundle.putString("type", type.toString())
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
@@ -170,7 +171,7 @@ class FoodBreakfastFragment : Fragment(), MainActivity.OnBackPressedListener {
                val dialog = AlertDialog.Builder(context)
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
-                     dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
+                     dataManager!!.deleteItem(TABLE_DAILY_FOOD, "id", dataList[pos].id)
                      dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                      if (imageData.size > 0) {
@@ -198,7 +199,7 @@ class FoodBreakfastFragment : Fragment(), MainActivity.OnBackPressedListener {
 
    override fun onBackPressed() {
       val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
       replaceFragment1(requireActivity(), FoodFragment())
+      activity!!.setOnBackPressedListener(null)
    }
 }

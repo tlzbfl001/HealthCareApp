@@ -59,12 +59,12 @@
     </androidx.cardview.widget.CardView>
     <TextView
         android:id="@+id/tvBreakfast"
-        android:layout_width="wrap_content"
+       android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/rec_25_border_gray"
         android:layout_marginTop="15dp"
         android:layout_marginLeft="25dp"
-        android:layout_marginRight="6dp"
+        android:layout_marginRight="7dp"
        android:paddingTop="6dp"
        android:paddingBottom="6dp"
        android:paddingLeft="20dp"
@@ -78,10 +78,10 @@
         app:layout_constraintEnd_toStartOf="@id/tvLunch"/>
     <TextView
         android:id="@+id/tvLunch"
-        android:layout_width="wrap_content"
+       android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/rec_25_border_gray"
-        android:layout_marginRight="6dp"
+        android:layout_marginRight="7dp"
        android:paddingTop="6dp"
        android:paddingBottom="6dp"
        android:paddingLeft="20dp"
@@ -96,9 +96,9 @@
         app:layout_constraintEnd_toStartOf="@id/tvDinner"/>
     <androidx.cardview.widget.CardView
         android:id="@+id/tvDinner"
-        android:layout_width="wrap_content"
+       android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="6dp"
+        android:layout_marginRight="7dp"
         app:cardBackgroundColor="#EE6685"
         app:cardCornerRadius="25dp"
         app:cardElevation="0dp"
@@ -120,7 +120,7 @@
     </androidx.cardview.widget.CardView>
     <TextView
         android:id="@+id/tvSnack"
-        android:layout_width="wrap_content"
+       android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/rec_25_border_gray"
         android:layout_marginRight="25dp"
@@ -222,7 +222,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="25dp"
                     android:text="섭취 음식"
-                   android:textSize="16dp"
+                   android:textSize="17dp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
                     app:layout_constraintTop_toTopOf="parent"

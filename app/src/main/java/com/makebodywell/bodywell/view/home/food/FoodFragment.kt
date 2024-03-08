@@ -222,7 +222,6 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
    @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       // 목표 초기화
-      binding.pbFood.max = 0
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
       binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0 kcal"
@@ -418,7 +417,7 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
 
    override fun onBackPressed() {
       val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
       replaceFragment1(requireActivity(), MainFragment())
+      activity!!.setOnBackPressedListener(null)
    }
 }

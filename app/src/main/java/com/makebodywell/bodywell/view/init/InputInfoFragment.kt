@@ -22,6 +22,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
@@ -38,7 +40,7 @@ class InputInfoFragment : Fragment() {
    private var dialog: Dialog? = null
    private var image: String? = ""
 
-   @SuppressLint("SetTextI18n")
+   @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -49,6 +51,11 @@ class InputInfoFragment : Fragment() {
       dataManager!!.open()
 
       val getUser = dataManager!!.getUser()
+
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         hideKeyboard(requireActivity())
+         true
+      }
 
       binding.ivProfile.setOnClickListener {
          if(cameraRequest(requireActivity())) {
@@ -79,14 +86,13 @@ class InputInfoFragment : Fragment() {
 
       binding.tvBirthday.setOnClickListener {
          val datePickerCalendar = Calendar.getInstance()
-         val year = datePickerCalendar.get(Calendar.YEAR)
-         val month = datePickerCalendar.get(Calendar.MONTH)
-         val day = datePickerCalendar.get(Calendar.DAY_OF_MONTH)
+         val calendarYear = datePickerCalendar.get(Calendar.YEAR)
+         val calendarMonth = datePickerCalendar.get(Calendar.MONTH)
+         val calendarDay = datePickerCalendar.get(Calendar.DAY_OF_MONTH)
 
          val dpd = DatePickerDialog(requireContext(), R.style.MySpinnerDatePickerStyle,{ _, year, monthOfYear, dayOfMonth ->
-               val month = monthOfYear + 1
-               binding.tvBirthday.text = "$year-${String.format("%02d", month)}-${String.format("%02d", dayOfMonth)}"
-            }, year, month, day
+               binding.tvBirthday.text = "$year-${String.format("%02d", monthOfYear + 1)}-${String.format("%02d", dayOfMonth)}"
+            }, calendarYear, calendarMonth, calendarDay
          )
 
          // 최대 날짜를 현재 시각으로
@@ -95,18 +101,18 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         val name = if(getUser.name != "") {
-            getUser.name
-         }else if(binding.etName.text.toString() != "") {
+         val name = if(binding.etName.text.toString() != "") {
             binding.etName.text.toString()
+         }else if(getUser.name != "") {
+            getUser.name
          }else {
             "바디웰"
          }
 
-         val birthday = if(getUser.birthday != "") {
-            getUser.birthday
-         }else if(binding.tvBirthday.text.toString() != "") {
+         val birthday = if(binding.tvBirthday.text.toString() != "") {
             binding.tvBirthday.text.toString()
+         }else if(getUser.birthday != "") {
+            getUser.birthday
          }else {
             "1990-01-01"
          }

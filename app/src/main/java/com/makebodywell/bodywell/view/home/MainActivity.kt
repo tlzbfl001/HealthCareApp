@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
    private var _binding: ActivityMainBinding? = null
    private val binding get() = _binding!!
 
-   private var pressedTime: Long = 0
    private lateinit var viewModel: MainViewModel
+   private var pressedTime: Long = 0
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -69,15 +69,15 @@ class MainActivity : AppCompatActivity() {
       if(backPressedListener != null) {
          backPressedListener!!.onBackPressed()
       }else {
-         if (pressedTime == 0L) {
+         pressedTime = if(pressedTime == 0L) {
             Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-            pressedTime = System.currentTimeMillis()
-         } else {
+            System.currentTimeMillis()
+         }else {
             val seconds = (System.currentTimeMillis() - pressedTime).toInt()
-            if (seconds > 2000) {
+            if(seconds > 2000) {
                Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-               pressedTime = 0
-            } else {
+               0
+            }else {
                super.onBackPressed()
                finishAffinity()
                System.runFinalization()

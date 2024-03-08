@@ -17,6 +17,8 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Image
@@ -165,19 +167,21 @@ class FoodDinnerFragment : Fragment(), MainActivity.OnBackPressedListener {
                     val dialog = AlertDialog.Builder(context)
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager!!.deleteItem(DBHelper.TABLE_FOOD, "id", dataList[pos].id)
-                            dataManager!!.deleteItem(DBHelper.TABLE_IMAGE, "dataId", dataList[pos].id)
+                            if (imageData!!.size > 0) {
+                                imageData!!.stream().filter {
+                                    x -> x.dataId == dataList[pos].id
+                                }.collect(Collectors.toList()).forEach { x ->
+                                    imageData!!.remove(x)
+                                }
+                            }
+
+                            dataManager!!.deleteItem(TABLE_DAILY_FOOD, "id", dataList[pos].id)
+                            dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                             dataList.removeAt(pos)
-                            intakeAdapter!!.notifyDataSetChanged()
 
-                            if (imageData!!.size > 0) {
-                                imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
-                                    .collect(Collectors.toList()).forEach { x ->
-                                        imageData!!.remove(x)
-                                    }
-                                photoAdapter!!.notifyDataSetChanged()
-                            }
+                            intakeAdapter!!.notifyDataSetChanged()
+                            photoAdapter!!.notifyDataSetChanged()
 
                             Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         }

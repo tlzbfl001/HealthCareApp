@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
@@ -83,8 +85,10 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       btnSave.setOnClickListener {
          if(etGoal.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(etVolume.text.toString().trim() == "0"  || etGoal.text.toString().trim() == "0") {
+         }else if(etVolume.text.toString().toInt() < 1 || etGoal.text.toString().toInt() < 1) {
             Toast.makeText(requireActivity(), "1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else if(etGoal.text.toString().toInt() > 100) {
+            Toast.makeText(requireActivity(), "섭취량은 100잔을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             goal = etGoal.text.toString().toInt()
 
@@ -104,18 +108,7 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
                dataManager!!.updateWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
             }
 
-            binding.pbWater.max = goal
-            binding.tvIntake.text = "${count}잔/${count * volume}ml"
-            binding.tvVolume.text = "${volume}ml"
-            binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
-            binding.tvUnit.text = (count * volume).toString()
-
-            val remain = goal - count
-            if(remain > 0) {
-               binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-            }else {
-               binding.tvRemain.text = "0잔/0ml"
-            }
+            dailyGoal()
 
             dialog.dismiss()
          }
@@ -185,13 +178,13 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       getDailyData = dataManager!!.getDailyData(selectedDate.toString())
       getWater = dataManager!!.getWater(selectedDate.toString())
 
-      binding.pbWater.max = 0
       binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
       binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
       binding.tvIntake.text = "0잔/0ml"
       binding.tvVolume.text = "200ml"
       binding.tvGoal.text = "0잔/0ml"
       binding.tvRemain.text = "0잔/0ml"
+
       goal = getDailyData.waterGoal
       volume = getWater.volume
       count = getWater.water
@@ -261,7 +254,9 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.ivPlus.setOnClickListener {
-         count += 1
+         if(count < 100) {
+            count += 1
+         }
 
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))

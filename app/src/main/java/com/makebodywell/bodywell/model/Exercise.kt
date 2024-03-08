@@ -11,7 +11,7 @@ data class Exercise (
    var intensity: String = "",
    var workoutTime: Int = 0,
    var calories: Int = 0,
-   var searchCount: Int = 0,
+   var useCount: Int = 0,
    var regDate: String = "",
    var useDate: String = ""
 ) : Parcelable

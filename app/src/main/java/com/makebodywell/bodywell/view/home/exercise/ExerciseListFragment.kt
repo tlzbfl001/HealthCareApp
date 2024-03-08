@@ -56,9 +56,9 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
-      val getExercise = dataManager!!.getDailyExercise(selectedDate.toString())
+      val getDailyExercise = dataManager!!.getDailyExercise(selectedDate.toString())
 
-      val adapter = ExerciseListAdapter(requireActivity(), getExercise)
+      val adapter = ExerciseListAdapter(requireActivity(), getDailyExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
 

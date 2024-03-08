@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.note
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -15,15 +16,23 @@ import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
 
-class NoteWriteFragment : Fragment() {
+class NoteWriteFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentNoteWriteBinding? = null
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var status = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      (context as MainActivity).setOnBackPressedListener(this)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -49,7 +58,7 @@ class NoteWriteFragment : Fragment() {
       bundle.putString("data", "note")
 
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
          true
       }
 
@@ -136,5 +145,11 @@ class NoteWriteFragment : Fragment() {
          binding.etContent.hint = "내용입력"
          binding.ivFace.setImageResource(R.drawable.face1)
       }
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment2(requireActivity(), NoteFragment(), bundle)
    }
 }

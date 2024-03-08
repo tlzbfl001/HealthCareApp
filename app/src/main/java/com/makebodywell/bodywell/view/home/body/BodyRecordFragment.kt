@@ -4,32 +4,27 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.food.FoodFragment
-import java.time.LocalDate
 
 class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentBodyRecordBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var exerciseLevel = 1
-   private var gender = "MALE"
+   private var level = 1
+   private var gender = "FEMALE"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -75,23 +70,23 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          when(getBody.exerciseLevel) {
             1 -> {
                binding.radioBtn1.isChecked = true
-               exerciseLevel = 1
+               level = 1
             }
             2 -> {
                binding.radioBtn2.isChecked = true
-               exerciseLevel = 2
+               level = 2
             }
             3 -> {
                binding.radioBtn3.isChecked = true
-               exerciseLevel = 3
+               level = 3
             }
             4 -> {
                binding.radioBtn4.isChecked = true
-               exerciseLevel = 4
+               level = 4
             }
             5 -> {
                binding.radioBtn5.isChecked = true
-               exerciseLevel = 5
+               level = 5
             }
          }
       }
@@ -120,22 +115,22 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       binding.radioGroup.setOnCheckedChangeListener{ _, checkedId ->
          when(checkedId) {
-            R.id.radioBtn1 -> exerciseLevel = 1
-            R.id.radioBtn2 -> exerciseLevel = 2
-            R.id.radioBtn3 -> exerciseLevel = 3
-            R.id.radioBtn4 -> exerciseLevel = 4
-            R.id.radioBtn5 -> exerciseLevel = 5
+            R.id.radioBtn1 -> level = 1
+            R.id.radioBtn2 -> level = 2
+            R.id.radioBtn3 -> level = 3
+            R.id.radioBtn4 -> level = 4
+            R.id.radioBtn5 -> level = 5
          }
       }
 
       // BMR 구하기
       binding.cvResult.setOnClickListener {
          if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "" || binding.etAge.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "내 신체 정보를 전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "내 신체 정보를 전부 입력해야합니다.", Toast.LENGTH_SHORT).show()
          }else {
             var step = 0.0
 
-            when(exerciseLevel) {
+            when(level) {
                1 -> step = 1.2
                2 -> step = 1.375
                3 -> step = 1.55
@@ -156,33 +151,29 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.cvSave.setOnClickListener {
-         var height = binding.etHeight.text.toString()
-         var weight = binding.etWeight.text.toString()
-         var age = binding.etAge.text.toString()
-         var fat = binding.etFat.text.toString()
-         var muscle = binding.etMuscle.text.toString()
-         var bmi = binding.etBmi.text.toString()
-         var bmr = binding.tvBmr.text.toString()
+         val height = if(binding.etHeight.text.toString() == "") 0.0 else binding.etHeight.text.toString().toDouble()
+         val weight = if(binding.etWeight.text.toString() == "") 0.0 else binding.etWeight.text.toString().toDouble()
+         val age = if(binding.etAge.text.toString() == "") 0 else binding.etAge.text.toString().toInt()
+         val fat = if(binding.etFat.text.toString() == "") 0.0 else binding.etFat.text.toString().toDouble()
+         val muscle = if(binding.etMuscle.text.toString() == "") 0.0 else binding.etMuscle.text.toString().toDouble()
+         val bmi = if(binding.etBmi.text.toString() == "") 0.0 else binding.etBmi.text.toString().toDouble()
+         val bmr = if(binding.tvBmr.text.toString() == "") 0.0 else binding.tvBmr.text.toString().toDouble()
 
-         if(height == "") height = "0.0"
-         if(weight == "") weight = "0.0"
-         if(age == "") age = "0"
-         if(fat == "") fat = "0.0"
-         if(muscle == "") muscle = "0.0"
-         if(bmi == "") bmi = "0.0"
-         if(bmr == "") bmr = "0.0"
-
-         if(getBody.regDate == "") {
-            dataManager!!.insertBody(Body(height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender, exerciseLevel = exerciseLevel,
-               fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble(), regDate = selectedDate.toString()))
-            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         if(binding.etFat.text.toString().toDouble() > 100) {
+            Toast.makeText(requireActivity(), "체지방율은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.updateBody(Body(id = getBody.id, height = height.toDouble(), weight = weight.toDouble(), age = age.toInt(), gender = gender,
-               exerciseLevel = exerciseLevel, fat = fat.toDouble(), muscle = muscle.toDouble(), bmi = bmi.toDouble(), bmr = bmr.toDouble()))
-            Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
-         }
+            if(getBody.regDate == "") {
+               dataManager!!.insertBody(Body(height = height, weight = weight, age = age, gender = gender, exerciseLevel = level,
+                  fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, regDate = selectedDate.toString()))
+               Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               dataManager!!.updateBody(Body(id = getBody.id, height = height, weight = weight, age = age, gender = gender, exerciseLevel = level,
+                  fat = fat, muscle = muscle, bmi = bmi, bmr = bmr))
+               Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            }
 
-         replaceFragment1(requireActivity(), BodyFragment())
+            replaceFragment1(requireActivity(), BodyFragment())
+         }
       }
 
       return binding.root

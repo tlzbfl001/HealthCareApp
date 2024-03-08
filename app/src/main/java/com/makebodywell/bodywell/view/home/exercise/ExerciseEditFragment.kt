@@ -10,25 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseEditBinding
 import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.food.FoodBreakfastFragment
-import com.makebodywell.bodywell.view.home.food.FoodDinnerFragment
-import com.makebodywell.bodywell.view.home.food.FoodFragment
-import com.makebodywell.bodywell.view.home.food.FoodLunchFragment
-import com.makebodywell.bodywell.view.home.food.FoodSnackFragment
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
@@ -159,25 +148,25 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
             val workoutTime = if(binding.etTime.text.toString().trim() != "") binding.etTime.text.toString().toInt() else 0
             val calories = if(binding.etKcal.text.toString().trim() != "") binding.etKcal.text.toString().toInt() else 0
 
-            if(type != null) {
+            if(type != "" && id != 0) {
                 if(type == "insert") {
                     dataManager!!.insertDailyExercise(Exercise(name = getExercise.name, intensity = intensity, workoutTime = workoutTime,
                         calories = calories, regDate = selectedDate.toString()))
 
                     Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 }else {
-                    dataManager!!.updateDailyExercise(Exercise(name = getExercise.name, intensity = intensity, workoutTime = workoutTime,
-                        calories = calories, regDate = selectedDate.toString()))
+                    dataManager!!.updateDailyExercise(Exercise(id=id, intensity = intensity, workoutTime = workoutTime, calories = calories))
 
                     Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
                 }
 
-                dataManager!!.updateInt(TABLE_EXERCISE, "searchCount", getExercise.searchCount + 1, id)
-                dataManager!!.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), id)
+                val getExercise2 = dataManager!!.getExercise(getExercise.name)
+                dataManager!!.updateInt(TABLE_EXERCISE, "useCount", getExercise2.useCount + 1, getExercise2.id)
+                dataManager!!.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), getExercise2.id)
 
                 replaceFragment1(requireActivity(), ExerciseListFragment())
             }else {
-                Toast.makeText(requireActivity(), "오류 발생.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "오류 발생", Toast.LENGTH_SHORT).show()
             }
         }
 

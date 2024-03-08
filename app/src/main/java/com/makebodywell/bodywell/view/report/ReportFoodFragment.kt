@@ -156,7 +156,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, calendarDate.toString(), calendarDate.toString(), "useDate")
+      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -188,7 +188,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString(), "useDate")
+      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
@@ -216,7 +216,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString(), "useDate")
+      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)

@@ -1,5 +1,6 @@
 package com.makebodywell.bodywell.view.init
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -26,6 +27,7 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
       (context as InputActivity).setOnBackPressedListener(this)
    }
 
+   @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -34,6 +36,11 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
 
       dataManager = DataManager(activity)
       dataManager!!.open()
+
+      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+         CustomUtil.hideKeyboard(requireActivity())
+         true
+      }
 
       binding.ivBack.setOnClickListener {
          requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -47,10 +54,10 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
       }
 
       binding.cvContinue.setOnClickListener {
-         val weightGoal = if(binding.etWeightGoal.text.toString() == "") 0.0 else {binding.etWeightGoal.text.toString().toDouble()}
-         val kcalGoal = if(binding.etKcalGoal.text.toString() == "") 0 else {binding.etKcalGoal.text.toString().toInt()}
-         val waterUnit = if(binding.etWaterUnit.text.toString() == "") 0 else {binding.etWaterUnit.text.toString().toInt()}
-         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 0 else {binding.etWaterGoal.text.toString().toInt()}
+         val weightGoal = if(binding.etWeightGoal.text.toString() == "") 55.0 else {binding.etWeightGoal.text.toString().toDouble()}
+         val kcalGoal = if(binding.etKcalGoal.text.toString() == "") 2000 else {binding.etKcalGoal.text.toString().toInt()}
+         val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else {binding.etWaterUnit.text.toString().toInt()}
+         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else {binding.etWaterGoal.text.toString().toInt()}
 
          dataManager?.updateUserDouble(TABLE_USER, "weightGoal", weightGoal)
          dataManager?.updateUserInt(TABLE_USER, "kcalGoal", kcalGoal)

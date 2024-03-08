@@ -180,7 +180,7 @@ class ReportDrugFragment : Fragment() {
       dateType = 2
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString(), "regDate")
+      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart(binding.chart, getDates)
          rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
@@ -198,7 +198,7 @@ class ReportDrugFragment : Fragment() {
       dateType = 3
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString(), "regDate")
+      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart(binding.chart, getDates)
          rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())

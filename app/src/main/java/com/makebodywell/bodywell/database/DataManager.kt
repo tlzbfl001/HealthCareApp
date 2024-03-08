@@ -3,7 +3,6 @@ package com.makebodywell.bodywell.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
-import android.util.Log
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_DATA
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
@@ -33,7 +32,6 @@ import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.model.Water
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.MyApp
 
 class DataManager(private var context: Context?) {
@@ -166,7 +164,7 @@ class DataManager(private var context: Context?) {
          data.fat= cursor.getDouble(8)
          data.salt= cursor.getDouble(9)
          data.sugar= cursor.getDouble(10)
-         data.searchCount= cursor.getInt(11)
+         data.useCount= cursor.getInt(11)
          data.useDate = cursor.getString(12)
       }
       cursor.close()
@@ -189,7 +187,7 @@ class DataManager(private var context: Context?) {
          data.fat= cursor.getDouble(8)
          data.salt= cursor.getDouble(9)
          data.sugar= cursor.getDouble(10)
-         data.searchCount= cursor.getInt(11)
+         data.useCount= cursor.getInt(11)
          data.useDate = cursor.getString(12)
       }
       cursor.close()
@@ -213,7 +211,7 @@ class DataManager(private var context: Context?) {
          data.fat= cursor.getDouble(8)
          data.salt= cursor.getDouble(9)
          data.sugar= cursor.getDouble(10)
-         data.searchCount= cursor.getInt(11)
+         data.useCount= cursor.getInt(11)
          data.useDate = cursor.getString(12)
          list.add(data)
       }
@@ -363,36 +361,40 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getExercise(date: String) : ArrayList<Exercise> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Exercise>()
-      val sql = "select * from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} and useDate = '$date'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val data = Exercise()
-         data.id=cursor.getInt(0)
-         data.name=cursor.getString(2)
-         data.searchCount=cursor.getInt(3)
-         data.useDate= cursor.getString(4)
-         list.add(data)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getExercise(id: Int): Exercise {
       val db = dbHelper!!.readableDatabase
       val data = Exercise()
-      val sql = "select * from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} and id = '$id'"
+      val sql = "select * from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} and id = $id"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
          data.name=cursor.getString(2)
-         data.searchCount=cursor.getInt(3)
-         data.useDate= cursor.getString(4)
+         data.intensity =cursor.getString(3)
+         data.workoutTime = cursor.getInt(4)
+         data.calories = cursor.getInt(5)
+         data.useCount=cursor.getInt(6)
+         data.useDate= cursor.getString(7)
       }
       cursor.close()
       return data
+   }
+
+   fun getExercise(data: String) : Exercise {
+      val db = dbHelper!!.readableDatabase
+      val exercise = Exercise()
+      val sql = "select * from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} and name = '$data'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         exercise.id=cursor.getInt(0)
+         exercise.name=cursor.getString(2)
+         exercise.intensity =cursor.getString(3)
+         exercise.workoutTime = cursor.getInt(4)
+         exercise.calories = cursor.getInt(5)
+         exercise.useCount=cursor.getInt(6)
+         exercise.useDate= cursor.getString(7)
+      }
+      cursor.close()
+      return exercise
    }
 
    fun getDailyExercise(id: Int): Exercise {
@@ -440,7 +442,7 @@ class DataManager(private var context: Context?) {
          val data = Exercise()
          data.id=cursor.getInt(0)
          data.name=cursor.getString(2)
-         data.searchCount= cursor.getInt(3)
+         data.useCount= cursor.getInt(3)
          data.useDate= cursor.getString(4)
          list.add(data)
       }
@@ -682,10 +684,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getDates(table: String, column: String, start: String, end: String) : ArrayList<String> {
+   fun getDates(table: String, start: String, end: String) : ArrayList<String> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<String>()
-      val sql = "select distinct $column from $table where userId = ${MyApp.prefs.getId()} and $column BETWEEN '$start' and '$end' order by $column"
+      val sql = "select distinct regDate from $table where userId = ${MyApp.prefs.getId()} and regDate BETWEEN '$start' and '$end' order by regDate"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          list.add(cursor.getString(0))
@@ -733,7 +735,7 @@ class DataManager(private var context: Context?) {
       values.put("fat", data.fat)
       values.put("salt", data.salt)
       values.put("sugar", data.sugar)
-      values.put("searchCount", data.searchCount)
+      values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
       db!!.insert(TABLE_FOOD, null, values)
    }
@@ -783,7 +785,10 @@ class DataManager(private var context: Context?) {
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
       values.put("name", data.name)
-      values.put("searchCount", data.searchCount)
+      values.put("intensity", data.intensity)
+      values.put("workoutTime", data.workoutTime)
+      values.put("calories", data.calories)
+      values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
       db.insert(TABLE_EXERCISE, null, values)
    }
@@ -963,8 +968,7 @@ class DataManager(private var context: Context?) {
 
    fun updateDailyExercise(data: Exercise){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_EXERCISE set intensity='${data.intensity}', workoutTime=${data.workoutTime}, " +
-         "calories=${data.calories} where userId = ${MyApp.prefs.getId()} and name='${data.name}' and regDate='${data.regDate}'"
+      val sql = "update $TABLE_DAILY_EXERCISE set intensity='${data.intensity}', workoutTime=${data.workoutTime}, calories=${data.calories} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }

@@ -8,13 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodSearchBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
@@ -85,7 +83,7 @@ class FoodSearchFragment : Fragment(), MainActivity.OnBackPressedListener {
 				dataManager!!.updateInt(TABLE_DAILY_FOOD, "count", getDailyFood.count + 1, getDailyFood.id)
 			}
 
-			dataManager!!.updateInt(TABLE_FOOD, "searchCount", getFood.searchCount + 1, getFood.id)
+			dataManager!!.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, getFood.id)
 			dataManager!!.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), getFood.id)
 
 			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()

@@ -328,7 +328,7 @@
                       android:layout_width="0dp"
                       android:layout_height="wrap_content"
                       android:layout_marginTop="20dp"
-                      android:paddingRight="20dp"
+                      android:paddingRight="10dp"
                       app:layout_constraintTop_toBottomOf="@id/tv6"
                       app:layout_constraintStart_toStartOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
@@ -336,7 +336,7 @@
                       app:layout_constraintHorizontal_weight="1">
                      <TextView
                          android:id="@+id/tv7"
-                         android:layout_width="wrap_content"
+                         android:layout_width="60dp"
                          android:layout_height="wrap_content"
                          android:text="탄수화물"
                          android:textColor="@color/black"
@@ -345,11 +345,15 @@
                          app:layout_constraintStart_toStartOf="parent"/>
                      <TextView
                          android:id="@+id/tvCar"
-                         android:layout_width="wrap_content"
+                         android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:text="0g"
                          android:textColor="@color/black"
                          android:textSize="14dp"
+                         android:textAlignment="textEnd"
+                         android:maxLines="1"
+                         android:ellipsize="end"
+                         app:layout_constraintStart_toEndOf="@id/tv7"
                          app:layout_constraintTop_toTopOf="@id/tv7"
                          app:layout_constraintBottom_toBottomOf="@id/tv7"
                          app:layout_constraintEnd_toEndOf="parent"/>
@@ -365,11 +369,15 @@
                          app:layout_constraintStart_toStartOf="@id/tv7"/>
                      <TextView
                          android:id="@+id/tvProtein"
-                         android:layout_width="wrap_content"
+                         android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:text="0g"
                          android:textColor="@color/black"
                          android:textSize="14dp"
+                         android:textAlignment="textEnd"
+                         android:maxLines="1"
+                         android:ellipsize="end"
+                         app:layout_constraintStart_toEndOf="@id/tv7"
                          app:layout_constraintTop_toTopOf="@id/tv8"
                          app:layout_constraintEnd_toEndOf="parent"
                          app:layout_constraintBottom_toBottomOf="@id/tv8"/>
@@ -385,11 +393,15 @@
                          app:layout_constraintStart_toStartOf="@id/tv8"/>
                      <TextView
                          android:id="@+id/tvFat"
-                         android:layout_width="wrap_content"
+                         android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:text="0g"
                          android:textColor="@color/black"
                          android:textSize="14dp"
+                         android:textAlignment="textEnd"
+                         android:maxLines="1"
+                         android:ellipsize="end"
+                         app:layout_constraintStart_toEndOf="@id/tv7"
                          app:layout_constraintTop_toTopOf="@id/tv9"
                          app:layout_constraintBottom_toBottomOf="@id/tv9"
                          app:layout_constraintEnd_toEndOf="parent"/>
@@ -398,7 +410,7 @@
                       android:id="@+id/cl6"
                       android:layout_width="0dp"
                       android:layout_height="0dp"
-                      android:paddingLeft="20dp"
+                      android:paddingLeft="10dp"
                       app:layout_constraintTop_toTopOf="@id/cl5"
                       app:layout_constraintStart_toEndOf="@id/cl5"
                       app:layout_constraintBottom_toBottomOf="parent"
@@ -406,7 +418,7 @@
                       app:layout_constraintHorizontal_weight="1">
                      <TextView
                          android:id="@+id/tv10"
-                         android:layout_width="wrap_content"
+                         android:layout_width="50dp"
                          android:layout_height="wrap_content"
                          android:text="나트륨"
                          android:textColor="@color/black"
@@ -415,11 +427,15 @@
                          app:layout_constraintStart_toStartOf="parent"/>
                      <TextView
                          android:id="@+id/tvSalt"
-                         android:layout_width="wrap_content"
+                         android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:text="0mg"
                          android:textColor="@color/black"
                          android:textSize="14dp"
+                         android:textAlignment="textEnd"
+                         android:maxLines="1"
+                         android:ellipsize="end"
+                         app:layout_constraintStart_toEndOf="@id/tv10"
                          app:layout_constraintTop_toTopOf="@id/tv10"
                          app:layout_constraintBottom_toBottomOf="@id/tv10"
                          app:layout_constraintEnd_toEndOf="parent"/>
@@ -435,11 +451,15 @@
                          app:layout_constraintStart_toStartOf="@id/tv10"/>
                      <TextView
                          android:id="@+id/tvSugar"
-                         android:layout_width="wrap_content"
+                         android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:text="0g"
                          android:textColor="@color/black"
                          android:textSize="14dp"
+                         android:textAlignment="textEnd"
+                         android:maxLines="1"
+                         android:ellipsize="end"
+                         app:layout_constraintStart_toEndOf="@id/tv10"
                          app:layout_constraintTop_toTopOf="@id/tv11"
                          app:layout_constraintBottom_toBottomOf="@id/tv11"
                          app:layout_constraintEnd_toEndOf="parent"/>

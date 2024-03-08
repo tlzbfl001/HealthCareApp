@@ -78,9 +78,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val body = dataManager!!.getBody(LocalDate.now().toString())
             val accessDiff = Duration.between(LocalDateTime.parse(token.accessTokenRegDate), LocalDateTime.now())
             val refreshDiff = Duration.between(LocalDateTime.parse(token.refreshTokenRegDate), LocalDateTime.now())
-
             Log.d(TAG, "accessDiff: ${accessDiff.toHours()}/${accessDiff.toMinutes()}/${accessDiff.seconds}")
             Log.d(TAG, "refreshDiff: ${refreshDiff.toHours()}/${refreshDiff.toMinutes()}/${refreshDiff.seconds}")
+
             if(accessDiff.toHours() >= 1 && !accessCheck) {
                accessCheck = refreshToken()
             }
@@ -90,12 +90,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             if(body.regDate != "") {
-               apolloClient.mutation(UpdateBodyMeasurementMutation(bodyMeasurementId = user.bodyMeasurementId!!, UpdateBodyMeasurementInput(
+               val updateBody = apolloClient.mutation(UpdateBodyMeasurementMutation(bodyMeasurementId = user.bodyMeasurementId!!, UpdateBodyMeasurementInput(
                   height = Optional.present(body.height), bodyFatPercentage = Optional.present(body.fat),
                   startedAt = Optional.present(LocalDate.now().toString()), endedAt = Optional.present(LocalDate.now().toString()))
                )).addHttpHeader(
                   "Authorization", "Bearer ${token.accessToken}"
                ).execute()
+
+               if(updateBody.data == null) {
+                  register()
+               }
+
+               Log.d(TAG, "updateBody: ${updateBody.data}")
 
                val test = apolloClient.query(BodyMeasurementQuery(
                   bodyMeasurementId = user.bodyMeasurementId!!
@@ -111,7 +117,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
          }
 
-         delay(5000)
+         delay(10000)
       }
    }
 
@@ -291,9 +297,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Build.VERSION.RELEASE
          }else ""
 
-         val createDevice = apolloClient.mutation(CreateDeviceMutation(userId = userId,
-            CreateDeviceInput(deviceHardwareVersion = ver, deviceLabel = device, deviceManufacturer = manufacturer,
-               deviceModel = model, deviceName = manufacturer, deviceSoftwareVersion = ver
+         val createDevice = apolloClient.mutation(CreateDeviceMutation(userId = userId, CreateDeviceInput(deviceHardwareVersion = ver,
+            deviceLabel = device, deviceManufacturer = manufacturer, deviceModel = model, deviceName = manufacturer, deviceSoftwareVersion = ver
          ))).addHttpHeader(
             "Authorization", "Bearer ${token.accessToken}"
          ).execute()
@@ -333,7 +338,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                      if(me3.data != null) {
                         val getUser = dataManager!!.getUser(user.type!!, user.email!!)
-                        if(getUser.id != 0) {
+                        if(getUser.id > 0) {
                            Log.d(TAG,  "access: ${token.accessToken}\n" +
                               "userId: $userId\n" +
                               "deviceId: $deviceId\n" +
@@ -341,9 +346,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                               "activityId: ${me3.data!!.me.user.health!!.activities[0].activityId}\n" +
                               "bodyMeasurementId: ${me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId}")
 
+                           // 사용자정보 업데이트
                            dataManager!!.updateUser(User(id = getUser.id, userId = userId, deviceId = deviceId, healthId = healthId,
                               activityId = me3.data!!.me.user.health!!.activities[0].activityId,
-                              bodyMeasurementId = me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId)) // 사용자정보 업데이트
+                              bodyMeasurementId = me3.data!!.me.user.health!!.bodyMeasurements[0].bodyMeasurementId))
 
                            user = dataManager!!.getUser()
                            updateData()

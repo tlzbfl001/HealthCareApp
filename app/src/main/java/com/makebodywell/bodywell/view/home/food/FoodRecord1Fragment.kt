@@ -112,7 +112,7 @@ class FoodRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private fun listView() {
       itemList.clear()
 
-      itemList = dataManager!!.getSearchFood("searchCount")
+      itemList = dataManager!!.getSearchFood("useCount")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
@@ -175,14 +175,14 @@ class FoodRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-
       when(type) {
          "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
          "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
          "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
          "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
       }
+
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
    }
 }

@@ -166,6 +166,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
 
          val adapter = PhotoSlideAdapter(context, getImage)
          viewPager?.adapter = adapter
+         viewPager?.setPadding(0, 0, 210, 0)
       }else {
          viewPager?.visibility = View.GONE
          tvStatus?.visibility = View.VISIBLE

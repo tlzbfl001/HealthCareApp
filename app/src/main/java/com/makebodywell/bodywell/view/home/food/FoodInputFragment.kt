@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -127,7 +128,7 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
             Toast.makeText(context, "같은 이름의 데이터가 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager.insertFood(Food(type = type.toInt(), name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-               protein = protein, fat = fat, salt = salt, sugar = sugar, searchCount = 1, useDate = LocalDateTime.now().toString()))
+               protein = protein, fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString()))
 
             dataManager.insertDailyFood(Food(type = type.toInt(), name = name, unit = unit, amount = amount, kcal = kcal,
                carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, regDate = selectedDate.toString()))

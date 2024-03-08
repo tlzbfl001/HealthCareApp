@@ -228,6 +228,7 @@
             android:textColor="@color/black"
             android:hint="제목."
             android:textColorHint="#ddd"
+            android:maxLength="50"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -241,6 +242,7 @@
             android:textColor="@color/black"
             android:hint="내용입력"
             android:textColorHint="#ddd"
+            android:maxLength="500"
             app:layout_constraintTop_toBottomOf="@id/etTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

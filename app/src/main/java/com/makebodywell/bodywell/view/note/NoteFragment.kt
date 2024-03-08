@@ -114,22 +114,6 @@ class NoteFragment : Fragment() {
          @SuppressLint("SetTextI18n")
          override fun onItemClick(view: View, position: Int) {
             selectedDate = days[position]!!
-
-            // 섭취 칼로리 계산
-            val foodKcal = getFoodCalories(requireActivity(), selectedDate.toString())
-            binding.tvKcal1.text = "${foodKcal.int5} kcal"
-            Log.d(TAG, "foodKcal: ${foodKcal.int5}")
-
-            // 소비 칼로리 계산
-            var total = 0
-            val getExercise = dataManager!!.getExercise(selectedDate.toString())
-            for(i in 0 until getExercise.size) {
-               total += getExercise[i].calories
-            }
-            Log.d(TAG, "getExercise: $getExercise")
-
-            binding.tvKcal2.text = "$total kcal"
-
             setDailyView()
          }
       }))
@@ -194,14 +178,17 @@ class NoteFragment : Fragment() {
       val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
 
+      // 섭취 칼로리 계산
       val foodKcal = getFoodCalories(requireActivity(), selectedDate.toString())
       binding.tvKcal1.text = "${foodKcal.int5} kcal"
 
+      // 소비 칼로리 계산
       var total = 0
-      val getExercise = dataManager!!.getExercise(selectedDate.toString())
-      for(i in 0 until getExercise.size) {
-         total += getExercise[i].calories
+      val getDailyExercise = dataManager!!.getDailyExercise(selectedDate.toString())
+      for(i in 0 until getDailyExercise.size) {
+         total += getDailyExercise[i].calories
       }
+
       binding.tvKcal2.text = "$total kcal"
 
       setImageView()

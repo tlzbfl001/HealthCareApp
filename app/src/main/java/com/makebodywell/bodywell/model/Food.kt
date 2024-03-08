@@ -14,7 +14,7 @@ data class Food(
     var salt: Double = 0.0,
     var sugar: Double = 0.0,
     var count: Int = 1,
-    var searchCount: Int = 0,
+    var useCount: Int = 0,
     var regDate: String = "",
     var useDate: String = ""
 )

@@ -135,7 +135,9 @@ class FoodEditFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.ivPlus.setOnClickListener {
-         count++
+         if(count < 100) {
+            count++
+         }
          dataTextView()
       }
 
