@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,6 @@ import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainActivity
@@ -36,6 +34,7 @@ import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
+import kotlin.math.roundToInt
 
 class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodBinding? = null
@@ -252,6 +251,7 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
       val imageList = ArrayList<Image>()
       binding.viewPager.adapter = null
 
+
       val getData1 = dataManager!!.getImage(1, selectedDate.toString())
       val getData2 = dataManager!!.getImage(2, selectedDate.toString())
       val getData3 = dataManager!!.getImage(3, selectedDate.toString())
@@ -310,6 +310,7 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
       itemList3.clear()
       itemList4.clear()
 
+      val getUser = dataManager!!.getUser()
       val getFood1 = dataManager!!.getDailyFood(1, selectedDate.toString())
       val getFood2 = dataManager!!.getDailyFood(2, selectedDate.toString())
       val getFood3 = dataManager!!.getDailyFood(3, selectedDate.toString())
@@ -379,17 +380,16 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
          )
       }
 
-      val totalCal = carbohydrate1 + carbohydrate2 + carbohydrate3 + carbohydrate4
+      val totalCar = carbohydrate1 + carbohydrate2 + carbohydrate3 + carbohydrate4
       val totalPro = protein1 + protein2 + protein3 + protein4
       val totalFat = fat1 + fat2 + fat3 + fat4
-      val recommendedCar = "순탄수 " + String.format("%.1f", totalCal * (50/100)) + "%"
-      val recommendedPro = "단백질 " + String.format("%.1f", totalPro) + "%"
-      val recommendedFat = "지방 " + String.format("%.1f", totalFat * (150/100)) + "%"
+      val recommendPro = if(getUser.gender == "MALE") totalPro * 100 / 55 else totalPro * 100 / 50
+      val recommendFat = totalFat * 100 / 51
 
-      binding.tvCalPct.text = recommendedCar
-      binding.tvProteinPct.text = recommendedPro
-      binding.tvFatPct.text = recommendedFat
-      binding.tvCar.text = String.format("%.1f", totalCal) + "g"
+      binding.tvCalPct.text = "순탄수" + totalCar.roundToInt() + "%"
+      binding.tvProteinPct.text = "단백질" + recommendPro.roundToInt() + "%"
+      binding.tvFatPct.text = "지방" + recommendFat.roundToInt() + "%"
+      binding.tvCar.text = String.format("%.1f", totalCar) + "g"
       binding.tvProtein.text = String.format("%.1f", totalPro) + "g"
       binding.tvFat.text = String.format("%.1f", totalFat) + "g"
 
