@@ -60,6 +60,36 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
+      binding.tvIntensity1.setOnClickListener {
+         binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_yellow)
+         binding.tvIntensity1.setTextColor(Color.WHITE)
+         binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
+         binding.tvIntensity2.setTextColor(Color.BLACK)
+         binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
+         binding.tvIntensity3.setTextColor(Color.BLACK)
+         intensity = "상"
+      }
+
+      binding.tvIntensity2.setOnClickListener {
+         binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
+         binding.tvIntensity1.setTextColor(Color.BLACK)
+         binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_yellow)
+         binding.tvIntensity2.setTextColor(Color.WHITE)
+         binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
+         binding.tvIntensity3.setTextColor(Color.BLACK)
+         intensity = "중"
+      }
+
+      binding.tvIntensity3.setOnClickListener {
+         binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
+         binding.tvIntensity1.setTextColor(Color.BLACK)
+         binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
+         binding.tvIntensity2.setTextColor(Color.BLACK)
+         binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
+         binding.tvIntensity3.setTextColor(Color.WHITE)
+         intensity = "하"
+      }
+
       binding.cvSave.setOnClickListener {
          val workoutTime = if(binding.etTime.text.toString() == "") 0 else binding.etTime.text.toString().trim().toInt()
          val calories = if(binding.etKcal.text.toString() == "") 0 else binding.etKcal.text.toString().trim().toInt()

@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +16,10 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyRecordBinding
 import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainActivity
+import java.text.DecimalFormat
 
 class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentBodyRecordBinding? = null
@@ -113,26 +112,26 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       binding.etBmi.addTextChangedListener(object : TextWatcher {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            val text = s.toString().replace(".","")
+
             if(s.length == 1 && s[0].toString() == ".") {
                binding.etBmi.setText("")
             }
 
-            if(s.length < 3) {
-               isDecimal = false
+            if(text.length == 2) {
+               val format = text[0].toString() + "." + text[1].toString()
+               binding.etBmi.removeTextChangedListener(this)
+               binding.etBmi.setText(format)
+               binding.etBmi.setSelection(format.length)
+               binding.etBmi.addTextChangedListener(this)
             }
 
-            if(!isDecimal && s.length == 3) {
-               val text = if (s[1].toString() == ".") {
-                  s[0].toString()+s[2].toString()+".0"
-               }else if(s[2].toString() == "."){
-                  s[0].toString()+s[1].toString()+".0"
-               }else {
-                  s[0].toString()+s[1].toString()+"."+s[2].toString()
-               }
-
-               binding.etBmi.setText(text)
-               binding.etBmi.setSelection(text.length)
-               isDecimal = true
+            if(text.length == 3) {
+               val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
+               binding.etBmi.removeTextChangedListener(this)
+               binding.etBmi.setText(format)
+               binding.etBmi.setSelection(format.length)
+               binding.etBmi.addTextChangedListener(this)
             }
          }
 
@@ -142,26 +141,26 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       binding.etFat.addTextChangedListener(object : TextWatcher {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            val text = s.toString().replace(".","")
+
             if(s.length == 1 && s[0].toString() == ".") {
                binding.etFat.setText("")
             }
 
-            if(s.length < 3) {
-               isDecimal = false
+            if(text.length == 2) {
+               val format = text[0].toString() + "." + text[1].toString()
+               binding.etFat.removeTextChangedListener(this)
+               binding.etFat.setText(format)
+               binding.etFat.setSelection(format.length)
+               binding.etFat.addTextChangedListener(this)
             }
 
-            if(!isDecimal && s.length == 3) {
-               val text = if (s[1].toString() == ".") {
-                  s[0].toString()+s[2].toString()+".0"
-               }else if(s[2].toString() == "."){
-                  s[0].toString()+s[1].toString()+".0"
-               }else {
-                  s[0].toString()+s[1].toString()+"."+s[2].toString()
-               }
-
-               binding.etFat.setText(text)
-               binding.etFat.setSelection(text.length)
-               isDecimal = true
+            if(text.length == 3) {
+               val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
+               binding.etFat.removeTextChangedListener(this)
+               binding.etFat.setText(format)
+               binding.etFat.setSelection(format.length)
+               binding.etFat.addTextChangedListener(this)
             }
          }
 
@@ -171,26 +170,26 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       binding.etMuscle.addTextChangedListener(object : TextWatcher {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            val text = s.toString().replace(".","")
+
             if(s.length == 1 && s[0].toString() == ".") {
                binding.etMuscle.setText("")
             }
 
-            if(s.length < 3) {
-               isDecimal = false
+            if(text.length == 2) {
+               val format = text[0].toString() + "." + text[1].toString()
+               binding.etMuscle.removeTextChangedListener(this)
+               binding.etMuscle.setText(format)
+               binding.etMuscle.setSelection(format.length)
+               binding.etMuscle.addTextChangedListener(this)
             }
 
-            if(!isDecimal && s.length == 3) {
-               val text = if (s[1].toString() == ".") {
-                  s[0].toString()+s[2].toString()+".0"
-               }else if(s[2].toString() == "."){
-                  s[0].toString()+s[1].toString()+".0"
-               }else {
-                  s[0].toString()+s[1].toString()+"."+s[2].toString()
-               }
-
-               binding.etMuscle.setText(text)
-               binding.etMuscle.setSelection(text.length)
-               isDecimal = true
+            if(text.length == 3) {
+               val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
+               binding.etMuscle.removeTextChangedListener(this)
+               binding.etMuscle.setText(format)
+               binding.etMuscle.setSelection(format.length)
+               binding.etMuscle.addTextChangedListener(this)
             }
          }
 
@@ -200,49 +199,83 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       binding.etHeight.addTextChangedListener(object : TextWatcher {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if(s.length == 1 && s[0].toString() == ".") {
-               binding.etHeight.setText("")
-            }
+            if(s.toString() != "") {
+               val text = s.toString().replace(".","")
 
-            if(s.length < 3) {
-               isDecimal = false
-               isThreeDigit = false
-            }
-
-            if(!isDecimal && s.length == 3) {
-               val text = if (s[1].toString() == ".") {
-                  s[0].toString()+s[2].toString()+".0"
-               }else if(s[2].toString() == "."){
-                  s[0].toString()+s[1].toString()+".0"
-               }else {
-                  s[0].toString()+s[1].toString()+"."+s[2].toString()
+               if(s.length == 1 && s[0].toString() == ".") {
+                  binding.etHeight.setText("")
                }
 
-               binding.etHeight.setText(text)
-               binding.etHeight.setSelection(text.length)
-               isDecimal = true
-               isThreeDigit=true
-            }
-
-            if(isThreeDigit && s.length == 4) {
-               val text = if (s[1].toString() == ".") {
-                  s[0].toString()+s[2].toString()+s[3].toString()+".0"
-               }else if(s[2].toString() == "."){
-                  s[0].toString()+s[1].toString()+s[3].toString()+".0"
-               }else {
-                  s[0].toString()+s[1].toString()+s[2].toString()+"."+s[3].toString()
+               if(text.length == 2) {
+                  val format = text[0].toString() + "." + text[1].toString()
+                  binding.etHeight.removeTextChangedListener(this)
+                  binding.etHeight.setText(format)
+                  binding.etHeight.setSelection(format.length)
+                  binding.etHeight.addTextChangedListener(this)
                }
 
-               binding.etHeight.setText(text)
-               binding.etHeight.setSelection(text.length)
-               isThreeDigit = false
+               if(text.length == 3) {
+                  val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
+                  binding.etHeight.removeTextChangedListener(this)
+                  binding.etHeight.setText(format)
+                  binding.etHeight.setSelection(format.length)
+                  binding.etHeight.addTextChangedListener(this)
+               }
+
+               if(text.length == 4) {
+                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
+                  binding.etHeight.removeTextChangedListener(this)
+                  binding.etHeight.setText(format)
+                  binding.etHeight.setSelection(format.length)
+                  binding.etHeight.addTextChangedListener(this)
+               }
             }
+         }
 
-            if(s.length == 5) {
-               val text = s[0].toString()+s[1].toString()+s[3].toString()+"."+s[4].toString()
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {}
+      })
 
-               binding.etHeight.setText(text)
-               binding.etHeight.setSelection(text.length)
+      binding.etWeight.addTextChangedListener(object : TextWatcher {
+         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if(s.toString() != "") {
+               val text = s.toString().replace(".","")
+
+               if(s.length == 1 && s[0].toString() == ".") {
+                  binding.etWeight.setText("")
+               }
+
+               if(text.length == 2) {
+                  val format = text[0].toString() + "." + text[1].toString()
+                  binding.etWeight.removeTextChangedListener(this)
+                  binding.etWeight.setText(format)
+                  binding.etWeight.setSelection(format.length)
+                  binding.etWeight.addTextChangedListener(this)
+               }
+
+               if(text.length == 3) {
+                  val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
+                  binding.etWeight.removeTextChangedListener(this)
+                  binding.etWeight.setText(format)
+                  binding.etWeight.setSelection(format.length)
+                  binding.etWeight.addTextChangedListener(this)
+               }
+
+               if(text.length == 4) {
+                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
+                  binding.etWeight.removeTextChangedListener(this)
+                  binding.etWeight.setText(format)
+                  binding.etWeight.setSelection(format.length)
+                  binding.etWeight.addTextChangedListener(this)
+               }
+
+               if(text.length == 4) {
+                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
+                  binding.etWeight.removeTextChangedListener(this)
+                  binding.etWeight.setText(format)
+                  binding.etWeight.setSelection(format.length)
+                  binding.etWeight.addTextChangedListener(this)
+               }
             }
          }
 
@@ -304,7 +337,7 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          val bmi = if(binding.etBmi.text.toString() == "") 0.0 else binding.etBmi.text.toString().toDouble()
          val bmr = if(binding.tvBmr.text.toString() == "") 0.0 else binding.tvBmr.text.toString().toDouble()
 
-         if(binding.etFat.text.toString().toDouble() > 100) {
+         if(binding.etFat.text.isNotEmpty() && binding.etFat.text.toString().toDouble() > 100) {
             Toast.makeText(requireActivity(), "체지방율은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getBody.regDate == "") {
