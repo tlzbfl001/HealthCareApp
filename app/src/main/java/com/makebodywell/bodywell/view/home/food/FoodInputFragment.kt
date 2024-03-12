@@ -29,7 +29,7 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
 
    private var bundle = Bundle()
    private var type = ""
-   private var unit = "g"
+   private var unit = "mg"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -338,8 +338,10 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
 
          val getFood = dataManager.getFood(name)
 
-         if(getFood.name != "") {
-            Toast.makeText(context, "같은 이름의 데이터가 존재합니다.", Toast.LENGTH_SHORT).show()
+         if(name == "") {
+            Toast.makeText(context, "음식이름 미입력", Toast.LENGTH_SHORT).show()
+         }else if (getFood.name != "") {
+            Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager.insertFood(Food(type = type.toInt(), name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
                protein = protein, fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString()))

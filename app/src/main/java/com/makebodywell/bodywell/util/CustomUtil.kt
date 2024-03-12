@@ -21,8 +21,8 @@ import com.makebodywell.bodywell.view.init.LoginActivity
 class CustomUtil {
    companion object {
       const val TAG = "testTag"
-      var drugTimeList = ArrayList<DrugTime>()
       val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
+      var drugTimeList = ArrayList<DrugTime>()
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {

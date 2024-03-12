@@ -1769,7 +1769,7 @@
                    android:id="@+id/tvDesc"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:layout_marginTop="12dp"
+                   android:layout_marginTop="10dp"
                    android:layout_marginRight="25dp"
                    android:layout_marginBottom="10dp"
                    android:text="스마트워치와 연동이 되어야 더 많은 데이터 이용이 가능"

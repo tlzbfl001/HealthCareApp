@@ -531,7 +531,7 @@ class DataManager(private var context: Context?) {
          data.id = cursor.getInt(0)
          data.type = cursor.getString(2)
          data.name = cursor.getString(3)
-         data.amount = cursor.getString(4)
+         data.amount = cursor.getInt(4)
          data.unit = cursor.getString(5)
          data.count = cursor.getInt(6)
          data.startDate = cursor.getString(7)
@@ -542,6 +542,27 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return list
+   }
+
+   fun getDrug(id: Int) : Drug {
+      val db = dbHelper!!.readableDatabase
+      val data = Drug()
+      val sql = "select * from $TABLE_DRUG where userId = ${MyApp.prefs.getId()} and id = $id"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         data.id = cursor.getInt(0)
+         data.type = cursor.getString(2)
+         data.name = cursor.getString(3)
+         data.amount = cursor.getInt(4)
+         data.unit = cursor.getString(5)
+         data.count = cursor.getInt(6)
+         data.startDate = cursor.getString(7)
+         data.endDate = cursor.getString(8)
+         data.isSet = cursor.getInt(9)
+         data.regDate = cursor.getString(10)
+      }
+      cursor.close()
+      return data
    }
 
    fun getDrugId() : ArrayList<Int> {
@@ -585,24 +606,22 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getDrugCheck(dataId: Int, date: String) : DrugCheck {
+   fun getDrugCheckCount(date: String) : Int {
       val db = dbHelper!!.readableDatabase
-      val data = DrugCheck()
-      val sql = "select checked, drugTimeId, regDate from $TABLE_DRUG_CHECK where userId=${MyApp.prefs.getId()} and drugTimeId=$dataId and regDate='$date'"
+      var data = 0
+      val sql = "select count(id) from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and regDate = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         data.checked = cursor.getInt(0)
-         data.drugTimeId = cursor.getInt(1)
-         data.regDate = cursor.getString(2)
+         data = cursor.getInt(0)
       }
       cursor.close()
       return data
    }
 
-   fun getDrugCheckCount(date: String) : Int {
+   fun getDrugCheckCount(drugTimeId: Int, date: String) : Int {
       val db = dbHelper!!.readableDatabase
       var data = 0
-      val sql = "select count(id) from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and checked = 1 and regDate = '$date'"
+      val sql = "select count(id) from $TABLE_DRUG_CHECK where userId=${MyApp.prefs.getId()} and drugTimeId=$drugTimeId and regDate='$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data = cursor.getInt(0)
@@ -621,7 +640,7 @@ class DataManager(private var context: Context?) {
          data.id = cursor.getInt(0)
          data.type = cursor.getString(2)
          data.name = cursor.getString(3)
-         data.amount = cursor.getString(4)
+         data.amount = cursor.getInt(4)
          data.unit = cursor.getString(5)
          data.count = cursor.getInt(6)
          data.startDate = cursor.getString(7)
@@ -848,13 +867,12 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_DRUG_TIME, null, values)
    }
 
-   fun insertDrugCheck(checked: Int, drugTimeId: Int, regDate: String) {
+   fun insertDrugCheck(data: DrugCheck) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
-      values.put("checked", checked)
-      values.put("drugTimeId", drugTimeId)
-      values.put("regDate", regDate)
+      values.put("drugTimeId", data.drugTimeId)
+      values.put("regDate", data.regDate)
       db!!.insert(TABLE_DRUG_CHECK, null, values)
    }
 
@@ -982,17 +1000,10 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateDrugCheck(data: DrugCheck){
+   fun updateDrug(data: Drug) {
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DRUG_CHECK set checked=${data.checked} " +
-         "where userId = ${MyApp.prefs.getId()} and drugTimeId=${data.drugTimeId} and regDate='${data.regDate}'"
-      db.execSQL(sql)
-      db.close()
-   }
-
-   fun updateDrugSet(isSet: Int){
-      val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DRUG set userId = ${MyApp.prefs.getId()} and isSet = $isSet"
+      val sql = "update $TABLE_DRUG set type='${data.type}', name='${data.name}', amount=${data.amount}, unit='${data.unit}', count=${data.count}, " +
+         "startDate='${data.startDate}', endDate='${data.endDate}', isSet=1 where userId = ${MyApp.prefs.getId()} and id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
@@ -1037,6 +1048,20 @@ class DataManager(private var context: Context?) {
    fun deleteItem(table: String, column: String, id: Int) {
       val db = dbHelper!!.writableDatabase
       val delete = "delete from $table where userId=${MyApp.prefs.getId()} and $column=$id"
+      db.execSQL(delete)
+      db.close()
+   }
+
+   fun deleteItem(table: String, column: String, data: String) {
+      val db = dbHelper!!.writableDatabase
+      val delete = "delete from $table where userId=${MyApp.prefs.getId()} and $column='$data'"
+      db.execSQL(delete)
+      db.close()
+   }
+
+   fun deleteItem(table: String, column1: String, int: Int, column2: String, str: String) {
+      val db = dbHelper!!.writableDatabase
+      val delete = "delete from $table where userId=${MyApp.prefs.getId()} and $column1=$int and $column2=$str"
       db.execSQL(delete)
       db.close()
    }

@@ -1,10 +1,13 @@
 package com.makebodywell.bodywell.view.home.drug
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,35 +16,36 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter4
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
+import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.food.FoodFragment
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentDrugAddBinding? = null
-   private val binding get() = _binding!!
+   val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
+   private val idList = ArrayList<Int>()
    private var unit = "정"
-   private var count = 1
+   var count = 1
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -70,6 +74,36 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       alarmReceiver = AlarmReceiver()
 
+      drugTimeList.clear()
+
+      val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
+
+      if(id > 0) {
+         val getDrug = dataManager!!.getDrug(id)
+         binding.etType.setText(getDrug.type)
+         binding.etName.setText(getDrug.name)
+         binding.etAmount.setText(getDrug.amount.toString())
+
+         when(getDrug.unit) {
+            "정" -> unit1()
+            "개" -> unit2()
+            "봉" -> unit3()
+            "mg" -> unit4()
+            "ml" -> unit5()
+            "set" -> unit6()
+         }
+
+         count = getDrug.count
+         binding.tvCount.text = count.toString()
+
+         val getDrugTime = dataManager!!.getDrugTime(id)
+         for(i in 0 until getDrugTime.size) {
+            setDrugTimeList(getDrugTime[i].hour, getDrugTime[i].minute)
+         }
+
+         binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
+      }
+
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
          true
@@ -83,6 +117,15 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.clX.setOnClickListener {
          replaceFragment1(requireActivity(), DrugRecordFragment())
       }
+
+      binding.etAmount.addTextChangedListener(object : TextWatcher {
+         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
+         }
+
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {}
+      })
 
       binding.clUnit1.setOnClickListener {
          unit1()
@@ -112,36 +155,80 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(count > 1) {
             count--
             binding.tvCount.text = count.toString()
+            binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
          }
       }
 
       binding.ivPlus.setOnClickListener {
          count++
          binding.tvCount.text = count.toString()
+         binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
       }
 
       binding.cvSave.setOnClickListener {
+         val type = if(binding.etType.text.toString() == "") "untitled" else binding.etType.text.toString().trim()
+         val name = if(binding.etName.text.toString() == "") "untitled" else binding.etName.text.toString().trim()
+         val amount = if(binding.etAmount.text.toString() == "") 1 else binding.etAmount.text.toString().trim().toInt()
+
          if(itemList.size == 0) {
             Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
-            val endDate = selectedDate.plusDays(count.toLong() - 1).toString()
+            val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
 
-            // 약 데이터 저장
-            dataManager!!.insertDrug(Drug(type = binding.etType.text.toString().trim(), name = binding.etName.text.toString().trim(), amount = binding.etAmount.text.toString().trim(),
-               unit = unit, startDate = selectedDate.toString(), endDate = endDate, count = count, isSet = 1, regDate = selectedDate.toString()))
+            if(id > -1) {
+               // 약 데이터 수정
+               dataManager!!.updateDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count,
+                  startDate = selectedDate.toString(), endDate = endDate, isSet = 1))
 
-            val getDrugId = dataManager!!.getDrugId(selectedDate.toString())
+               // 시간 데이터 수정
+               val getDrugTime = dataManager!!.getDrugTime(id)
+               for(i in 0 until getDrugTime.size) {
+                  var check = false
+                  for(j in 0 until drugTimeList.size) {
+                     if(getDrugTime[i].hour == drugTimeList[j].hour && getDrugTime[i].minute == drugTimeList[j].minute) {
+                        check = true
+                     }
 
-            // 시간 데이터 저장
-            for(i in 0 until drugTimeList.size) {
-               dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+                     if(j == (drugTimeList.size - 1) && !check) idList.add(getDrugTime[i].id)
+                  }
+               }
+
+               if(idList.size > 0) {
+                  for(i in 0 until idList.size) {
+                     dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", idList[i])
+                  }
+               }
+
+               dataManager!!.deleteItem(TABLE_DRUG_TIME, "drugId", id)
+
+               for(i in 0 until drugTimeList.size) {
+                  dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = id))
+               }
+
+               alarmReceiver!!.cancelAlarm(requireActivity(), id)
+
+               val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
+               alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), endDate, drugTimeList, message)
+
+               Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               // 약 데이터 저장
+               dataManager!!.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count,
+                  startDate = selectedDate.toString(), endDate = endDate, isSet = 1, regDate = selectedDate.toString()))
+
+               val getDrugId = dataManager!!.getDrugId(selectedDate.toString())
+
+               // 시간 데이터 저장
+               for(i in 0 until drugTimeList.size) {
+                  dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+               }
+
+               val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
+               alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, message)
+
+               Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
-            val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
-
-            alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, message)
-
-            Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), DrugRecordFragment())
          }
       }
@@ -153,7 +240,6 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun settingTime() {
-      drugTimeList.clear()
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.requestLayout()
 
@@ -194,6 +280,7 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.recyclerView.visibility = View.GONE
       }else {
          binding.recyclerView.visibility = View.VISIBLE
+         binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
       }
 
       adapter = DrugAdapter4(requireActivity(), itemList)
@@ -245,7 +332,7 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvUnit5.setTextColor(Color.BLACK)
       binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
-      unit = "ml"
+      unit = "봉"
    }
 
    private fun unit4() {
@@ -277,7 +364,7 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvUnit5.setTextColor(Color.WHITE)
       binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
       binding.tvUnit6.setTextColor(Color.BLACK)
-      unit = "set"
+      unit = "ml"
    }
 
    private fun unit6() {
@@ -293,7 +380,7 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvUnit5.setTextColor(Color.BLACK)
       binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
       binding.tvUnit6.setTextColor(Color.WHITE)
-      unit = "봉"
+      unit = "set"
    }
 
    override fun onBackPressed() {

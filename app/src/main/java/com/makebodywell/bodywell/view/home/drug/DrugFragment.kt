@@ -20,18 +20,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter1
-import com.makebodywell.bodywell.database.DBHelper
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_DATA
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugBinding
 import com.makebodywell.bodywell.model.DailyData
 import com.makebodywell.bodywell.model.DrugList
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -39,7 +34,6 @@ import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.time.LocalDate
 
 class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentDrugBinding? = null
@@ -49,7 +43,6 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var adapter: DrugAdapter1? = null
    private val itemList = ArrayList<DrugList>()
    private var getDailyData = DailyData()
-   private var check = 0
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -103,7 +96,6 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
             }
 
             recordView()
-
             dialog.dismiss()
          }
       }
@@ -166,35 +158,31 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvDrugCount.text = "0회"
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
-      check = 0
 
       getDailyData = dataManager!!.getDailyData(selectedDate.toString())
       binding.pbDrug.max = getDailyData.drugGoal
       binding.tvGoal.text = "${getDailyData.drugGoal}회"
 
       // 약복용 체크값 초기화
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
-      check = getDrugCheckCount
+      val check = dataManager!!.getDrugCheckCount(selectedDate.toString())
 
       // 약복용 리스트 생성
       val getDrugDaily = dataManager!!.getDrugDaily(selectedDate.toString())
       for(i in 0 until getDrugDaily.size) {
          val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
-            val getDrugCheck = dataManager!!.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
+            val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugTime[j].id, selectedDate.toString())
             itemList.add(DrugList(id = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
                unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
-               initCheck = check, checked = getDrugCheck.checked)
+               initCheck = check, checked = getDrugCheckCount)
             )
          }
       }
 
-//      val sortedList = itemList.sortedBy{ it.time }
-
       adapter = DrugAdapter1(requireActivity(), itemList, getDailyData.drugGoal)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.recyclerView.requestLayout()
       binding.recyclerView.adapter = adapter
+      binding.recyclerView.requestLayout()
    }
 
    private fun requestPermission(): Boolean {

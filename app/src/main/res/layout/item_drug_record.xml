@@ -31,11 +31,11 @@
             android:text="text"
             android:textSize="13dp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toTopOf="@id/cvModify"
-            app:layout_constraintBottom_toBottomOf="@id/cvModify"
+            app:layout_constraintTop_toTopOf="@id/cvEdit"
+            app:layout_constraintBottom_toBottomOf="@id/cvEdit"
             app:layout_constraintStart_toStartOf="parent"/>
          <androidx.cardview.widget.CardView
-            android:id="@+id/cvModify"
+            android:id="@+id/cvEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -72,8 +72,8 @@
             app:track="@drawable/switch_track"
             app:thumbTextPadding="24dp"
             app:switchMinWidth="36dp"
-            app:layout_constraintTop_toTopOf="@id/cvModify"
-            app:layout_constraintBottom_toBottomOf="@id/cvModify"
+            app:layout_constraintTop_toTopOf="@id/cvEdit"
+            app:layout_constraintBottom_toBottomOf="@id/cvEdit"
             app:layout_constraintEnd_toEndOf="parent" />
          <TextView
             android:id="@+id/tvName"
@@ -84,7 +84,7 @@
             android:textSize="16.5dp"
             android:textColor="@color/black"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/cvModify"
+            app:layout_constraintTop_toBottomOf="@id/cvEdit"
             app:layout_constraintStart_toStartOf="parent"/>
          <ImageView
             android:id="@+id/ivOval1"

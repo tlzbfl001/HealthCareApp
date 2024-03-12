@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Drug
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.drug.DrugAddFragment
 
 class DrugAdapter4 (
     private val context: Context,
@@ -30,6 +31,8 @@ class DrugAdapter4 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugAddFragment
+
         holder.tvTime.text = itemList[position].name
         holder.tvCount.text = itemList[position].count.toString()
 
@@ -42,6 +45,8 @@ class DrugAdapter4 (
                 val minute = String.format("%02d", drugTimeList[i].minute)
                 itemList.add(Drug(name = "$hour:$minute", count = i + 1))
             }
+
+            fragment.binding.tvDesc.text = "${fragment.count}일동안 ${drugTimeList.size}회 복용"
 
             notifyDataSetChanged()
         }

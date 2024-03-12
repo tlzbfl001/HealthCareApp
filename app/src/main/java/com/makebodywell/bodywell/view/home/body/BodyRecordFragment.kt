@@ -28,8 +28,6 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var dataManager: DataManager? = null
    private var level = 1
    private var gender = "FEMALE"
-   private var isDecimal = false
-   private var isThreeDigit = false
 
    override fun onAttach(context: Context) {
       super.onAttach(context)

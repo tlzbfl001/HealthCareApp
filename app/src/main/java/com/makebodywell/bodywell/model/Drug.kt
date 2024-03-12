@@ -8,7 +8,7 @@ data class Drug(
    var userId: Int = 0,
    var type: String = "",
    var name: String = "",
-   var amount: String = "",
+   var amount: Int = 0,
    var unit: String = "",
    var count: Int = 0,
    var startDate: String = "",
@@ -29,7 +29,6 @@ data class DrugTime(
 data class DrugCheck(
    var id: Int = 0,
    var userId: Int = 0,
-   var checked: Int = 0,
    var drugTimeId: Int = 0,
    var regDate: String = ""
 )
@@ -39,7 +38,7 @@ data class DrugList(
    var userId: Int = 0,
    var date: String = "",
    var name: String = "",
-   var amount: String = "",
+   var amount: Int = 0,
    var unit: String = "",
    var time: String = "",
    var initCheck: Int = 0,

@@ -386,9 +386,9 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
       val recommendPro = if(getUser.gender == "MALE") totalPro * 100 / 55 else totalPro * 100 / 50
       val recommendFat = totalFat * 100 / 51
 
-      binding.tvCalPct.text = "순탄수" + totalCar.roundToInt() + "%"
-      binding.tvProteinPct.text = "단백질" + recommendPro.roundToInt() + "%"
-      binding.tvFatPct.text = "지방" + recommendFat.roundToInt() + "%"
+      binding.tvCalPct.text = "순탄수 " + totalCar.roundToInt() + "%"
+      binding.tvProteinPct.text = "단백질 " + recommendPro.roundToInt() + "%"
+      binding.tvFatPct.text = "지방 " + recommendFat.roundToInt() + "%"
       binding.tvCar.text = String.format("%.1f", totalCar) + "g"
       binding.tvProtein.text = String.format("%.1f", totalPro) + "g"
       binding.tvFat.text = String.format("%.1f", totalFat) + "g"

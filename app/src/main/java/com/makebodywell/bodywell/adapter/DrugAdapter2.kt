@@ -1,8 +1,10 @@
 package com.makebodywell.bodywell.adapter
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,21 +12,30 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
+import com.makebodywell.bodywell.view.home.drug.DrugAddFragment
+import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import java.text.SimpleDateFormat
 
 class DrugAdapter2 (
-   private val context: Context,
+   private val context: Activity,
    private val itemList: ArrayList<Drug> = ArrayList()
 ) : RecyclerView.Adapter<DrugAdapter2.ViewHolder>() {
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var alarmReceiver: AlarmReceiver
    private val timeList: ArrayList<DrugTime> = ArrayList()
@@ -45,17 +56,17 @@ class DrugAdapter2 (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvType.text = itemList[position].type
       holder.tvName.text = itemList[position].name
-      holder.tvCount.text = itemList[position].amount + itemList[position].unit
+      holder.tvCount.text = itemList[position].amount.toString() + itemList[position].unit
 
-      val getDrugTime = dataManager?.getDrugTime(itemList[position].id)
+      val getDrugTime = dataManager!!.getDrugTime(itemList[position].id)
 
-      holder.tvPeriod.text = "${getDrugTime!!.size}일동안 ${itemList[position].count}회 복용"
+      holder.tvPeriod.text = "${itemList[position].count}일동안 ${getDrugTime.size}회 복용"
 
       if(getDrugTime.isNotEmpty()) {
          timeList.clear()
 
          for(i in 0 until getDrugTime.size) {
-            timeList.add(DrugTime(hour = getDrugTime[i].hour, minute = getDrugTime[i].minute, drugId = i+1))
+            timeList.add(DrugTime(id = getDrugTime[i].id, hour = getDrugTime[i].hour, minute = getDrugTime[i].minute, drugId = i+1))
          }
 
          val adapter = DrugAdapter3(timeList)
@@ -66,14 +77,19 @@ class DrugAdapter2 (
       holder.switchOnOff.isChecked = itemList[position].isSet == 1
 
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
-         if (isChecked) {
+         if(isChecked) {
             val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
             alarmReceiver.setAlarm(context, itemList[position].id, itemList[position].startDate, itemList[position].endDate, timeList, message)
-            dataManager!!.updateDrugSet(1)
+            dataManager!!.updateInt(TABLE_DRUG, "isSet", 1, itemList[position].id)
          }else {
             alarmReceiver.cancelAlarm(context, itemList[position].id)
-            dataManager!!.updateDrugSet(0)
+            dataManager!!.updateInt(TABLE_DRUG, "isSet", 0, itemList[position].id)
          }
+      }
+
+      holder.cvEdit.setOnClickListener {
+         bundle.putString("id", itemList[position].id.toString())
+         replaceFragment2(context, DrugAddFragment(), bundle)
       }
 
       holder.ivDelete.setOnClickListener {
@@ -81,11 +97,11 @@ class DrugAdapter2 (
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                for(i in 0 until timeList.size) {
-                  dataManager!!.deleteItem(DBHelper.TABLE_DRUG_CHECK, "drugTimeId", timeList[i].id)
+                  dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", timeList[i].id)
                }
 
-               dataManager!!.deleteItem(DBHelper.TABLE_DRUG_TIME, "drugId", itemList[position].id)
-               dataManager!!.deleteItem(DBHelper.TABLE_DRUG, "id", itemList[position].id)
+               dataManager!!.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
+               dataManager!!.deleteItem(TABLE_DRUG, "id", itemList[position].id)
 
                alarmReceiver.cancelAlarm(context, itemList[position].id)
 
@@ -111,6 +127,7 @@ class DrugAdapter2 (
       val tvPeriod: TextView = itemView.findViewById(R.id.tvPeriod)
       val tvCount: TextView = itemView.findViewById(R.id.tvCount)
       val recyclerView: RecyclerView = itemView.findViewById(R.id.recyclerView)
+      val cvEdit: CardView = itemView.findViewById(R.id.cvEdit)
       val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
    }
 }

@@ -10,10 +10,10 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugList
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.MainActivity
 
@@ -37,11 +37,11 @@ class DrugAdapter1 (
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugFragment
+
         holder.tvTime.text = itemList[position].time
         holder.tvName.text = itemList[position].name
-        holder.tvAmount.text = itemList[position].amount + itemList[position].unit
-
-        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugFragment
+        holder.tvAmount.text = itemList[position].amount.toString() + itemList[position].unit
 
         // 복용횟수 초기화
         check = itemList[position].initCheck
@@ -55,9 +55,7 @@ class DrugAdapter1 (
             fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
         }
 
-        if(itemList[position].checked == 1) {
-            holder.tvCheck.isChecked = true
-        }
+        if(itemList[position].checked == 1) holder.tvCheck.isChecked = true
 
         var result = drugGoal - check
         if(result > 0) {
@@ -66,18 +64,18 @@ class DrugAdapter1 (
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheck = dataManager!!.getDrugCheck(itemList[position].id, itemList[position].date)
+            val getDrugCheckCount = dataManager!!.getDrugCheckCount(itemList[position].id, itemList[position].date)
             if(holder.tvCheck.isChecked) {
-                check += 1
-                if(getDrugCheck.regDate == "") {
-                    dataManager!!.insertDrugCheck(1, itemList[position].id, itemList[position].date)
-                }else {
-                    dataManager!!.updateDrugCheck(DrugCheck(checked = 1, drugTimeId = itemList[position].id, regDate = itemList[position].date))
+                check++
+                if(getDrugCheckCount == 0) {
+                    dataManager!!.insertDrugCheck(DrugCheck(drugTimeId = itemList[position].id, regDate = itemList[position].date))
                 }
             }else {
                 if(check > 0) {
-                    check -= 1
-                    dataManager!!.updateDrugCheck(DrugCheck(checked = 0, drugTimeId = itemList[position].id, regDate = itemList[position].date))
+                    check--
+                }
+                if(getDrugCheckCount > 0) {
+                    dataManager!!.deleteItem(TABLE_DRUG_CHECK, "id", itemList[position].id, "regDate", itemList[position].date)
                 }
             }
 
