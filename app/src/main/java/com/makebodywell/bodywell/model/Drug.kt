@@ -29,6 +29,7 @@ data class DrugTime(
 data class DrugCheck(
    var id: Int = 0,
    var userId: Int = 0,
+   var drugId: Int = 0,
    var drugTimeId: Int = 0,
    var regDate: String = ""
 )

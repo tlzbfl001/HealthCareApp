@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.report
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -209,6 +211,7 @@ class ReportBodyFragment : Fragment() {
       val weekArray = weekArray(calendarDate)
       val getData = dataManager!!.getBody(weekArray[0].toString(), weekArray[6].toString())
       for(i in 0 until getData.size) {
+         Log.d(TAG, "getData: ${getData[i].regDate}")
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
          }
@@ -349,11 +352,7 @@ class ReportBodyFragment : Fragment() {
       binding.lineChart3.visibility = View.GONE
    }
 
-   private fun setupChart(
-      chart: LineChart,
-      entries: ArrayList<Entry>,
-      xValue: ArrayList<String>
-   ) {
+   private fun setupChart(chart: LineChart, entries: ArrayList<Entry>, xValue: ArrayList<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null

@@ -20,7 +20,6 @@ import android.view.Window
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat.finishAffinity
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -29,8 +28,10 @@ import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.RemoveUserMutation
+import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_DATA
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
@@ -399,15 +400,16 @@ class SettingFragment : Fragment() {
       dataManager!!.deleteAll(TABLE_USER, "id")
       dataManager!!.deleteAll(TABLE_TOKEN, "userId")
       dataManager!!.deleteAll(TABLE_FOOD, "userId")
+      dataManager!!.deleteAll(TABLE_DAILY_FOOD, "userId")
       dataManager!!.deleteAll(TABLE_WATER, "userId")
       dataManager!!.deleteAll(TABLE_EXERCISE, "userId")
+      dataManager!!.deleteAll(TABLE_DAILY_EXERCISE, "userId")
       dataManager!!.deleteAll(TABLE_BODY, "userId")
       dataManager!!.deleteAll(TABLE_DRUG, "userId")
       dataManager!!.deleteAll(TABLE_DRUG_TIME, "userId")
       dataManager!!.deleteAll(TABLE_DRUG_CHECK, "userId")
       dataManager!!.deleteAll(TABLE_NOTE, "userId")
       dataManager!!.deleteAll(TABLE_SLEEP, "userId")
-      dataManager!!.deleteAll(TABLE_DAILY_DATA, "userId")
       dataManager!!.deleteAll(TABLE_IMAGE, "userId")
    }
 

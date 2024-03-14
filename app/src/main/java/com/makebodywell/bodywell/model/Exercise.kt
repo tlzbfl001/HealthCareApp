@@ -10,7 +10,7 @@ data class Exercise (
    var name: String = "",
    var intensity: String = "",
    var workoutTime: Int = 0,
-   var calories: Int = 0,
+   var kcal: Int = 0,
    var useCount: Int = 0,
    var regDate: String = "",
    var useDate: String = ""

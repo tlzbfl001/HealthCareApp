@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugList
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.MainActivity
 
@@ -75,7 +77,7 @@ class DrugAdapter1 (
                     check--
                 }
                 if(getDrugCheckCount > 0) {
-                    dataManager!!.deleteItem(TABLE_DRUG_CHECK, "id", itemList[position].id, "regDate", itemList[position].date)
+                    dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[position].id, "regDate", itemList[position].date)
                 }
             }
 

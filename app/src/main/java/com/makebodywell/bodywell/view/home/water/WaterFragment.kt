@@ -18,15 +18,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.WaterAdapter
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_WATER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentWaterBinding
-import com.makebodywell.bodywell.model.DailyData
+import com.makebodywell.bodywell.model.DailyGoal
 import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -34,17 +35,15 @@ import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
-import java.time.LocalDate
 
 class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentWaterBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var getDailyData = DailyData()
+   private var getDailyGoal = DailyGoal()
    private var getWater = Water()
    private var adapter: WaterAdapter? = null
-   private var goal = 0
    private var volume = 200
    private var count = 0
 
@@ -85,30 +84,29 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       btnSave.setOnClickListener {
          if(etGoal.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(etVolume.text.toString().toInt() < 1 || etGoal.text.toString().toInt() < 1) {
+         }else if(etGoal.text.toString().toInt() < 1) {
             Toast.makeText(requireActivity(), "1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else if(etGoal.text.toString().toInt() > 100) {
-            Toast.makeText(requireActivity(), "섭취량은 100잔을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "목표 섭취물은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            goal = etGoal.text.toString().toInt()
-
             if(etVolume.text.toString() != "") {
                volume = etVolume.text.toString().toInt()
             }
 
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(waterGoal = goal, regDate = selectedDate.toString()))
+            if(getDailyGoal.regDate == "") {
+               dataManager!!.insertDailyGoal(DailyGoal(waterGoal = etGoal.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateGoal("waterGoal", goal, selectedDate.toString())
+               dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "waterGoal", etGoal.text.toString().toInt(), selectedDate.toString())
             }
 
             if(getWater.regDate == "") {
-               dataManager!!.insertWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
+               dataManager!!.insertWater(Water(volume = volume, regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
+               dataManager!!.updateIntByDate(TABLE_WATER, "volume", volume, selectedDate.toString())
             }
 
             dailyGoal()
+            dailyWater()
 
             dialog.dismiss()
          }
@@ -123,10 +121,6 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.clPrev.setOnClickListener {
-         if(getWater.regDate != "") {
-            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
-         }
-
          selectedDate = selectedDate.minusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
@@ -135,10 +129,6 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.clNext.setOnClickListener {
-         if(getWater.regDate != "") {
-            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
-         }
-
          selectedDate = selectedDate.plusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
@@ -166,8 +156,8 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      dailyGoal()
       dailyWater()
+      dailyGoal()
 
       return binding.root
    }
@@ -175,7 +165,7 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
    @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       // 목표 초기화
-      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
       getWater = dataManager!!.getWater(selectedDate.toString())
 
       binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
@@ -185,22 +175,21 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0잔/0ml"
       binding.tvRemain.text = "0잔/0ml"
 
-      goal = getDailyData.waterGoal
       volume = getWater.volume
       count = getWater.water
 
       if(count > 0) {
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
-         binding.pbWater.max = goal
+         binding.pbWater.max = getDailyGoal.waterGoal
          binding.pbWater.progress = count
       }
 
       binding.tvIntake.text = "${count}잔/${count * volume}ml"
       binding.tvVolume.text = "${volume}ml"
-      binding.tvGoal.text = "${goal}잔/${goal * volume}ml"
+      binding.tvGoal.text = "${getDailyGoal.waterGoal}잔/${getDailyGoal.waterGoal * volume}ml"
 
-      val remain = goal - count
+      val remain = getDailyGoal.waterGoal - count
       if(remain > 0) {
          binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
       }else {
@@ -211,7 +200,8 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
    @SuppressLint("SetTextI18n")
    private fun dailyWater() {
       binding.tvCount.text = "${count}잔"
-      binding.tvUnit.text = "(${count * volume} ml)"
+      binding.tvUnit.text = "(${count * volume}ml)"
+
       getWater = dataManager!!.getWater(selectedDate.toString())
 
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
@@ -230,13 +220,14 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(count == 0) {
             binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
             binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
+            dataManager!!.deleteItem(TABLE_WATER, "regDate", selectedDate.toString())
          }
 
          binding.tvCount.text = "${count}잔"
-         binding.tvUnit.text = "(${count * volume} ml)"
+         binding.tvUnit.text = "(${count * volume}ml)"
          binding.tvIntake.text = "${count}잔/${count * volume}ml"
 
-         val remain = goal - count
+         val remain = getDailyGoal.waterGoal - count
          if(remain > 0) {
             binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
          }else {
@@ -246,10 +237,13 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
          adapter = WaterAdapter(count)
          binding.rv.adapter = adapter
 
-         if(getWater.regDate == "") {
-            dataManager!!.insertWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
-         }else {
-            dataManager!!.updateWater(Water(water = count, volume = volume, regDate = selectedDate.toString()))
+         getWater = dataManager!!.getWater(selectedDate.toString())
+         if(count > 0) {
+            if(getWater.regDate == "") {
+               dataManager!!.insertWater(Water(water = count, regDate = selectedDate.toString()))
+            }else {
+               dataManager!!.updateIntByDate(TABLE_WATER, "water", count, selectedDate.toString())
+            }
          }
       }
 
@@ -260,13 +254,14 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
 
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
-         binding.pbWater.max = goal
+         binding.pbWater.max = getDailyGoal.waterGoal
          binding.pbWater.progress = count
+
          binding.tvCount.text = "${count}잔"
-         binding.tvUnit.text = "(${count * volume} ml)"
+         binding.tvUnit.text = "(${count * volume}ml)"
          binding.tvIntake.text = "${count}잔/${count * volume}ml"
 
-         val remain = goal - count
+         val remain = getDailyGoal.waterGoal - count
          if(remain > 0) {
             binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
          }else {
@@ -276,10 +271,11 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
          adapter = WaterAdapter(count)
          binding.rv.adapter = adapter
 
+         getWater = dataManager!!.getWater(selectedDate.toString())
          if(getWater.regDate == "") {
-            dataManager!!.insertWater(Water(water = count, volume = getWater.volume, regDate = selectedDate.toString()))
+            dataManager!!.insertWater(Water(water = count, regDate = selectedDate.toString()))
          }else {
-            dataManager!!.updateWater(Water(water = count, volume = getWater.volume, regDate = selectedDate.toString()))
+            dataManager!!.updateIntByDate(TABLE_WATER, "water", count, selectedDate.toString())
          }
       }
    }

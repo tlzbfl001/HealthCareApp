@@ -11,7 +11,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -31,7 +30,6 @@ import com.makebodywell.bodywell.databinding.FragmentNoteBinding
 import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
@@ -186,7 +184,7 @@ class NoteFragment : Fragment() {
       var total = 0
       val getDailyExercise = dataManager!!.getDailyExercise(selectedDate.toString())
       for(i in 0 until getDailyExercise.size) {
-         total += getDailyExercise[i].calories
+         total += getDailyExercise[i].kcal
       }
 
       binding.tvKcal2.text = "$total kcal"

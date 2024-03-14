@@ -61,7 +61,8 @@ class FoodSearchFragment : Fragment(), MainActivity.OnBackPressedListener {
 		getFood = dataManager!!.getFood(dataId)
 
 		if(getFood.name != "") binding.tvName.text = getFood.name
-		if(getFood.amount > 0) binding.tvAmount.text = getFood.kcal.toString()
+		if(getFood.amount > 0) binding.tvAmount.text = getFood.amount.toString()
+		if(getFood.kcal > 0) binding.tvKcal.text = getFood.kcal.toString()
 		if(getFood.carbohydrate > 0.0) binding.tvCar.text = String.format("%.1f", getFood.carbohydrate)
 		if(getFood.protein > 0.0) binding.tvProtein.text = String.format("%.1f", getFood.protein)
 		if(getFood.fat > 0.0) binding.tvFat.text = String.format("%.1f", getFood.fat)
@@ -78,7 +79,7 @@ class FoodSearchFragment : Fragment(), MainActivity.OnBackPressedListener {
 			if(getDailyFood.regDate == "") {
 				dataManager!!.insertDailyFood(Food(type = type.toInt(), name = getFood.name, unit = getFood.unit, amount = getFood.amount,
 					kcal = getFood.kcal, carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt,
-					sugar = getFood.sugar, count = 1, regDate = LocalDate.now().toString()))
+					sugar = getFood.sugar, count = 1, regDate = selectedDate.toString()))
 			}else {
 				dataManager!!.updateInt(TABLE_DAILY_FOOD, "count", getDailyFood.count + 1, getDailyFood.id)
 			}

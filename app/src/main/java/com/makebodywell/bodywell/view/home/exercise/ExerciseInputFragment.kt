@@ -98,9 +98,9 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
             Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
-               calories = calories, useCount = 1, useDate = LocalDateTime.now().toString()))
+               kcal = calories, useCount = 1, useDate = LocalDateTime.now().toString()))
             dataManager!!.insertDailyExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
-               calories = calories, regDate = selectedDate.toString()))
+               kcal = calories, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), ExerciseListFragment())

@@ -11,20 +11,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSleepBinding
-import com.makebodywell.bodywell.model.DailyData
-import com.makebodywell.bodywell.model.Food
+import com.makebodywell.bodywell.model.DailyGoal
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -32,15 +31,13 @@ import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.time.LocalDate
-import java.util.Calendar
 
 class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentSleepBinding? = null
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var getDaily = DailyData()
+   private var getDailyGoal = DailyGoal()
    private var getSleep = Sleep()
 
    override fun onAttach(context: Context) {
@@ -83,10 +80,10 @@ class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
          val minute = if(etMinute.text.toString().trim() == "") 0 else { etMinute.text.toString().toInt() }
          val total = hour * 60 + minute
 
-         if(getDaily.regDate == "") {
-            dataManager!!.insertDailyData(DailyData(sleepGoal = total, regDate = selectedDate.toString()))
+         if(getDailyGoal.regDate == "") {
+            dataManager!!.insertDailyGoal(DailyGoal(sleepGoal = total, regDate = selectedDate.toString()))
          }else {
-            dataManager!!.updateGoal("sleepGoal", total, selectedDate.toString())
+            dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "sleepGoal", total, selectedDate.toString())
          }
 
          dailyView()
@@ -151,23 +148,23 @@ class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0h 0m"
       binding.tvRemain.text = "0h 0m"
 
+      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
       getSleep = dataManager!!.getSleep(selectedDate.toString())
-      getDaily = dataManager!!.getDailyData(selectedDate.toString())
 
       if(getSleep.sleepTime > 0) {
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
-         binding.pbSleep.max = getDaily.sleepGoal
+         binding.pbSleep.max = getDailyGoal.sleepGoal
          binding.pbSleep.progress = getSleep.sleepTime
 
-         val result = (getDaily.sleepGoal - getSleep.sleepTime)
+         val result = (getDailyGoal.sleepGoal - getSleep.sleepTime)
          if(result > 0) {
             binding.tvRemain.text = "${result / 60}h ${result % 60}m"
          }
       }
 
       binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
-      binding.tvGoal.text = "${getDaily.sleepGoal / 60}h ${getDaily.sleepGoal % 60}m"
+      binding.tvGoal.text = "${getDailyGoal.sleepGoal / 60}h ${getDailyGoal.sleepGoal % 60}m"
       binding.tvBedtime.text = "${getSleep.bedTime / 60}h ${getSleep.bedTime % 60}m"
       binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
    }

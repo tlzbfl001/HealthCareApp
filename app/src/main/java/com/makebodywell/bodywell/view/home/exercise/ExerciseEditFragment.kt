@@ -62,13 +62,13 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
                 getExercise = dataManager!!.getExercise(id)
                 binding.tvName.text = getExercise.name
                 binding.etTime.setText(getExercise.workoutTime.toString())
-                binding.etKcal.setText(getExercise.calories.toString())
+                binding.etKcal.setText(getExercise.kcal.toString())
             }
             else -> {
                 getExercise = dataManager!!.getDailyExercise(id)
                 binding.tvName.text = getExercise.name
                 binding.etTime.setText(getExercise.workoutTime.toString())
-                binding.etKcal.setText(getExercise.calories.toString())
+                binding.etKcal.setText(getExercise.kcal.toString())
             }
         }
 
@@ -115,11 +115,11 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
             if(type != "" && id != 0) {
                 if(type == "insert") {
                     dataManager!!.insertDailyExercise(Exercise(name = getExercise.name, intensity = intensity, workoutTime = workoutTime,
-                        calories = calories, regDate = selectedDate.toString()))
+                        kcal = calories, regDate = selectedDate.toString()))
 
                     Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 }else {
-                    dataManager!!.updateDailyExercise(Exercise(id=id, intensity = intensity, workoutTime = workoutTime, calories = calories))
+                    dataManager!!.updateDailyExercise(Exercise(id=id, intensity = intensity, workoutTime = workoutTime, kcal = calories))
 
                     Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
                 }

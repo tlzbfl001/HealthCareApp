@@ -348,7 +348,7 @@ class ReportFoodFragment : Fragment() {
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
          lineDataSet.color = Color.parseColor("#FFAD0D")
-         lineDataSet.lineWidth = 0.5f
+         lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
          lineDataSet.valueTextSize = 8f
@@ -407,8 +407,8 @@ class ReportFoodFragment : Fragment() {
       }
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#0F7EF6")
-      lineDataSet.lineWidth = 0.5f
+      lineDataSet.color = Color.parseColor("#6F89BF")
+      lineDataSet.lineWidth = 1f
       lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f

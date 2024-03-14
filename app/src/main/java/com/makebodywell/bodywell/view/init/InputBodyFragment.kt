@@ -23,6 +23,8 @@ class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
+   private var height = 163
+   private var weight = 58
    private var gender = "FEMALE"
 
    override fun onAttach(context: Context) {
@@ -66,7 +68,11 @@ class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
          binding.cvWoman.setCardBackgroundColor(Color.parseColor("#9F98FF"))
          binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvWoman.setTextColor(Color.WHITE)
+         height = 163
+         weight = 58
          gender = "FEMALE"
+         binding.etHeight.hint = height.toString()
+         binding.etWeight.hint = weight.toString()
       }
 
       binding.cvMan.setOnClickListener {
@@ -76,12 +82,16 @@ class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
          binding.cvWoman.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
          binding.ivWoman.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvWoman.setTextColor(Color.BLACK)
+         height = 173
+         weight = 68
          gender = "MALE"
+         binding.etHeight.hint = height.toString()
+         binding.etWeight.hint = weight.toString()
       }
 
       binding.cvContinue.setOnClickListener {
-         val height = if(binding.etHeight.text.toString() == "") 163.0 else {binding.etHeight.text.toString().toDouble()}
-         val weight = if(binding.etWeight.text.toString() == "") 58.0 else {binding.etWeight.text.toString().toDouble()}
+         val height = if(binding.etHeight.text.toString() == "") height.toDouble() else {binding.etHeight.text.toString().toDouble()}
+         val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else {binding.etWeight.text.toString().toDouble()}
 
          dataManager?.updateUserStr(TABLE_USER, "gender", gender)
          dataManager?.updateUserDouble(TABLE_USER, "height", height)

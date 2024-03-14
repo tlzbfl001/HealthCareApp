@@ -3,7 +3,6 @@ package com.makebodywell.bodywell.view.report
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.ReportAdapter
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportExerciseBinding
 import com.makebodywell.bodywell.model.Item
@@ -37,12 +35,11 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
-class ReportExerciseFragment : Fragment() {
+class  ReportExerciseFragment : Fragment() {
    private var _binding: FragmentReportExerciseBinding? = null
    private val binding get() = _binding!!
 
@@ -264,8 +261,8 @@ class ReportExerciseFragment : Fragment() {
          }
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#BBBBBB")
-         lineDataSet.lineWidth = 0.5f
+         lineDataSet.color = Color.parseColor("#D3B479")
+         lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
          lineDataSet.valueTextSize = 8f
@@ -313,8 +310,8 @@ class ReportExerciseFragment : Fragment() {
 
          val getDailyExercise = dataManager!!.getDailyExercise(getData[i])
          for(j in 0 until getDailyExercise.size) {
-            if(getDailyExercise[j].calories > 0) {
-               total += getDailyExercise[j].calories.toFloat()
+            if(getDailyExercise[j].kcal > 0) {
+               total += getDailyExercise[j].kcal.toFloat()
             }
          }
 
@@ -335,8 +332,8 @@ class ReportExerciseFragment : Fragment() {
          }
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#BBBBBB")
-         lineDataSet.lineWidth = 0.5f
+         lineDataSet.color = Color.parseColor("#FFC6D7")
+         lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
          lineDataSet.valueTextSize = 8f
@@ -347,7 +344,7 @@ class ReportExerciseFragment : Fragment() {
          data.setData(lineData)
 
          val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.color = Color.parseColor("#8F8C6E")
+         barDataSet.color = Color.parseColor("#FFC6D7")
          barDataSet.valueTextSize = 0f
 
          val barData = BarData(barDataSet)

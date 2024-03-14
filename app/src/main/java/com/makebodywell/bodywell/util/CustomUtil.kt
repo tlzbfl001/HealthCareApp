@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.apollographql.apollo3.ApolloClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
@@ -15,8 +14,6 @@ import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.init.InputActivity
-import com.makebodywell.bodywell.view.init.LoginActivity
 
 class CustomUtil {
    companion object {
@@ -145,7 +142,7 @@ class CustomUtil {
 
          if(getExercise.size > 0) {
             for(i in 0 until getExercise.size) {
-               sum += getExercise[i].calories
+               sum += getExercise[i].kcal
             }
          }
 

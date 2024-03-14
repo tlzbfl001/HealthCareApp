@@ -6,7 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,15 +17,14 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyBinding
 import com.makebodywell.bodywell.model.Body
-import com.makebodywell.bodywell.model.DailyData
-import com.makebodywell.bodywell.util.CalendarUtil
+import com.makebodywell.bodywell.model.DailyGoal
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -33,7 +32,6 @@ import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.time.LocalDate
 import kotlin.math.roundToInt
 
 class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
@@ -41,7 +39,7 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var getDailyData = DailyData()
+   private var getDailyGoal = DailyGoal()
    private var getBody = Body()
    private var isExpand = false
 
@@ -75,9 +73,12 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
       val et = dialog.findViewById<EditText>(R.id.et)
       val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
+      tvTitle.text = "신체 / 목표 체중 입력"
+      et.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
       tvUnit.text = "kg"
       btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
 
@@ -85,16 +86,10 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+            if(getDailyGoal.regDate == "") {
+               dataManager!!.insertDailyGoal(DailyGoal(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
             }else {
-               dataManager?.updateBodyGoal(DailyData(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
-            }
-
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(bodyGoal = et.text.toString().toDouble()))
-            }else {
-               dataManager!!.updateDouble(TABLE_BODY, "bodyGoal", et.text.toString().toDouble(), getDailyData.id)
+               dataManager!!.updateDoubleByDate(TABLE_DAILY_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
             }
 
             dailyGoal()
@@ -199,16 +194,15 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
 
-      val goal = getDailyData.bodyGoal
-      if (goal > 0) {
-         binding.pbBody.max = goal.roundToInt()
+      if (getDailyGoal.bodyGoal > 0) {
+         binding.pbBody.max = getDailyGoal.bodyGoal.roundToInt()
 
-         val split = goal.toString().split(".")
+         val split = getDailyGoal.bodyGoal.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
-            else -> binding.tvGoal.text = "$goal kg"
+            else -> binding.tvGoal.text = "${getDailyGoal.bodyGoal} kg"
          }
       }
 
@@ -226,7 +220,7 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
          }
       }
 
-      val remain = goal - getBody.weight.toString().toDouble()
+      val remain = getDailyGoal.bodyGoal - getBody.weight.toString().toDouble()
       if (remain > 0) {
          val split = remain.toString().split(".")
          when (split[1]) {

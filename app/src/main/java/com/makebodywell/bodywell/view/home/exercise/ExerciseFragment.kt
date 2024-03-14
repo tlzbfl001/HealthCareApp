@@ -16,15 +16,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.ExerciseAdapter
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseBinding
-import com.makebodywell.bodywell.model.DailyData
+import com.makebodywell.bodywell.model.DailyGoal
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
@@ -32,7 +31,6 @@ import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
-import java.time.LocalDate
 
 class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentExerciseBinding? = null
@@ -40,7 +38,7 @@ class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
 
    private var dataManager: DataManager? = null
    private var adapter: ExerciseAdapter? = null
-   private var getDailyData = DailyData()
+   private var getDailyGoal = DailyGoal()
    private var sum = 0
 
    override fun onAttach(context: Context) {
@@ -82,10 +80,10 @@ class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyData.regDate == "") {
-               dataManager!!.insertDailyData(DailyData(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(getDailyGoal.regDate == "") {
+               dataManager!!.insertDailyGoal(DailyGoal(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateGoal("exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
             }
 
             binding.pbExercise.max = et.text.toString().toInt()
@@ -160,20 +158,20 @@ class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
+      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
       sum = getExerciseCalories(requireActivity(), selectedDate.toString())
 
       if(sum > 0) {
          binding.pbExercise.setProgressStartColor(Color.parseColor("#FFB846"))
          binding.pbExercise.setProgressEndColor(Color.parseColor("#FFB846"))
-         binding.pbExercise.max = getDailyData.exerciseGoal
+         binding.pbExercise.max = getDailyGoal.exerciseGoal
          binding.pbExercise.progress = sum
       }
 
-      binding.tvGoal.text = "${getDailyData.exerciseGoal} kcal"
+      binding.tvGoal.text = "${getDailyGoal.exerciseGoal} kcal"
       binding.tvConsume.text = "$sum kcal"
 
-      val remain = getDailyData.exerciseGoal - sum
+      val remain = getDailyGoal.exerciseGoal - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {

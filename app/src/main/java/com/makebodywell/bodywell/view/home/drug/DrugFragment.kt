@@ -20,10 +20,15 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter1
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugBinding
-import com.makebodywell.bodywell.model.DailyData
+import com.makebodywell.bodywell.model.DailyGoal
+import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugList
+import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
@@ -42,7 +47,7 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var dataManager: DataManager? = null
    private var adapter: DrugAdapter1? = null
    private val itemList = ArrayList<DrugList>()
-   private var getDailyData = DailyData()
+   private var getDailyGoal = DailyGoal()
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -89,10 +94,10 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyData.regDate == "") {
-               dataManager?.insertDailyData(DailyData(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(getDailyGoal.regDate == "") {
+               dataManager!!.insertDailyGoal(DailyGoal(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateGoal("drugGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
             }
 
             recordView()
@@ -159,9 +164,9 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
 
-      getDailyData = dataManager!!.getDailyData(selectedDate.toString())
-      binding.pbDrug.max = getDailyData.drugGoal
-      binding.tvGoal.text = "${getDailyData.drugGoal}회"
+      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
+      binding.pbDrug.max = getDailyGoal.drugGoal
+      binding.tvGoal.text = "${getDailyGoal.drugGoal}회"
 
       // 약복용 체크값 초기화
       val check = dataManager!!.getDrugCheckCount(selectedDate.toString())
@@ -179,7 +184,7 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          }
       }
 
-      adapter = DrugAdapter1(requireActivity(), itemList, getDailyData.drugGoal)
+      adapter = DrugAdapter1(requireActivity(), itemList, getDailyGoal.drugGoal)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()

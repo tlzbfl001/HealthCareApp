@@ -24,7 +24,7 @@ class SignupActivity : AppCompatActivity() {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-   private var user: User? = null
+   private var user = User()
    private var isAll = true
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +45,7 @@ class SignupActivity : AppCompatActivity() {
       dataManager = DataManager(this)
       dataManager!!.open()
 
-      user = intent!!.getParcelableExtra("user")
+      user = intent!!.getParcelableExtra("user")!!
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -119,19 +119,15 @@ class SignupActivity : AppCompatActivity() {
       }
 
       binding.cvContinue.setOnClickListener {
-         if(user == null) {
-            signInDialog()
-         }else {
-            if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-               dataManager!!.insertUser(user!!) // 사용자 정보 저장
-               val getUser = dataManager!!.getUser(user!!.type!!, user!!.email!!)
-               if(getUser.id != 0) {
-                  MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
-                  signInDialog()
-               }
-            }else {
-               Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
+         if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
+            dataManager!!.insertUser(user) // 사용자 정보 저장
+            val getUser = dataManager!!.getUser(user.type!!, user.email!!)
+            if(getUser.id > 0) {
+               MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
+               signInDialog()
             }
+         }else {
+            Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
          }
       }
    }

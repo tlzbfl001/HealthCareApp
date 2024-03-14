@@ -227,14 +227,11 @@ class ReportDrugFragment : Fragment() {
       var count = 0
 
       for(i in 0 until getData.size){
-         val getDailyData = dataManager!!.getDailyData(getData[i])
+         val getDailyGoal = dataManager!!.getDailyGoal(getData[i])
          val getDrugCheckCount = dataManager!!.getDrugCheckCount(getData[i])
 
          if(getDrugCheckCount > 0) {
-            val pt = when(getDailyData.drugGoal) {
-               0 -> 100f
-               else -> (getDrugCheckCount.toFloat() / getDailyData.drugGoal.toFloat()) * 100
-            }
+            val pt = if(getDailyGoal.drugGoal == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drugGoal.toFloat()) * 100
 
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += pt
@@ -253,7 +250,7 @@ class ReportDrugFragment : Fragment() {
          }
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#BBBBBB")
+         lineDataSet.color = Color.parseColor("#4E38A4")
          lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
@@ -266,7 +263,7 @@ class ReportDrugFragment : Fragment() {
          data.setData(lineData)
 
          val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.color = Color.parseColor("#3C7A8A")
+         barDataSet.color = Color.parseColor("#4E38A4")
          barDataSet.valueTextSize = 0f
 
          val barData = BarData(barDataSet)
@@ -337,8 +334,8 @@ class ReportDrugFragment : Fragment() {
       val itemList = ArrayList<Item>()
 
       val getData = when(type) {
-         1 -> dataManager!!.getRanking(TABLE_DRUG, calendarDate.toString())
-         else -> dataManager!!.getRanking(TABLE_DRUG, start, end)
+         1 -> dataManager!!.getRanking(TABLE_DRUG_CHECK, calendarDate.toString())
+         else -> dataManager!!.getRanking(TABLE_DRUG_CHECK, start, end)
       }
 
       if(getData.size > 0) {

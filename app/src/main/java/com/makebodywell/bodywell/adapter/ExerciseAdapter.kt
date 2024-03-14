@@ -20,7 +20,7 @@ class ExerciseAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvName.text = itemList[position].name
       holder.tvTime.text = "${itemList[position].workoutTime}분"
-      holder.tvKcal.text = "${itemList[position].calories} kcal"
+      holder.tvKcal.text = "${itemList[position].kcal} kcal"
    }
 
    override fun getItemCount(): Int {
