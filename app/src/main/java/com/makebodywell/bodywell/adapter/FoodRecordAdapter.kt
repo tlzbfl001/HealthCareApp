@@ -22,7 +22,7 @@ class FoodRecordAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.textView.text = itemList[position].name
 
-      holder.mainLayout.setOnClickListener {
+      holder.cl1.setOnClickListener {
          onItemClickListener!!.onItemClick(position)
       }
    }
@@ -40,7 +40,7 @@ class FoodRecordAdapter (
    }
 
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-      val mainLayout: ConstraintLayout = itemView.findViewById(R.id.mainLayout)
+      val cl1: ConstraintLayout = itemView.findViewById(R.id.cl1)
       val textView: TextView = itemView.findViewById(R.id.textView)
    }
 }

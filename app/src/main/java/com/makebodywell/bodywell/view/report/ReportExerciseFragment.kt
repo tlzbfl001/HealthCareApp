@@ -427,8 +427,8 @@ class  ReportExerciseFragment : Fragment() {
       val itemList = ArrayList<Item>()
 
       val getData = when(type) {
-         1 -> dataManager!!.getRanking(TABLE_DAILY_EXERCISE, calendarDate.toString())
-         else -> dataManager!!.getRanking(TABLE_DAILY_EXERCISE, start, end)
+         1 -> dataManager!!.getExerciseRanking(calendarDate.toString())
+         else -> dataManager!!.getExerciseRanking(start, end)
       }
 
       if(getData.size > 0) {

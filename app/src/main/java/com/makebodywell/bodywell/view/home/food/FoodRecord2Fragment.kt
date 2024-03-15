@@ -119,7 +119,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                bundle.putString("dataId", itemList[pos].id.toString())
-               replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
+               replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
             }
          })
 
@@ -164,7 +164,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
             bundle.putString("dataId", searchList[pos].int1.toString())
-            replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
+            replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
          }
       })
    }

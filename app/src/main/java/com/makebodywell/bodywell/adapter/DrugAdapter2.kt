@@ -94,12 +94,9 @@ class DrugAdapter2 (
 
       holder.ivDelete.setOnClickListener {
          val dialog = AlertDialog.Builder(context)
-            .setMessage("정말 삭제하시겠습니까?")
+            .setMessage("해당 약과 관련된 모든 데이터가 삭제됩니다.\n정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               for(i in 0 until timeList.size) {
-                  dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", timeList[i].id)
-               }
-
+               dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
                dataManager!!.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
                dataManager!!.deleteItem(TABLE_DRUG, "id", itemList[position].id)
 

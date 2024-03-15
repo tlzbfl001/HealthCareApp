@@ -64,20 +64,19 @@
          android:noHistory="true">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
-
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
       <activity android:name=".view.init.LoginActivity" />
       <activity android:name=".view.init.InitActivity" />
-      <activity android:name=".view.home.MainActivity" />
+      <activity android:name=".view.home.MainActivity"
+         android:windowSoftInputMode="adjustPan" />
       <activity
          android:name=".view.home.HealthConnectActivity"
          android:exported="true">
          <intent-filter>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
          </intent-filter>
-
          <meta-data
             android:name="health_permissions"
             android:resource="@array/health_permissions" />
@@ -87,18 +86,13 @@
          android:exported="true">
          <intent-filter>
             <action android:name="android.intent.action.VIEW" />
-
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-
-            <data
-               android:host="oauth"
+            <data android:host="oauth"
                android:scheme="@string/kakao_oauth_host" />
          </intent-filter>
       </activity>
-
       <service android:name=".util.BluetoothService" />
-
       <receiver
          android:name=".util.AlarmReceiver"
          android:exported="false" />
@@ -111,5 +105,4 @@
          </intent-filter>
       </receiver>
    </application>
-
 </manifest>

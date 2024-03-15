@@ -177,8 +177,8 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
             val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugTime[j].id, selectedDate.toString())
-            itemList.add(DrugList(id = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name, amount = getDrugDaily[i].amount,
-               unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
+            itemList.add(DrugList(drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name,
+               amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
                initCheck = check, checked = getDrugCheckCount)
             )
          }

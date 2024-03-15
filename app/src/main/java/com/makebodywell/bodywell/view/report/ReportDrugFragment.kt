@@ -3,7 +3,6 @@ package com.makebodywell.bodywell.view.report
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +26,6 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.ReportAdapter
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentReportDrugBinding
@@ -37,7 +35,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -281,7 +278,7 @@ class ReportDrugFragment : Fragment() {
          chart.isClickable = false
          chart.isHighlightPerDragEnabled = false
          chart.isHighlightPerTapEnabled = false
-         chart.setExtraOffsets(12f, 15f, 15f, 10f)
+         chart.setExtraOffsets(10f, 20f, 15f, 10f)
 
          val xAxis = chart.xAxis
          xAxis.axisLineColor = Color.BLACK
@@ -310,43 +307,39 @@ class ReportDrugFragment : Fragment() {
    }
 
    class XValueFormatter : IValueFormatter {
-      override fun getFormattedValue(
-         value: Float,
-         entry: Entry,
-         dataSetIndex: Int,
-         viewPortHandler: ViewPortHandler
-      ): String {
-         return value.toInt().toString()
+      override fun getFormattedValue(value: Float, entry: Entry, dataSetIndex: Int, viewPortHandler: ViewPortHandler): String {
+         return "${value.toInt()}%"
       }
    }
 
    class LeftAxisFormatter : IAxisValueFormatter {
       override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-         return if(value.toInt() == 0) {
-            "0"
-         }else {
-            "${value.toInt()}%"
-         }
+         return if(value.toInt() == 0) "0" else "${value.toInt()}%"
       }
    }
 
    private fun rankView(type: Int, start: String, end: String) {
       val itemList = ArrayList<Item>()
 
-      val getData = when(type) {
-         1 -> dataManager!!.getRanking(TABLE_DRUG_CHECK, calendarDate.toString())
-         else -> dataManager!!.getRanking(TABLE_DRUG_CHECK, start, end)
+      if(type == 1) {
+         val getRanking = dataManager!!.getDrugRanking(calendarDate.toString())
+         for(i in 0 until getRanking.size) {
+            val getDrug = dataManager!!.getDrug(getRanking[i].int2)
+            itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getDrug.name))
+         }
+      }else {
+         val getRanking = dataManager!!.getDrugRanking(start, end)
+         for(i in 0 until getRanking.size) {
+            val getDrug = dataManager!!.getDrug(getRanking[i].int2)
+            itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getDrug.name))
+         }
       }
 
-      if(getData.size > 0) {
+      if(itemList.size > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.recyclerView.visibility = View.VISIBLE
 
-         for(i in 0 until getData.size) {
-            itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
-         }
-
-         when(getData.size) {
+         when(itemList.size) {
             1 -> {
                val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
                binding.recyclerView.layoutManager = layoutManager

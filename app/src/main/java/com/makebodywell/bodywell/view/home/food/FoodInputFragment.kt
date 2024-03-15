@@ -1,8 +1,10 @@
 package com.makebodywell.bodywell.view.home.food
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
@@ -28,8 +31,8 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
    private val binding get() = _binding!!
 
    private var bundle = Bundle()
-   private var type = ""
-   private var unit = "mg"
+   private var type = "1"
+   private var unit = "g"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -73,24 +76,94 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
-      binding.tvMg.setOnClickListener {
-         button1()
+      val dialog = Dialog(requireActivity())
+      dialog.setContentView(R.layout.dialog_unit)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+      val tvMg = dialog.findViewById<TextView>(R.id.tvMg)
+      val tvG = dialog.findViewById<TextView>(R.id.tvG)
+      val tvKg = dialog.findViewById<TextView>(R.id.tvKg)
+      val tvMl = dialog.findViewById<TextView>(R.id.tvMl)
+      val tvL = dialog.findViewById<TextView>(R.id.tvL)
+
+      tvMg!!.setOnClickListener {
+         unit = "mg"
+         tvMg.setBackgroundResource(R.drawable.rec_25_pink)
+         tvMg.setTextColor(Color.WHITE)
+         tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvG.setTextColor(Color.BLACK)
+         tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvKg.setTextColor(Color.BLACK)
+         tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMl.setTextColor(Color.BLACK)
+         tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvL.setTextColor(Color.BLACK)
+         setText()
       }
 
-      binding.tvG.setOnClickListener {
-         button2()
+      tvG!!.setOnClickListener {
+         unit = "g"
+         tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMg.setTextColor(Color.BLACK)
+         tvG.setBackgroundResource(R.drawable.rec_25_pink)
+         tvG.setTextColor(Color.WHITE)
+         tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvKg.setTextColor(Color.BLACK)
+         tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMl.setTextColor(Color.BLACK)
+         tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvL.setTextColor(Color.BLACK)
+         setText()
       }
 
-      binding.tvKg.setOnClickListener {
-         button3()
+      tvKg!!.setOnClickListener {
+         unit = "kg"
+         tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMg.setTextColor(Color.BLACK)
+         tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvG.setTextColor(Color.BLACK)
+         tvKg.setBackgroundResource(R.drawable.rec_25_pink)
+         tvKg.setTextColor(Color.WHITE)
+         tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMl.setTextColor(Color.BLACK)
+         tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvL.setTextColor(Color.BLACK)
+         setText()
       }
 
-      binding.tvMl.setOnClickListener {
-         button4()
+      tvMl!!.setOnClickListener {
+         unit = "mL"
+         tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMg.setTextColor(Color.BLACK)
+         tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvG.setTextColor(Color.BLACK)
+         tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvKg.setTextColor(Color.BLACK)
+         tvMl.setBackgroundResource(R.drawable.rec_25_pink)
+         tvMl.setTextColor(Color.WHITE)
+         tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvL.setTextColor(Color.BLACK)
+         setText()
       }
 
-      binding.tvL.setOnClickListener {
-         button5()
+      tvL!!.setOnClickListener {
+         unit = "L"
+         tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMg.setTextColor(Color.BLACK)
+         tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvG.setTextColor(Color.BLACK)
+         tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvKg.setTextColor(Color.BLACK)
+         tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
+         tvMl.setTextColor(Color.BLACK)
+         tvL.setBackgroundResource(R.drawable.rec_25_pink)
+         tvL.setTextColor(Color.WHITE)
+         setText()
+      }
+
+      binding.clUnit.setOnClickListener {
+         dialog.show()
       }
 
       binding.etCar.addTextChangedListener(object : TextWatcher {
@@ -298,9 +371,9 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          var salt = 0.0
          var sugar = 0.0
 
-         if(binding.etName.text.toString().trim() == "" && binding.etAmount.text.toString().trim() == "" &&
-            binding.etKcal.text.toString().trim() == "" && binding.etCar.text.toString().trim() == "" && binding.etProtein.text.toString().trim() == "" &&
-            binding.etFat.text.toString().trim() == "" && binding.etSalt.text.toString().trim() == "" && binding.etSugar.text.toString().trim() == "") {
+         if(binding.etName.text.toString().trim() == "" && binding.etAmount.text.toString().trim() == "" && binding.etKcal.text.toString().trim() == "" &&
+            binding.etCar.text.toString().trim() == "" && binding.etProtein.text.toString().trim() == "" && binding.etFat.text.toString().trim() == "" &&
+            binding.etSalt.text.toString().trim() == "" && binding.etSugar.text.toString().trim() == "") {
             name = "사과"
             amount = 100
             kcal = 52
@@ -310,30 +383,14 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
             salt = 1.0
             sugar = 10.8
          }else {
-            if(binding.etName.text.toString() != "") {
-               name = binding.etName.text.toString().trim()
-            }
-            if(binding.etAmount.text.toString() != "") {
-               amount = binding.etAmount.text.toString().trim().toInt()
-            }
-            if(binding.etKcal.text.toString() != "") {
-               kcal = binding.etKcal.text.toString().trim().toInt()
-            }
-            if(binding.etCar.text.toString() != "") {
-               carbohydrate = binding.etCar.text.toString().trim().toDouble()
-            }
-            if(binding.etProtein.text.toString() != "") {
-               protein = binding.etProtein.text.toString().trim().toDouble()
-            }
-            if(binding.etFat.text.toString() != "") {
-               fat = binding.etFat.text.toString().trim().toDouble()
-            }
-            if(binding.etSalt.text.toString() != "") {
-               salt = binding.etSalt.text.toString().trim().toDouble()
-            }
-            if(binding.etSugar.text.toString() != "") {
-               sugar = binding.etSugar.text.toString().trim().toDouble()
-            }
+            if(binding.etName.text.toString() != "") name = binding.etName.text.toString().trim()
+            if(binding.etAmount.text.toString() != "") amount = binding.etAmount.text.toString().trim().toInt()
+            if(binding.etKcal.text.toString() != "") kcal = binding.etKcal.text.toString().trim().toInt()
+            if(binding.etCar.text.toString() != "") carbohydrate = binding.etCar.text.toString().trim().toDouble()
+            if(binding.etProtein.text.toString() != "") protein = binding.etProtein.text.toString().trim().toDouble()
+            if(binding.etFat.text.toString() != "") fat = binding.etFat.text.toString().trim().toDouble()
+            if(binding.etSalt.text.toString() != "") salt = binding.etSalt.text.toString().trim().toDouble()
+            if(binding.etSugar.text.toString() != "") sugar = binding.etSugar.text.toString().trim().toDouble()
          }
 
          val getFood = dataManager.getFood(name)
@@ -363,79 +420,9 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       return binding.root
    }
 
-   private fun button1() {
-      unit = "mg"
-      binding.tvMg.setBackgroundResource(R.drawable.rec_25_pink)
-      binding.tvMg.setTextColor(Color.WHITE)
-      binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvG.setTextColor(Color.BLACK)
-      binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvKg.setTextColor(Color.BLACK)
-      binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMl.setTextColor(Color.BLACK)
-      binding.tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvL.setTextColor(Color.BLACK)
-      binding.tvUnit.text = unit
-   }
-
-   private fun button2() {
-      unit = "g"
-      binding.tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMg.setTextColor(Color.BLACK)
-      binding.tvG.setBackgroundResource(R.drawable.rec_25_pink)
-      binding.tvG.setTextColor(Color.WHITE)
-      binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvKg.setTextColor(Color.BLACK)
-      binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMl.setTextColor(Color.BLACK)
-      binding.tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvL.setTextColor(Color.BLACK)
-      binding.tvUnit.text = unit
-   }
-
-   private fun button3() {
-      unit = "kg"
-      binding.tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMg.setTextColor(Color.BLACK)
-      binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvG.setTextColor(Color.BLACK)
-      binding.tvKg.setBackgroundResource(R.drawable.rec_25_pink)
-      binding.tvKg.setTextColor(Color.WHITE)
-      binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMl.setTextColor(Color.BLACK)
-      binding.tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvL.setTextColor(Color.BLACK)
-      binding.tvUnit.text = unit
-   }
-
-   private fun button4() {
-      unit = "mL"
-      binding.tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMg.setTextColor(Color.BLACK)
-      binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvG.setTextColor(Color.BLACK)
-      binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvKg.setTextColor(Color.BLACK)
-      binding.tvMl.setBackgroundResource(R.drawable.rec_25_pink)
-      binding.tvMl.setTextColor(Color.WHITE)
-      binding.tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvL.setTextColor(Color.BLACK)
-      binding.tvUnit.text = unit
-   }
-
-   private fun button5() {
-      unit = "L"
-      binding.tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMg.setTextColor(Color.BLACK)
-      binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvG.setTextColor(Color.BLACK)
-      binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvKg.setTextColor(Color.BLACK)
-      binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
-      binding.tvMl.setTextColor(Color.BLACK)
-      binding.tvL.setBackgroundResource(R.drawable.rec_25_pink)
-      binding.tvL.setTextColor(Color.WHITE)
-      binding.tvUnit.text = unit
+   private fun setText() {
+      binding.tvUnit1.text = unit
+      binding.tvUnit2.text = unit
    }
 
    override fun onBackPressed() {

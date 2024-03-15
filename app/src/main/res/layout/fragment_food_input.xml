@@ -52,18 +52,18 @@
          android:layout_width="match_parent"
          android:layout_height="wrap_content">
          <androidx.cardview.widget.CardView
-             android:id="@+id/box1"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_marginTop="20dp"
-             android:layout_marginLeft="25dp"
-             android:layout_marginRight="25dp"
-             app:cardBackgroundColor="@color/white"
-             app:cardCornerRadius="20dp"
-             app:cardElevation="2dp"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toEndOf="parent">
+               android:id="@+id/box1"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="15dp"
+               android:layout_marginLeft="25dp"
+               android:layout_marginRight="25dp"
+               app:cardBackgroundColor="@color/white"
+               app:cardCornerRadius="15dp"
+               app:cardElevation="2dp"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                    app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                    android:id="@+id/cv1"
-                   android:layout_width="80dp"
+                   android:layout_width="70dp"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="22dp"
                    android:text="음식이름"
@@ -105,112 +105,46 @@
                   app:layout_constraintStart_toEndOf="@id/cv1"
                   app:layout_constraintEnd_toEndOf="parent"/>
                <TextView
-                   android:id="@+id/cv2"
-                  android:layout_width="80dp"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="20dp"
-                   android:text="단위"
-                   android:textSize="16dp"
-                   android:textColor="@color/black"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@id/cv1"/>
-               <TextView
-                  android:id="@+id/tvMg"
-                  android:layout_width="0dp"
+                  android:id="@+id/cv2"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
-                  android:background="@drawable/rec_25_pink"
-                  android:paddingTop="4dp"
-                  android:paddingBottom="4dp"
-                  android:text="mg"
-                  android:textSize="14dp"
-                  android:textColor="@color/white"
-                  android:textAlignment="center"
-                  app:layout_constraintBottom_toBottomOf="@+id/cv2"
-                  app:layout_constraintStart_toEndOf="@+id/cv2"
-                  app:layout_constraintTop_toTopOf="@+id/cv2"
-                  app:layout_constraintEnd_toStartOf="@id/tvG"/>
-               <TextView
-                  android:id="@+id/tvG"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:background="@drawable/rec_25_border_gray"
-                  android:layout_marginLeft="12dp"
-                  android:paddingTop="4dp"
-                  android:paddingBottom="4dp"
-                  android:text="g"
-                  android:textSize="14dp"
+                  android:layout_marginTop="20dp"
+                  android:text="단위"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
-                  android:textAlignment="center"
-                  app:layout_constraintTop_toTopOf="@+id/tvMg"
-                  app:layout_constraintBottom_toBottomOf="@id/tvMg"
-                  app:layout_constraintStart_toEndOf="@+id/tvMg"
-                  app:layout_constraintEnd_toStartOf="@id/tvKg"/>
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintTop_toBottomOf="@id/cv1"/>
+               <androidx.constraintlayout.widget.ConstraintLayout
+                  android:id="@+id/clUnit"
+                  android:layout_width="42dp"
+                  android:layout_height="27dp"
+                  android:background="@drawable/rec_5"
+                  android:backgroundTint="#eee"
+                  app:layout_constraintStart_toEndOf="@id/cv2"
+                  app:layout_constraintTop_toTopOf="@id/cv2"
+                  app:layout_constraintBottom_toBottomOf="@id/cv2">
+                  <TextView
+                     android:id="@+id/tvUnit1"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="g"
+                     android:textColor="@color/black"
+                     android:textSize="15dp"
+                     app:layout_constraintBottom_toBottomOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintTop_toTopOf="parent" />
+               </androidx.constraintlayout.widget.ConstraintLayout>
                <TextView
-                  android:id="@+id/tvKg"
-                  android:layout_width="0dp"
+                  android:id="@+id/cv3"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
-                  android:background="@drawable/rec_25_border_gray"
-                  android:layout_marginLeft="12dp"
-                  android:paddingTop="4dp"
-                  android:paddingBottom="4dp"
-                  android:text="kg"
-                  android:textSize="14dp"
+                  android:layout_marginTop="15dp"
+                  android:text="섭취량"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
-                  android:textAlignment="center"
-                  app:layout_constraintTop_toTopOf="@+id/tvG"
-                  app:layout_constraintBottom_toBottomOf="@id/tvG"
-                  app:layout_constraintStart_toEndOf="@+id/tvG"
-                  app:layout_constraintEnd_toEndOf="parent"/>
-               <TextView
-                  android:id="@+id/tvMl"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:background="@drawable/rec_25_border_gray"
-                  android:layout_marginTop="7dp"
-                  android:paddingTop="4dp"
-                  android:paddingBottom="4dp"
-                  android:text="mL"
-                  android:textSize="14dp"
-                  android:textColor="@color/black"
-                  android:textAlignment="center"
-                  app:layout_constraintTop_toBottomOf="@+id/tvMg"
-                  app:layout_constraintStart_toStartOf="@+id/tvMg"
-                  app:layout_constraintEnd_toStartOf="@id/tvL"/>
-               <TextView
-                  android:id="@+id/tvL"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:background="@drawable/rec_25_border_gray"
-                  android:layout_marginLeft="12dp"
-                  android:paddingTop="4dp"
-                  android:paddingBottom="4dp"
-                  android:text="L"
-                  android:textSize="14dp"
-                  android:textColor="@color/black"
-                  android:textAlignment="center"
-                  app:layout_constraintTop_toTopOf="@+id/tvMl"
-                  app:layout_constraintBottom_toBottomOf="@id/tvMl"
-                  app:layout_constraintStart_toEndOf="@+id/tvMl"
-                  app:layout_constraintEnd_toStartOf="@+id/tv2"/>
-               <TextView
-                  android:id="@+id/tv2"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_marginLeft="12dp"
-                  app:layout_constraintTop_toTopOf="@+id/tvL"
-                  app:layout_constraintBottom_toBottomOf="@id/tvL"
-                  app:layout_constraintStart_toEndOf="@+id/tvL"
-                  app:layout_constraintEnd_toEndOf="parent"/>
-               <TextView
-                   android:id="@+id/cv3"
-                  android:layout_width="80dp"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="15dp"
-                   android:text="섭취량"
-                   android:textSize="16dp"
-                   android:textColor="@color/black"
-                   app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintTop_toBottomOf="@id/tvMl"/>
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintTop_toBottomOf="@id/clUnit"/>
                <EditText
                   android:id="@+id/etAmount"
                   android:layout_width="0dp"
@@ -229,12 +163,12 @@
                   app:layout_constraintStart_toEndOf="@+id/cv3"
                   app:layout_constraintTop_toTopOf="@+id/cv3"/>
                <TextView
-                  android:id="@+id/tvUnit"
+                  android:id="@+id/tvUnit2"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_marginBottom="3dp"
                   android:layout_marginRight="5dp"
-                  android:text="mg"
+                  android:text="g"
                   android:textSize="15dp"
                   android:textColor="@color/black"
                   android:textAlignment="textEnd"
@@ -244,19 +178,19 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.cardview.widget.CardView>
          <androidx.cardview.widget.CardView
-             android:id="@+id/box2"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_marginTop="15dp"
-             android:layout_marginLeft="25dp"
-             android:layout_marginRight="25dp"
-             android:layout_marginBottom="10dp"
-             app:cardBackgroundColor="@color/white"
-             app:cardCornerRadius="20dp"
-             app:cardElevation="2dp"
-             app:layout_constraintTop_toBottomOf="@id/box1"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toEndOf="parent">
+               android:id="@+id/box2"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="15dp"
+               android:layout_marginLeft="25dp"
+               android:layout_marginRight="25dp"
+               android:layout_marginBottom="10dp"
+               app:cardBackgroundColor="@color/white"
+               app:cardCornerRadius="15dp"
+               app:cardElevation="2dp"
+               app:layout_constraintTop_toBottomOf="@id/box1"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -273,7 +207,7 @@
                    app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                    android:id="@+id/cv4"
-                  android:layout_width="80dp"
+                  android:layout_width="70dp"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="22dp"
                    android:text="칼로리"
@@ -312,7 +246,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etKcal"/>
                <TextView
                   android:id="@+id/cv5"
-                  android:layout_width="80dp"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="탄수화물"
@@ -351,7 +285,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etCar"/>
                <TextView
                   android:id="@+id/cv6"
-                  android:layout_width="80dp"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="단백질"
@@ -390,7 +324,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etProtein"/>
                <TextView
                   android:id="@+id/cv7"
-                  android:layout_width="80dp"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="지방"
@@ -429,7 +363,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etFat"/>
                <TextView
                   android:id="@+id/cv8"
-                  android:layout_width="80dp"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="나트륨"
@@ -468,7 +402,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etSalt"/>
                <TextView
                   android:id="@+id/cv9"
-                  android:layout_width="80dp"
+                  android:layout_width="70dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="당류"
@@ -511,8 +445,8 @@
              android:id="@+id/cvSave"
              android:layout_width="230dp"
              android:layout_height="wrap_content"
-             android:layout_marginTop="40dp"
-             android:layout_marginBottom="40dp"
+             android:layout_marginTop="30dp"
+             android:layout_marginBottom="30dp"
              app:cardBackgroundColor="#9F98FF"
              app:cardCornerRadius="30dp"
              app:layout_constraintTop_toBottomOf="@id/box2"

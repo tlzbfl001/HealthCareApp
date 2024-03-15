@@ -13,19 +13,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodRecord1Binding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
-import com.makebodywell.bodywell.util.CalendarUtil
-import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class FoodRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private var _binding: FragmentFoodRecord1Binding? = null
@@ -124,7 +119,7 @@ class FoodRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                bundle.putString("dataId", itemList[pos].id.toString())
-               replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
+               replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
             }
          })
 
@@ -167,7 +162,7 @@ class FoodRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
             bundle.putString("dataId", searchList[pos].int1.toString())
-            replaceFragment2(requireActivity(), FoodSearchFragment(), bundle)
+            replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
          }
       })
 
