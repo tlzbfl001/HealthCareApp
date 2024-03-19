@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
+import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
 import com.makebodywell.bodywell.database.DBHelper
@@ -40,11 +41,6 @@ class FoodSnackFragment : Fragment(), MainActivity.OnBackPressedListener {
     private var imageData: ArrayList<Image>? = null
     private var type = 4
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context as MainActivity).setOnBackPressedListener(this)
-    }
-
     @SuppressLint("DiscouragedApi", "InternalInsetResource")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +57,8 @@ class FoodSnackFragment : Fragment(), MainActivity.OnBackPressedListener {
             val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
             binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
         }
+
+        (context as MainActivity).setOnBackPressedListener(this)
 
         dataManager = DataManager(activity)
         dataManager!!.open()
@@ -163,7 +161,8 @@ class FoodSnackFragment : Fragment(), MainActivity.OnBackPressedListener {
             intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onItemClick(pos: Int) {
-                    val dialog = AlertDialog.Builder(context)
+                    val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                        .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)

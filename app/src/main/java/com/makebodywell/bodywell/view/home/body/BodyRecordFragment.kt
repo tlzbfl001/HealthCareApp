@@ -29,11 +29,6 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var level = 1
    private var gender = "FEMALE"
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +45,8 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()

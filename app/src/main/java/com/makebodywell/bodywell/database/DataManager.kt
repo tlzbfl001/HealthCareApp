@@ -1019,13 +1019,13 @@ class DataManager(private var context: Context?) {
 
    fun updateFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
-         "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, useCount=${data.useCount}, useDate='${data.useDate}' where id=${data.id}"
+      val sql = "update $TABLE_FOOD set name='${data.name}', unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
+         "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
 
-   fun updateFoodDaily(data: Food){
+   fun updateDailyFood(data: Food){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_DAILY_FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
          "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, count=${data.count} where id=${data.id}"

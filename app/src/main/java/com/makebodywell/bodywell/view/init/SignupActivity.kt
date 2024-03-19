@@ -6,17 +6,21 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivitySignupBinding
 import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.MyApp
 
 class SignupActivity : AppCompatActivity() {
@@ -121,10 +125,11 @@ class SignupActivity : AppCompatActivity() {
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
             dataManager!!.insertUser(user) // 사용자 정보 저장
+
             val getUser = dataManager!!.getUser(user.type!!, user.email!!)
             if(getUser.id > 0) {
                MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
-               signInDialog()
+               signUpDialog()
             }
          }else {
             Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
@@ -132,7 +137,7 @@ class SignupActivity : AppCompatActivity() {
       }
    }
 
-   private fun signInDialog() {
+   private fun signUpDialog() {
       val dialog = Dialog(this)
       dialog.setContentView(R.layout.dialog_signup)
       dialog.setCancelable(false)
@@ -148,16 +153,15 @@ class SignupActivity : AppCompatActivity() {
    }
 
    private fun showTermsDialog(title: String, id: Int) {
-      val dialog = Dialog(this)
-      dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-      dialog.setContentView(R.layout.dialog_terms)
+      val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+      val bottomSheetView = layoutInflater.inflate(R.layout.dialog_terms, null)
 
-      val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
-      val clX = dialog.findViewById<ConstraintLayout>(R.id.clX)
-      val terms1 = dialog.findViewById<TextView>(R.id.terms1)
-      val terms2 = dialog.findViewById<ConstraintLayout>(R.id.terms2)
-      val terms3 = dialog.findViewById<ConstraintLayout>(R.id.terms3)
-      val terms4 = dialog.findViewById<TextView>(R.id.terms4)
+      val tvTitle = bottomSheetView.findViewById<TextView>(R.id.tvTitle)
+      val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
+      val terms1 = bottomSheetView.findViewById<TextView>(R.id.terms1)
+      val terms2 = bottomSheetView.findViewById<ConstraintLayout>(R.id.terms2)
+      val terms3 = bottomSheetView.findViewById<ConstraintLayout>(R.id.terms3)
+      val terms4 = bottomSheetView.findViewById<TextView>(R.id.terms4)
 
       tvTitle.text = title
 
@@ -172,9 +176,7 @@ class SignupActivity : AppCompatActivity() {
          4 -> terms4.visibility = View.VISIBLE
       }
 
-      dialog.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-      dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      dialog.window!!.setGravity(Gravity.BOTTOM)
+      dialog.setContentView(bottomSheetView)
       dialog.show()
    }
 }

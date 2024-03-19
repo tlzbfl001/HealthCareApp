@@ -49,11 +49,6 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
    private val itemList = ArrayList<DrugList>()
    private var getDailyGoal = DailyGoal()
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -69,6 +64,8 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()

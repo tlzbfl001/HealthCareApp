@@ -3,64 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="30dp"
-    android:background="@color/white"
     android:orientation="vertical">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/rec_terms">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bar"
+            android:layout_marginTop="7dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="15dp"
             android:layout_marginLeft="25dp"
             android:text="서비스 이용 약관 동의"
             android:textSize="17dp"
             android:textColor="@color/black"
-            app:layout_constraintTop_toTopOf="@id/clX"
-            app:layout_constraintBottom_toBottomOf="@id/clX"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clX"/>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clX"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/tvTitle"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+            app:layout_constraintEnd_toEndOf="parent">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/x1"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
-                android:layout_marginLeft="30dp"
+                android:layout_marginLeft="40dp"
                 android:layout_marginRight="25dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#eeeeee"
-            app:layout_constraintTop_toBottomOf="@id/clX"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:layout_marginTop="9dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
+        android:background="@color/white"
+        android:paddingBottom="20dp"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
         app:layout_constraintTop_toBottomOf="@id/cl"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +75,7 @@
                 android:visibility="gone"
                 android:text="@string/terms1"
                 android:textSize="14dp"
-                android:textColor="@color/black"
+               android:textColor="#666666"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +96,7 @@
                     android:layout_marginBottom="10dp"
                     android:text="@string/terms21"
                     android:textSize="14dp"
-                    android:textColor="@color/black"
+                    android:textColor="#666666"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -105,7 +105,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:background="@color/black"
+                    android:background="#666666"
                     android:stretchColumns="*"
                     android:padding="0.7dp"
                     app:layout_constraintTop_toBottomOf="@id/tv1"
@@ -121,7 +121,7 @@
                             android:padding="1dp"
                             android:text="위탁 받는 자"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
                             android:padding="1dp"
                             android:text="위탁하는 업무의 내용"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -142,7 +142,7 @@
                             android:padding="1dp"
                             android:text="NHN 주식회사"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -151,7 +151,7 @@
                             android:padding="1dp"
                             android:text="메시지 발송 서비스"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -163,7 +163,7 @@
                             android:padding="1dp"
                             android:text="(주)코드에프"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -172,7 +172,7 @@
                             android:padding="1dp"
                             android:text="건강검진 연동 서비스"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -183,7 +183,7 @@
                             android:padding="1dp"
                             android:text="(주)써머스플랫폼 스윗트래커"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -191,7 +191,7 @@
                             android:padding="1dp"
                             android:text="메시지 발송 서비스"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                 </TableLayout>
                 <View
@@ -205,7 +205,7 @@
                     android:id="@+id/tl2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/black"
+                    android:background="#666666"
                     android:stretchColumns="*"
                     android:padding="0.7dp"
                     app:layout_constraintTop_toBottomOf="@id/view1"
@@ -224,7 +224,7 @@
                             android:padding="1dp"
                             android:text="업체명\n(연락처)"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -235,7 +235,7 @@
                             android:padding="1dp"
                             android:text="개인정보\n이전국가"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -247,7 +247,7 @@
                             android:text="이용 목적"
                             android:textAlignment="center"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -258,7 +258,7 @@
                             android:padding="1dp"
                             android:text="이전 항목"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -269,7 +269,7 @@
                             android:padding="1dp"
                             android:text="이전일시\n 및 방법"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -279,7 +279,7 @@
                             android:padding="1dp"
                             android:text="보유 및\n이용기간"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow
                         android:layout_width="match_parent"
@@ -294,7 +294,7 @@
                             android:padding="1dp"
                             android:text="Google Inc.(googlekrsupport@google.com)"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -305,7 +305,7 @@
                             android:padding="1dp"
                             android:text="미국"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -316,7 +316,7 @@
                             android:padding="1dp"
                             android:text="인프라 제공"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -327,7 +327,7 @@
                             android:padding="1dp"
                             android:text="개인정보 수집 이용 보유 파기 항목에 있는 개인정보"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -338,7 +338,7 @@
                             android:padding="1dp"
                             android:text="서비스 이용 시점에 네트워크를 통한 전송"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -348,7 +348,7 @@
                             android:padding="1dp"
                             android:text="위탁 계약 종료 시"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow
                         android:layout_width="match_parent"
@@ -362,7 +362,7 @@
                             android:padding="1dp"
                             android:text="Amazon Web Service Inc.(cs-reply@amazon.com)"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -372,7 +372,7 @@
                             android:padding="1dp"
                             android:text="미국"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -382,7 +382,7 @@
                             android:padding="1dp"
                             android:text="인프라 제공"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -392,7 +392,7 @@
                             android:padding="1dp"
                             android:text="개인정보 수집 이용 보유 파기 항목에 있는 개인정보"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -402,7 +402,7 @@
                             android:padding="1dp"
                             android:text="서비스 이용 시점에 네트워크를 통한 전송"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -411,7 +411,7 @@
                             android:padding="1dp"
                             android:text="위탁 계약 종료 시"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                 </TableLayout>
                 <TextView
@@ -420,7 +420,7 @@
                     android:layout_marginTop="15dp"
                     android:text="@string/terms22"
                     android:textSize="14dp"
-                    android:textColor="@color/black"
+                   android:textColor="#666666"
                     app:layout_constraintTop_toBottomOf="@id/tl2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -442,7 +442,7 @@
                     android:layout_marginBottom="10dp"
                     android:text="@string/terms31"
                     android:textSize="14dp"
-                    android:textColor="@color/black"
+                   android:textColor="#666666"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -450,7 +450,7 @@
                     android:id="@+id/tl21"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/black"
+                    android:background="#666666"
                     android:stretchColumns="*"
                     android:layout_marginTop="5dp"
                     android:padding="0.7dp"
@@ -468,7 +468,7 @@
                             android:padding="1dp"
                             android:text="구분"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -479,7 +479,7 @@
                             android:padding="1dp"
                             android:text="필수여부"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -490,7 +490,7 @@
                             android:padding="1dp"
                             android:text="민감정보\n수집항목"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -501,7 +501,7 @@
                             android:padding="1dp"
                             android:text="이용목적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -511,7 +511,7 @@
                             android:padding="1dp"
                             android:text="보유기간"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -524,7 +524,7 @@
                             android:padding="1dp"
                             android:text="Apple/카카오 회원 가입"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -535,7 +535,7 @@
                             android:padding="1dp"
                             android:text="필수"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -546,7 +546,7 @@
                             android:padding="1dp"
                             android:text="생년월일, 성별"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -557,7 +557,7 @@
                             android:padding="1dp"
                             android:text="맞춤 건강 서비스 제공, 연구 및 통계분석자료 활용, 서비스 이용에 대한 분석 및 통계 제공"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -567,7 +567,7 @@
                             android:padding="1dp"
                             android:text="탈퇴시까지"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -580,7 +580,7 @@
                             android:padding="1dp"
                             android:text="기저질환"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -591,7 +591,7 @@
                             android:padding="1dp"
                             android:text="선택"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -602,7 +602,7 @@
                             android:padding="1dp"
                             android:text="기저질환 항목"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -613,7 +613,7 @@
                             android:padding="1dp"
                             android:text="위와 동일"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -623,7 +623,7 @@
                             android:padding="1dp"
                             android:text="영구적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -636,7 +636,7 @@
                             android:padding="1dp"
                             android:text="알러지"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -647,7 +647,7 @@
                             android:padding="1dp"
                             android:text="선택"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -658,7 +658,7 @@
                             android:padding="1dp"
                             android:text="알러지 항목"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -669,7 +669,7 @@
                             android:padding="1dp"
                             android:text="위와 동일"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -679,7 +679,7 @@
                             android:padding="1dp"
                             android:text="영구적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -692,7 +692,7 @@
                             android:padding="1dp"
                             android:text="복용 중인 의약품"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -703,7 +703,7 @@
                             android:padding="1dp"
                             android:text="선택"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -714,7 +714,7 @@
                             android:padding="1dp"
                             android:text="복용 중인 의약품 항목"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -725,7 +725,7 @@
                             android:padding="1dp"
                             android:text="위와 동일"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -735,7 +735,7 @@
                             android:padding="1dp"
                             android:text="영구적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -748,7 +748,7 @@
                             android:padding="1dp"
                             android:text="건강 특수 상태 "
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -758,8 +758,8 @@
                             android:layout_marginBottom="0.7dp"
                             android:padding="1dp"
                             android:text="선택"
-                            android:textSize="11dp"
-                            android:textColor="@color/black"/>
+                            android:textSize="13dp"
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -770,7 +770,7 @@
                             android:padding="1dp"
                             android:text="흡연여부, 자녀계획여부, 임신여부, 수유여부"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -781,7 +781,7 @@
                             android:padding="1dp"
                             android:text="위와 동일"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -791,7 +791,7 @@
                             android:padding="1dp"
                             android:text="영구적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -804,7 +804,7 @@
                             android:padding="1dp"
                             android:text="섭취 기록"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -815,7 +815,7 @@
                             android:padding="1dp"
                             android:text="선택"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -826,7 +826,7 @@
                             android:padding="1dp"
                             android:text="섭취 관리"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -837,7 +837,7 @@
                             android:padding="1dp"
                             android:text="위와 동일"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -847,7 +847,7 @@
                             android:padding="1dp"
                             android:text="영구적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -859,7 +859,7 @@
                             android:padding="1dp"
                             android:text="컨디션 기록"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -869,7 +869,7 @@
                             android:padding="1dp"
                             android:text="선택"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -879,7 +879,7 @@
                             android:padding="1dp"
                             android:text="컨디션 관리"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -889,7 +889,7 @@
                             android:padding="1dp"
                             android:text="위와 동일"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -898,7 +898,7 @@
                             android:padding="1dp"
                             android:text="영구적"
                             android:textSize="13dp"
-                            android:textColor="@color/black"/>
+                           android:textColor="#666666"/>
                     </TableRow>
                 </TableLayout>
                 <TextView
@@ -907,7 +907,7 @@
                     android:layout_marginTop="15dp"
                     android:text="@string/terms32"
                     android:textSize="14dp"
-                    android:textColor="@color/black"
+                   android:textColor="#666666"
                     app:layout_constraintTop_toBottomOf="@id/tl21"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -920,7 +920,7 @@
                 android:visibility="gone"
                 android:text="@string/terms4"
                 android:textSize="14dp"
-                android:textColor="@color/black"
+                android:textColor="#666666"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -27,7 +27,6 @@ class InitActivity : AppCompatActivity() {
    private var _binding: ActivityInitBinding? = null
    private val binding get() = _binding!!
 
-   private var backWait:Long = 0
    private var pressedTime: Long = 0
 
    private var adapter: SectionPageAdapter = SectionPageAdapter(supportFragmentManager)
@@ -92,15 +91,15 @@ class InitActivity : AppCompatActivity() {
 
    @Deprecated("Deprecated in Java")
    override fun onBackPressed() {
-      if (pressedTime == 0L) {
+      if(pressedTime == 0L) {
          Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
          pressedTime = System.currentTimeMillis()
-      } else {
+      }else {
          val seconds = (System.currentTimeMillis() - pressedTime).toInt()
-         if (seconds > 2000) {
+         if(seconds > 2000) {
             Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
             pressedTime = 0
-         } else {
+         }else {
             super.onBackPressed()
             finishAffinity()
             System.runFinalization()

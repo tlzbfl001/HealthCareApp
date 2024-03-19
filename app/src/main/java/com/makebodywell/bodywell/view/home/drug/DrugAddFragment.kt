@@ -47,11 +47,6 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var unit = "정"
    var count = 1
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +64,8 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
+      (context as MainActivity).setOnBackPressedListener(this)
+
       dataManager = DataManager(activity)
       dataManager!!.open()
 
@@ -78,7 +75,7 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 
       val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
 
-      if(id > 0) {
+      if(id > -1) {
          val getDrug = dataManager!!.getDrug(id)
          binding.etType.setText(getDrug.type)
          binding.etName.setText(getDrug.name)

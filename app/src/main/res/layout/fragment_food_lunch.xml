@@ -50,7 +50,7 @@
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:text="입력"
-           android:textSize="17dp"
+           android:textSize="16dp"
            android:textColor="@color/black"
            android:layout_marginTop="4dp"
            android:layout_marginBottom="4dp"
@@ -171,7 +171,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="25dp"
-                        android:src="@drawable/arrow_left_round"
+                        android:src="@drawable/arrow_left"
                         android:layout_marginRight="5dp"
                         app:tint="#E3E4E5"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -200,7 +200,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="25dp"
-                        android:src="@drawable/arrow_right_round"
+                        android:src="@drawable/arrow_right"
                         android:layout_marginLeft="5dp"
                         app:tint="#CACACA"
                         app:layout_constraintBottom_toBottomOf="parent"

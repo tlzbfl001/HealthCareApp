@@ -3,6 +3,7 @@ package com.makebodywell.bodywell.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.R
@@ -20,6 +22,7 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivityLoginBinding
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
@@ -34,11 +37,9 @@ class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
    private val binding get() = _binding!!
 
-   private val bundle = Bundle()
    private var dataManager: DataManager? = null
    private var gsc: GoogleSignInClient? = null
    private var gso: GoogleSignInOptions? = null
-   private var gsa: GoogleSignInAccount? = null
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -88,6 +89,8 @@ class LoginActivity : AppCompatActivity() {
             kakaoLogin()
          }
       }
+
+//      Log.d(TAG, "getKeyHash: " + Utility.getKeyHash(this))
    }
 
    private fun googleLogin() {
@@ -101,25 +104,26 @@ class LoginActivity : AppCompatActivity() {
       startActivityForResult(signInIntent, 1000)
    }
 
-   // 구글 로그인 처리
    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
       super.onActivityResult(requestCode, resultCode, data)
       if (requestCode == 1000) {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
             if(it.isSuccessful) {
-               val getUser1 = dataManager!!.getUser("google", it.result.email.toString())
+               val getUser = dataManager!!.getUser("google", it.result.email.toString())
 
-               if(getUser1.regDate == "") { // 초기 가입 작업
-                  val user = User(type = "google", idToken = it.result.idToken!!, email = it.result.email!!, name = it.result.displayName!!,
-                     regDate = LocalDate.now().toString())
+               if(getUser.regDate == "") { // 초기 가입 작업
+                  if(it.result.idToken == "" || it.result.idToken == null || it.result.email == "" || it.result.email == null) {
+                     Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                  }else {
+                     val name = if(it.result.displayName == "" || it.result.displayName == "") "" else it.result.displayName
+                     val user = User(type = "google", idToken = it.result.idToken!!, email = it.result.email!!, name = name!!, regDate = LocalDate.now().toString())
 
-                  val intent = Intent(this, SignupActivity::class.java)
-                  intent.putExtra("user", user)
-                  startActivity(intent)
+                     val intent = Intent(this, SignupActivity::class.java)
+                     intent.putExtra("user", user)
+                     startActivity(intent)
+                  }
                }else { // 로그인
-                  val getUser2 = dataManager!!.getUser("google", it.result.email.toString())
-                  MyApp.prefs.setPrefs("userId", getUser2.id)
-
+                  MyApp.prefs.setPrefs("userId", getUser.id)
                   startActivity(Intent(this, MainActivity::class.java))
                }
             }else {
@@ -134,25 +138,28 @@ class LoginActivity : AppCompatActivity() {
          override fun onSuccess() {
             NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                override fun onSuccess(result: NidProfileResponse) {
-                  if(NaverIdLoginSDK.getAccessToken() != null && NaverIdLoginSDK.getAccessToken() != "") {
-                     val getUser1 = dataManager!!.getUser("naver", result.profile?.email.toString())
+                  val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
 
-                     if(getUser1.regDate == "") {
-                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, name = result.profile?.name!!,
-                           nickname = result.profile?.nickname!!, gender = result.profile?.gender!!, birthday = result.profile?.birthYear + "-" + result.profile?.birthday,
-                           profileImage = result.profile?.profileImage!!, regDate = LocalDate.now().toString())
+                  if(getUser.regDate == "") {
+                     if(NaverIdLoginSDK.getAccessToken() == "" || NaverIdLoginSDK.getAccessToken() == null || result.profile?.email == "" || result.profile?.email == null) {
+                        Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                     }else {
+                        val name = if(result.profile?.name == "" || result.profile?.name == null) "" else result.profile?.name
+                        val nickname = if(result.profile?.nickname == "" || result.profile?.nickname == null) "" else result.profile?.nickname
+                        val birthday = if(result.profile?.birthYear == "" || result.profile?.birthYear == null || result.profile?.birthday == "" ||
+                           result.profile?.birthday == null) "" else result.profile?.birthYear + "-" + result.profile?.birthday
+                        val profileImage = if(result.profile?.profileImage == "" || result.profile?.profileImage == null) "" else result.profile?.profileImage
+
+                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, name = name,
+                           nickname = nickname, birthday = birthday, profileImage = profileImage!!, regDate = LocalDate.now().toString())
 
                         val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                         intent.putExtra("user", user)
                         startActivity(intent)
-                     }else {
-                        val getUser2 = dataManager!!.getUser("naver", result.profile?.email.toString())
-                        MyApp.prefs.setPrefs("userId", getUser2.id)
-
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                      }
                   }else {
-                     Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                     MyApp.prefs.setPrefs("userId", getUser.id)
+                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
                }
                override fun onError(errorCode: Int, message: String) {
@@ -181,12 +188,12 @@ class LoginActivity : AppCompatActivity() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
          if (error != null) {
             Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
-         }else if (token != null) { // 로그인 성공
+         }else if (token != null) {
             createKakaoUser(token)
          }
       }
 
-      // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
+      // 카카오톡이 설치되어있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
       if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
          UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
             if(error != null) {
@@ -210,20 +217,27 @@ class LoginActivity : AppCompatActivity() {
          if(error != null) {
             Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
          }else {
-            val getUser1 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString()) // 사용자 가입여부 체크
+            val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount!!.email.toString()) // 사용자 가입여부 체크
 
-            if(getUser1.regDate == "") { // 초기 가입 작업
-               val user2 = User(type = "kakao", idToken = token.idToken!!, email = user!!.kakaoAccount?.email!!, name = user.kakaoAccount?.name,
-                  nickname = user.kakaoAccount?.profile?.nickname, profileImage = user.kakaoAccount?.profile?.profileImageUrl, regDate = LocalDate.now().toString())
-               bundle.putParcelable("user", user2)
+            if(getUser.regDate == "") { // 초기 가입 작업
+               if(token.idToken == "" || token.idToken == null || user.kakaoAccount?.email == "" || user.kakaoAccount?.email == null) {
+                  Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+               }else {
+                  val name = if(user.kakaoAccount?.name == "" || user.kakaoAccount?.name == null) "" else user.kakaoAccount?.name
+                  val nickname = if(user.kakaoAccount?.profile?.nickname == "" || user.kakaoAccount?.profile?.nickname == null) "" else user.kakaoAccount?.profile?.nickname
+                  val profileImage = if(user.kakaoAccount?.profile?.profileImageUrl == "" || user.kakaoAccount?.profile?.profileImageUrl == null){
+                     ""
+                  }else user.kakaoAccount?.profile?.profileImageUrl
 
-               val intent = Intent(this, SignupActivity::class.java)
-               intent.putExtra("user", user)
-               startActivity(intent)
+                  val data = User(type = "kakao", idToken = token.idToken!!, email = user.kakaoAccount?.email!!, name = name, nickname = nickname, profileImage = profileImage,
+                     regDate = LocalDate.now().toString())
+
+                  val intent = Intent(this, SignupActivity::class.java)
+                  intent.putExtra("user", data)
+                  startActivity(intent)
+               }
             }else { // 로그인
-               val getUser2 = dataManager!!.getUser("kakao", user?.kakaoAccount?.email.toString())
-               MyApp.prefs.setPrefs("userId", getUser2.id)
-
+               MyApp.prefs.setPrefs("userId", getUser.id)
                startActivity(Intent(this, MainActivity::class.java))
             }
          }

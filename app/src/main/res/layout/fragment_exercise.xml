@@ -16,7 +16,7 @@
       app:layout_constraintTop_toTopOf="@id/tvDate">
       <ImageView
          android:layout_width="12dp"
-         android:layout_height="23dp"
+         android:layout_height="24dp"
          android:layout_marginTop="5dp"
          android:layout_marginBottom="5dp"
          android:src="@drawable/arrow_back"

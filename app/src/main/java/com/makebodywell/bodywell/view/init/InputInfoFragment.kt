@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -140,7 +141,7 @@ class InputInfoFragment : Fragment() {
             CAMERA_REQUEST_CODE -> {
                if(data!!.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
-                  val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+                  val uri = saveFile(requireActivity(), "image/jpeg", img)
                   image = uri.toString()
 
                   binding.ivProfile.setImageURI(Uri.parse(uri.toString()))

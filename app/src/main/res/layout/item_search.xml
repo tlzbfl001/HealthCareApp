@@ -20,7 +20,7 @@
         android:id="@+id/iv"
         android:layout_width="12dp"
         android:layout_height="12dp"
-        android:src="@drawable/arrow_right_round"
+        android:src="@drawable/arrow_right"
         android:layout_marginRight="25dp"
         app:tint="#9E9E9E"
         app:layout_constraintStart_toEndOf="@id/textView"

@@ -26,11 +26,6 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var dataManager: DataManager? = null
    private var intensity = "상"
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +42,8 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()

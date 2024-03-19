@@ -55,7 +55,7 @@
          <ImageView
             android:layout_width="12dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrow_left_round"
+            android:src="@drawable/arrow_left"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="40dp"
             app:tint="#9E9E9E"
@@ -87,7 +87,7 @@
          <ImageView
             android:layout_width="12dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/arrow_right_round"
+            android:src="@drawable/arrow_right"
             android:layout_marginRight="40dp"
             android:layout_marginLeft="20dp"
             app:tint="#9E9E9E"

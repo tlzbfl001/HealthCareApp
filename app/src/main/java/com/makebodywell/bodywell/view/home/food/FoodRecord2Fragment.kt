@@ -29,14 +29,8 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var itemList = ArrayList<Food>()
-   private val originalList = ArrayList<Food>()
    private val searchList = ArrayList<Item>()
-   private var type = ""
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
+   private var type = "1"
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -54,6 +48,8 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()
@@ -113,12 +109,12 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         val adapter = FoodRecordAdapter(itemList)
+         val adapter = FoodRecordAdapter(requireActivity(), itemList, type)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("dataId", itemList[pos].id.toString())
+               bundle.putString("id", itemList[pos].id.toString())
                replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
             }
          })
@@ -128,11 +124,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun searchView() {
-      var adapter = SearchAdapter()
-
-      for(i in 0 until itemList.size) {
-         originalList.add(itemList[i])
-      }
+      var adapter = SearchAdapter(requireActivity(), type)
 
       binding.etSearch.addTextChangedListener(object: TextWatcher {
          override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -148,8 +140,8 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
             }else {
                // 검색 단어를 포함하는지 확인
                for(i in 0 until itemList.size) {
-                  if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = originalList[i].id, string1 = originalList[i].name))
+                  if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].name))
                   }
                   adapter.setItems(searchList)
                }
@@ -157,13 +149,13 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          }
       })
 
-      adapter = SearchAdapter()
+      adapter = SearchAdapter(requireActivity(), type)
       binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv2.adapter = adapter
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("dataId", searchList[pos].int1.toString())
+            bundle.putString("id", searchList[pos].int1.toString())
             replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
          }
       })

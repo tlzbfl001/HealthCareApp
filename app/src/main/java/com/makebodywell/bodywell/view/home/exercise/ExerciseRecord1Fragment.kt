@@ -32,11 +32,6 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private val originalList = ArrayList<Exercise>()
    private val searchList = ArrayList<Item>()
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +48,8 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()
@@ -106,7 +103,7 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         val adapter = ExerciseRecordAdapter(itemList)
+         val adapter = ExerciseRecordAdapter(requireActivity(), itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          adapter.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
@@ -121,7 +118,7 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun searchView() {
-      val adapter = SearchAdapter()
+      val adapter = SearchAdapter(requireActivity(), "")
 
       for(i in 0 until itemList.size) {
          originalList.add(itemList[i])

@@ -1,18 +1,34 @@
 package com.makebodywell.bodywell.adapter
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.database.DBHelper
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
+import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.view.home.food.FoodInputFragment
 
 class ExerciseRecordAdapter (
+   private val context: Activity,
    private var itemList: ArrayList<Exercise> = ArrayList<Exercise>()
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
+   private var dataManager: DataManager? = null
    private var onItemClickListener: OnItemClickListener? = null
+
+   init {
+      dataManager = DataManager(context)
+      dataManager!!.open()
+   }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -22,8 +38,45 @@ class ExerciseRecordAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.textView.text = itemList[position].name
 
-      holder.mainLayout.setOnClickListener {
+      holder.textView.setOnClickListener {
          onItemClickListener!!.onItemClick(position)
+      }
+
+      holder.cl.setOnClickListener {
+         val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+         val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu, null)
+
+         val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
+         val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
+         val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
+
+         clX.setOnClickListener {
+            dialog.dismiss()
+         }
+
+         clEdit.setOnClickListener {
+            dialog.dismiss()
+         }
+
+         clDelete.setOnClickListener {
+            val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+               .setTitle("운동 삭제")
+               .setMessage("정말 삭제하시겠습니까?")
+               .setPositiveButton("확인") { _, _ ->
+                  dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
+
+                  itemList.removeAt(position)
+                  notifyDataSetChanged()
+
+                  Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+               }
+               .setNegativeButton("취소", null)
+               .create()
+            dialog.show()
+         }
+
+         dialog.setContentView(bottomSheetView)
+         dialog.show()
       }
    }
 
@@ -40,7 +93,7 @@ class ExerciseRecordAdapter (
    }
 
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-      val mainLayout: ConstraintLayout = itemView.findViewById(R.id.mainLayout)
       val textView: TextView = itemView.findViewById(R.id.textView)
+      val cl: ConstraintLayout = itemView.findViewById(R.id.cl)
    }
 }

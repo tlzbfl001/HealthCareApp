@@ -24,8 +24,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
+import com.makebodywell.bodywell.BuildConfig.GOOGLE_WEB_CLIENT_ID
+import com.makebodywell.bodywell.BuildConfig.NAVER_CLIENT_ID
+import com.makebodywell.bodywell.BuildConfig.NAVER_CLIENT_SECRET
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.RemoveUserMutation
 import com.makebodywell.bodywell.database.DBHelper
@@ -59,6 +64,7 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import com.makebodywell.bodywell.view.init.InitActivity
 import com.makebodywell.bodywell.view.init.LoginActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
@@ -138,17 +144,18 @@ class SettingFragment : Fragment() {
 
       binding.tvLogout.setOnClickListener {
          if(!networkStatusCheck(requireActivity())){
-            Toast.makeText(context, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            val dialog = AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+               .setTitle("로그아웃")
                .setMessage("정말 로그아웃하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   val getUser = dataManager!!.getUser()
 
                   when(getUser.type) {
                      "google" -> {
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                           .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                        val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
+                           .requestIdToken(GOOGLE_WEB_CLIENT_ID)
                            .requestEmail()
                            .build()
                         val gsc = GoogleSignIn.getClient(requireActivity(), gso)
@@ -167,7 +174,7 @@ class SettingFragment : Fragment() {
                         }
                      }
                      "naver" -> {
-                        NaverIdLoginSDK.initialize(requireActivity(), BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(
+                        NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(
                            R.string.app_name))
                         NaverIdLoginSDK.logout()
                         MyApp.prefs.removePrefs("userId")
@@ -202,9 +209,10 @@ class SettingFragment : Fragment() {
 
       binding.tvResign.setOnClickListener {
          if(!networkStatusCheck(requireActivity())){
-            Toast.makeText(context, "네트워크에 연결해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            val dialog = AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+               .setTitle("회원탈퇴")
                .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   getUser = dataManager!!.getUser()
@@ -214,8 +222,8 @@ class SettingFragment : Fragment() {
                      "google" -> {
                         val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
 
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                           .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                        val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
+                           .requestIdToken(GOOGLE_WEB_CLIENT_ID)
                            .requestEmail()
                            .build()
                         val gsc = GoogleSignIn.getClient(requireActivity(), gso)
@@ -228,15 +236,15 @@ class SettingFragment : Fragment() {
                                  Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                               }else {
                                  gsc.revokeAccess().addOnCompleteListener {
-                                    if (it.isSuccessful) {
+                                    if(it.isSuccessful) {
                                        removeData()
                                        MyApp.prefs.removePrefs("userId")
 
-                                       Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
                                        finishAffinity(requireActivity())
-                                       startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                       startActivity(Intent(requireActivity(), InitActivity::class.java))
                                        exitProcess(0)
-                                    } else {
+                                    }else {
                                        Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                     }
                                  }
@@ -245,7 +253,7 @@ class SettingFragment : Fragment() {
                         }
                      }
                      "naver" -> {
-                        NaverIdLoginSDK.initialize(requireActivity(), BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(
+                        NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(
                            R.string.app_name))
                         if(NaverIdLoginSDK.getAccessToken() == null) {
                            Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
@@ -259,9 +267,9 @@ class SettingFragment : Fragment() {
                                        removeData()
                                        MyApp.prefs.removePrefs("userId")
 
-                                       Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
                                        finishAffinity(requireActivity())
-                                       startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                       startActivity(Intent(requireActivity(), InitActivity::class.java))
                                        exitProcess(0)
                                     }
                                     override fun onFailure(httpStatus: Int, message: String) {
@@ -289,9 +297,9 @@ class SettingFragment : Fragment() {
                                        removeData()
                                        MyApp.prefs.removePrefs("userId")
 
-                                       Toast.makeText(context, "탈퇴에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                       Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
                                        finishAffinity(requireActivity())
-                                       startActivity(Intent(requireActivity(), LoginActivity::class.java))
+                                       startActivity(Intent(requireActivity(), InitActivity::class.java))
                                        exitProcess(0)
                                     }
                                  }
@@ -358,7 +366,7 @@ class SettingFragment : Fragment() {
             CAMERA_REQUEST_CODE -> {
                if(data!!.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
-                  val uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+                  val uri = saveFile(requireActivity(), "image/jpeg", img)
 
                   binding.ivUser.setImageURI(Uri.parse(uri.toString()))
 

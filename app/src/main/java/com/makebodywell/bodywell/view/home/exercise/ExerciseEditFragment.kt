@@ -29,11 +29,6 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
     private var intensity = "상"
     private var type = ""
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context as MainActivity).setOnBackPressedListener(this)
-    }
-
     @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +45,8 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
             val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
             binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
         }
+
+        (context as MainActivity).setOnBackPressedListener(this)
 
         dataManager = DataManager(activity)
         dataManager!!.open()
@@ -84,30 +81,6 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
             }
         }
 
-        when(getExercise.intensity) {
-            "상" -> {
-                button1()
-            }
-            "중" -> {
-                button2()
-            }
-            "하" -> {
-                button3()
-            }
-        }
-
-        binding.tvIntensity1.setOnClickListener {
-            button1()
-        }
-
-        binding.tvIntensity2.setOnClickListener {
-            button2()
-        }
-
-        binding.tvIntensity3.setOnClickListener {
-            button3()
-        }
-
         binding.cvSave.setOnClickListener {
             val workoutTime = if(binding.etTime.text.toString().trim() != "") binding.etTime.text.toString().toInt() else 0
             val calories = if(binding.etKcal.text.toString().trim() != "") binding.etKcal.text.toString().toInt() else 0
@@ -135,36 +108,6 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
         }
 
         return binding.root
-    }
-
-    private fun button1() {
-        binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_yellow)
-        binding.tvIntensity1.setTextColor(Color.WHITE)
-        binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
-        binding.tvIntensity2.setTextColor(Color.BLACK)
-        binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
-        binding.tvIntensity3.setTextColor(Color.BLACK)
-        intensity = "상"
-    }
-
-    private fun button2() {
-        binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
-        binding.tvIntensity1.setTextColor(Color.BLACK)
-        binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_yellow)
-        binding.tvIntensity2.setTextColor(Color.WHITE)
-        binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
-        binding.tvIntensity3.setTextColor(Color.BLACK)
-        intensity = "중"
-    }
-
-    private fun button3() {
-        binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
-        binding.tvIntensity1.setTextColor(Color.BLACK)
-        binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
-        binding.tvIntensity2.setTextColor(Color.BLACK)
-        binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
-        binding.tvIntensity3.setTextColor(Color.WHITE)
-        intensity = "하"
     }
 
     override fun onBackPressed() {

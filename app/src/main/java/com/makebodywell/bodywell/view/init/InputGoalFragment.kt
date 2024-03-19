@@ -13,6 +13,7 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputGoalBinding
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 
@@ -21,11 +22,8 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
    private val binding get() = _binding!!
 
    private var dataManager: DataManager? = null
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as InputActivity).setOnBackPressedListener(this)
-   }
+   private var weightGoal = 55.0
+   private var kcalGoal = 2000
 
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
@@ -34,11 +32,22 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
    ): View {
       _binding = FragmentInputGoalBinding.inflate(layoutInflater)
 
+      (context as InputActivity).setOnBackPressedListener(this)
+
       dataManager = DataManager(activity)
       dataManager!!.open()
 
+      val getUser = dataManager!!.getUser()
+
+      if(getUser.gender == "MALE") {
+         weightGoal = 65.0
+         kcalGoal = 2200
+         binding.etWeightGoal.hint = weightGoal.toString()
+         binding.etKcalGoal.hint = kcalGoal.toString()
+      }
+
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
-         CustomUtil.hideKeyboard(requireActivity())
+         hideKeyboard(requireActivity())
          true
       }
 
@@ -54,8 +63,8 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
       }
 
       binding.cvContinue.setOnClickListener {
-         val weightGoal = if(binding.etWeightGoal.text.toString() == "") 55.0 else {binding.etWeightGoal.text.toString().toDouble()}
-         val kcalGoal = if(binding.etKcalGoal.text.toString() == "") 2000 else {binding.etKcalGoal.text.toString().toInt()}
+         if(binding.etWeightGoal.text.toString() != "") weightGoal = binding.etWeightGoal.text.toString().toDouble()
+         if(binding.etKcalGoal.text.toString() != "") kcalGoal = binding.etKcalGoal.text.toString().toInt()
          val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else {binding.etWaterUnit.text.toString().toInt()}
          val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else {binding.etWaterGoal.text.toString().toInt()}
 

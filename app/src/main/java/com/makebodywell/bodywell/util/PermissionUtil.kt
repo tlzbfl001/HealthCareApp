@@ -107,10 +107,10 @@ class PermissionUtil {
         }
 
         @SuppressLint("Recycle")
-        fun saveFile(context: Context, fileName:String, mimeType:String, bitmap: Bitmap): Uri?{
+        fun saveFile(context: Context, mimeType:String, bitmap: Bitmap): Uri?{
             // MediaStore 에 파일명, mimeType 을 지정
             val cv = ContentValues()
-            cv.put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+            cv.put(MediaStore.Images.Media.DISPLAY_NAME, randomFileName())
             cv.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
             cv.put(MediaStore.Images.Media.IS_PENDING, 1)
 

@@ -48,7 +48,8 @@ class ExerciseListAdapter (
       }
 
       holder.clX.setOnClickListener {
-         val dialog = AlertDialog.Builder(context)
+         val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+            .setTitle("운동 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                dataManager!!.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)

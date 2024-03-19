@@ -39,11 +39,6 @@ class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var sleepHour = 0
    private var sleepMinute = 0
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +55,8 @@ class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()

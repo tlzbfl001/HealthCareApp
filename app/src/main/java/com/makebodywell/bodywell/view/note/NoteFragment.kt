@@ -271,7 +271,7 @@ class NoteFragment : Fragment() {
             CAMERA_REQUEST_CODE -> {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
-                  uri = saveFile(requireActivity(), randomFileName(), "image/jpeg", img)
+                  uri = saveFile(requireActivity(), "image/jpeg", img)
 
                   dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()

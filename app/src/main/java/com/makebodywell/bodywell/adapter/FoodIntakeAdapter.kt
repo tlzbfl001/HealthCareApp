@@ -6,14 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.food.FoodEditFragment
+import com.makebodywell.bodywell.view.home.food.FoodDailyEditFragment
 
 class FoodIntakeAdapter (
     private val context: Activity,
@@ -46,7 +45,7 @@ class FoodIntakeAdapter (
         holder.cl.setOnClickListener {
             bundle.putString("dataId", itemList[position].id.toString())
             bundle.putString("type", type.toString())
-            replaceFragment2(context, FoodEditFragment(), bundle)
+            replaceFragment2(context, FoodDailyEditFragment(), bundle)
         }
 
         holder.clX.setOnClickListener {

@@ -17,10 +17,10 @@
             </item>
             <item
                 android:drawable="@drawable/round_check"
-                android:top="2dp"
-                android:right="2dp"
-                android:bottom="2dp"
-                android:left="2dp"/>
+                android:top="1dp"
+                android:right="1dp"
+                android:bottom="1dp"
+                android:left="1dp"/>
         </layer-list>
     </item>
 </selector>

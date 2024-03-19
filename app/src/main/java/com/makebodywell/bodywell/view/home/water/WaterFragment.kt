@@ -47,11 +47,6 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var volume = 200
    private var count = 0
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      (context as MainActivity).setOnBackPressedListener(this)
-   }
-
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "SetTextI18n")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +63,8 @@ class WaterFragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       dataManager = DataManager(activity)
       dataManager!!.open()
