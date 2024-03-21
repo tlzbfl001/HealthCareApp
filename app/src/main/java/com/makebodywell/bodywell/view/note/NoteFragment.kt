@@ -131,8 +131,8 @@ class NoteFragment : Fragment() {
             }
 
             clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_PICK)
-               intent.type = MediaStore.Images.Media.CONTENT_TYPE
+               val intent = Intent(Intent.ACTION_GET_CONTENT)
+               intent.type = "image/*"
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
 
@@ -270,6 +270,7 @@ class NoteFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   uri = saveFile(requireActivity(), "image/jpeg", img)
 
+                  requireActivity().contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                   dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()
 
@@ -278,14 +279,9 @@ class NoteFragment : Fragment() {
             }
             STORAGE_REQUEST_CODE -> {
                uri = data!!.data
-               if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
-                  val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  dataManager!!.insertImage(Image(imageUri = uriParse!!, type = 5, regDate = selectedDate.toString()))
-                  setImageView()
-               }else {
-                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
-                  setImageView()
-               }
+               requireActivity().contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+               dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+               setImageView()
 
                dialog!!.dismiss()
             }
