@@ -281,7 +281,7 @@
          android:id="@+id/clWrite"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:background="@drawable/rec_15_green"
+         android:background="@drawable/rec_15_border_green"
          android:layout_margin="25dp"
          android:padding="15dp">
          <TextView

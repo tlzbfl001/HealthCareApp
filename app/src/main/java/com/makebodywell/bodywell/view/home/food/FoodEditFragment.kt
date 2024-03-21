@@ -92,7 +92,7 @@ class FoodEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 		}
 
 		binding.clBack.setOnClickListener {
-			replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+			replaceFragment()
 		}
 
 		binding.tvMg.setOnClickListener {
@@ -310,7 +310,7 @@ class FoodEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 			override fun afterTextChanged(p0: Editable?) {}
 		})
 
-		binding.cvSave.setOnClickListener {
+		binding.cvEdit.setOnClickListener {
 			if(id > -1) {
 				val getData = dataManager.getFood(binding.etName.text.toString().trim())
 
@@ -410,9 +410,16 @@ class FoodEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 		binding.tvUnit.text = unit
 	}
 
+	private fun replaceFragment() {
+		when(arguments?.getString("back")) {
+			"1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+			else -> replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
+		}
+	}
+
 	override fun onBackPressed() {
 		val activity = activity as MainActivity?
 		activity!!.setOnBackPressedListener(null)
-		replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+		replaceFragment()
 	}
 }

@@ -33,6 +33,8 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
    ): View {
       _binding = FragmentExerciseInputBinding.inflate(layoutInflater)
 
+      (context as MainActivity).setOnBackPressedListener(this)
+
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
@@ -43,18 +45,16 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
       binding.clX.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+         replaceFragment()
       }
 
       binding.tvIntensity1.setOnClickListener {
@@ -107,9 +107,16 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       return binding.root
    }
 
+   private fun replaceFragment() {
+      when(arguments?.getString("back")) {
+         "1" -> replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+         else -> replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
+      }
+   }
+
    override fun onBackPressed() {
       val activity = activity as MainActivity?
       activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+      replaceFragment()
    }
 }

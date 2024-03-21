@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -19,6 +18,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter2
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -95,30 +95,25 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.clPhoto.setOnClickListener {
-         if (cameraRequest(requireActivity())) {
-            dialog = Dialog(requireActivity())
-            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog!!.setContentView(R.layout.dialog_gallery)
+         dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+         val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
 
-            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
-            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+         val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+         val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
 
-            clCamera.setOnClickListener {
-               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-               startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }
-
-            clGallery.setOnClickListener {
-               val intent = Intent(Intent.ACTION_PICK)
-               intent.type = MediaStore.Images.Media.CONTENT_TYPE
-               startActivityForResult(intent, STORAGE_REQUEST_CODE)
-            }
-
-            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog!!.window!!.setGravity(Gravity.BOTTOM)
-            dialog!!.show()
+         clCamera.setOnClickListener {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(intent, CAMERA_REQUEST_CODE)
          }
+
+         clPhoto.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = MediaStore.Images.Media.CONTENT_TYPE
+            startActivityForResult(intent, STORAGE_REQUEST_CODE)
+         }
+
+         dialog!!.setContentView(bottomSheetView)
+         dialog!!.show()
       }
 
       binding.ivMinus.setOnClickListener {

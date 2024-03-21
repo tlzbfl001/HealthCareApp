@@ -454,8 +454,8 @@
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="25dp"
-                   android:backgroundTint="#B4B4B5"
-                   app:cardCornerRadius="5dp"
+                   android:backgroundTint="#bbb"
+                   app:cardCornerRadius="8dp"
                    app:cardElevation="0dp"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintStart_toStartOf="parent"
@@ -476,7 +476,7 @@
                <androidx.constraintlayout.widget.ConstraintLayout
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"
-                   android:background="#A9AFBC"
+                   android:background="#bbb"
                    android:layout_marginTop="25dp"
                    android:paddingTop="14dp"
                    android:paddingBottom="14dp"
@@ -493,23 +493,30 @@
                       android:textColor="@color/white"
                       android:textStyle="bold"
                       app:layout_constraintTop_toTopOf="parent"
-                      app:layout_constraintEnd_toStartOf="@id/tvBmr"
+                      app:layout_constraintEnd_toStartOf="@id/cvBmr"
                       app:layout_constraintStart_toStartOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintHorizontal_chainStyle="packed"/>
-                  <TextView
-                      android:id="@+id/tvBmr"
-                      android:layout_width="180dp"
-                      android:layout_height="wrap_content"
-                      android:background="@drawable/rec_5"
-                      android:layout_marginLeft="15dp"
-                      android:padding="8dp"
-                      android:textSize="15dp"
-                      android:textColor="@color/black"
-                      app:layout_constraintStart_toEndOf="@id/tvInputTitle"
-                      app:layout_constraintTop_toTopOf="parent"
-                      app:layout_constraintEnd_toStartOf="@id/tvKcalText"
-                      app:layout_constraintBottom_toBottomOf="parent"/>
+                  <androidx.cardview.widget.CardView
+                     android:id="@+id/cvBmr"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_marginLeft="15dp"
+                     app:cardBackgroundColor="@color/white"
+                     app:cardCornerRadius="6dp"
+                     app:cardElevation="0dp"
+                     app:layout_constraintStart_toEndOf="@id/tvInputTitle"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintEnd_toStartOf="@id/tvKcalText"
+                     app:layout_constraintBottom_toBottomOf="parent">
+                     <TextView
+                        android:id="@+id/tvBmr"
+                        android:layout_width="180dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textSize="15dp"
+                        android:textColor="@color/black"/>
+                  </androidx.cardview.widget.CardView>
                   <TextView
                       android:id="@+id/tvKcalText"
                       android:layout_width="wrap_content"
@@ -520,7 +527,7 @@
                       android:textColor="@color/white"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
-                      app:layout_constraintStart_toEndOf="@id/tvBmr"
+                      app:layout_constraintStart_toEndOf="@id/cvBmr"
                       app:layout_constraintBottom_toBottomOf="parent"/>
                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

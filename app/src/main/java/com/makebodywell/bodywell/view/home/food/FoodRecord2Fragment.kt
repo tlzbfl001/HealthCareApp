@@ -56,6 +56,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
 
       type = arguments?.getString("type").toString()
       bundle.putString("type", type)
+      bundle.putString("back", "2")
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
@@ -78,12 +79,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.clBack.setOnClickListener {
-         when(type) {
-            "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-            "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-            "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-            "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
-         }
+         replaceFragment()
       }
 
       binding.tvBtn1.setOnClickListener {
@@ -109,7 +105,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         val adapter = FoodRecordAdapter(requireActivity(), itemList, type)
+         val adapter = FoodRecordAdapter(requireActivity(), itemList, "2", type)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          adapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
@@ -124,7 +120,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun searchView() {
-      var adapter = SearchAdapter(requireActivity(), type)
+      val adapter = SearchAdapter(requireActivity(), "2", type)
 
       binding.etSearch.addTextChangedListener(object: TextWatcher {
          override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -149,7 +145,6 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          }
       })
 
-      adapter = SearchAdapter(requireActivity(), type)
       binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv2.adapter = adapter
 
@@ -161,15 +156,18 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       })
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-
+   private fun replaceFragment() {
       when(type) {
          "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
          "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
          "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
          "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
       }
+   }
+
+   override fun onBackPressed() {
+      val activity = activity as MainActivity?
+      activity!!.setOnBackPressedListener(null)
+      replaceFragment()
    }
 }

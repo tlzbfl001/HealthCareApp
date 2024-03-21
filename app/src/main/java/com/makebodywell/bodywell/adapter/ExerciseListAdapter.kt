@@ -16,7 +16,8 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCIS
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
+import com.makebodywell.bodywell.view.home.exercise.ExerciseAddFragment
+import com.makebodywell.bodywell.view.home.exercise.ExerciseDailyEditFragment
 
 class ExerciseListAdapter (
    private val context: Activity,
@@ -43,8 +44,7 @@ class ExerciseListAdapter (
 
       holder.cl.setOnClickListener {
          bundle.putString("id", itemList[pos].id.toString())
-         bundle.putString("type", "edit")
-         replaceFragment2(context, ExerciseEditFragment(), bundle)
+         replaceFragment2(context, ExerciseDailyEditFragment(), bundle)
       }
 
       holder.clX.setOnClickListener {

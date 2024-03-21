@@ -1,7 +1,6 @@
 package com.makebodywell.bodywell.view.home.exercise
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -29,7 +28,6 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var itemList = ArrayList<Exercise>()
-   private val originalList = ArrayList<Exercise>()
    private val searchList = ArrayList<Item>()
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
@@ -38,6 +36,8 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentExerciseRecord1Binding.inflate(layoutInflater)
+
+      (context as MainActivity).setOnBackPressedListener(this)
 
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -49,29 +49,27 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
       dataManager!!.open()
 
-      bundle.putString("type", "insert")
+      bundle.putString("back", "1")
 
-      binding.constraint.setOnTouchListener { view, motionEvent ->
+      binding.constraint.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
-      binding.linear.setOnTouchListener { view, motionEvent ->
+      binding.linear.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
-      binding.rv1.setOnTouchListener { view, motionEvent ->
+      binding.rv1.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
-      binding.rv2.setOnTouchListener { view, motionEvent ->
+      binding.rv2.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
@@ -95,21 +93,19 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun listView() {
-      itemList.clear()
-
       itemList = dataManager!!.getSearchExercise("useCount")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         val adapter = ExerciseRecordAdapter(requireActivity(), itemList)
+         val adapter = ExerciseRecordAdapter(requireActivity(), itemList, "1")
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          adapter.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                bundle.putString("id", itemList[pos].id.toString())
-               replaceFragment2(requireActivity(), ExerciseEditFragment(), bundle)
+               replaceFragment2(requireActivity(), ExerciseAddFragment(), bundle)
             }
          })
 
@@ -118,11 +114,7 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun searchView() {
-      val adapter = SearchAdapter(requireActivity(), "")
-
-      for(i in 0 until itemList.size) {
-         originalList.add(itemList[i])
-      }
+      val adapter = SearchAdapter(requireActivity(), "1", "")
 
       binding.etSearch.addTextChangedListener(object: TextWatcher {
          override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -137,8 +129,8 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
                adapter.clearItems()
             }else {
                for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
-                  if(originalList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = originalList[i].id, string1 = originalList[i].name))
+                  if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].name))
                   }
                   adapter.setItems(searchList)
                }
@@ -152,7 +144,7 @@ class ExerciseRecord1Fragment : Fragment(), MainActivity.OnBackPressedListener {
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
             bundle.putString("id", searchList[pos].int1.toString())
-            replaceFragment2(requireActivity(), ExerciseEditFragment(), bundle)
+            replaceFragment2(requireActivity(), ExerciseAddFragment(), bundle)
          }
       })
    }

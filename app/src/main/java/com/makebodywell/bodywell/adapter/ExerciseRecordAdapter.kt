@@ -2,6 +2,7 @@ package com.makebodywell.bodywell.adapter
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +17,16 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
+import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
 import com.makebodywell.bodywell.view.home.food.FoodInputFragment
 
 class ExerciseRecordAdapter (
    private val context: Activity,
-   private var itemList: ArrayList<Exercise> = ArrayList<Exercise>()
+   private var itemList: ArrayList<Exercise> = ArrayList<Exercise>(),
+   private val back: String
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
+   private var bundle = Bundle()
    private var dataManager: DataManager? = null
    private var onItemClickListener: OnItemClickListener? = null
 
@@ -55,11 +60,14 @@ class ExerciseRecordAdapter (
          }
 
          clEdit.setOnClickListener {
+            bundle.putString("id", itemList[position].id.toString())
+            bundle.putString("back", back)
+            replaceFragment2(context, ExerciseEditFragment(), bundle)
             dialog.dismiss()
          }
 
          clDelete.setOnClickListener {
-            val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+            AlertDialog.Builder(context, R.style.AlertDialogStyle)
                .setTitle("운동 삭제")
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
@@ -71,8 +79,8 @@ class ExerciseRecordAdapter (
                   Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                }
                .setNegativeButton("취소", null)
-               .create()
-            dialog.show()
+               .create().show()
+            dialog.dismiss()
          }
 
          dialog.setContentView(bottomSheetView)

@@ -80,7 +80,7 @@
                    app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                    android:id="@+id/cv1"
-                   android:layout_width="70dp"
+                   android:layout_width="80dp"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="20dp"
                    android:text="음식이름"
@@ -95,7 +95,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="사과"
                   android:textColorHint="#cccccc"
@@ -106,7 +106,7 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <TextView
                   android:id="@+id/tv2"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="22dp"
                   android:text="단위"
@@ -200,9 +200,9 @@
                </androidx.constraintlayout.widget.ConstraintLayout>
                <TextView
                   android:id="@+id/cv3"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
-                  android:layout_marginTop="20dp"
+                  android:layout_marginTop="16dp"
                   android:text="섭취량"
                   android:textSize="16dp"
                   android:textColor="@color/black"
@@ -215,7 +215,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="100"
                   android:textColorHint="#cccccc"
@@ -270,7 +270,7 @@
                    app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                    android:id="@+id/cv4"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="20dp"
                    android:text="칼로리"
@@ -285,7 +285,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="52"
                   android:textColorHint="#cccccc"
@@ -309,7 +309,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etKcal"/>
                <TextView
                   android:id="@+id/cv5"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="탄수화물"
@@ -324,7 +324,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="13.81"
                   android:textColorHint="#cccccc"
@@ -348,7 +348,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etCar"/>
                <TextView
                   android:id="@+id/cv6"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="단백질"
@@ -363,7 +363,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="0.26"
                   android:textColorHint="#cccccc"
@@ -387,7 +387,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etProtein"/>
                <TextView
                   android:id="@+id/cv7"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="지방"
@@ -402,7 +402,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="0.17"
                   android:textColorHint="#cccccc"
@@ -426,7 +426,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etFat"/>
                <TextView
                   android:id="@+id/cv8"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="나트륨"
@@ -441,7 +441,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="1"
                   android:textColorHint="#cccccc"
@@ -465,7 +465,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etSalt"/>
                <TextView
                   android:id="@+id/cv9"
-                  android:layout_width="70dp"
+                  android:layout_width="80dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="15dp"
                   android:text="당류"
@@ -480,7 +480,7 @@
                   android:backgroundTint="#969696"
                   android:singleLine="true"
                   android:lines="1"
-                  android:textSize="15dp"
+                  android:textSize="16dp"
                   android:textColor="@color/black"
                   android:hint="10.8"
                   android:textColorHint="#cccccc"

@@ -379,10 +379,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getExercise(data: String) : Exercise {
+   fun getExercise(column: String, data: String) : Exercise {
       val db = dbHelper!!.readableDatabase
       val exercise = Exercise()
-      val sql = "select * from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} and name = '$data'"
+      val sql = "select * from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} and $column = '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          exercise.id=cursor.getInt(0)
@@ -1033,9 +1033,9 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateDailyExercise(data: Exercise){
+   fun updateExercise(data: Exercise){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_DAILY_EXERCISE set intensity='${data.intensity}', workoutTime=${data.workoutTime}, calories=${data.kcal} where id=${data.id}"
+      val sql = "update $TABLE_EXERCISE set name='${data.name}', intensity='${data.intensity}', workoutTime=${data.workoutTime}, kcal=${data.kcal} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }

@@ -1,0 +1,105 @@
+package com.makebodywell.bodywell.view.home.exercise
+
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_EXERCISE
+import com.makebodywell.bodywell.database.DataManager
+import com.makebodywell.bodywell.databinding.FragmentExerciseAddBinding
+import com.makebodywell.bodywell.model.Exercise
+import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
+import com.makebodywell.bodywell.view.home.food.FoodRecord2Fragment
+import java.time.LocalDateTime
+
+class ExerciseAddFragment : Fragment(), MainActivity.OnBackPressedListener {
+    private var _binding: FragmentExerciseAddBinding? = null
+    private val binding get() = _binding!!
+
+    private var dataManager: DataManager? = null
+    private var exercise = Exercise()
+    private var intensity = "상"
+
+    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentExerciseAddBinding.inflate(layoutInflater)
+
+        (context as MainActivity).setOnBackPressedListener(this)
+
+        requireActivity().window?.apply {
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            statusBarColor = Color.TRANSPARENT
+            navigationBarColor = Color.BLACK
+
+            val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+            val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+            binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+        }
+
+        dataManager = DataManager(activity)
+        dataManager!!.open()
+
+        val id = arguments?.getString("id")!!.toInt()
+
+        exercise = dataManager!!.getExercise(id)
+
+        binding.tvName.text = exercise.name
+        binding.tvTime.text = exercise.workoutTime.toString()
+        binding.tvKcal.text = exercise.kcal.toString()
+
+        binding.mainLayout.setOnTouchListener { _, _ ->
+            hideKeyboard(requireActivity())
+            true
+        }
+
+        binding.clX.setOnClickListener {
+            replaceFragment()
+        }
+
+        binding.cvSave.setOnClickListener {
+            val workoutTime = if(binding.tvTime.text.toString().trim() == "") 0 else binding.tvTime.text.toString().toInt()
+            val calories = if(binding.tvKcal.text.toString().trim() == "") 0 else binding.tvKcal.text.toString().toInt()
+
+            if(id > 0) {
+                dataManager!!.insertDailyExercise(Exercise(name = exercise.name, intensity = intensity, workoutTime = workoutTime,
+                    kcal = calories, regDate = selectedDate.toString()))
+
+                val getExercise = dataManager!!.getExercise("name", exercise.name)
+                dataManager!!.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, getExercise.id)
+                dataManager!!.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), getExercise.id)
+
+                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+                replaceFragment1(requireActivity(), ExerciseListFragment())
+            }else {
+                Toast.makeText(requireActivity(), "오류 발생", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return binding.root
+    }
+
+    private fun replaceFragment() {
+        when(arguments?.getString("back")) {
+            "1" -> replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+            else -> replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
+        }
+    }
+
+    override fun onBackPressed() {
+        val activity = activity as MainActivity?
+        activity!!.setOnBackPressedListener(null)
+        replaceFragment()
+    }
+}

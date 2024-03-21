@@ -8,32 +8,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
+import com.makebodywell.bodywell.adapter.ExerciseListAdapter
+import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.databinding.FragmentExerciseEditBinding
-import com.makebodywell.bodywell.databinding.FragmentExerciseInputBinding
+import com.makebodywell.bodywell.databinding.FragmentExerciseDailyEditBinding
+import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
 import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
+import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
-import java.time.LocalDateTime
 
-class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
-	private var _binding: FragmentExerciseEditBinding? = null
+class ExerciseDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
+	private var _binding: FragmentExerciseDailyEditBinding? = null
 	private val binding get() = _binding!!
 
 	private var dataManager: DataManager? = null
 	private var intensity = ""
 
-	@SuppressLint("ClickableViewAccessibility", "InternalInsetResource")
+	@SuppressLint("ClickableViewAccessibility")
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
 	): View {
-		_binding = FragmentExerciseEditBinding.inflate(layoutInflater)
+		_binding = FragmentExerciseDailyEditBinding.inflate(layoutInflater)
 
 		(context as MainActivity).setOnBackPressedListener(this)
 
@@ -52,9 +53,9 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 
 		val id = arguments?.getString("id")!!.toInt()
 
-		val exercise = dataManager!!.getExercise(id)
+		val exercise = dataManager!!.getDailyExercise(id)
 
-		binding.etName.setText(exercise.name)
+		binding.tvName.text = exercise.name
 		binding.etTime.setText(exercise.workoutTime.toString())
 		binding.etKcal.setText(exercise.kcal.toString())
 
@@ -70,7 +71,7 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 		}
 
 		binding.clX.setOnClickListener {
-			replaceFragment()
+			replaceFragment1(requireActivity(), ExerciseListFragment())
 		}
 
 		binding.tvIntensity1.setOnClickListener {
@@ -85,23 +86,16 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 			unit3()
 		}
 
-		binding.cvEdit.setOnClickListener {
+		binding.cvSave.setOnClickListener {
 			if(id > -1) {
-				val getData = dataManager!!.getExercise("name", binding.etName.text.toString().trim())
+				dataManager!!.updateStr(TABLE_DAILY_EXERCISE, "intensity", intensity, id)
+				dataManager!!.updateInt(TABLE_DAILY_EXERCISE, "workoutTime", binding.etTime.text.toString().trim().toInt(), id)
+				dataManager!!.updateInt(TABLE_DAILY_EXERCISE, "kcal", binding.etKcal.text.toString().trim().toInt(), id)
 
-				if(binding.etName.text.toString().trim() == "") {
-					Toast.makeText(context, "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
-				}else if (getData.name != "" && (getData.name != exercise.name)) {
-					Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
-				}else {
-					dataManager!!.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
-						workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt()))
-
-					Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-					replaceFragment()
-				}
+				Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+				replaceFragment1(requireActivity(), ExerciseListFragment())
 			}else {
-				Toast.makeText(context, "수정 실패", Toast.LENGTH_SHORT).show()
+				Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show()
 			}
 		}
 
@@ -138,16 +132,9 @@ class ExerciseEditFragment : Fragment(), MainActivity.OnBackPressedListener {
 		intensity = "하"
 	}
 
-	private fun replaceFragment() {
-		when(arguments?.getString("back")) {
-			"1" -> CustomUtil.replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
-			else -> CustomUtil.replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
-		}
-	}
-
 	override fun onBackPressed() {
 		val activity = activity as MainActivity?
 		activity!!.setOnBackPressedListener(null)
-		replaceFragment()
+		replaceFragment1(requireActivity(), ExerciseListFragment())
 	}
 }

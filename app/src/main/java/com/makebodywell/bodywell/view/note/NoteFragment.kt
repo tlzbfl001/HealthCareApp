@@ -22,6 +22,7 @@ import android.view.Window
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.CalendarAdapter2
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
@@ -36,7 +37,6 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CO
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -119,27 +119,24 @@ class NoteFragment : Fragment() {
       // 카메라 설정
       binding.clCamera.setOnClickListener {
          if(cameraRequest(requireActivity())) {
-            dialog = Dialog(requireActivity())
-            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog!!.setContentView(R.layout.dialog_gallery)
+            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
 
-            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
-            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
 
             clCamera.setOnClickListener {
                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
 
-            clGallery.setOnClickListener {
+            clPhoto.setOnClickListener {
                val intent = Intent(Intent.ACTION_PICK)
                intent.type = MediaStore.Images.Media.CONTENT_TYPE
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
 
-            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog!!.window!!.setGravity(Gravity.BOTTOM)
+            dialog!!.setContentView(bottomSheetView)
             dialog!!.show()
          }
       }

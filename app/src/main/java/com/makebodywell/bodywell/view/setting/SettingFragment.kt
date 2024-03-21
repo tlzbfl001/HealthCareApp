@@ -25,6 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.makebodywell.bodywell.BuildConfig
@@ -53,6 +54,7 @@ import com.makebodywell.bodywell.databinding.FragmentSettingBinding
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.util.AlarmReceiver
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
@@ -64,6 +66,7 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
 import com.makebodywell.bodywell.view.init.InitActivity
 import com.makebodywell.bodywell.view.init.LoginActivity
 import com.navercorp.nid.NaverIdLoginSDK
@@ -80,7 +83,7 @@ class SettingFragment : Fragment() {
    private var dataManager: DataManager? = null
    private var getUser = User()
    private var getToken = Token()
-   private var dialog: Dialog? = null
+   private var dialog: BottomSheetDialog? = null
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -106,27 +109,24 @@ class SettingFragment : Fragment() {
 
       binding.ivUser.setOnClickListener {
          if(cameraRequest(requireActivity())) {
-            dialog = Dialog(requireActivity())
-            dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog!!.setContentView(R.layout.dialog_gallery)
+            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
 
-            val clCamera = dialog!!.findViewById<ConstraintLayout>(R.id.clCamera)
-            val clGallery = dialog!!.findViewById<ConstraintLayout>(R.id.clGallery)
+            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
 
             clCamera.setOnClickListener {
                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
 
-            clGallery.setOnClickListener {
+            clPhoto.setOnClickListener {
                val intent = Intent(Intent.ACTION_PICK)
                intent.type = MediaStore.Images.Media.CONTENT_TYPE
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
 
-            dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog!!.window!!.setGravity(Gravity.BOTTOM)
+            dialog!!.setContentView(bottomSheetView)
             dialog!!.show()
          }
       }

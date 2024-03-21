@@ -21,6 +21,7 @@ import com.makebodywell.bodywell.view.home.food.FoodEditFragment
 class FoodRecordAdapter (
    private val context: Activity,
    private var itemList: ArrayList<Food> = ArrayList<Food>(),
+   private val back: String,
    private val type: String
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
    private var bundle = Bundle()
@@ -59,12 +60,13 @@ class FoodRecordAdapter (
          clEdit.setOnClickListener {
             bundle.putString("id", itemList[position].id.toString())
             bundle.putString("type", type)
+            bundle.putString("back", "1")
             replaceFragment2(context, FoodEditFragment(), bundle)
             dialog.dismiss()
          }
 
          clDelete.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+            AlertDialog.Builder(context, R.style.AlertDialogStyle)
                .setTitle("음식 삭제")
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
@@ -77,6 +79,7 @@ class FoodRecordAdapter (
                }
                .setNegativeButton("취소", null)
                .create().show()
+
             dialog.dismiss()
          }
 

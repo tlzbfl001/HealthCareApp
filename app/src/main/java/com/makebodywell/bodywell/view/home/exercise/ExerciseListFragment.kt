@@ -30,6 +30,8 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
    ): View {
       _binding = FragmentExerciseListBinding.inflate(layoutInflater)
 
+      (context as MainActivity).setOnBackPressedListener(this)
+
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
@@ -40,8 +42,6 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
       dataManager!!.open()
 
@@ -49,7 +49,7 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
          replaceFragment1(requireActivity(), ExerciseFragment())
       }
 
-      binding.tvInput.setOnClickListener {
+      binding.cvInput.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 

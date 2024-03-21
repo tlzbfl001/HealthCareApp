@@ -55,18 +55,18 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       type = arguments?.getString("type")!!.toInt()
       bundle.putString("type", type.toString())
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
-      binding.constraint.setOnTouchListener { view, motionEvent ->
+      binding.constraint.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+         replaceFragment()
       }
 
       binding.tvMg.setOnClickListener {
@@ -426,9 +426,16 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvUnit.text = unit
    }
 
+   private fun replaceFragment() {
+      when(arguments?.getString("back")) {
+         "1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+         else -> replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
+      }
+   }
+
    override fun onBackPressed() {
       val activity = activity as MainActivity?
       activity!!.setOnBackPressedListener(null)
-      replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+      replaceFragment()
    }
 }

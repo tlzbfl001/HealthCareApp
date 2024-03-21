@@ -73,13 +73,13 @@ class FoodAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 		binding.tvSalt.text = String.format("%.1f", getFood.salt) + "g"
 		binding.tvSugar.text = String.format("%.1f", getFood.sugar) + "g"
 
-		binding.clBack.setOnClickListener {
-			replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-		}
-
 		binding.cl1.setOnTouchListener { view, motionEvent ->
 			hideKeyboard(requireActivity())
 			true
+		}
+
+		binding.clBack.setOnClickListener {
+			replaceFragment()
 		}
 
 		binding.cvSave.setOnClickListener {
@@ -113,9 +113,16 @@ class FoodAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 		return binding.root
 	}
 
+	private fun replaceFragment() {
+		when(arguments?.getString("back")) {
+			"1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+			else -> replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
+		}
+	}
+
 	override fun onBackPressed() {
 		val activity = activity as MainActivity?
 		activity!!.setOnBackPressedListener(null)
-		replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+		replaceFragment()
 	}
 }
