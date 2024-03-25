@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
@@ -33,19 +34,31 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.body.BodyFragment
 import java.time.LocalDateTime
 
-class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
+class DrugAddFragment : Fragment() {
    private var _binding: FragmentDrugAddBinding? = null
    val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
-   private val idList = ArrayList<Int>()
+   private val idList= ArrayList<Int>()
    private var unit = "정"
    var count = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), DrugRecordFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -64,19 +77,15 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
-
-      alarmReceiver = AlarmReceiver()
+      dataManager.open()
 
       drugTimeList.clear()
 
       val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
 
       if(id > -1) {
-         val getDrug = dataManager!!.getDrug(id)
+         val getDrug = dataManager.getDrug(id)
          binding.etType.setText(getDrug.type)
          binding.etName.setText(getDrug.name)
          binding.etAmount.setText(getDrug.amount.toString())
@@ -93,7 +102,7 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
          count = getDrug.count
          binding.tvCount.text = count.toString()
 
-         val getDrugTime = dataManager!!.getDrugTime(id)
+         val getDrugTime = dataManager.getDrugTime(id)
          for(i in 0 until getDrugTime.size) {
             setDrugTimeList(getDrugTime[i].hour, getDrugTime[i].minute)
          }
@@ -172,13 +181,11 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
          }else {
             val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
 
-            if(id > -1) {
-               // 약 데이터 수정
-               dataManager!!.updateDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count,
+            if(id > -1) { // 데이터 수정
+               dataManager.updateDrug(Drug(id = id, type = type, name = name, amount = amount, unit = unit, count = count,
                   startDate = selectedDate.toString(), endDate = endDate, isSet = 1))
 
-               // 시간 데이터 수정
-               val getDrugTime = dataManager!!.getDrugTime(id)
+               val getDrugTime = dataManager.getDrugTime(id)
                for(i in 0 until getDrugTime.size) {
                   var check = false
                   for(j in 0 until drugTimeList.size) {
@@ -192,14 +199,14 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 
                if(idList.size > 0) {
                   for(i in 0 until idList.size) {
-                     dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", idList[i])
+                     dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", idList[i])
                   }
                }
 
-               dataManager!!.deleteItem(TABLE_DRUG_TIME, "drugId", id)
+               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", id)
 
                for(i in 0 until drugTimeList.size) {
-                  dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = id))
+                  dataManager.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = id))
                }
 
                alarmReceiver!!.cancelAlarm(requireActivity(), id)
@@ -208,16 +215,14 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
                alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), endDate, drugTimeList, message)
 
                Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-            }else {
-               // 약 데이터 저장
-               dataManager!!.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count,
+            }else { // 데이터 저장
+               dataManager.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count,
                   startDate = selectedDate.toString(), endDate = endDate, isSet = 1, regDate = selectedDate.toString()))
 
-               val getDrugId = dataManager!!.getDrugId(selectedDate.toString())
+               val getDrugId = dataManager.getDrugId(selectedDate.toString())
 
-               // 시간 데이터 저장
                for(i in 0 until drugTimeList.size) {
-                  dataManager!!.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+                  dataManager.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
                }
 
                val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
@@ -380,9 +385,8 @@ class DrugAddFragment : Fragment(), MainActivity.OnBackPressedListener {
       unit = "set"
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), DrugRecordFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

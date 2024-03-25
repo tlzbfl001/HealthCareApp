@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
@@ -36,18 +38,34 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAu
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import com.makebodywell.bodywell.view.home.MainActivity
 
-class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
+class FoodDailyEditFragment : Fragment() {
    private var _binding: FragmentFoodDailyEditBinding? = null
    private val binding get() = _binding!!
 
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
    private var getFood = Food()
    private var imageList = ArrayList<Image>()
    private var dialog: Dialog? = null
    private var type = "1"
    private var dataId = -1
    private var count = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            when(type) {
+               "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+               "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+               "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+               "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
+            }
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -66,21 +84,19 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       type = arguments?.getString("type").toString()
       dataId = arguments?.getString("dataId").toString().toInt()
       bundle.putString("type", type)
 
-      getFood = dataManager!!.getDailyFood(dataId)
+      getFood = dataManager.getDailyFood(dataId)
 
       binding.tvName.text = getFood.name
       count = getFood.count
 
-      val getImage = dataManager!!.getImage(dataId)
+      val getImage = dataManager.getImage(dataId)
       for(i in 0 until getImage.size) {
          imageList.add(getImage[i])
       }
@@ -107,8 +123,8 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
          }
 
          clPhoto.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = MediaStore.Images.Media.CONTENT_TYPE
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.type = "image/*"
             startActivityForResult(intent, STORAGE_REQUEST_CODE)
          }
 
@@ -131,13 +147,13 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       binding.cvSave.setOnClickListener {
-         dataManager!!.deleteItem(TABLE_IMAGE, "dataId", dataId)
+         dataManager.deleteItem(TABLE_IMAGE, "dataId", dataId)
 
          for(i in 0 until imageList.size) {
-            dataManager!!.insertImage(imageList[i])
+            dataManager.insertImage(imageList[i])
          }
 
-         dataManager!!.updateInt(TABLE_DAILY_FOOD, "count", count, dataId)
+         dataManager.updateInt(TABLE_DAILY_FOOD, "count", count, dataId)
 
          when(type) {
             "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
@@ -146,7 +162,7 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
             "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
          }
 
-         Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
       }
 
       photoView()
@@ -210,6 +226,7 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), "image/jpeg", img)
+
                   imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView()
 
@@ -219,14 +236,11 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
             STORAGE_REQUEST_CODE -> {
                val uri = data!!.data
 
-               if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
-                  val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  imageList.add(Image(imageUri = uriParse!!, type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
-                  photoView()
-               }else {
-                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
-                  photoView()
-               }
+               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
+
+               imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+               photoView()
 
                dialog!!.dismiss()
             }
@@ -234,15 +248,8 @@ class FoodDailyEditFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-
-      when(type) {
-         "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-         "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-         "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-         "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
-      }
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

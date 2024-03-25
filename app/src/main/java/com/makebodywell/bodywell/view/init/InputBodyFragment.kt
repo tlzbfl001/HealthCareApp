@@ -10,6 +10,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
@@ -18,16 +19,31 @@ import com.makebodywell.bodywell.databinding.FragmentInputBodyBinding
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
+class InputBodyFragment : Fragment() {
    private var _binding: FragmentInputBodyBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var height = 163
    private var weight = 58
    private var gender = "FEMALE"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+               replace(R.id.inputFrame, InputInfoFragment())
+               commit()
+            }
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
@@ -36,12 +52,10 @@ class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
    ): View {
       _binding = FragmentInputBodyBinding.inflate(layoutInflater)
 
-      (context as InputActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
@@ -178,9 +192,9 @@ class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
          val height = if(binding.etHeight.text.toString() == "") height.toDouble() else {binding.etHeight.text.toString().toDouble()}
          val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else {binding.etWeight.text.toString().toDouble()}
 
-         dataManager?.updateUserStr(TABLE_USER, "gender", gender)
-         dataManager?.updateUserDouble(TABLE_USER, "height", height)
-         dataManager?.updateUserDouble(TABLE_USER, "weight", weight)
+         dataManager.updateUserStr(TABLE_USER, "gender", gender)
+         dataManager.updateUserDouble(TABLE_USER, "height", height)
+         dataManager.updateUserDouble(TABLE_USER, "weight", weight)
 
          requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.inputFrame, InputGoalFragment())
@@ -191,13 +205,8 @@ class InputBodyFragment : Fragment(), InputActivity.OnBackPressedListener {
       return binding.root
    }
 
-   override fun onBackPressed() {
-      val activity = activity as InputActivity?
-      activity!!.setOnBackPressedListener(null)
-
-      requireActivity().supportFragmentManager.beginTransaction().apply {
-         replace(R.id.inputFrame, InputInfoFragment())
-         commit()
-      }
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

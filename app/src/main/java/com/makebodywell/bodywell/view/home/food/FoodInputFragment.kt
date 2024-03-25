@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
@@ -20,15 +21,27 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDateTime
 
-class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
+class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
    private val binding get() = _binding!!
 
+   private lateinit var callback: OnBackPressedCallback
    private var bundle = Bundle()
    private var type = 1
    private var unit = "mg"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment()
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -46,8 +59,6 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
-
-      (context as MainActivity).setOnBackPressedListener(this)
 
       val dataManager = DataManager(requireActivity())
       dataManager.open()
@@ -433,9 +444,8 @@ class FoodInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment()
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

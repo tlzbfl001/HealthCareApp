@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
@@ -21,18 +22,30 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.exercise.ExerciseListFragment
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class FoodAddFragment : Fragment(), MainActivity.OnBackPressedListener {
+class FoodAddFragment : Fragment() {
 	private var _binding: FragmentFoodAddBinding? = null
 	val binding get() = _binding!!
 
+	private lateinit var callback: OnBackPressedCallback
+	private lateinit var dataManager: DataManager
 	private var bundle = Bundle()
-	private var dataManager: DataManager? = null
 	private var getFood = Food()
 	private var type = "1"
 	private var unit = "g"
+
+	override fun onAttach(context: Context) {
+		super.onAttach(context)
+		callback = object : OnBackPressedCallback(true) {
+			override fun handleOnBackPressed() {
+				replaceFragment()
+			}
+		}
+		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+	}
 
 	@SuppressLint("ClickableViewAccessibility")
 	override fun onCreateView(
@@ -51,16 +64,14 @@ class FoodAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 			binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
 		}
 
-		(context as MainActivity).setOnBackPressedListener(this)
-
 		dataManager = DataManager(activity)
-		dataManager!!.open()
+		dataManager.open()
 
 		val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
 		type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
-		getFood = dataManager!!.getFood(id)
+		getFood = dataManager.getFood(id)
 
 		unit = getFood.unit
 		binding.tvName.text = getFood.name
@@ -84,20 +95,20 @@ class FoodAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 
 		binding.cvSave.setOnClickListener {
 			if(id > -1) {
-				val getDailyFood = dataManager!!.getDailyFood(type = type.toInt(), name = getFood.name, selectedDate.toString())
+				val getDailyFood = dataManager.getDailyFood(type = type.toInt(), name = getFood.name, selectedDate.toString())
 				if(getDailyFood.regDate == "") {
-					dataManager!!.insertDailyFood(Food(type = type.toInt(), name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
+					dataManager.insertDailyFood(Food(type = type.toInt(), name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
 						carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
 						regDate = selectedDate.toString()))
 				}else {
-					dataManager!!.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
+					dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
 						protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1))
 				}
 
 				Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 
-				dataManager!!.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, id)
-				dataManager!!.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), id)
+				dataManager.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, id)
+				dataManager.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), id)
 
 				when(type) {
 					"1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
@@ -120,9 +131,8 @@ class FoodAddFragment : Fragment(), MainActivity.OnBackPressedListener {
 		}
 	}
 
-	override fun onBackPressed() {
-		val activity = activity as MainActivity?
-		activity!!.setOnBackPressedListener(null)
-		replaceFragment()
+	override fun onDetach() {
+		super.onDetach()
+		callback.remove()
 	}
 }

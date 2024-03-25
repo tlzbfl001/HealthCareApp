@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.ExerciseListAdapter
@@ -14,14 +15,23 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
+class ExerciseListFragment : Fragment() {
    private var _binding: FragmentExerciseListBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), ExerciseFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -29,8 +39,6 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentExerciseListBinding.inflate(layoutInflater)
-
-      (context as MainActivity).setOnBackPressedListener(this)
 
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -43,7 +51,7 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), ExerciseFragment())
@@ -53,7 +61,7 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
-      val getDailyExercise = dataManager!!.getDailyExercise(selectedDate.toString())
+      val getDailyExercise = dataManager.getDailyExercise(selectedDate.toString())
 
       val adapter = ExerciseListAdapter(requireActivity(), getDailyExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
@@ -62,9 +70,8 @@ class ExerciseListFragment : Fragment(), MainActivity.OnBackPressedListener {
       return binding.root
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), ExerciseFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

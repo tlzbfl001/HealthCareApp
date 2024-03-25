@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
@@ -17,13 +18,27 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
+class InputGoalFragment : Fragment() {
    private var _binding: FragmentInputGoalBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var weightGoal = 55.0
    private var kcalGoal = 2000
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+               replace(R.id.inputFrame, InputBodyFragment())
+               commit()
+            }
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
@@ -32,12 +47,10 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
    ): View {
       _binding = FragmentInputGoalBinding.inflate(layoutInflater)
 
-      (context as InputActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
-      val getUser = dataManager!!.getUser()
+      val getUser = dataManager.getUser()
 
       if(getUser.gender == "MALE") {
          weightGoal = 65.0
@@ -46,7 +59,7 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
          binding.etKcalGoal.hint = kcalGoal.toString()
       }
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
@@ -68,10 +81,10 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
          val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else {binding.etWaterUnit.text.toString().toInt()}
          val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else {binding.etWaterGoal.text.toString().toInt()}
 
-         dataManager?.updateUserDouble(TABLE_USER, "weightGoal", weightGoal)
-         dataManager?.updateUserInt(TABLE_USER, "kcalGoal", kcalGoal)
-         dataManager?.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
-         dataManager?.updateUserInt(TABLE_USER, "waterGoal", waterGoal)
+         dataManager.updateUserDouble(TABLE_USER, "weightGoal", weightGoal)
+         dataManager.updateUserInt(TABLE_USER, "kcalGoal", kcalGoal)
+         dataManager.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
+         dataManager.updateUserInt(TABLE_USER, "waterGoal", waterGoal)
 
          startActivity(Intent(requireActivity(), MainActivity::class.java))
       }
@@ -79,13 +92,8 @@ class InputGoalFragment : Fragment(), InputActivity.OnBackPressedListener {
       return binding.root
    }
 
-   override fun onBackPressed() {
-      val activity = activity as InputActivity?
-      activity!!.setOnBackPressedListener(null)
-
-      requireActivity().supportFragmentManager.beginTransaction().apply {
-         replace(R.id.inputFrame, InputBodyFragment())
-         commit()
-      }
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

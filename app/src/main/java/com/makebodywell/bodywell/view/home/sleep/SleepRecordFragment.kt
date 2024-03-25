@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -23,21 +24,33 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import nl.joery.timerangepicker.TimeRangePicker
 import java.util.Calendar
 
-class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
+class SleepRecordFragment : Fragment() {
    private var _binding: FragmentSleepRecordBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var bedHour = 0
    private var bedMinute = 0
    private var wakeHour = 0
    private var wakeMinute = 0
    private var sleepHour = 0
    private var sleepMinute = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), SleepFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -56,10 +69,8 @@ class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), SleepFragment())
@@ -90,19 +101,19 @@ class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
       })
 
       binding.cvSave.setOnClickListener {
-         val getSleep = dataManager!!.getSleep(selectedDate.toString())
+         val getSleep = dataManager.getSleep(selectedDate.toString())
 
          val bedTime = bedHour * 60 + bedMinute
          val wakeTime = wakeHour * 60 + wakeMinute
          val sleepTime = sleepHour * 60 + sleepMinute
 
          if(getSleep.regDate == "") {
-            dataManager!!.insertSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = selectedDate.toString()))
+            dataManager.insertSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
          }else {
-            dataManager!!.updateSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = selectedDate.toString()))
+            dataManager.updateSleep(Sleep(bedTime = bedTime, wakeTime = wakeTime, sleepTime = sleepTime, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
@@ -112,9 +123,8 @@ class SleepRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
       return binding.root
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), SleepFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

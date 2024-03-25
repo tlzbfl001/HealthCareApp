@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +25,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -32,14 +32,25 @@ import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 
-class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
+class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var adapter: ExerciseAdapter? = null
-   private var getDailyGoal = DailyGoal()
+   private var dailyGoal = DailyGoal()
    private var sum = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -57,10 +68,8 @@ class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -77,10 +86,10 @@ class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyGoal.regDate == "") {
-               dataManager!!.insertDailyGoal(DailyGoal(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.regDate == "") {
+               dataManager.insertDailyGoal(DailyGoal(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
             }
 
             binding.pbExercise.max = et.text.toString().toInt()
@@ -155,36 +164,35 @@ class ExerciseFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       sum = getExerciseCalories(requireActivity(), selectedDate.toString())
 
       if(sum > 0) {
          binding.pbExercise.setProgressStartColor(Color.parseColor("#FFB846"))
          binding.pbExercise.setProgressEndColor(Color.parseColor("#FFB846"))
-         binding.pbExercise.max = getDailyGoal.exerciseGoal
+         binding.pbExercise.max = dailyGoal.exerciseGoal
          binding.pbExercise.progress = sum
       }
 
-      binding.tvGoal.text = "${getDailyGoal.exerciseGoal} kcal"
+      binding.tvGoal.text = "${dailyGoal.exerciseGoal} kcal"
       binding.tvConsume.text = "$sum kcal"
 
-      val remain = getDailyGoal.exerciseGoal - sum
+      val remain = dailyGoal.exerciseGoal - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager!!.getDailyExercise(selectedDate.toString())
+      val getExercise = dataManager.getDailyExercise(selectedDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv.adapter = adapter
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), MainFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

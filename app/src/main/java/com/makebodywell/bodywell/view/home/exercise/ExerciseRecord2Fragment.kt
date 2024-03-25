@@ -1,6 +1,7 @@
 package com.makebodywell.bodywell.view.home.exercise
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.ExerciseRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
@@ -21,14 +23,25 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
 
-class ExerciseRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
+class ExerciseRecord2Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord2Binding? = null
    private val binding get() = _binding!!
 
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
    private var itemList = ArrayList<Exercise>()
    private val searchList = ArrayList<Item>()
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), ExerciseListFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -36,8 +49,6 @@ class ExerciseRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentExerciseRecord2Binding.inflate(layoutInflater)
-
-      (context as MainActivity).setOnBackPressedListener(this)
 
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -50,7 +61,7 @@ class ExerciseRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       bundle.putString("back", "2")
 
@@ -93,7 +104,7 @@ class ExerciseRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
    }
 
    private fun listView() {
-      itemList = dataManager!!.getSearchExercise("useDate")
+      itemList = dataManager.getSearchExercise("useDate")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
@@ -150,9 +161,8 @@ class ExerciseRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       })
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), ExerciseListFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

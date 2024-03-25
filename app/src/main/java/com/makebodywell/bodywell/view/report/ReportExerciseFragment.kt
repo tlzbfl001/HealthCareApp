@@ -1,11 +1,13 @@
 package com.makebodywell.bodywell.view.report
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +38,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -43,7 +46,8 @@ class  ReportExerciseFragment : Fragment() {
    private var _binding: FragmentReportExerciseBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var adapter: ReportAdapter? = null
    private var calendarDate = LocalDate.now()
    private var dateType = 1
@@ -52,6 +56,16 @@ class  ReportExerciseFragment : Fragment() {
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -71,7 +85,7 @@ class  ReportExerciseFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -158,7 +172,7 @@ class  ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val dates = ArrayList<String>()
-      val getExercise = dataManager!!.getDailyExercise(calendarDate.toString())
+      val getExercise = dataManager.getDailyExercise(calendarDate.toString())
 
       if(getExercise.size > 0) {
          dates.add(calendarDate.toString())
@@ -180,7 +194,7 @@ class  ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DAILY_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager.getDates(TABLE_DAILY_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -201,7 +215,7 @@ class  ReportExerciseFragment : Fragment() {
       dateType = 3
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DAILY_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager.getDates(TABLE_DAILY_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -237,7 +251,7 @@ class  ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
 
-         val getDailyExercise = dataManager!!.getDailyExercise(getData[i])
+         val getDailyExercise = dataManager.getDailyExercise(getData[i])
          for(j in 0 until getDailyExercise.size) {
             if(getDailyExercise[j].workoutTime > 0) {
                total += getDailyExercise[j].workoutTime.toFloat()
@@ -308,7 +322,7 @@ class  ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
 
-         val getDailyExercise = dataManager!!.getDailyExercise(getData[i])
+         val getDailyExercise = dataManager.getDailyExercise(getData[i])
          for(j in 0 until getDailyExercise.size) {
             if(getDailyExercise[j].kcal > 0) {
                total += getDailyExercise[j].kcal.toFloat()
@@ -427,8 +441,8 @@ class  ReportExerciseFragment : Fragment() {
       val itemList = ArrayList<Item>()
 
       val getData = when(type) {
-         1 -> dataManager!!.getExerciseRanking(calendarDate.toString())
-         else -> dataManager!!.getExerciseRanking(start, end)
+         1 -> dataManager.getExerciseRanking(calendarDate.toString())
+         else -> dataManager.getExerciseRanking(start, end)
       }
 
       if(getData.size > 0) {
@@ -461,5 +475,10 @@ class  ReportExerciseFragment : Fragment() {
          adapter = ReportAdapter(itemList)
          binding.recyclerView.adapter = adapter
       }
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

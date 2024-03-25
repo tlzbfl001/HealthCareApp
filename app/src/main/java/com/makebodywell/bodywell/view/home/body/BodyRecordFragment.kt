@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
@@ -19,15 +20,27 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.text.DecimalFormat
 
-class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
+class BodyRecordFragment : Fragment() {
    private var _binding: FragmentBodyRecordBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var level = 1
    private var gender = "FEMALE"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), BodyFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -46,12 +59,10 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
-      val getBody = dataManager!!.getBody(selectedDate.toString())
+      val getBody = dataManager.getBody(selectedDate.toString())
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
       if (getBody.regDate != "") {
@@ -91,12 +102,12 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          }
       }
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
-      binding.constraint.setOnTouchListener { view, motionEvent ->
+      binding.constraint.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
@@ -336,11 +347,11 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
             Toast.makeText(requireActivity(), "체지방율은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getBody.regDate == "") {
-               dataManager!!.insertBody(Body(height = height, weight = weight, age = age, gender = gender, exerciseLevel = level,
+               dataManager.insertBody(Body(height = height, weight = weight, age = age, gender = gender, exerciseLevel = level,
                   fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, regDate = selectedDate.toString()))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }else {
-               dataManager!!.updateBody(Body(id = getBody.id, height = height, weight = weight, age = age, gender = gender, exerciseLevel = level,
+               dataManager.updateBody(Body(id = getBody.id, height = height, weight = weight, age = age, gender = gender, exerciseLevel = level,
                   fat = fat, muscle = muscle, bmi = bmi, bmr = bmr))
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -368,9 +379,8 @@ class BodyRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
       gender = "FEMALE"
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), BodyFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

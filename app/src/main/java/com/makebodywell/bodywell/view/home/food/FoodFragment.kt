@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,11 +38,12 @@ import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import kotlin.math.roundToInt
 
-class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
+class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var getDailyGoal = DailyGoal()
    private val itemList1 = ArrayList<Food>()
    private val itemList2 = ArrayList<Food>()
@@ -52,6 +54,16 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
    private var isExpand3 = false
    private var isExpand4 = false
    private var sum = 0
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -69,10 +81,8 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -88,9 +98,9 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getDailyGoal.regDate == "") {
-               dataManager!!.insertDailyGoal(DailyGoal(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertDailyGoal(DailyGoal(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "foodGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "foodGoal", et.text.toString().toInt(), selectedDate.toString())
             }
 
             binding.pbFood.max = et.text.toString().toInt()
@@ -249,10 +259,10 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
       val imageList = ArrayList<Image>()
       binding.viewPager.adapter = null
 
-      val getData1 = dataManager!!.getImage(1, selectedDate.toString())
-      val getData2 = dataManager!!.getImage(2, selectedDate.toString())
-      val getData3 = dataManager!!.getImage(3, selectedDate.toString())
-      val getData4 = dataManager!!.getImage(4, selectedDate.toString())
+      val getData1 = dataManager.getImage(1, selectedDate.toString())
+      val getData2 = dataManager.getImage(2, selectedDate.toString())
+      val getData3 = dataManager.getImage(3, selectedDate.toString())
+      val getData4 = dataManager.getImage(4, selectedDate.toString())
 
       for(i in 0 until getData1.size) {
          imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
@@ -307,11 +317,11 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
       itemList3.clear()
       itemList4.clear()
 
-      val getUser = dataManager!!.getUser()
-      val getFood1 = dataManager!!.getDailyFood(1, selectedDate.toString())
-      val getFood2 = dataManager!!.getDailyFood(2, selectedDate.toString())
-      val getFood3 = dataManager!!.getDailyFood(3, selectedDate.toString())
-      val getFood4 = dataManager!!.getDailyFood(4, selectedDate.toString())
+      val getUser = dataManager.getUser()
+      val getFood1 = dataManager.getDailyFood(1, selectedDate.toString())
+      val getFood2 = dataManager.getDailyFood(2, selectedDate.toString())
+      val getFood3 = dataManager.getDailyFood(3, selectedDate.toString())
+      val getFood4 = dataManager.getDailyFood(4, selectedDate.toString())
 
       var kcal1 = 0
       var carbohydrate1 = 0.0
@@ -412,9 +422,8 @@ class FoodFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.rv4.adapter = adapter4
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      replaceFragment1(requireActivity(), MainFragment())
-      activity!!.setOnBackPressedListener(null)
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

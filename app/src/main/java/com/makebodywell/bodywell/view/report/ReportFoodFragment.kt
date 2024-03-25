@@ -1,11 +1,13 @@
 package com.makebodywell.bodywell.view.report
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
@@ -34,6 +36,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getNutrition
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -42,8 +45,8 @@ class ReportFoodFragment : Fragment() {
    private var _binding: FragmentReportFoodBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
-
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var calendarDate = LocalDate.now()
    private var dateType = 0
 
@@ -51,6 +54,16 @@ class ReportFoodFragment : Fragment() {
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -70,7 +83,7 @@ class ReportFoodFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -156,7 +169,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
+      val getDates = dataManager.getDates(TABLE_DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -164,7 +177,7 @@ class ReportFoodFragment : Fragment() {
       }
 
       val getWater = ArrayList<Water>()
-      val data = dataManager!!.getWater(calendarDate.toString())
+      val data = dataManager.getWater(calendarDate.toString())
 
       if(data.water > 0) {
          binding.chart3.visibility = View.VISIBLE
@@ -188,13 +201,13 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager.getDates(TABLE_DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
       }
 
-      val getWater = dataManager!!.getWater(weekArray[0].toString(), weekArray[6].toString())
+      val getWater = dataManager.getWater(weekArray[0].toString(), weekArray[6].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
@@ -216,13 +229,13 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager.getDates(TABLE_DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
       }
 
-      val getWater = dataManager!!.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getWater = dataManager.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getWater.size > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
@@ -477,5 +490,10 @@ class ReportFoodFragment : Fragment() {
          val formatter= DecimalFormat("#.#");
          return formatter.format(value)
       }
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

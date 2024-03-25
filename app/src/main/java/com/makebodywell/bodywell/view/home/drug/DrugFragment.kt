@@ -14,25 +14,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter1
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugBinding
 import com.makebodywell.bodywell.model.DailyGoal
-import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugList
-import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -40,14 +36,25 @@ import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 
-class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
+class DrugFragment : Fragment() {
    private var _binding: FragmentDrugBinding? = null
    val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var adapter: DrugAdapter1? = null
    private val itemList = ArrayList<DrugList>()
-   private var getDailyGoal = DailyGoal()
+   private var dailyGoal = DailyGoal()
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -65,10 +72,8 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -91,10 +96,10 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyGoal.regDate == "") {
-               dataManager!!.insertDailyGoal(DailyGoal(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.regDate == "") {
+               dataManager.insertDailyGoal(DailyGoal(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
             }
 
             recordView()
@@ -161,19 +166,19 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
 
-      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
-      binding.pbDrug.max = getDailyGoal.drugGoal
-      binding.tvGoal.text = "${getDailyGoal.drugGoal}회"
+      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      binding.pbDrug.max = dailyGoal.drugGoal
+      binding.tvGoal.text = "${dailyGoal.drugGoal}회"
 
       // 약복용 체크값 초기화
-      val check = dataManager!!.getDrugCheckCount(selectedDate.toString())
+      val check = dataManager.getDrugCheckCount(selectedDate.toString())
 
       // 약복용 리스트 생성
-      val getDrugDaily = dataManager!!.getDrugDaily(selectedDate.toString())
+      val getDrugDaily = dataManager.getDrugDaily(selectedDate.toString())
       for(i in 0 until getDrugDaily.size) {
-         val getDrugTime = dataManager!!.getDrugTime(getDrugDaily[i].id)
+         val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
-            val getDrugCheckCount = dataManager!!.getDrugCheckCount(getDrugTime[j].id, selectedDate.toString())
+            val getDrugCheckCount = dataManager.getDrugCheckCount(getDrugTime[j].id, selectedDate.toString())
             itemList.add(DrugList(drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name,
                amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
                initCheck = check, checked = getDrugCheckCount)
@@ -181,7 +186,7 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
          }
       }
 
-      adapter = DrugAdapter1(requireActivity(), itemList, getDailyGoal.drugGoal)
+      adapter = DrugAdapter1(requireActivity(), itemList, dailyGoal.drugGoal)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()
@@ -204,13 +209,12 @@ class DrugFragment : Fragment(), MainActivity.OnBackPressedListener {
       return check
    }
 
-   companion object {
-      private const val REQUEST_CODE = 1
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), MainFragment())
+   companion object {
+      private const val REQUEST_CODE = 1
    }
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -16,6 +17,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -30,14 +33,40 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import java.util.Calendar
+import kotlin.system.exitProcess
 
 class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
    private val binding get() = _binding!!
 
+   private lateinit var callback: OnBackPressedCallback
    private var dataManager: DataManager? = null
    private var dialog: Dialog? = null
+   private var pressedTime: Long = 0
    private var image: String? = ""
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            pressedTime = if(pressedTime == 0L) {
+               Toast.makeText(requireActivity(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+               System.currentTimeMillis()
+            }else {
+               val seconds = (System.currentTimeMillis() - pressedTime).toInt()
+               if(seconds > 2000) {
+                  Toast.makeText(requireActivity(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                  0
+               }else {
+                  requireActivity().finishAffinity()
+                  System.runFinalization()
+                  exitProcess(0)
+               }
+            }
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -51,7 +80,7 @@ class InputInfoFragment : Fragment() {
 
       val getUser = dataManager!!.getUser()
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
@@ -70,8 +99,8 @@ class InputInfoFragment : Fragment() {
             }
 
             clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_PICK)
-               intent.type = MediaStore.Images.Media.CONTENT_TYPE
+               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+               intent.type = "image/*"
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
 
@@ -137,6 +166,7 @@ class InputInfoFragment : Fragment() {
                if(data!!.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), "image/jpeg", img)
+
                   image = uri.toString()
 
                   binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
@@ -146,11 +176,11 @@ class InputInfoFragment : Fragment() {
             }
             STORAGE_REQUEST_CODE -> {
                val uri = data!!.data
-               image = if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
-                  getImageUriWithAuthority(requireActivity(), uri)
-               }else {
-                  uri.toString()
-               }
+
+               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags) // 영구 권한 얻기
+
+               image = uri.toString()
 
                binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
 

@@ -19,6 +19,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,6 +39,7 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_C
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -46,10 +48,21 @@ class NoteFragment : Fragment() {
    private var _binding: FragmentNoteBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var days = ArrayList<LocalDate?>()
    private var dialog: Dialog? = null
    private var uri:Uri? = null
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -69,7 +82,7 @@ class NoteFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       // 날짜 초기화
       if(arguments?.getString("data").toString() != "note") {
@@ -131,7 +144,7 @@ class NoteFragment : Fragment() {
             }
 
             clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_GET_CONTENT)
+               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                intent.type = "image/*"
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
@@ -153,7 +166,7 @@ class NoteFragment : Fragment() {
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
 
-      val getNote = dataManager!!.getNote(selectedDate.toString())
+      val getNote = dataManager.getNote(selectedDate.toString())
       if(getNote.regDate != "") {
          binding.tvTitle.text = getNote.title
          when(getNote.status) {
@@ -179,7 +192,7 @@ class NoteFragment : Fragment() {
 
       // 소비 칼로리 계산
       var total = 0
-      val getDailyExercise = dataManager!!.getDailyExercise(selectedDate.toString())
+      val getDailyExercise = dataManager.getDailyExercise(selectedDate.toString())
       for(i in 0 until getDailyExercise.size) {
          total += getDailyExercise[i].kcal
       }
@@ -190,7 +203,7 @@ class NoteFragment : Fragment() {
    }
 
    private fun setImageView() {
-      val dataList = dataManager!!.getImage(5, selectedDate.toString())
+      val dataList = dataManager.getImage(5, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
       binding.viewPager.setPadding(140, 0, 140, 0)
@@ -270,8 +283,7 @@ class NoteFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   uri = saveFile(requireActivity(), "image/jpeg", img)
 
-                  requireActivity().contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                  dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  dataManager.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                   setImageView()
 
                   dialog!!.dismiss()
@@ -279,14 +291,22 @@ class NoteFragment : Fragment() {
             }
             STORAGE_REQUEST_CODE -> {
                uri = data!!.data
-               requireActivity().contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-               dataManager!!.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+
+               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
+
+               dataManager.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
                setImageView()
 
                dialog!!.dismiss()
             }
          }
       }
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 
    companion object {

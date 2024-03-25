@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper
@@ -32,13 +33,24 @@ import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 
-class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
+class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var getDailyGoal = DailyGoal()
    private var getSleep = Sleep()
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -57,10 +69,8 @@ class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -78,9 +88,9 @@ class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
          val total = hour * 60 + minute
 
          if(getDailyGoal.regDate == "") {
-            dataManager!!.insertDailyGoal(DailyGoal(sleepGoal = total, regDate = selectedDate.toString()))
+            dataManager.insertDailyGoal(DailyGoal(sleepGoal = total, regDate = selectedDate.toString()))
          }else {
-            dataManager!!.updateIntByDate(TABLE_DAILY_GOAL, "sleepGoal", total, selectedDate.toString())
+            dataManager.updateIntByDate(TABLE_DAILY_GOAL, "sleepGoal", total, selectedDate.toString())
          }
 
          dailyView()
@@ -145,8 +155,8 @@ class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0h 0m"
       binding.tvRemain.text = "0h 0m"
 
-      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
-      getSleep = dataManager!!.getSleep(selectedDate.toString())
+      getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      getSleep = dataManager.getSleep(selectedDate.toString())
 
       if(getSleep.sleepTime > 0) {
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
@@ -166,9 +176,8 @@ class SleepFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), MainFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

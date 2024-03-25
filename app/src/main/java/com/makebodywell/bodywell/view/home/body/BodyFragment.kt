@@ -13,10 +13,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentBodyBinding
@@ -25,7 +25,6 @@ import com.makebodywell.bodywell.model.DailyGoal
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseFragment
@@ -34,14 +33,25 @@ import com.makebodywell.bodywell.view.home.sleep.SleepFragment
 import com.makebodywell.bodywell.view.home.water.WaterFragment
 import kotlin.math.roundToInt
 
-class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
+class BodyFragment : Fragment() {
    private var _binding: FragmentBodyBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
-   private var getDailyGoal = DailyGoal()
-   private var getBody = Body()
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
+   private var dailyGoal: DailyGoal? = null
+   private var body: Body? = null
    private var isExpand = false
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -60,10 +70,8 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -83,10 +91,10 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyGoal.regDate == "") {
-               dataManager!!.insertDailyGoal(DailyGoal(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+            if(dailyGoal!!.regDate == "") {
+               dataManager.insertDailyGoal(DailyGoal(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
             }else {
-               dataManager!!.updateDoubleByDate(TABLE_DAILY_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
+               dataManager.updateDoubleByDate(TABLE_DAILY_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
             }
 
             dailyGoal()
@@ -191,52 +199,52 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
 
-      if (getDailyGoal.bodyGoal > 0) {
-         binding.pbBody.max = getDailyGoal.bodyGoal.roundToInt()
+      if (dailyGoal!!.bodyGoal > 0) {
+         binding.pbBody.max = dailyGoal!!.bodyGoal.roundToInt()
 
-         val split = getDailyGoal.bodyGoal.toString().split(".")
+         val split = dailyGoal!!.bodyGoal.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
-            else -> binding.tvGoal.text = "${getDailyGoal.bodyGoal} kg"
+            else -> binding.tvGoal.text = "${dailyGoal!!.bodyGoal} kg"
          }
       }
 
-      getBody = dataManager!!.getBody(selectedDate.toString())
+      body = dataManager.getBody(selectedDate.toString())
 
-      if (getBody.weight > 0) {
+      if (body!!.weight > 0) {
          binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
          binding.pbBody.setProgressEndColor(Color.parseColor("#AED77D"))
-         binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
+         binding.pbBody.progress = body!!.weight.toString().toDouble().roundToInt()
 
-         val split = getBody.weight.toString().split(".")
+         val split = body!!.weight.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvWeight.text = "${split[0]} kg"
-            else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
+            else -> binding.tvWeight.text = "${String.format("%.1f", body!!.weight)} kg"
          }
       }
 
-      val remain = getDailyGoal.bodyGoal - getBody.weight.toString().toDouble()
+      val remain = dailyGoal!!.bodyGoal - body!!.weight.toString().toDouble()
       if (remain > 0) {
          val split = remain.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvRemain.text = "${split[0]} kg"
             else -> binding.tvRemain.text = "$remain kg"
          }
-         binding.tvWeight.text = "${getBody.weight} kg"
+         binding.tvWeight.text = "${body!!.weight} kg"
       }
    }
 
    @SuppressLint("SetTextI18n")
    private fun dailyList() {
-      binding.tvBmi.text = getBody.bmi.toString()
-      binding.tvFat.text = "${getBody.fat} %"
-      binding.tvMuscle.text = "${getBody.muscle} kg"
-      binding.tvBmr.text = "${getBody.bmr} kcal"
+      binding.tvBmi.text = body!!.bmi.toString()
+      binding.tvFat.text = "${body!!.fat} %"
+      binding.tvMuscle.text = "${body!!.muscle} kg"
+      binding.tvBmr.text = "${body!!.bmr} kcal"
 
       // 체질량지수 범위
-      val format1 = String.format("%.1f", getBody.bmi)
+      val format1 = String.format("%.1f", body!!.bmi)
       val bmi = format1.replace(".", "").toInt()
       when{
          bmi < 186 -> {
@@ -302,7 +310,7 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       // 체지방율 범위
-      val format2 = String.format("%.1f", getBody.fat)
+      val format2 = String.format("%.1f", body!!.fat)
       val fat = format2.replace(".", "").toInt()
       when{
          fat < 141 -> {
@@ -353,7 +361,7 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       // 골격근량 범위
-      val format3 = String.format("%.1f", getBody.muscle)
+      val format3 = String.format("%.1f", body!!.muscle)
       val muscle = format3.replace(".", "").toInt()
       when{
          muscle < 267 -> {
@@ -380,9 +388,8 @@ class BodyFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), MainFragment())
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

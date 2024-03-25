@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.FoodRecordAdapter
 import com.makebodywell.bodywell.adapter.SearchAdapter
@@ -22,15 +23,26 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
 
-class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
+class FoodRecord2Fragment : Fragment() {
    private var _binding: FragmentFoodRecord2Binding? = null
    private val binding get() = _binding!!
 
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
    private var itemList = ArrayList<Food>()
    private val searchList = ArrayList<Item>()
    private var type = "1"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment()
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -49,10 +61,8 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.constraint.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       type = arguments?.getString("type").toString()
       bundle.putString("type", type)
@@ -99,7 +109,7 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
    private fun listView() {
       itemList.clear()
 
-      itemList = dataManager!!.getSearchFood("useDate")
+      itemList = dataManager.getSearchFood("useDate")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
@@ -165,9 +175,8 @@ class FoodRecord2Fragment : Fragment(), MainActivity.OnBackPressedListener {
       }
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment()
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

@@ -27,7 +27,7 @@ class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var dataManager: DataManager
    private var user = User()
    private var isAll = true
 
@@ -47,7 +47,7 @@ class SignupActivity : AppCompatActivity() {
       }
 
       dataManager = DataManager(this)
-      dataManager!!.open()
+      dataManager.open()
 
       user = intent!!.getParcelableExtra("user")!!
 
@@ -124,9 +124,9 @@ class SignupActivity : AppCompatActivity() {
 
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            dataManager!!.insertUser(user) // 사용자 정보 저장
+            dataManager.insertUser(user) // 사용자 정보 저장
 
-            val getUser = dataManager!!.getUser(user.type!!, user.email!!)
+            val getUser = dataManager.getUser(user.type!!, user.email!!)
             if(getUser.id > 0) {
                MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
                signUpDialog()

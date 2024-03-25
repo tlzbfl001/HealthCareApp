@@ -8,6 +8,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.ViewGroup.LayoutParams
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,16 +33,40 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.system.exitProcess
 
 class MainFragment : Fragment() {
    private var _binding: FragmentMainBinding? = null
    val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
-   private lateinit var adapter: CalendarAdapter1
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
+   private var adapter: CalendarAdapter1? = null
+   private var pressedTime: Long = 0
+   private var days = ArrayList<LocalDate?>()
 
-   val itemList = ArrayList<Image>()
-   var days = ArrayList<LocalDate?>()
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            pressedTime = if(pressedTime == 0L) {
+               Toast.makeText(requireActivity(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+               System.currentTimeMillis()
+            }else {
+               val seconds = (System.currentTimeMillis() - pressedTime).toInt()
+               if(seconds > 2000) {
+                  Toast.makeText(requireActivity(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                  0
+               }else {
+                  requireActivity().finishAffinity()
+                  System.runFinalization()
+                  exitProcess(0)
+               }
+            }
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("ClickableViewAccessibility", "SetTextI18n", "DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -59,11 +86,11 @@ class MainFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       selectedDate = LocalDate.now()
 
-      val getUser = dataManager!!.getUser()
+      val getUser = dataManager.getUser()
 
       if(getUser.name != "") {
          binding.tvName.text = getUser.name + " 님"
@@ -323,6 +350,11 @@ class MainFragment : Fragment() {
       binding.tvBody.text = "$weight/$weightGoal kg"
       binding.tvSleep.text = "${getSleep.sleepTime / 60}h${getSleep.sleepTime % 60}m/$sleep"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyGoal.drugGoal}회"
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 
    companion object {

@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
    private val binding get() = _binding!!
 
    private lateinit var viewModel: MainViewModel
+//   private var backPressedListener: OnBackPressedListener? = null
    private var pressedTime: Long = 0
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,36 +55,33 @@ class MainActivity : AppCompatActivity() {
       viewModel = ViewModelProvider(this)[MainViewModel::class.java]
    }
 
-   interface OnBackPressedListener {
-      fun onBackPressed()
-	}
-
-   private var backPressedListener: OnBackPressedListener? = null
-
-   fun setOnBackPressedListener(listener: OnBackPressedListener?) {
-      backPressedListener = listener
-   }
-
-   @Deprecated("Deprecated in Java")
-   override fun onBackPressed() {
-      if(backPressedListener != null) {
-         backPressedListener!!.onBackPressed()
-      }else {
-         pressedTime = if(pressedTime == 0L) {
-            Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-            System.currentTimeMillis()
-         }else {
-            val seconds = (System.currentTimeMillis() - pressedTime).toInt()
-            if(seconds > 2000) {
-               Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-               0
-            }else {
-               super.onBackPressed()
-               finishAffinity()
-               System.runFinalization()
-               exitProcess(0)
-            }
-         }
-      }
-   }
+//   interface OnBackPressedListener {
+//      fun onBackPressed()
+//	}
+//
+//   fun setOnBackPressedListener(listener: OnBackPressedListener?) {
+//      backPressedListener = listener
+//   }
+//
+//   override fun onBackPressed() {
+//      if(backPressedListener != null) {
+//         backPressedListener!!.onBackPressed()
+//      }else {
+//         pressedTime = if(pressedTime == 0L) {
+//            Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+//            System.currentTimeMillis()
+//         }else {
+//            val seconds = (System.currentTimeMillis() - pressedTime).toInt()
+//            if(seconds > 2000) {
+//               Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+//               0
+//            }else {
+//               super.onBackPressed()
+//               finishAffinity()
+//               System.runFinalization()
+//               exitProcess(0)
+//            }
+//         }
+//      }
+//   }
 }

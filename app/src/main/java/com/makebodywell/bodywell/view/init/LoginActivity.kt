@@ -37,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var dataManager: DataManager
    private var gsc: GoogleSignInClient? = null
    private var gso: GoogleSignInOptions? = null
 
@@ -57,7 +57,7 @@ class LoginActivity : AppCompatActivity() {
       }
 
       dataManager = DataManager(this)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tv1.setOnClickListener {
          startActivity(Intent(this, SignupActivity::class.java))
@@ -109,7 +109,7 @@ class LoginActivity : AppCompatActivity() {
       if (requestCode == 1000) {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
             if(it.isSuccessful) {
-               val getUser = dataManager!!.getUser("google", it.result.email.toString())
+               val getUser = dataManager.getUser("google", it.result.email.toString())
 
                if(getUser.regDate == "") { // 초기 가입 작업
                   if(it.result.idToken == "" || it.result.idToken == null || it.result.email == "" || it.result.email == null) {
@@ -138,7 +138,7 @@ class LoginActivity : AppCompatActivity() {
          override fun onSuccess() {
             NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                override fun onSuccess(result: NidProfileResponse) {
-                  val getUser = dataManager!!.getUser("naver", result.profile?.email.toString())
+                  val getUser = dataManager.getUser("naver", result.profile?.email.toString())
 
                   if(getUser.regDate == "") {
                      if(NaverIdLoginSDK.getAccessToken() == "" || NaverIdLoginSDK.getAccessToken() == null || result.profile?.email == "" || result.profile?.email == null) {
@@ -217,7 +217,7 @@ class LoginActivity : AppCompatActivity() {
          if(error != null) {
             Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
          }else {
-            val getUser = dataManager!!.getUser("kakao", user?.kakaoAccount!!.email.toString()) // 사용자 가입여부 체크
+            val getUser = dataManager.getUser("kakao", user?.kakaoAccount!!.email.toString()) // 사용자 가입여부 체크
 
             if(getUser.regDate == "") { // 초기 가입 작업
                if(token.idToken == "" || token.idToken == null || user.kakaoAccount?.email == "" || user.kakaoAccount?.email == null) {

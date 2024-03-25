@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,15 +30,26 @@ import com.makebodywell.bodywell.view.home.MainActivity
 import java.util.stream.Collectors
 import kotlin.math.abs
 
-class FoodLunchFragment : Fragment(), MainActivity.OnBackPressedListener {
+class FoodLunchFragment : Fragment() {
     private var _binding: FragmentFoodLunchBinding? = null
     val binding get() = _binding!!
 
-    private var dataManager: DataManager? = null
+    private lateinit var callback: OnBackPressedCallback
+    private lateinit var dataManager: DataManager
     private var photoAdapter: PhotoViewAdapter? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
-    private var imageData: ArrayList<Image>? = null
+    private var imageData = ArrayList<Image>()
     private var type = 2
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                replaceFragment1(requireActivity(), FoodFragment())
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     @SuppressLint("DiscouragedApi", "InternalInsetResource")
     override fun onCreateView(
@@ -56,10 +68,8 @@ class FoodLunchFragment : Fragment(), MainActivity.OnBackPressedListener {
             binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
         }
 
-        (context as MainActivity).setOnBackPressedListener(this)
-
         dataManager = DataManager(activity)
-        dataManager!!.open()
+        dataManager.open()
 
         binding.clBack.setOnClickListener {
             replaceFragment1(requireActivity(), FoodFragment())
@@ -90,10 +100,10 @@ class FoodLunchFragment : Fragment(), MainActivity.OnBackPressedListener {
     }
 
     private fun photoView() {
-        imageData = dataManager!!.getImage(type, selectedDate.toString())
+        imageData = dataManager.getImage(type, selectedDate.toString())
 
-        if(imageData!!.size > 0) {
-            photoAdapter = PhotoViewAdapter(imageData!!)
+        if(imageData.size > 0) {
+            photoAdapter = PhotoViewAdapter(imageData)
 
             binding.viewPager.adapter = photoAdapter
             binding.viewPager.offscreenPageLimit = 5
@@ -150,7 +160,7 @@ class FoodLunchFragment : Fragment(), MainActivity.OnBackPressedListener {
     }
 
     private fun listView() {
-        val dataList = dataManager!!.getDailyFood(type, selectedDate.toString())
+        val dataList = dataManager.getDailyFood(type, selectedDate.toString())
 
         if(dataList.size != 0) {
             // 섭취한 식단 설정
@@ -164,19 +174,20 @@ class FoodLunchFragment : Fragment(), MainActivity.OnBackPressedListener {
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager!!.deleteItem(TABLE_FOOD, "id", dataList[pos].id)
-                            dataManager!!.deleteItem(DBHelper.TABLE_IMAGE, "dataId", dataList[pos].id)
+                            dataManager.deleteItem(DBHelper.TABLE_DAILY_FOOD, "id", dataList[pos].id)
+                            dataManager.deleteItem(DBHelper.TABLE_IMAGE, "dataId", dataList[pos].id)
+
+                            if (imageData.size > 0) {
+                                imageData.stream().filter {
+                                    x -> x.dataId == dataList[pos].id
+                                }.collect(Collectors.toList()).forEach { x ->
+                                    imageData.remove(x)
+                                }
+                                photoAdapter!!.notifyDataSetChanged()
+                            }
 
                             dataList.removeAt(pos)
                             intakeAdapter!!.notifyDataSetChanged()
-
-                            if (imageData!!.size > 0) {
-                                imageData!!.stream().filter { x -> x.dataId == dataList[pos].id }
-                                    .collect(Collectors.toList()).forEach { x ->
-                                        imageData!!.remove(x)
-                                    }
-                                photoAdapter!!.notifyDataSetChanged()
-                            }
 
                             Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         }
@@ -190,9 +201,8 @@ class FoodLunchFragment : Fragment(), MainActivity.OnBackPressedListener {
         }
     }
 
-    override fun onBackPressed() {
-        val activity = activity as MainActivity?
-        activity!!.setOnBackPressedListener(null)
-        replaceFragment1(requireActivity(), FoodFragment())
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
     }
 }

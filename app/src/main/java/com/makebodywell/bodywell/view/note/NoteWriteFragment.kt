@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentNoteWriteBinding
@@ -19,15 +20,27 @@ import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
 
-class NoteWriteFragment : Fragment(), MainActivity.OnBackPressedListener {
+class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
    private val binding get() = _binding!!
 
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
    private var status = 1
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment2(requireActivity(), NoteFragment(), bundle)
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
@@ -46,15 +59,13 @@ class NoteWriteFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
-      val getNote = dataManager!!.getNote(selectedDate.toString())
+      val getNote = dataManager.getNote(selectedDate.toString())
       bundle.putString("data", "note")
 
-      binding.mainLayout.setOnTouchListener { view, motionEvent ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
@@ -103,11 +114,11 @@ class NoteWriteFragment : Fragment(), MainActivity.OnBackPressedListener {
             Toast.makeText(activity, "특수문자 '는 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getNote.regDate == "") {
-               dataManager!!.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+               dataManager.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
                   status = status, regDate = selectedDate.toString()))
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }else {
-               dataManager!!.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+               dataManager.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
                   status = status, regDate = selectedDate.toString()))
                Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -124,7 +135,7 @@ class NoteWriteFragment : Fragment(), MainActivity.OnBackPressedListener {
    private fun settingData() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
-      val getNote = dataManager!!.getNote(selectedDate.toString())
+      val getNote = dataManager.getNote(selectedDate.toString())
       if(getNote.regDate != "") {
          binding.etTitle.setText(getNote.title)
          binding.etContent.setText(getNote.content)
@@ -144,9 +155,8 @@ class NoteWriteFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment2(requireActivity(), NoteFragment(), bundle)
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

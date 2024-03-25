@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -18,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.fragment.app.Fragment
@@ -66,6 +68,7 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
+import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
 import com.makebodywell.bodywell.view.init.InitActivity
 import com.makebodywell.bodywell.view.init.LoginActivity
@@ -80,10 +83,21 @@ class SettingFragment : Fragment() {
    private var _binding: FragmentSettingBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var getUser = User()
    private var getToken = Token()
    private var dialog: BottomSheetDialog? = null
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -103,7 +117,7 @@ class SettingFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       userProfile()
 
@@ -121,8 +135,8 @@ class SettingFragment : Fragment() {
             }
 
             clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_PICK)
-               intent.type = MediaStore.Images.Media.CONTENT_TYPE
+               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+               intent.type = "image/*"
                startActivityForResult(intent, STORAGE_REQUEST_CODE)
             }
 
@@ -150,7 +164,7 @@ class SettingFragment : Fragment() {
                .setTitle("로그아웃")
                .setMessage("정말 로그아웃하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  val getUser = dataManager!!.getUser()
+                  val getUser = dataManager.getUser()
 
                   when(getUser.type) {
                      "google" -> {
@@ -215,8 +229,8 @@ class SettingFragment : Fragment() {
                .setTitle("회원탈퇴")
                .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  getUser = dataManager!!.getUser()
-                  getToken = dataManager!!.getToken()
+                  getUser = dataManager.getUser()
+                  getToken = dataManager.getToken()
 
                   when(getUser.type) {
                      "google" -> {
@@ -321,7 +335,7 @@ class SettingFragment : Fragment() {
 
    @SuppressLint("SetTextI18n")
    private fun userProfile() {
-      val getUser = dataManager!!.getUser()
+      val getUser = dataManager.getUser()
 
       if(getUser.name != "") binding.tvName.text = getUser.name
 
@@ -368,28 +382,24 @@ class SettingFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), "image/jpeg", img)
 
-                  binding.ivUser.setImageURI(Uri.parse(uri.toString()))
+                  if(uri.toString() != "") dataManager.updateUserStr(TABLE_USER, "profileImage", uri.toString())
 
-                  if(uri.toString() != "") {
-                     dataManager!!.updateUserStr(TABLE_USER, "profileImage", uri.toString())
-                  }
+                  binding.ivUser.setImageURI(Uri.parse(uri.toString()))
 
                   dialog!!.dismiss()
                }
             }
             STORAGE_REQUEST_CODE -> {
                val uri = data!!.data
-               val image = if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
-                  getImageUriWithAuthority(requireActivity(), uri)
-               }else {
-                  uri.toString()
-               }
 
-               binding.ivUser.setImageURI(Uri.parse(uri.toString()))
+               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
 
-               if(image != "") {
-                  dataManager!!.updateUserStr(TABLE_USER, "profileImage", image.toString())
-               }
+               val image =  uri.toString()
+
+               binding.ivUser.setImageURI(Uri.parse(image))
+
+               if(image != "") dataManager.updateUserStr(TABLE_USER, "profileImage", image)
 
                dialog!!.dismiss()
             }
@@ -400,25 +410,25 @@ class SettingFragment : Fragment() {
    private fun removeData() {
       val alarmReceiver = AlarmReceiver()
 
-      val getDrugId = dataManager!!.getDrugId()
+      val getDrugId = dataManager.getDrugId()
       for(i in 0 until getDrugId.size) {
          alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
       }
 
-      dataManager!!.deleteAll(TABLE_USER, "id")
-      dataManager!!.deleteAll(TABLE_TOKEN, "userId")
-      dataManager!!.deleteAll(TABLE_FOOD, "userId")
-      dataManager!!.deleteAll(TABLE_DAILY_FOOD, "userId")
-      dataManager!!.deleteAll(TABLE_WATER, "userId")
-      dataManager!!.deleteAll(TABLE_EXERCISE, "userId")
-      dataManager!!.deleteAll(TABLE_DAILY_EXERCISE, "userId")
-      dataManager!!.deleteAll(TABLE_BODY, "userId")
-      dataManager!!.deleteAll(TABLE_DRUG, "userId")
-      dataManager!!.deleteAll(TABLE_DRUG_TIME, "userId")
-      dataManager!!.deleteAll(TABLE_DRUG_CHECK, "userId")
-      dataManager!!.deleteAll(TABLE_NOTE, "userId")
-      dataManager!!.deleteAll(TABLE_SLEEP, "userId")
-      dataManager!!.deleteAll(TABLE_IMAGE, "userId")
+      dataManager.deleteAll(TABLE_USER, "id")
+      dataManager.deleteAll(TABLE_TOKEN, "userId")
+      dataManager.deleteAll(TABLE_FOOD, "userId")
+      dataManager.deleteAll(TABLE_DAILY_FOOD, "userId")
+      dataManager.deleteAll(TABLE_WATER, "userId")
+      dataManager.deleteAll(TABLE_EXERCISE, "userId")
+      dataManager.deleteAll(TABLE_DAILY_EXERCISE, "userId")
+      dataManager.deleteAll(TABLE_BODY, "userId")
+      dataManager.deleteAll(TABLE_DRUG, "userId")
+      dataManager.deleteAll(TABLE_DRUG_TIME, "userId")
+      dataManager.deleteAll(TABLE_DRUG_CHECK, "userId")
+      dataManager.deleteAll(TABLE_NOTE, "userId")
+      dataManager.deleteAll(TABLE_SLEEP, "userId")
+      dataManager.deleteAll(TABLE_IMAGE, "userId")
    }
 
    private suspend fun removeUser(): Boolean {
@@ -429,5 +439,10 @@ class SettingFragment : Fragment() {
       ).execute()
 
       return removeUser.data != null
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

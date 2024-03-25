@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseInputBinding
@@ -17,14 +18,26 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDateTime
 
-class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
+class ExerciseInputFragment : Fragment() {
    private var _binding: FragmentExerciseInputBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var intensity = "상"
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment()
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("ClickableViewAccessibility")
    override fun onCreateView(
@@ -32,8 +45,6 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentExerciseInputBinding.inflate(layoutInflater)
-
-      (context as MainActivity).setOnBackPressedListener(this)
 
       requireActivity().window?.apply {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -46,7 +57,7 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -94,9 +105,9 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
          if(binding.etName.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager!!.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
+            dataManager.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
                kcal = calories, useCount = 1, useDate = LocalDateTime.now().toString()))
-            dataManager!!.insertDailyExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
+            dataManager.insertDailyExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
                kcal = calories, regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
@@ -114,9 +125,8 @@ class ExerciseInputFragment : Fragment(), MainActivity.OnBackPressedListener {
       }
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment()
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

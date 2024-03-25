@@ -1,12 +1,14 @@
 package com.makebodywell.bodywell.view.report
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
@@ -36,6 +38,7 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.MainFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -43,7 +46,8 @@ class ReportDrugFragment : Fragment() {
    private var _binding: FragmentReportDrugBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var adapter: ReportAdapter? = null
    private var calendarDate = LocalDate.now()
    private var dateType = 1
@@ -52,6 +56,16 @@ class ReportDrugFragment : Fragment() {
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
@@ -71,7 +85,7 @@ class ReportDrugFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -157,7 +171,7 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount(calendarDate.toString())
+      val getDrugCheckCount = dataManager.getDrugCheckCount(calendarDate.toString())
       if(getDrugCheckCount > 0) {
          val getDates = ArrayList<String>()
          getDates.add(calendarDate.toString())
@@ -177,7 +191,7 @@ class ReportDrugFragment : Fragment() {
       dateType = 2
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart(binding.chart, getDates)
          rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
@@ -195,7 +209,7 @@ class ReportDrugFragment : Fragment() {
       dateType = 3
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager!!.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart(binding.chart, getDates)
          rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
@@ -224,8 +238,8 @@ class ReportDrugFragment : Fragment() {
       var count = 0
 
       for(i in 0 until getData.size){
-         val getDailyGoal = dataManager!!.getDailyGoal(getData[i])
-         val getDrugCheckCount = dataManager!!.getDrugCheckCount(getData[i])
+         val getDailyGoal = dataManager.getDailyGoal(getData[i])
+         val getDrugCheckCount = dataManager.getDrugCheckCount(getData[i])
 
          if(getDrugCheckCount > 0) {
             val pt = if(getDailyGoal.drugGoal == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drugGoal.toFloat()) * 100
@@ -322,15 +336,15 @@ class ReportDrugFragment : Fragment() {
       val itemList = ArrayList<Item>()
 
       if(type == 1) {
-         val getRanking = dataManager!!.getDrugRanking(calendarDate.toString())
+         val getRanking = dataManager.getDrugRanking(calendarDate.toString())
          for(i in 0 until getRanking.size) {
-            val getDrug = dataManager!!.getDrug(getRanking[i].int2)
+            val getDrug = dataManager.getDrug(getRanking[i].int2)
             itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getDrug.name))
          }
       }else {
-         val getRanking = dataManager!!.getDrugRanking(start, end)
+         val getRanking = dataManager.getDrugRanking(start, end)
          for(i in 0 until getRanking.size) {
-            val getDrug = dataManager!!.getDrug(getRanking[i].int2)
+            val getDrug = dataManager.getDrug(getRanking[i].int2)
             itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getDrug.name))
          }
       }
@@ -361,5 +375,10 @@ class ReportDrugFragment : Fragment() {
          adapter = ReportAdapter(itemList)
          binding.recyclerView.adapter = adapter
       }
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

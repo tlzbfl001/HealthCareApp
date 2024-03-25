@@ -1,12 +1,14 @@
 package com.makebodywell.bodywell.view.report
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -26,8 +28,11 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
+import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
+import com.makebodywell.bodywell.view.home.MainFragment
+import com.makebodywell.bodywell.view.note.NoteFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -35,8 +40,8 @@ class ReportBodyFragment : Fragment() {
    private var _binding: FragmentReportBodyBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
-
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var calendarDate = LocalDate.now()
    private var dateType = 0
 
@@ -44,6 +49,16 @@ class ReportBodyFragment : Fragment() {
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    @SuppressLint("SimpleDateFormat")
    private val format2 = SimpleDateFormat("M.dd")
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
 
    @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
@@ -63,7 +78,7 @@ class ReportBodyFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.tvDate.text = dateFormat(calendarDate)
 
@@ -149,7 +164,7 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getBody = dataManager!!.getBody(calendarDate.toString())
+      val getBody = dataManager.getBody(calendarDate.toString())
 
       if (getBody.weight > 0) {
          binding.tvEmpty1.visibility = View.GONE
@@ -209,7 +224,7 @@ class ReportBodyFragment : Fragment() {
       val itemList3 = ArrayList<Body>()
 
       val weekArray = weekArray(calendarDate)
-      val getData = dataManager!!.getBody(weekArray[0].toString(), weekArray[6].toString())
+      val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
       for(i in 0 until getData.size) {
          Log.d(TAG, "getData: ${getData[i].regDate}")
          if (getData[i].weight > 0) {
@@ -284,7 +299,7 @@ class ReportBodyFragment : Fragment() {
       val itemList3 = ArrayList<Body>()
 
       val monthArray = monthArray2(calendarDate)
-      val getData = dataManager!!.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getData = dataManager.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
@@ -419,5 +434,10 @@ class ReportBodyFragment : Fragment() {
       ): String {
          return value.toString()
       }
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.DrugAdapter2
@@ -21,9 +22,10 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.MainActivity
+import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.food.FoodFragment
 
-class DrugRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
+class DrugRecordFragment : Fragment() {
    private var _binding: FragmentDrugRecordBinding? = null
    private val binding get() = _binding!!
 
@@ -47,8 +49,6 @@ class DrugRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
-      (context as MainActivity).setOnBackPressedListener(this)
-
       dataManager = DataManager(activity)
       dataManager!!.open()
 
@@ -70,9 +70,20 @@ class DrugRecordFragment : Fragment(), MainActivity.OnBackPressedListener {
       return binding.root
    }
 
-   override fun onBackPressed() {
-      val activity = activity as MainActivity?
-      activity!!.setOnBackPressedListener(null)
-      replaceFragment1(requireActivity(), DrugFragment())
+   private lateinit var callback: OnBackPressedCallback
+
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), DrugFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }
