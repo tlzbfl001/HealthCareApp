@@ -5,16 +5,23 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
@@ -53,7 +60,6 @@ class BodyFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -246,7 +252,7 @@ class BodyFragment : Fragment() {
       // 체질량지수 범위
       val format1 = String.format("%.1f", body!!.bmi)
       val bmi = format1.replace(".", "").toInt()
-      when{
+      when {
          bmi < 186 -> {
             binding.bmiIndicator1.progress = bmi
             binding.bmiIndicator1.thumb.setTint(Color.BLACK)
@@ -312,7 +318,7 @@ class BodyFragment : Fragment() {
       // 체지방율 범위
       val format2 = String.format("%.1f", body!!.fat)
       val fat = format2.replace(".", "").toInt()
-      when{
+      when {
          fat < 141 -> {
             binding.fatIndicator1.progress = fat
             binding.fatIndicator1.thumb.setTint(Color.BLACK)
@@ -363,7 +369,7 @@ class BodyFragment : Fragment() {
       // 골격근량 범위
       val format3 = String.format("%.1f", body!!.muscle)
       val muscle = format3.replace(".", "").toInt()
-      when{
+      when {
          muscle < 267 -> {
             binding.muscleIndicator1.progress = muscle
             binding.muscleIndicator1.thumb.setTint(Color.BLACK)

@@ -87,7 +87,6 @@ class SettingFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var getUser = User()
    private var getToken = Token()
-   private var dialog: BottomSheetDialog? = null
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -121,28 +120,8 @@ class SettingFragment : Fragment() {
 
       userProfile()
 
-      binding.ivUser.setOnClickListener {
-         if(cameraRequest(requireActivity())) {
-            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-
-            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-
-            clCamera.setOnClickListener {
-               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-               startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }
-
-            clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-               intent.type = "image/*"
-               startActivityForResult(intent, STORAGE_REQUEST_CODE)
-            }
-
-            dialog!!.setContentView(bottomSheetView)
-            dialog!!.show()
-         }
+      binding.cvProfile.setOnClickListener {
+         replaceFragment1(requireActivity(), ProfileFragment())
       }
 
       binding.tvAlarm.setOnClickListener {
@@ -370,41 +349,6 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvHeight.text = "${height}cm / ${weight}kg"
-   }
-
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-      super.onActivityResult(requestCode, resultCode, data)
-
-      if(resultCode == Activity.RESULT_OK){
-         when(requestCode){
-            CAMERA_REQUEST_CODE -> {
-               if(data!!.extras?.get("data") != null){
-                  val img = data.extras?.get("data") as Bitmap
-                  val uri = saveFile(requireActivity(), "image/jpeg", img)
-
-                  if(uri.toString() != "") dataManager.updateUserStr(TABLE_USER, "profileImage", uri.toString())
-
-                  binding.ivUser.setImageURI(Uri.parse(uri.toString()))
-
-                  dialog!!.dismiss()
-               }
-            }
-            STORAGE_REQUEST_CODE -> {
-               val uri = data!!.data
-
-               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
-
-               val image =  uri.toString()
-
-               binding.ivUser.setImageURI(Uri.parse(image))
-
-               if(image != "") dataManager.updateUserStr(TABLE_USER, "profileImage", image)
-
-               dialog!!.dismiss()
-            }
-         }
-      }
    }
 
    private fun removeData() {

@@ -97,7 +97,7 @@
                   android:textSize="16dp"
                   android:textColor="@color/black"
                   android:textColorHint="#cccccc"
-                  android:maxLength="20"
+                  android:maxLength="15"
                   app:layout_constraintTop_toTopOf="@id/cv1"
                   app:layout_constraintBottom_toBottomOf="@id/cv1"
                   app:layout_constraintStart_toEndOf="@id/cv1"

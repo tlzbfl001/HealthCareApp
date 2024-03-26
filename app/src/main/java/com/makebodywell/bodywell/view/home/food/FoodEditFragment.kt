@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -28,6 +29,7 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import com.makebodywell.bodywell.view.home.MainActivity
 import java.time.LocalDateTime
+import java.util.regex.Pattern
 
 class FoodEditFragment : Fragment() {
 	private var _binding: FragmentFoodEditBinding? = null

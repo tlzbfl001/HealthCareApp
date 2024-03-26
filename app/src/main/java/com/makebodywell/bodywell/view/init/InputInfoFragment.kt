@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.InputFilter
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,7 @@ import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import java.util.Calendar
+import java.util.regex.Pattern
 import kotlin.system.exitProcess
 
 class InputInfoFragment : Fragment() {

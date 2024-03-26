@@ -42,7 +42,6 @@ class BodyRecordFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
