@@ -23,7 +23,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentProfileBinding
-import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterText
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil
@@ -120,8 +121,6 @@ class ProfileFragment : Fragment() {
 			}
 		}
 
-		binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
-
 		binding.etHeight.addTextChangedListener(object : TextWatcher {
 			override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 				if(s.toString() != "") {
@@ -214,7 +213,9 @@ class ProfileFragment : Fragment() {
 			val weight = if(binding.etWeight.text.toString() == "") 0.0 else binding.etWeight.text.toString().toDouble()
 
 			if(binding.etName.text.length < 2) {
-				Toast.makeText(context, "이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+				Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+			}else if(!filterText(binding.etName.text.toString())) {
+				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
 				dataManager.updateUserStr(TABLE_USER, "name", name)
 				dataManager.updateUserDouble(TABLE_USER, "height", height)

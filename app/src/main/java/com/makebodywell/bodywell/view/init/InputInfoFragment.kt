@@ -25,14 +25,14 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
-import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterText
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import kotlin.system.exitProcess
-
 
 class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
@@ -107,8 +107,6 @@ class InputInfoFragment : Fragment() {
          }
       }
 
-      binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
-
       binding.tvBirthday.setOnClickListener {
          val dialog = Dialog(requireActivity())
          dialog.setContentView(R.layout.dialog_date_picker)
@@ -152,7 +150,9 @@ class InputInfoFragment : Fragment() {
          val profileImage = if(image != "") image else ""
 
          if(binding.etName.text.length < 2) {
-            Toast.makeText(context, "이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+         }else if(!filterText(binding.etName.text.toString())) {
+            Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager.updateUserStr(TABLE_USER, "name", name!!)
             dataManager.updateUserStr(TABLE_USER, "birthday", birthday!!)

@@ -64,6 +64,14 @@ class CustomUtil {
          if (!ps.matcher(source).matches()) "" else source
       }
 
+      fun filterText(text: String): Boolean {
+         val pattern = "^[ㄱ-ㅣ가-힣a-zA-Z0-9]+\$" // 한글, 영문, 숫자 패턴
+         val compile = Pattern.compile(pattern)
+         val match = compile.matcher(text)
+
+         return match.find()
+      }
+
       fun getFoodCalories(context: Context, date:String) : Item {
          val dataManager = DataManager(context)
          dataManager.open()

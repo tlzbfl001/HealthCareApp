@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,11 +17,13 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodInputBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterText
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDateTime
+import java.util.regex.Pattern
 
 class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
@@ -77,8 +79,6 @@ class FoodInputFragment : Fragment() {
       binding.clBack.setOnClickListener {
          replaceFragment()
       }
-
-      binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
 
       binding.tvMg.setOnClickListener {
          unit1()
@@ -337,9 +337,11 @@ class FoodInputFragment : Fragment() {
 
          val getFood = dataManager.getFood(name)
 
-         if(name.length < 2) {
+         if(name.length < 2 || name.length > 15) {
             Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
-         }else if (getFood.name != "") {
+         }else if(!filterText(name)) {
+            Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
+         }else if(getFood.name != "") {
             Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {
             // 음식데이터 저장

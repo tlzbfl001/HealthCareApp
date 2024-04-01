@@ -16,7 +16,8 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
+import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterText
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 
@@ -94,8 +95,6 @@ class FoodEditFragment : Fragment() {
 		binding.clBack.setOnClickListener {
 			replaceFragment()
 		}
-
-		binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
 
 		binding.tvMg.setOnClickListener {
 			unit1()
@@ -326,6 +325,8 @@ class FoodEditFragment : Fragment() {
 
 				if(binding.etName.text.length < 2) {
 					Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+				}else if(!filterText(binding.etName.text.toString())) {
+					Toast.makeText(context, "특수문자는 입력 불가능합니다.", Toast.LENGTH_SHORT).show()
 				}else if (getData.name != "" && (getData.name != getFood.name)) {
 					Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
 				}else {
