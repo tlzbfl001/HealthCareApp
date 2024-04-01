@@ -1,9 +1,7 @@
 package com.makebodywell.bodywell.adapter
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +14,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
@@ -24,12 +21,8 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Drug
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
 import com.makebodywell.bodywell.view.home.drug.DrugAddFragment
-import com.makebodywell.bodywell.view.home.drug.DrugFragment
-import java.text.SimpleDateFormat
 
 class DrugAdapter2 (
    private val context: Activity,
@@ -52,7 +45,6 @@ class DrugAdapter2 (
       return ViewHolder(view)
    }
 
-   @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvType.text = itemList[position].type
       holder.tvName.text = itemList[position].name

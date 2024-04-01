@@ -1,10 +1,10 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +17,10 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodInputBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDateTime
 
 class FoodInputFragment : Fragment() {
@@ -43,7 +42,6 @@ class FoodInputFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -79,6 +77,8 @@ class FoodInputFragment : Fragment() {
       binding.clBack.setOnClickListener {
          replaceFragment()
       }
+
+      binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
 
       binding.tvMg.setOnClickListener {
          unit1()
@@ -249,6 +249,14 @@ class FoodInputFragment : Fragment() {
                   binding.etSalt.setSelection(format.length)
                   binding.etSalt.addTextChangedListener(this)
                }
+
+               if(text.length == 5) {
+                  val format = text[0].toString() + text[1].toString() + text[2].toString() + text[3].toString() + "." + text[4].toString()
+                  binding.etSalt.removeTextChangedListener(this)
+                  binding.etSalt.setText(format)
+                  binding.etSalt.setSelection(format.length)
+                  binding.etSalt.addTextChangedListener(this)
+               }
             }
          }
 
@@ -329,8 +337,8 @@ class FoodInputFragment : Fragment() {
 
          val getFood = dataManager.getFood(name)
 
-         if(name == "") {
-            Toast.makeText(context, "음식이름 미입력", Toast.LENGTH_SHORT).show()
+         if(name.length < 2) {
+            Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
          }else if (getFood.name != "") {
             Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {

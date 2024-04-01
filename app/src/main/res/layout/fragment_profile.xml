@@ -60,8 +60,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="프로필 사진"
+            android:textSize="15.3dp"
             android:textColor="@color/black"
-            android:textSize="16dp"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
          <de.hdodenhof.circleimageview.CircleImageView
@@ -79,6 +80,7 @@
             android:layout_height="23dp"
             android:src="@drawable/camera"
             android:background="@drawable/oval"
+            android:layout_marginBottom="3dp"
             android:padding="4dp"
             android:elevation="5dp"
             app:tint="#BBBBBB"
@@ -88,10 +90,11 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="23dp"
+            android:layout_marginTop="21dp"
             android:text="이름"
+            android:textSize="15.3dp"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivProfile"/>
          <EditText
@@ -105,7 +108,6 @@
             android:textSize="16dp"
             android:textColor="@color/black"
             android:textColorHint="#ccc"
-            android:maxLength="15"
             android:singleLine="true"
             android:lines="1"
             app:layout_constraintTop_toBottomOf="@id/tvName"
@@ -115,10 +117,11 @@
             android:id="@+id/tv4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="24dp"
             android:text="키"
+            android:textSize="15.3dp"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/etName"
             app:layout_constraintStart_toStartOf="parent"/>
          <EditText
@@ -154,10 +157,11 @@
             android:id="@+id/tv6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="24dp"
             android:text="체중"
+            android:textSize="15.3dp"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/etHeight"
             app:layout_constraintStart_toStartOf="parent"/>
          <EditText

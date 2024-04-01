@@ -1,13 +1,11 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,21 +13,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodEditBinding
-import com.makebodywell.bodywell.databinding.FragmentFoodInputBinding
 import com.makebodywell.bodywell.model.Food
-import com.makebodywell.bodywell.model.User
-import com.makebodywell.bodywell.util.CalendarUtil
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainActivity
-import java.time.LocalDateTime
-import java.util.regex.Pattern
 
 class FoodEditFragment : Fragment() {
 	private var _binding: FragmentFoodEditBinding? = null
@@ -50,7 +39,6 @@ class FoodEditFragment : Fragment() {
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
 	}
 
-	@SuppressLint("ClickableViewAccessibility", "InternalInsetResource", "DiscouragedApi")
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
@@ -106,6 +94,8 @@ class FoodEditFragment : Fragment() {
 		binding.clBack.setOnClickListener {
 			replaceFragment()
 		}
+
+		binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
 
 		binding.tvMg.setOnClickListener {
 			unit1()
@@ -276,6 +266,14 @@ class FoodEditFragment : Fragment() {
 						binding.etSalt.setSelection(format.length)
 						binding.etSalt.addTextChangedListener(this)
 					}
+
+					if(text.length == 5) {
+						val format = text[0].toString() + text[1].toString() + text[2].toString() + text[3].toString() + "." + text[4].toString()
+						binding.etSalt.removeTextChangedListener(this)
+						binding.etSalt.setText(format)
+						binding.etSalt.setSelection(format.length)
+						binding.etSalt.addTextChangedListener(this)
+					}
 				}
 			}
 
@@ -326,8 +324,8 @@ class FoodEditFragment : Fragment() {
 			if(id > -1) {
 				val getData = dataManager.getFood(binding.etName.text.toString().trim())
 
-				if(binding.etName.text.toString() == "") {
-					Toast.makeText(context, "음식이름 미입력", Toast.LENGTH_SHORT).show()
+				if(binding.etName.text.length < 2) {
+					Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
 				}else if (getData.name != "" && (getData.name != getFood.name)) {
 					Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
 				}else {

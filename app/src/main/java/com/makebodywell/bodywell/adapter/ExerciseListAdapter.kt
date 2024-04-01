@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.adapter
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
@@ -16,7 +15,6 @@ import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCIS
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.exercise.ExerciseAddFragment
 import com.makebodywell.bodywell.view.home.exercise.ExerciseDailyEditFragment
 
 class ExerciseListAdapter (
@@ -36,7 +34,6 @@ class ExerciseListAdapter (
       return ViewHolder(view)
    }
 
-   @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
       holder.tvName.text = itemList[pos].name
       holder.tvTime.text = "${itemList[pos].workoutTime}분"

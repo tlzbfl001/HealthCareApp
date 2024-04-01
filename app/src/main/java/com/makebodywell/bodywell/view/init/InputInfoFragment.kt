@@ -1,8 +1,6 @@
 package com.makebodywell.bodywell.view.init
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -13,11 +11,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputFilter
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
+import android.widget.DatePicker
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -27,22 +25,21 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentInputInfoBinding
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
-import java.util.Calendar
-import java.util.regex.Pattern
 import kotlin.system.exitProcess
+
 
 class InputInfoFragment : Fragment() {
    private var _binding: FragmentInputInfoBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private var dataManager: DataManager? = null
+   private lateinit var dataManager: DataManager
    private var dialog: Dialog? = null
    private var pressedTime: Long = 0
    private var image: String? = ""
@@ -70,7 +67,6 @@ class InputInfoFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -78,9 +74,9 @@ class InputInfoFragment : Fragment() {
       _binding = FragmentInputInfoBinding.inflate(layoutInflater)
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
-      val getUser = dataManager!!.getUser()
+      val getUser = dataManager.getUser()
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -111,20 +107,29 @@ class InputInfoFragment : Fragment() {
          }
       }
 
+      binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
+
       binding.tvBirthday.setOnClickListener {
-         val datePickerCalendar = Calendar.getInstance()
-         val calendarYear = datePickerCalendar.get(Calendar.YEAR)
-         val calendarMonth = datePickerCalendar.get(Calendar.MONTH)
-         val calendarDay = datePickerCalendar.get(Calendar.DAY_OF_MONTH)
+         val dialog = Dialog(requireActivity())
+         dialog.setContentView(R.layout.dialog_date_picker)
+         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-         val dpd = DatePickerDialog(requireContext(), R.style.MySpinnerDatePickerStyle,{ _, year, monthOfYear, dayOfMonth ->
-               binding.tvBirthday.text = "$year-${String.format("%02d", monthOfYear + 1)}-${String.format("%02d", dayOfMonth)}"
-            }, calendarYear, calendarMonth, calendarDay
-         )
+         val datePicker = dialog.findViewById<DatePicker>(R.id.datePicker)
+         val tvConfirm = dialog.findViewById<TextView>(R.id.tvConfirm)
+         val tvCancel = dialog.findViewById<TextView>(R.id.tvCancel)
 
-         // 최대 날짜를 현재 시각으로
-         dpd.datePicker.maxDate = System.currentTimeMillis() - 1000
-         dpd.show()
+         tvConfirm.setOnClickListener {
+            binding.tvBirthday.text = "${datePicker.year}-${String.format("%02d", datePicker.month + 1)}-${String.format("%02d", datePicker.dayOfMonth)}"
+            dialog.dismiss()
+         }
+
+         tvCancel.setOnClickListener {
+            dialog.dismiss()
+         }
+
+         datePicker.maxDate = System.currentTimeMillis() - 1000
+
+         dialog.show()
       }
 
       binding.cvContinue.setOnClickListener {
@@ -146,13 +151,17 @@ class InputInfoFragment : Fragment() {
 
          val profileImage = if(image != "") image else ""
 
-         dataManager?.updateUserStr(TABLE_USER, "name", name!!)
-         dataManager?.updateUserStr(TABLE_USER, "birthday", birthday!!)
-         dataManager?.updateUserStr(TABLE_USER, "profileImage", profileImage!!)
+         if(binding.etName.text.length < 2) {
+            Toast.makeText(context, "이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            dataManager.updateUserStr(TABLE_USER, "name", name!!)
+            dataManager.updateUserStr(TABLE_USER, "birthday", birthday!!)
+            dataManager.updateUserStr(TABLE_USER, "profileImage", profileImage!!)
 
-         requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.inputFrame, InputBodyFragment())
-            commit()
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+               replace(R.id.inputFrame, InputBodyFragment())
+               commit()
+            }
          }
       }
 
@@ -171,7 +180,7 @@ class InputInfoFragment : Fragment() {
 
                   image = uri.toString()
 
-                  binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
+                  binding.ivProfile.setImageURI(Uri.parse(image))
 
                   dialog!!.dismiss()
                }
@@ -184,7 +193,7 @@ class InputInfoFragment : Fragment() {
 
                image = uri.toString()
 
-               binding.ivProfile.setImageURI(Uri.parse(uri.toString()))
+               binding.ivProfile.setImageURI(Uri.parse(image))
 
                dialog!!.dismiss()
             }

@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.note
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
@@ -18,7 +17,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
@@ -37,7 +35,6 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import com.makebodywell.bodywell.view.home.MainFragment
 import java.time.LocalDate
@@ -64,7 +61,6 @@ class NoteFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -122,7 +118,6 @@ class NoteFragment : Fragment() {
       }
 
       binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : OnItemClickListener {
-         @SuppressLint("SetTextI18n")
          override fun onItemClick(view: View, position: Int) {
             selectedDate = days[position]!!
             setDailyView()
@@ -160,7 +155,6 @@ class NoteFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun setDailyView() {
       // 텍스트 초기화
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))

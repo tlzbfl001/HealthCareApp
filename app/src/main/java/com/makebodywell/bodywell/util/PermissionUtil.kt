@@ -49,21 +49,14 @@ class PermissionUtil {
             Manifest.permission.BLUETOOTH_CONNECT
         )
 
-        val CAMERA_PERMISSION_1 = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        @RequiresApi(Build.VERSION_CODES.S)
-        val CAMERA_PERMISSION_2 = arrayOf(
+        private val CAMERA_PERMISSION_1 = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
 
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        val CAMERA_PERMISSION_3 = arrayOf(
+        private val CAMERA_PERMISSION_2 = arrayOf(
             Manifest.permission.CAMERA,
             Manifest.permission.READ_MEDIA_IMAGES
         )
@@ -71,15 +64,6 @@ class PermissionUtil {
         fun cameraRequest(context: Activity): Boolean {
             var check = true
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                for(permission in CAMERA_PERMISSION_3) {
-                    if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_3),
-                            REQUEST_CODE
-                        )
-                        check = false
-                    }
-                }
-            }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 for(permission in CAMERA_PERMISSION_2) {
                     if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_2),

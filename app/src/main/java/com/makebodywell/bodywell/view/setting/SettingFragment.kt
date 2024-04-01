@@ -1,42 +1,29 @@
 package com.makebodywell.bodywell.view.setting
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
-import com.makebodywell.bodywell.BuildConfig
 import com.makebodywell.bodywell.BuildConfig.GOOGLE_WEB_CLIENT_ID
 import com.makebodywell.bodywell.BuildConfig.NAVER_CLIENT_ID
 import com.makebodywell.bodywell.BuildConfig.NAVER_CLIENT_SECRET
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.RemoveUserMutation
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_BODY
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -56,20 +43,12 @@ import com.makebodywell.bodywell.databinding.FragmentSettingBinding
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
 import com.makebodywell.bodywell.util.AlarmReceiver
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.apolloClient
 import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.MyApp
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.randomFileName
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 import com.makebodywell.bodywell.view.home.MainFragment
-import com.makebodywell.bodywell.view.home.exercise.ExerciseEditFragment
 import com.makebodywell.bodywell.view.init.InitActivity
 import com.makebodywell.bodywell.view.init.LoginActivity
 import com.navercorp.nid.NaverIdLoginSDK
@@ -98,7 +77,6 @@ class SettingFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -312,7 +290,6 @@ class SettingFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun userProfile() {
       val getUser = dataManager.getUser()
 

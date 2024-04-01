@@ -1,11 +1,5 @@
 <resources>
    <string name="app_name">BodyWell</string>
-   <!--   <string name="googleWebClientId">598051682826-f7lamjml7e8lbnf4il224tnvebi706qh.apps.googleusercontent.com</string>-->
-   <!--   <string name="nativeAppKey">d9c3b1c89cfbb632aa6cbfeadd09861e</string>-->
-   <!--   <string name="nativeAppKey2">kakaod9c3b1c89cfbb632aa6cbfeadd09861e</string>-->
-   <!--   <string name="naverClientId">MhfyG1p13DZogqMU_T2M</string>-->
-   <!--   <string name="naverClientSecret">tkqS2oroTP</string>-->
-
    <string name="terms1">
 제1조(목적)\n
 이 약관은 주식회사 바디웰 (사업자등록번호: 12345)이 운영하는 바디웰(이하 &quot;바디웰&quot;이라 한다)에서 제공하는 인터넷 관련 서비스(이하 &quot;서비스&quot;라 한다)를 이용함에 있어 사이버 몰과 이용자의 권리 의무 및 책임사항을 규정함을 목적으로 합니다.\n

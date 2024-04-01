@@ -1,27 +1,19 @@
 package com.makebodywell.bodywell.view.home.body
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowInsetsController
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
@@ -197,7 +189,6 @@ class BodyFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
       binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
@@ -242,7 +233,6 @@ class BodyFragment : Fragment() {
       }
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyList() {
       binding.tvBmi.text = body!!.bmi.toString()
       binding.tvFat.text = "${body!!.fat} %"

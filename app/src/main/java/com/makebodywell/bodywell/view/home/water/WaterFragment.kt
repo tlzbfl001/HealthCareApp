@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.water
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -27,7 +26,6 @@ import com.makebodywell.bodywell.model.Water
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -57,7 +55,6 @@ class WaterFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("InternalInsetResource", "DiscouragedApi", "SetTextI18n")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -167,7 +164,6 @@ class WaterFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       // 목표 초기화
       dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
@@ -202,7 +198,6 @@ class WaterFragment : Fragment() {
       }
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyWater() {
       binding.tvCount.text = "${count}잔"
       binding.tvUnit.text = "(${count * volume}ml)"

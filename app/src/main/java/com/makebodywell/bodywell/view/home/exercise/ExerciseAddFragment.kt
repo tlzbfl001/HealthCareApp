@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.exercise
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -15,13 +14,8 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseAddBinding
 import com.makebodywell.bodywell.model.Exercise
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.drug.DrugFragment
-import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
-import com.makebodywell.bodywell.view.home.food.FoodRecord2Fragment
 import java.time.LocalDateTime
 
 class ExerciseAddFragment : Fragment() {
@@ -43,7 +37,6 @@ class ExerciseAddFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

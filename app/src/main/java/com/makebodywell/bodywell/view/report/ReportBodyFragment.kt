@@ -1,10 +1,8 @@
 package com.makebodywell.bodywell.view.report
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,11 +26,8 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthArray2
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.monthFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekFormat
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.view.home.MainFragment
-import com.makebodywell.bodywell.view.note.NoteFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -42,13 +37,10 @@ class ReportBodyFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   private val format2 = SimpleDateFormat("M.dd")
    private var calendarDate = LocalDate.now()
    private var dateType = 0
-
-   @SuppressLint("SimpleDateFormat")
-   private val format1 = SimpleDateFormat("yyyy-MM-dd")
-   @SuppressLint("SimpleDateFormat")
-   private val format2 = SimpleDateFormat("M.dd")
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -60,7 +52,6 @@ class ReportBodyFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -226,7 +217,6 @@ class ReportBodyFragment : Fragment() {
       val weekArray = weekArray(calendarDate)
       val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
       for(i in 0 until getData.size) {
-         Log.d(TAG, "getData: ${getData[i].regDate}")
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
          }

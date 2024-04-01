@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.note
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -16,12 +15,8 @@ import com.makebodywell.bodywell.databinding.FragmentNoteWriteBinding
 import com.makebodywell.bodywell.model.Note
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.MainFragment
-import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
@@ -42,7 +37,6 @@ class NoteWriteFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?

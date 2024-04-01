@@ -1,29 +1,22 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_FOOD
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodAddBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.exercise.ExerciseListFragment
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class FoodAddFragment : Fragment() {
@@ -47,7 +40,6 @@ class FoodAddFragment : Fragment() {
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
@@ -84,7 +76,7 @@ class FoodAddFragment : Fragment() {
 		binding.tvSalt.text = String.format("%.1f", getFood.salt) + "g"
 		binding.tvSugar.text = String.format("%.1f", getFood.sugar) + "g"
 
-		binding.cl1.setOnTouchListener { view, motionEvent ->
+		binding.cl1.setOnTouchListener { _, _ ->
 			hideKeyboard(requireActivity())
 			true
 		}

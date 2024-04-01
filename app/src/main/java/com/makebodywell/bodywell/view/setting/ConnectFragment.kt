@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.setting
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -42,7 +41,6 @@ class ConnectFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("MissingPermission")
    private fun getPairedDevices() {
       bluetoothAdapter?.let {
          if(it.isEnabled) {

@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -29,7 +28,6 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getFoodCalories
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -226,7 +224,6 @@ class FoodFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyGoal() {
       // 목표 초기화
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
@@ -234,7 +231,7 @@ class FoodFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
+      getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
 
       if(sum > 0) {
@@ -301,7 +298,6 @@ class FoodFragment : Fragment() {
       }
    }
 
-   @SuppressLint("SetTextI18n")
    private fun listView() {
       binding.clView1.visibility = View.GONE
       binding.ivExpand1.setImageResource(R.drawable.arrow_down)
@@ -390,10 +386,11 @@ class FoodFragment : Fragment() {
       val totalCar = carbohydrate1 + carbohydrate2 + carbohydrate3 + carbohydrate4
       val totalPro = protein1 + protein2 + protein3 + protein4
       val totalFat = fat1 + fat2 + fat3 + fat4
-      val recommendPro = if(getUser.gender == "MALE") totalPro * 100 / 55 else totalPro * 100 / 50
-      val recommendFat = totalFat * 100 / 51
+      val recommendCar = totalCar / 324 * 100
+      val recommendPro = totalPro / 55 * 100
+      val recommendFat = totalFat / 54 * 100
 
-      binding.tvCalPct.text = "순탄수 " + totalCar.roundToInt() + "%"
+      binding.tvCalPct.text = "순탄수 " + recommendCar.roundToInt() + "%"
       binding.tvProteinPct.text = "단백질 " + recommendPro.roundToInt() + "%"
       binding.tvFatPct.text = "지방 " + recommendFat.roundToInt() + "%"
       binding.tvCar.text = String.format("%.1f", totalCar) + "g"

@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,14 +9,12 @@ import android.view.*
 import android.view.ViewGroup.LayoutParams
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentMainBinding
-import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.weekArray
 import com.makebodywell.bodywell.util.CustomUtil.Companion.getExerciseCalories
@@ -68,7 +65,6 @@ class MainFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("ClickableViewAccessibility", "SetTextI18n", "DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -161,7 +157,6 @@ class MainFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("ClickableViewAccessibility")
    fun setWeekView() {
       days = weekArray(selectedDate)
       adapter = CalendarAdapter1(days, 1)
@@ -240,7 +235,6 @@ class MainFragment : Fragment() {
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
    }
 
-   @SuppressLint("SetTextI18n")
    fun recordView() {
       // 프로그래스바 초기화
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
@@ -257,13 +251,13 @@ class MainFragment : Fragment() {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
       // 프로그래스바 설정
-      val getDailyGoal = dataManager!!.getDailyGoal(selectedDate.toString())
+      val getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       val foodSum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
-      val getWater = dataManager!!.getWater(selectedDate.toString())
+      val getWater = dataManager.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
-      val getBody = dataManager!!.getBody(selectedDate.toString())
-      val getSleep = dataManager!!.getSleep(selectedDate.toString())
-      val getDrugCheckCount = dataManager!!.getDrugCheckCount(selectedDate.toString())
+      val getBody = dataManager.getBody(selectedDate.toString())
+      val getSleep = dataManager.getSleep(selectedDate.toString())
+      val getDrugCheckCount = dataManager.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
@@ -317,7 +311,7 @@ class MainFragment : Fragment() {
       val sleep = if(getDailyGoal.sleepGoal % 60 == 0) {
          "${getDailyGoal.sleepGoal / 60}h"
       }else {
-         "${getDailyGoal.sleepGoal / 60}h$getDailyGoal.sleepGoal % 60}m"
+         "${getDailyGoal.sleepGoal / 60}h${getDailyGoal.sleepGoal % 60}m"
       }
 
       if(getSleep.sleepTime > 0) {

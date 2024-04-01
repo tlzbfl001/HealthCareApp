@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.exercise
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -21,7 +20,6 @@ import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainActivity
 
 class ExerciseRecord1Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord1Binding? = null
@@ -43,7 +41,6 @@ class ExerciseRecord1Fragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?

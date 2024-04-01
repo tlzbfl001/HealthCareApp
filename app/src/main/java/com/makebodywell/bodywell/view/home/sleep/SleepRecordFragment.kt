@@ -1,33 +1,20 @@
 package com.makebodywell.bodywell.view.home.sleep
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.text.format.DateFormat.is24HourFormat
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.health.connect.client.time.TimeRangeFilter
-import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSleepRecordBinding
 import com.makebodywell.bodywell.model.Sleep
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.MyApp
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.MainFragment
-import com.makebodywell.bodywell.view.home.food.FoodFragment
 import nl.joery.timerangepicker.TimeRangePicker
-import java.util.Calendar
 
 class SleepRecordFragment : Fragment() {
    private var _binding: FragmentSleepRecordBinding? = null
@@ -52,7 +39,6 @@ class SleepRecordFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("InternalInsetResource", "DiscouragedApi")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -77,14 +63,12 @@ class SleepRecordFragment : Fragment() {
       }
 
       binding.time.setOnTimeChangeListener(object : TimeRangePicker.OnTimeChangeListener {
-         @SuppressLint("SetTextI18n")
          override fun onStartTimeChange(startTime: TimeRangePicker.Time) {
             bedHour = binding.time.startTime.hour
             bedMinute = binding.time.startTime.minute
             binding.tvBedtime.text = "$bedHour : $bedMinute"
          }
 
-         @SuppressLint("SetTextI18n")
          override fun onEndTimeChange(endTime: TimeRangePicker.Time) {
             wakeHour = binding.time.endTime.hour
             wakeMinute = binding.time.endTime.minute
@@ -92,7 +76,6 @@ class SleepRecordFragment : Fragment() {
 
          }
 
-         @SuppressLint("SetTextI18n")
          override fun onDurationChange(duration: TimeRangePicker.TimeDuration) {
             sleepHour = duration.hour
             sleepMinute = duration.minute
@@ -102,7 +85,6 @@ class SleepRecordFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val getSleep = dataManager.getSleep(selectedDate.toString())
-
          val bedTime = bedHour * 60 + bedMinute
          val wakeTime = wakeHour * 60 + wakeMinute
          val sleepTime = sleepHour * 60 + sleepMinute

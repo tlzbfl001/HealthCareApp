@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -18,17 +17,14 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.FoodIntakeAdapter
 import com.makebodywell.bodywell.adapter.PhotoViewAdapter
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_IMAGE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodDinnerBinding
 import com.makebodywell.bodywell.model.Image
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.view.home.MainActivity
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -53,7 +49,6 @@ class FoodDinnerFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @SuppressLint("InternalInsetResource", "DiscouragedApi")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -170,7 +165,6 @@ class FoodDinnerFragment : Fragment() {
             binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
             intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
-                @SuppressLint("NotifyDataSetChanged")
                 override fun onItemClick(pos: Int) {
                     val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
                         .setTitle("음식 삭제")

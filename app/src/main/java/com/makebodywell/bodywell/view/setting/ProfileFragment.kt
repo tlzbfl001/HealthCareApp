@@ -20,21 +20,16 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_USER
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentProfileBinding
-import com.makebodywell.bodywell.databinding.FragmentSettingBinding
-import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.filterAlphaNumSpace
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
-import com.makebodywell.bodywell.view.home.MainFragment
-import com.makebodywell.bodywell.view.home.food.FoodRecord1Fragment
-import java.util.regex.Pattern
 
 class ProfileFragment : Fragment() {
 	private var _binding: FragmentProfileBinding? = null
@@ -111,13 +106,13 @@ class ProfileFragment : Fragment() {
 
 				clCamera.setOnClickListener {
 					val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-					startActivityForResult(intent, PermissionUtil.CAMERA_REQUEST_CODE)
+					startActivityForResult(intent, CAMERA_REQUEST_CODE)
 				}
 
 				clPhoto.setOnClickListener {
 					val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
 					intent.type = "image/*"
-					startActivityForResult(intent, PermissionUtil.STORAGE_REQUEST_CODE)
+					startActivityForResult(intent, STORAGE_REQUEST_CODE)
 				}
 
 				dialog!!.setContentView(bottomSheetView)
@@ -125,7 +120,7 @@ class ProfileFragment : Fragment() {
 			}
 		}
 
-		binding.etName.filters = arrayOf(filterAlphaNumSpace)
+		binding.etName.filters = arrayOf(filterAlphaNumSpace, InputFilter.LengthFilter(15))
 
 		binding.etHeight.addTextChangedListener(object : TextWatcher {
 			override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -214,29 +209,25 @@ class ProfileFragment : Fragment() {
 		})
 
 		binding.cvEdit.setOnClickListener {
-			if(binding.etName.text.length < 2) {
-
-			}
 			val name = if(binding.etName.text.toString() == "") "" else binding.etName.text.toString()
 			val height = if(binding.etHeight.text.toString() == "") 0.0 else binding.etHeight.text.toString().toDouble()
 			val weight = if(binding.etWeight.text.toString() == "") 0.0 else binding.etWeight.text.toString().toDouble()
 
-			dataManager.updateUserStr(TABLE_USER, "name", name)
-			dataManager.updateUserDouble(TABLE_USER, "height", height)
-			dataManager.updateUserDouble(TABLE_USER, "weight", weight)
+			if(binding.etName.text.length < 2) {
+				Toast.makeText(context, "이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+			}else {
+				dataManager.updateUserStr(TABLE_USER, "name", name)
+				dataManager.updateUserDouble(TABLE_USER, "height", height)
+				dataManager.updateUserDouble(TABLE_USER, "weight", weight)
 
-			if(image != "") dataManager.updateUserStr(TABLE_USER, "profileImage", image)
+				if(image != "") dataManager.updateUserStr(TABLE_USER, "profileImage", image)
 
-			Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-			replaceFragment1(requireActivity(), SettingFragment())
+				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+				replaceFragment1(requireActivity(), SettingFragment())
+			}
 		}
 
 		return binding.root
-	}
-
-	private var filterAlphaNumSpace = InputFilter { source, start, end, dest, dstart, dend ->
-		val ps = Pattern.compile("^[ㄱ-ㅣ가-힣a-zA-Z0-9]+$")
-		if (!ps.matcher(source).matches()) "" else source
 	}
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

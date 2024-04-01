@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import com.apollographql.apollo3.ApolloClient
@@ -14,6 +15,7 @@ import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.view.home.MainActivity
+import java.util.regex.Pattern
 
 class CustomUtil {
    companion object {
@@ -55,6 +57,11 @@ class CustomUtil {
             val inputManager: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
          }
+      }
+
+      val filterAlphaNumSpace = InputFilter { source, _, _, _, _, _ ->
+         val ps = Pattern.compile("^[ㄱ-ㅣ가-힣a-zA-Z0-9]+$")
+         if (!ps.matcher(source).matches()) "" else source
       }
 
       fun getFoodCalories(context: Context, date:String) : Item {

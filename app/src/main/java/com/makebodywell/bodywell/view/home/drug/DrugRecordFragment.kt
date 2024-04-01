@@ -1,10 +1,8 @@
 package com.makebodywell.bodywell.view.home.drug
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,25 +12,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.adapter.DrugAdapter2
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugRecordBinding
-import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
-import com.makebodywell.bodywell.util.MyApp
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.MainFragment
-import com.makebodywell.bodywell.view.home.food.FoodFragment
 
 class DrugRecordFragment : Fragment() {
    private var _binding: FragmentDrugRecordBinding? = null
    private val binding get() = _binding!!
 
-   private var dataManager: DataManager? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
    private var adapter: DrugAdapter2? = null
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), DrugFragment())
+         }
+      }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+   }
+
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -50,7 +50,7 @@ class DrugRecordFragment : Fragment() {
       }
 
       dataManager = DataManager(activity)
-      dataManager!!.open()
+      dataManager.open()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), DrugFragment())
@@ -60,7 +60,7 @@ class DrugRecordFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugAddFragment())
       }
 
-      val getDrug = dataManager!!.getDrug(selectedDate.toString())
+      val getDrug = dataManager.getDrug(selectedDate.toString())
 
       adapter = DrugAdapter2(requireActivity(), getDrug)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
@@ -68,18 +68,6 @@ class DrugRecordFragment : Fragment() {
       binding.recyclerView.adapter = adapter
 
       return binding.root
-   }
-
-   private lateinit var callback: OnBackPressedCallback
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), DrugFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
    override fun onDetach() {

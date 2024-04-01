@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.note
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
@@ -16,7 +15,6 @@ import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.CalendarAdapter1
 import com.makebodywell.bodywell.adapter.PhotoSlideAdapter
 import com.makebodywell.bodywell.database.DataManager
-import com.makebodywell.bodywell.model.Image
 import com.makebodywell.bodywell.util.CalendarUtil
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import java.time.LocalDate
@@ -35,7 +33,6 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
    private var rv: RecyclerView? = null
    private var viewPager: ViewPager? = null
 
-   @SuppressLint("ClickableViewAccessibility")
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.dialog_calendar2)

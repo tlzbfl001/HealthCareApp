@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.body
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -19,9 +18,6 @@ import com.makebodywell.bodywell.model.Body
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.MainFragment
-import java.text.DecimalFormat
 
 class BodyRecordFragment : Fragment() {
    private var _binding: FragmentBodyRecordBinding? = null
@@ -309,7 +305,7 @@ class BodyRecordFragment : Fragment() {
       // BMR 구하기
       binding.cvResult.setOnClickListener {
          if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "" || binding.etAge.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "내 신체 정보를 전부 입력해야합니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "신체 정보를 전부 입력해야합니다.", Toast.LENGTH_SHORT).show()
          }else {
             var step = 0.0
 

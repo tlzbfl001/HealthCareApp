@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.food
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -8,15 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -33,10 +29,8 @@ import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
-import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.getImageUriWithAuthority
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
-import com.makebodywell.bodywell.view.home.MainActivity
 
 class FoodDailyEditFragment : Fragment() {
    private var _binding: FragmentFoodDailyEditBinding? = null
@@ -56,18 +50,12 @@ class FoodDailyEditFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            when(type) {
-               "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-               "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-               "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-               "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
-            }
+            replaceFragment()
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -102,12 +90,7 @@ class FoodDailyEditFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         when(type) {
-            "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-            "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-            "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-            "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
-         }
+         replaceFragment()
       }
 
       binding.clPhoto.setOnClickListener {
@@ -123,8 +106,8 @@ class FoodDailyEditFragment : Fragment() {
          }
 
          clPhoto.setOnClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.type = "image/*"
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = MediaStore.Images.Media.CONTENT_TYPE
             startActivityForResult(intent, STORAGE_REQUEST_CODE)
          }
 
@@ -136,6 +119,7 @@ class FoodDailyEditFragment : Fragment() {
          if(count > 1) {
             count--
          }
+
          dataTextView()
       }
 
@@ -143,6 +127,7 @@ class FoodDailyEditFragment : Fragment() {
          if(count < 100) {
             count++
          }
+
          dataTextView()
       }
 
@@ -155,14 +140,8 @@ class FoodDailyEditFragment : Fragment() {
 
          dataManager.updateInt(TABLE_DAILY_FOOD, "count", count, dataId)
 
-         when(type) {
-            "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-            "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-            "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-            "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
-         }
-
-         Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+         replaceFragment()
+         Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
       }
 
       photoView()
@@ -226,7 +205,6 @@ class FoodDailyEditFragment : Fragment() {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), "image/jpeg", img)
-
                   imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView()
 
@@ -236,11 +214,14 @@ class FoodDailyEditFragment : Fragment() {
             STORAGE_REQUEST_CODE -> {
                val uri = data!!.data
 
-               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
-
-               imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
-               photoView()
+               if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
+                  val uriParse = getImageUriWithAuthority(requireActivity(), uri)
+                  imageList.add(Image(imageUri = uriParse!!, type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+                  photoView()
+               }else {
+                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+                  photoView()
+               }
 
                dialog!!.dismiss()
             }
@@ -248,8 +229,12 @@ class FoodDailyEditFragment : Fragment() {
       }
    }
 
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
+   private fun replaceFragment() {
+      when(type) {
+         "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+         "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+         "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+         "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
+      }
    }
 }

@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.exercise
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -155,7 +154,6 @@ class ExerciseFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyView() {
       // 목표 초기화
       binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)

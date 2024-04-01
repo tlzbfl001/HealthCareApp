@@ -1,7 +1,6 @@
 package com.makebodywell.bodywell.view.home.drug
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -17,24 +16,18 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.adapter.DrugAdapter4
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DRUG_TIME
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentDrugAddBinding
 import com.makebodywell.bodywell.model.Drug
-import com.makebodywell.bodywell.model.DrugCheck
 import com.makebodywell.bodywell.model.DrugTime
 import com.makebodywell.bodywell.util.AlarmReceiver
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.drugTimeList
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.setDrugTimeList
-import com.makebodywell.bodywell.util.MyApp
-import com.makebodywell.bodywell.view.home.MainActivity
-import com.makebodywell.bodywell.view.home.body.BodyFragment
 import java.time.LocalDateTime
 
 class DrugAddFragment : Fragment() {
@@ -60,7 +53,6 @@ class DrugAddFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("InternalInsetResource", "DiscouragedApi", "ClickableViewAccessibility")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -181,7 +173,7 @@ class DrugAddFragment : Fragment() {
          }else {
             val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
 
-            if(id > -1) { // 데이터 수정
+            if(id > 0) { // 데이터 수정
                dataManager.updateDrug(Drug(id = id, type = type, name = name, amount = amount, unit = unit, count = count,
                   startDate = selectedDate.toString(), endDate = endDate, isSet = 1))
 

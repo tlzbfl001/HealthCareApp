@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.report
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -42,20 +41,17 @@ import com.makebodywell.bodywell.view.home.MainFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
-class  ReportExerciseFragment : Fragment() {
+class ReportExerciseFragment : Fragment() {
    private var _binding: FragmentReportExerciseBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private val format1 = SimpleDateFormat("yyyy-MM-dd")
+   private val format2 = SimpleDateFormat("M.dd")
    private var adapter: ReportAdapter? = null
    private var calendarDate = LocalDate.now()
    private var dateType = 1
-
-   @SuppressLint("SimpleDateFormat")
-   private val format1 = SimpleDateFormat("yyyy-MM-dd")
-   @SuppressLint("SimpleDateFormat")
-   private val format2 = SimpleDateFormat("M.dd")
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -67,7 +63,6 @@ class  ReportExerciseFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?

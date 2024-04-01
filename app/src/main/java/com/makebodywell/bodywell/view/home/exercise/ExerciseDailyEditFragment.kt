@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.exercise
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -10,19 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.adapter.ExerciseListAdapter
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentExerciseDailyEditBinding
-import com.makebodywell.bodywell.databinding.FragmentExerciseListBinding
-import com.makebodywell.bodywell.model.Exercise
-import com.makebodywell.bodywell.util.CalendarUtil
-import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 
 class ExerciseDailyEditFragment : Fragment() {
 	private var _binding: FragmentExerciseDailyEditBinding? = null
@@ -42,7 +34,6 @@ class ExerciseDailyEditFragment : Fragment() {
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?

@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.sleep
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -14,18 +13,14 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import com.makebodywell.bodywell.R
-import com.makebodywell.bodywell.database.DBHelper
 import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_DAILY_GOAL
-import com.makebodywell.bodywell.database.DBHelper.Companion.TABLE_SLEEP
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentSleepBinding
 import com.makebodywell.bodywell.model.DailyGoal
-import com.makebodywell.bodywell.model.Item
 import com.makebodywell.bodywell.model.Sleep
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.dateFormat
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
-import com.makebodywell.bodywell.view.home.MainActivity
 import com.makebodywell.bodywell.view.home.MainFragment
 import com.makebodywell.bodywell.view.home.body.BodyFragment
 import com.makebodywell.bodywell.view.home.drug.DrugFragment
@@ -52,7 +47,6 @@ class SleepFragment : Fragment() {
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
-   @SuppressLint("DiscouragedApi", "InternalInsetResource")
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
@@ -147,7 +141,6 @@ class SleepFragment : Fragment() {
       return binding.root
    }
 
-   @SuppressLint("SetTextI18n")
    private fun dailyView() {
       // 목표 초기화
       binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
