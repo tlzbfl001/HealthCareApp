@@ -72,6 +72,8 @@ class DrugAddFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
+      alarmReceiver = AlarmReceiver()
+
       drugTimeList.clear()
 
       val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
@@ -203,8 +205,7 @@ class DrugAddFragment : Fragment() {
 
                alarmReceiver!!.cancelAlarm(requireActivity(), id)
 
-               val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
-               alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), endDate, drugTimeList, message)
+               alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }else { // 데이터 저장
@@ -217,8 +218,7 @@ class DrugAddFragment : Fragment() {
                   dataManager.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
                }
 
-               val message = binding.etName.text.toString() + " " + binding.etAmount.text.toString() + unit
-               alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, message)
+               alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }

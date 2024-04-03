@@ -51,8 +51,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     fun setAlarm(context: Context, id: Int, startDate: String, endDate: String, timeList: ArrayList<DrugTime>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
+        val today = LocalDate.now()
         val intent = Intent(context, AlarmReceiver::class.java)
+
         intent.putExtra("id", id.toString())
         intent.putExtra("startDate", startDate)
         intent.putExtra("endDate", endDate)
@@ -65,7 +66,6 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
-        val today = LocalDate.now()
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { //설정된 알람주기동안 실행
             val cal = Calendar.getInstance()
             val currentTime = System.currentTimeMillis() //현재시간(밀리세컨드)
@@ -103,16 +103,16 @@ class AlarmReceiver : BroadcastReceiver() {
 
         if(today < LocalDate.parse(startDate)) {
             val cal = Calendar.getInstance()
-            cal.set(Calendar.YEAR, Integer.parseInt(startDate.substring(0, 4)))
-            cal.set(Calendar.MONTH, Integer.parseInt(startDate.substring(5,7)) - 1)
-            cal.set(Calendar.DATE, Integer.parseInt(startDate.substring(8,10)))
+
+            cal.add(Calendar.DATE, 1)
             cal.set(Calendar.HOUR_OF_DAY, timeList[0].hour)
             cal.set(Calendar.MINUTE, timeList[0].minute)
             cal.set(Calendar.SECOND, 0)
             cal.set(Calendar.MILLISECOND, 0)
+            val selectTime = cal.timeInMillis
 
             try{
-                alarmManager.setAlarmClock(AlarmClockInfo(cal.timeInMillis, pendingIntent), pendingIntent)
+                alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent)
             }catch (e: SecurityException) {
                 e.printStackTrace()
             }

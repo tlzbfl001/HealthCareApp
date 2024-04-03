@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.util
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
 import android.provider.Settings
@@ -47,7 +46,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-   @SuppressLint("StaticFieldLeak")
    private val context = application.applicationContext
    private var dataManager: DataManager? = null
    private var user = User()
@@ -81,7 +79,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Log.d(TAG, "accessDiff: ${accessDiff.toHours()}/${accessDiff.toMinutes()}/${accessDiff.seconds}")
             Log.d(TAG, "refreshDiff: ${refreshDiff.toHours()}/${refreshDiff.toMinutes()}/${refreshDiff.seconds}")
 
-            if(accessDiff.toHours() >= 1 && !accessCheck) {
+            if((accessDiff.toHours() in 1..335) && !accessCheck) {
                accessCheck = refreshToken()
             }
 

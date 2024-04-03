@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +16,11 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.FragmentFoodInputBinding
 import com.makebodywell.bodywell.model.Food
 import com.makebodywell.bodywell.util.CalendarUtil.Companion.selectedDate
-import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.CustomUtil.Companion.filterText
 import com.makebodywell.bodywell.util.CustomUtil.Companion.hideKeyboard
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDateTime
-import java.util.regex.Pattern
 
 class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
@@ -337,7 +334,7 @@ class FoodInputFragment : Fragment() {
 
          val getFood = dataManager.getFood(name)
 
-         if(name.length < 2 || name.length > 15) {
+         if(name.length < 2) {
             Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
          }else if(!filterText(name)) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
