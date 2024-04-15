@@ -74,26 +74,20 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
-         data.type=cursor.getString(1)
-         data.idToken=cursor.getString(2)
-         data.userId=cursor.getString(3)
-         data.deviceId=cursor.getString(4)
-         data.healthId=cursor.getString(5)
-         data.activityId=cursor.getString(6)
-         data.bodyMeasurementId=cursor.getString(7)
-         data.email = cursor.getString(8)
-         data.name = cursor.getString(9)
-         data.nickname = cursor.getString(10)
-         data.gender = cursor.getString(11)
-         data.birthday = cursor.getString(12)
-         data.profileImage = cursor.getString(13)
-         data.height = cursor.getDouble(14).toString()
-         data.weight = cursor.getDouble(15).toString()
-         data.weightGoal = cursor.getDouble(16).toString()
-         data.kcalGoal = cursor.getInt(17).toString()
-         data.waterGoal = cursor.getInt(18).toString()
-         data.waterUnit = cursor.getInt(19).toString()
-         data.regDate = cursor.getString(20)
+         data.uid=cursor.getString(1)
+         data.type=cursor.getString(2)
+         data.email = cursor.getString(3)
+         data.name = cursor.getString(4)
+         data.gender = cursor.getString(5)
+         data.birthday = cursor.getString(6)
+         data.image = cursor.getString(7)
+         data.height = cursor.getDouble(8).toString()
+         data.weight = cursor.getDouble(9).toString()
+         data.weightGoal = cursor.getDouble(10).toString()
+         data.kcalGoal = cursor.getInt(11).toString()
+         data.waterGoal = cursor.getInt(12).toString()
+         data.waterUnit = cursor.getInt(13).toString()
+         data.regDate = cursor.getString(14)
       }
       cursor.close()
       return data
@@ -106,35 +100,29 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
-         data.type=cursor.getString(1)
-         data.idToken=cursor.getString(2)
-         data.userId=cursor.getString(3)
-         data.deviceId=cursor.getString(4)
-         data.healthId=cursor.getString(5)
-         data.activityId=cursor.getString(6)
-         data.bodyMeasurementId=cursor.getString(7)
-         data.email = cursor.getString(8)
-         data.name = cursor.getString(9)
-         data.nickname = cursor.getString(10)
-         data.gender = cursor.getString(11)
-         data.birthday = cursor.getString(12)
-         data.profileImage = cursor.getString(13)
-         data.height = cursor.getDouble(14).toString()
-         data.weight = cursor.getDouble(15).toString()
-         data.weightGoal = cursor.getDouble(16).toString()
-         data.kcalGoal = cursor.getInt(17).toString()
-         data.waterGoal = cursor.getInt(18).toString()
-         data.waterUnit = cursor.getInt(19).toString()
-         data.regDate = cursor.getString(20)
+         data.uid=cursor.getString(1)
+         data.type=cursor.getString(2)
+         data.email = cursor.getString(3)
+         data.name = cursor.getString(4)
+         data.gender = cursor.getString(5)
+         data.birthday = cursor.getString(6)
+         data.image = cursor.getString(7)
+         data.height = cursor.getDouble(8).toString()
+         data.weight = cursor.getDouble(9).toString()
+         data.weightGoal = cursor.getDouble(10).toString()
+         data.kcalGoal = cursor.getInt(11).toString()
+         data.waterGoal = cursor.getInt(12).toString()
+         data.waterUnit = cursor.getInt(13).toString()
+         data.regDate = cursor.getString(14)
       }
       cursor.close()
       return data
    }
 
-   fun getToken() : Token {
+   fun getToken(userId: Int) : Token {
       val db = dbHelper!!.readableDatabase
       val data = Token()
-      val sql = "select * from $TABLE_TOKEN where userId = ${MyApp.prefs.getId()}"
+      val sql = "select * from $TABLE_TOKEN where userId = userId"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)
@@ -751,13 +739,9 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("type", data.type)
-      values.put("idToken", data.idToken)
+      values.put("uid", data.uid)
       values.put("email", data.email)
       values.put("name", data.name)
-      values.put("nickname", data.nickname)
-      values.put("gender", data.gender)
-      values.put("birthday", data.birthday)
-      values.put("profileImage", data.profileImage)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_USER, null, values)
    }
@@ -990,14 +974,6 @@ class DataManager(private var context: Context?) {
    fun updateDoubleByDate(table: String, column: String, data: Double, regDate: String){
       val db = dbHelper!!.writableDatabase
       val sql = "update $table set $column=$data where userId=${MyApp.prefs.getId()} and regDate='$regDate'"
-      db.execSQL(sql)
-      db.close()
-   }
-
-   fun updateUser(data: User){
-      val db = dbHelper!!.writableDatabase
-      val sql = "update user set userId='${data.userId}', deviceId='${data.deviceId}', healthId='${data.healthId}', activityId='${data.activityId}', " +
-         "bodyMeasurementId='${data.bodyMeasurementId}' where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }

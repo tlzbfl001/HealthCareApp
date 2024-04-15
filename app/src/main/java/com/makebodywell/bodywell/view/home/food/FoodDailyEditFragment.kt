@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
@@ -43,7 +44,7 @@ class FoodDailyEditFragment : Fragment() {
    private var imageList = ArrayList<Image>()
    private var dialog: Dialog? = null
    private var type = "1"
-   private var dataId = -1
+   private var dataId = 0
    private var count = 1
 
    override fun onAttach(context: Context) {
@@ -106,8 +107,8 @@ class FoodDailyEditFragment : Fragment() {
          }
 
          clPhoto.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = MediaStore.Images.Media.CONTENT_TYPE
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.type = "image/*"
             startActivityForResult(intent, STORAGE_REQUEST_CODE)
          }
 
@@ -140,8 +141,8 @@ class FoodDailyEditFragment : Fragment() {
 
          dataManager.updateInt(TABLE_DAILY_FOOD, "count", count, dataId)
 
-         replaceFragment()
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+         replaceFragment()
       }
 
       photoView()
@@ -205,6 +206,7 @@ class FoodDailyEditFragment : Fragment() {
                if(data?.extras?.get("data") != null){
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), "image/jpeg", img)
+                  
                   imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
                   photoView()
 
@@ -213,15 +215,11 @@ class FoodDailyEditFragment : Fragment() {
             }
             STORAGE_REQUEST_CODE -> {
                val uri = data!!.data
+               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
 
-               if(data.data!!.toString().contains("com.google.android.apps.photos.contentprovider")) {
-                  val uriParse = getImageUriWithAuthority(requireActivity(), uri)
-                  imageList.add(Image(imageUri = uriParse!!, type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
-                  photoView()
-               }else {
-                  imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
-                  photoView()
-               }
+               imageList.add(Image(imageUri = uri.toString(), type = type.toInt(), dataId = dataId, regDate = selectedDate.toString()))
+               photoView()
 
                dialog!!.dismiss()
             }

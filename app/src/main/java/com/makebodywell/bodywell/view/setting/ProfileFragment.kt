@@ -30,6 +30,7 @@ import com.makebodywell.bodywell.util.CustomUtil.Companion.replaceFragment1
 import com.makebodywell.bodywell.util.PermissionUtil
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
+import com.makebodywell.bodywell.util.PermissionUtil.Companion.cameraRequest
 import com.makebodywell.bodywell.util.PermissionUtil.Companion.saveFile
 
 class ProfileFragment : Fragment() {
@@ -48,6 +49,7 @@ class ProfileFragment : Fragment() {
 				replaceFragment1(requireActivity(), SettingFragment())
 			}
 		}
+
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
 	}
 
@@ -72,19 +74,19 @@ class ProfileFragment : Fragment() {
 
 		val getUser = dataManager.getUser()
 
-		if(getUser.name != "") binding.etName.setText(getUser.name)
+		if(getUser.name != "" && getUser.name != null) binding.etName.setText(getUser.name)
 
-		if(getUser.profileImage != "") binding.ivProfile.setImageURI(Uri.parse(getUser.profileImage))
+		if(getUser.image != "" && getUser.image != null) binding.ivProfile.setImageURI(Uri.parse(getUser.image))
 
-		if(getUser.height != "0") {
+		if(getUser.height != "0" && getUser.height != null) {
 			val hSplit = getUser.height!!.split(".")
-			val height = if(hSplit[1] == "0") hSplit[0] else getUser.height!!
+			val height = if(hSplit[1] == "0") hSplit[0] else getUser.height
 			binding.etHeight.setText(height)
 		}
 
-		if(getUser.weight != "0") {
+		if(getUser.weight != "0" && getUser.weight != null) {
 			val wSplit = getUser.weight!!.split(".")
-			val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight!!
+			val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight
 			binding.etWeight.setText(weight)
 		}
 
@@ -98,7 +100,7 @@ class ProfileFragment : Fragment() {
 		}
 
 		binding.ivProfile.setOnClickListener {
-			if(PermissionUtil.cameraRequest(requireActivity())) {
+			if(cameraRequest(requireActivity())) {
 				dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
 				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
 
@@ -192,14 +194,6 @@ class ProfileFragment : Fragment() {
 						binding.etWeight.setSelection(format.length)
 						binding.etWeight.addTextChangedListener(this)
 					}
-
-					if(text.length == 4) {
-						val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-						binding.etWeight.removeTextChangedListener(this)
-						binding.etWeight.setText(format)
-						binding.etWeight.setSelection(format.length)
-						binding.etWeight.addTextChangedListener(this)
-					}
 				}
 			}
 
@@ -221,7 +215,7 @@ class ProfileFragment : Fragment() {
 				dataManager.updateUserDouble(TABLE_USER, "height", height)
 				dataManager.updateUserDouble(TABLE_USER, "weight", weight)
 
-				if(image != "") dataManager.updateUserStr(TABLE_USER, "profileImage", image)
+				if(image != "") dataManager.updateUserStr(TABLE_USER, "image", image)
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 				replaceFragment1(requireActivity(), SettingFragment())
@@ -240,7 +234,6 @@ class ProfileFragment : Fragment() {
 					if(data!!.extras?.get("data") != null){
 						val img = data.extras?.get("data") as Bitmap
 						val uri = saveFile(requireActivity(), "image/jpeg", img)
-
 						image = uri.toString()
 
 						binding.ivProfile.setImageURI(Uri.parse(image))
@@ -250,10 +243,8 @@ class ProfileFragment : Fragment() {
 				}
 				STORAGE_REQUEST_CODE -> {
 					val uri = data!!.data
-
 					val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 					requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
-
 					image = uri.toString()
 
 					binding.ivProfile.setImageURI(Uri.parse(image))

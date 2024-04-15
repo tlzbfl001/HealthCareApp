@@ -163,8 +163,8 @@ class FoodBreakfastFragment : Fragment() {
       val dataList = dataManager.getDailyFood(type, selectedDate.toString())
       
       if(dataList.size > 0) {
-         intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList, type)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList, type)
 
          intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
             @SuppressLint("NotifyDataSetChanged")

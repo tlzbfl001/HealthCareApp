@@ -74,13 +74,13 @@ class InputGoalFragment : Fragment() {
       binding.cvContinue.setOnClickListener {
          if(binding.etWeightGoal.text.toString() != "") weightGoal = binding.etWeightGoal.text.toString().toDouble()
          if(binding.etKcalGoal.text.toString() != "") kcalGoal = binding.etKcalGoal.text.toString().toInt()
-         val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else {binding.etWaterUnit.text.toString().toInt()}
-         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else {binding.etWaterGoal.text.toString().toInt()}
+         val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else binding.etWaterUnit.text.toString().toInt()
+         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else binding.etWaterGoal.text.toString().toInt()
 
          dataManager.updateUserDouble(TABLE_USER, "weightGoal", weightGoal)
          dataManager.updateUserInt(TABLE_USER, "kcalGoal", kcalGoal)
-         dataManager.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
          dataManager.updateUserInt(TABLE_USER, "waterGoal", waterGoal)
+         dataManager.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
 
          startActivity(Intent(requireActivity(), MainActivity::class.java))
       }

@@ -16,14 +16,14 @@ class CalendarUtil {
          return date?.format(formatter)
       }
 
-      fun weekFormat(date: LocalDate?): String? {
+      fun weekFormat(date: LocalDate?): String {
          val calendar = Calendar.getInstance()
          val split = date.toString().split("-")
          calendar.set(split[0].toInt(), split[1].toInt()-1, split[2].toInt())
          return "${split[0]}년 ${split[1]}월 ${calendar.get(Calendar.WEEK_OF_MONTH)}주차"
       }
 
-      fun monthFormat(date: LocalDate?): String? {
+      fun monthFormat(date: LocalDate?): String {
          val split = date.toString().split("-")
          return "${split[0]}년 ${split[1]}월"
       }

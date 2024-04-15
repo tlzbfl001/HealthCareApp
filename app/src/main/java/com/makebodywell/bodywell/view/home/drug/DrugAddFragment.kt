@@ -1,6 +1,5 @@
 package com.makebodywell.bodywell.view.home.drug
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -56,7 +55,8 @@ class DrugAddFragment : Fragment() {
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
-   ): View {
+   ):
+      View {
       _binding = FragmentDrugAddBinding.inflate(layoutInflater)
 
       requireActivity().window?.apply {

@@ -167,14 +167,6 @@ class InputBodyFragment : Fragment() {
                   binding.etWeight.setSelection(format.length)
                   binding.etWeight.addTextChangedListener(this)
                }
-
-               if(text.length == 4) {
-                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-                  binding.etWeight.removeTextChangedListener(this)
-                  binding.etWeight.setText(format)
-                  binding.etWeight.setSelection(format.length)
-                  binding.etWeight.addTextChangedListener(this)
-               }
             }
          }
 
@@ -183,8 +175,8 @@ class InputBodyFragment : Fragment() {
       })
 
       binding.cvContinue.setOnClickListener {
-         val height = if(binding.etHeight.text.toString() == "") height.toDouble() else {binding.etHeight.text.toString().toDouble()}
-         val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else {binding.etWeight.text.toString().toDouble()}
+         val height = if(binding.etHeight.text.toString() == "") height.toDouble() else binding.etHeight.text.toString().toDouble()
+         val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else binding.etWeight.text.toString().toDouble()
 
          dataManager.updateUserStr(TABLE_USER, "gender", gender)
          dataManager.updateUserDouble(TABLE_USER, "height", height)

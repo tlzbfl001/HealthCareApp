@@ -11,9 +11,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.model.Bluetooth
-import com.makebodywell.bodywell.util.BluetoothService
-import com.makebodywell.bodywell.util.BluetoothService.Companion.btStatus
-import com.makebodywell.bodywell.util.BluetoothService.Companion.deviceNum
+import com.makebodywell.bodywell.service.BluetoothService
+import com.makebodywell.bodywell.service.BluetoothService.Companion.btStatus
+import com.makebodywell.bodywell.service.BluetoothService.Companion.deviceNum
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

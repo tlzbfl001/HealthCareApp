@@ -91,7 +91,7 @@
                android:scheme="@string/kakao_oauth_host" />
          </intent-filter>
       </activity>
-      <service android:name=".util.BluetoothService" />
+      <service android:name=".service.BluetoothService" />
       <receiver
          android:name=".util.AlarmReceiver"
          android:exported="false" />

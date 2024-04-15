@@ -62,6 +62,7 @@ class MainFragment : Fragment() {
             }
          }
       }
+
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
@@ -88,12 +89,12 @@ class MainFragment : Fragment() {
 
       val getUser = dataManager.getUser()
 
-      if(getUser.name != "") {
+      if(getUser.name != null && getUser.name != "") {
          binding.tvName.text = getUser.name + " 님"
       }
 
-      if(getUser.profileImage != "") {
-         binding.ivUser.setImageURI(Uri.parse(getUser.profileImage))
+      if(getUser.image != null && getUser.image != "") {
+         binding.ivUser.setImageURI(Uri.parse(getUser.image))
       }
 
       binding.clFood.setOnClickListener {
@@ -175,7 +176,7 @@ class MainFragment : Fragment() {
             val diffY = e2.y - e1.y
             val diffX = e2.x - e1.x
             if (abs(diffX) > abs(diffY)) {
-               if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+               if (abs(diffX) > 100 && abs(velocityX) > 100) {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
                      setWeekView()
@@ -349,10 +350,5 @@ class MainFragment : Fragment() {
    override fun onDetach() {
       super.onDetach()
       callback.remove()
-   }
-
-   companion object {
-      private const val SWIPE_THRESHOLD = 100
-      private const val SWIPE_VELOCITY_THRESHOLD = 100
    }
 }

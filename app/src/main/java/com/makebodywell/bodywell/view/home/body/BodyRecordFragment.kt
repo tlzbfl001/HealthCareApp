@@ -68,10 +68,7 @@ class BodyRecordFragment : Fragment() {
          if(getBody.weight > 0.0) binding.etWeight.setText(getBody.weight.toString())
          if(getBody.age > 0) binding.etAge.setText(getBody.age.toString())
 
-         when(getBody.gender) {
-            "MALE" -> genderUI1()
-            else -> genderUI2()
-         }
+         if(getBody.gender == "MALE") genderUI1() else genderUI2()
 
          when(getBody.exerciseLevel) {
             1 -> {
@@ -269,14 +266,6 @@ class BodyRecordFragment : Fragment() {
                   binding.etWeight.setSelection(format.length)
                   binding.etWeight.addTextChangedListener(this)
                }
-
-               if(text.length == 4) {
-                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-                  binding.etWeight.removeTextChangedListener(this)
-                  binding.etWeight.setText(format)
-                  binding.etWeight.setSelection(format.length)
-                  binding.etWeight.addTextChangedListener(this)
-               }
             }
          }
 
@@ -317,7 +306,7 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            val result = if(gender == "MALE") {
+            val bmr = if(gender == "MALE") {
                val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*binding.etAge.text.toString().toDouble())+5)*step
                String.format("%.1f", num)
             }else {
@@ -325,7 +314,7 @@ class BodyRecordFragment : Fragment() {
                String.format("%.1f", num)
             }
 
-            binding.tvBmr.text = result
+            binding.tvBmr.text = bmr
          }
       }
 
@@ -338,7 +327,7 @@ class BodyRecordFragment : Fragment() {
          val bmi = if(binding.etBmi.text.toString() == "") 0.0 else binding.etBmi.text.toString().toDouble()
          val bmr = if(binding.tvBmr.text.toString() == "") 0.0 else binding.tvBmr.text.toString().toDouble()
 
-         if(binding.etFat.text.isNotEmpty() && binding.etFat.text.toString().toDouble() > 100) {
+         if(binding.etFat.text.toString().toDouble() > 100) {
             Toast.makeText(requireActivity(), "체지방율은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getBody.regDate == "") {

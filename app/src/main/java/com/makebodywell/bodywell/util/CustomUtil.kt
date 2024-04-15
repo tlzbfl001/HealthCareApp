@@ -5,10 +5,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.text.InputFilter
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import com.apollographql.apollo3.ApolloClient
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.model.DrugTime
@@ -20,7 +18,6 @@ import java.util.regex.Pattern
 class CustomUtil {
    companion object {
       const val TAG = "testTag"
-      val apolloClient = ApolloClient.Builder().serverUrl("https://api.bodywell.dev/graphql").build()
       var drugTimeList = ArrayList<DrugTime>()
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {

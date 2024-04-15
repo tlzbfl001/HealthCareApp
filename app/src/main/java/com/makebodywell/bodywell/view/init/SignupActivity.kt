@@ -19,16 +19,22 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.makebodywell.bodywell.R
 import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivitySignupBinding
+import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.service.UserResponse
 import com.makebodywell.bodywell.util.CustomUtil
+import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
 import com.makebodywell.bodywell.util.MyApp
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var dataManager: DataManager
-   private var user = User()
+   private var user = UserResponse()
+   private var token = Token()
    private var isAll = true
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +56,7 @@ class SignupActivity : AppCompatActivity() {
       dataManager.open()
 
       user = intent!!.getParcelableExtra("user")!!
+      token = intent!!.getParcelableExtra("token")!!
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -124,11 +131,23 @@ class SignupActivity : AppCompatActivity() {
 
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            dataManager.insertUser(user) // 사용자 정보 저장
+            dataManager.insertUser(User(uid = user.uid, type = user.type, email = user.email, name = user.username, regDate = LocalDate.now().toString())) // 사용자 정보 저장
+            val getUser = dataManager.getUser(user.type, user.email)
 
-            val getUser = dataManager.getUser(user.type!!, user.email!!)
-            if(getUser.id > 0) {
+            if(getUser.regDate == "") {
+               Toast.makeText(this, "회원가입에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+            }else {
                MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
+               val getToken = dataManager.getToken(getUser.id)
+
+               if(getToken.userId > 0) {
+                  dataManager.updateToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(),
+                     refreshTokenRegDate = LocalDateTime.now().toString()))
+               }else {
+                  dataManager.insertToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(),
+                     refreshTokenRegDate = LocalDateTime.now().toString()))
+               }
+
                signUpDialog()
             }
          }else {

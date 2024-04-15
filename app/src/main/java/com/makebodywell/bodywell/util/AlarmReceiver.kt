@@ -51,7 +51,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
     fun setAlarm(context: Context, id: Int, startDate: String, endDate: String, timeList: ArrayList<DrugTime>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val today = LocalDate.now()
         val intent = Intent(context, AlarmReceiver::class.java)
 
         intent.putExtra("id", id.toString())
@@ -65,6 +64,8 @@ class AlarmReceiver : BroadcastReceiver() {
         }else {
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
+
+        val today = LocalDate.now()
 
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { //설정된 알람주기동안 실행
             val cal = Calendar.getInstance()

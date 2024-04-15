@@ -64,6 +64,7 @@ class InputInfoFragment : Fragment() {
             }
          }
       }
+
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
@@ -133,7 +134,7 @@ class InputInfoFragment : Fragment() {
       binding.cvContinue.setOnClickListener {
          val name = if(binding.etName.text.toString() != "") {
             binding.etName.text.toString()
-         }else if(getUser.name != "") {
+         }else if(getUser.name != null && getUser.name != "") {
             getUser.name
          }else {
             "바디웰"
@@ -141,22 +142,22 @@ class InputInfoFragment : Fragment() {
 
          val birthday = if(binding.tvBirthday.text.toString() != "") {
             binding.tvBirthday.text.toString()
-         }else if(getUser.birthday != "") {
+         }else if(getUser.birthday != null && getUser.birthday != "") {
             getUser.birthday
          }else {
             "1990-01-01"
          }
 
-         val profileImage = if(image != "") image else ""
+         val image = if(image != "") image else ""
 
-         if(binding.etName.text.length < 2) {
+         if(binding.etName.text.length in 1..1) {
             Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
-         }else if(!filterText(binding.etName.text.toString())) {
+         }else if(binding.etName.text.length in 1..1 && !filterText(binding.etName.text.toString())) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else {
             dataManager.updateUserStr(TABLE_USER, "name", name!!)
             dataManager.updateUserStr(TABLE_USER, "birthday", birthday!!)
-            dataManager.updateUserStr(TABLE_USER, "profileImage", profileImage!!)
+            dataManager.updateUserStr(TABLE_USER, "image", image!!)
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                replace(R.id.inputFrame, InputBodyFragment())
