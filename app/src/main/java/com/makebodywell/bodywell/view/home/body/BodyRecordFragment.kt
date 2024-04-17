@@ -327,7 +327,7 @@ class BodyRecordFragment : Fragment() {
          val bmi = if(binding.etBmi.text.toString() == "") 0.0 else binding.etBmi.text.toString().toDouble()
          val bmr = if(binding.tvBmr.text.toString() == "") 0.0 else binding.tvBmr.text.toString().toDouble()
 
-         if(binding.etFat.text.toString().toDouble() > 100) {
+         if(fat > 100) {
             Toast.makeText(requireActivity(), "체지방율은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(getBody.regDate == "") {

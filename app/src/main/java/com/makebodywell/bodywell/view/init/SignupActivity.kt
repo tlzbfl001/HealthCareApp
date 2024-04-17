@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -21,10 +22,15 @@ import com.makebodywell.bodywell.database.DataManager
 import com.makebodywell.bodywell.databinding.ActivitySignupBinding
 import com.makebodywell.bodywell.model.Token
 import com.makebodywell.bodywell.model.User
+import com.makebodywell.bodywell.service.RetrofitAPI
 import com.makebodywell.bodywell.service.UserResponse
 import com.makebodywell.bodywell.util.CustomUtil
 import com.makebodywell.bodywell.util.CustomUtil.Companion.TAG
+import com.makebodywell.bodywell.util.CustomUtil.Companion.networkStatusCheck
 import com.makebodywell.bodywell.util.MyApp
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -33,7 +39,7 @@ class SignupActivity : AppCompatActivity() {
    private val binding get() = _binding!!
 
    private lateinit var dataManager: DataManager
-   private var user = UserResponse()
+   private var user = User()
    private var token = Token()
    private var isAll = true
 
@@ -56,7 +62,7 @@ class SignupActivity : AppCompatActivity() {
       dataManager.open()
 
       user = intent!!.getParcelableExtra("user")!!
-      token = intent!!.getParcelableExtra("token")!!
+//      token = intent!!.getParcelableExtra("token")!!
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -131,24 +137,29 @@ class SignupActivity : AppCompatActivity() {
 
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            dataManager.insertUser(User(uid = user.uid, type = user.type, email = user.email, name = user.username, regDate = LocalDate.now().toString())) // 사용자 정보 저장
-            val getUser = dataManager.getUser(user.type, user.email)
-
-            if(getUser.regDate == "") {
-               Toast.makeText(this, "회원가입에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+            if(!networkStatusCheck(this)){
+               Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
             }else {
-               MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
-               val getToken = dataManager.getToken(getUser.id)
+//               dataManager.insertUser(User(uid = user.uid, type = user.type, email = user.email, name = user.username, regDate = LocalDate.now().toString())) // 사용자 정보 저장
+               dataManager.insertUser(User(type = user.type, email = user.email, name = user.name, regDate = LocalDate.now().toString())) // 사용자 정보 저장
+               val getUser = dataManager.getUser(user.type!!, user.email!!)
 
-               if(getToken.userId > 0) {
-                  dataManager.updateToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(),
-                     refreshTokenRegDate = LocalDateTime.now().toString()))
+               if(getUser.regDate == "") {
+                  Toast.makeText(this, "회원가입에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                }else {
-                  dataManager.insertToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(),
-                     refreshTokenRegDate = LocalDateTime.now().toString()))
-               }
+                  MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 고유 Id 저장
 
-               signUpDialog()
+//                  val getToken = dataManager.getToken()
+//                  if(getToken.userId > 0) {
+//                     dataManager.updateToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(),
+//                        refreshTokenRegDate = LocalDateTime.now().toString()))
+//                  }else {
+//                     dataManager.insertToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(),
+//                        refreshTokenRegDate = LocalDateTime.now().toString()))
+//                  }
+
+                  signUpDialog()
+               }
             }
          }else {
             Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()

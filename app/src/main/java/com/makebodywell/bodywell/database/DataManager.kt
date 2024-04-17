@@ -119,10 +119,10 @@ class DataManager(private var context: Context?) {
       return data
    }
 
-   fun getToken(userId: Int) : Token {
+   fun getToken() : Token {
       val db = dbHelper!!.readableDatabase
       val data = Token()
-      val sql = "select * from $TABLE_TOKEN where userId = userId"
+      val sql = "select * from $TABLE_TOKEN where userId = ${MyApp.prefs.getId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          data.id=cursor.getInt(0)

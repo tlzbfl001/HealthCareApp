@@ -3,7 +3,7 @@ package com.makebodywell.bodywell.service
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object ApiObject {
+object RetrofitAPI {
 	private const val BASE_URL = "https://api.bodywell.dev/auth/"
 
 	private val getRetrofit by lazy {
@@ -13,5 +13,5 @@ object ApiObject {
 			.build()
 	}
 
-	val api: ApiInterface by lazy { getRetrofit.create(ApiInterface::class.java)}
+	val api: APIService by lazy { getRetrofit.create(APIService::class.java)}
 }

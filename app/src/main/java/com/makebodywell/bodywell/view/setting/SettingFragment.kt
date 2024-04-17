@@ -150,7 +150,7 @@ class SettingFragment : Fragment() {
                .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   getUser = dataManager.getUser()
-                  getToken = dataManager.getToken(getUser.id)
+                  getToken = dataManager.getToken()
 
                   when(getUser.type) {
                      "google" -> {
