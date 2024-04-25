@@ -71,20 +71,20 @@ class ProfileFragment : Fragment() {
 
 		val getUser = dataManager.getUser()
 
-		if(getUser.name != "" && getUser.name != null) binding.etName.setText(getUser.name)
+		if(getUser.name != "") binding.etName.setText(getUser.name)
 
-		if(getUser.image != "" && getUser.image != null) binding.ivProfile.setImageURI(Uri.parse(getUser.image))
+		if(getUser.image != "") binding.ivProfile.setImageURI(Uri.parse(getUser.image))
 
-		if(getUser.height != "0" && getUser.height != null) {
-			val hSplit = getUser.height!!.split(".")
+		if(getUser.height > 0) {
+			val hSplit = getUser.height.toString().split(".")
 			val height = if(hSplit[1] == "0") hSplit[0] else getUser.height
-			binding.etHeight.setText(height)
+			binding.etHeight.setText(height.toString())
 		}
 
-		if(getUser.weight != "0" && getUser.weight != null) {
-			val wSplit = getUser.weight!!.split(".")
+		if(getUser.weight > 0) {
+			val wSplit = getUser.weight.toString().split(".")
 			val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight
-			binding.etWeight.setText(weight)
+			binding.etWeight.setText(weight.toString())
 		}
 
 		binding.mainLayout.setOnTouchListener { _, _ ->

@@ -4,10 +4,8 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -15,30 +13,18 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ActivitySignupBinding
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.service.BodyResponse
-import kr.bodywell.android.service.DeviceResponse
-import kr.bodywell.android.service.RetrofitAPI
-import kr.bodywell.android.service.UserResponse
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var dataManager: DataManager
-   private var user = UserResponse()
-   private var token = Token()
+   private var user = User()
    private var isAll = true
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,8 +45,7 @@ class SignupActivity : AppCompatActivity() {
       dataManager = DataManager(this)
       dataManager.open()
 
-      user = intent!!.getParcelableExtra("user")!!
-      token = intent!!.getParcelableExtra("token")!!
+      user = intent.getParcelableExtra("user")!!
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -136,73 +121,21 @@ class SignupActivity : AppCompatActivity() {
       binding.cvContinue.setOnClickListener {
          if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
             if(networkStatusCheck(this)) {
-               val getUser1 = dataManager.getUser(user.type, user.email)
+               if(user.idToken != "" && user.type != "" && user.email != null && user.email != "") {
+                  val getUser = dataManager.getUser(user.type, user.email)
 
-               // 사용자 정보 저장
-               if(getUser1.regDate == "") {
-                  dataManager.insertUser(User(uid = user.uid, type = user.type, email = user.email, name = user.username, regDate = LocalDate.now().toString()))
-               }else {
-                  dataManager.updateUser(User(uid = user.uid, type = user.type, email = user.email, name = user.username, regDate = LocalDate.now().toString()))
-               }
+                  // 사용자 정보 저장
+                  if(getUser.regDate == "") {
+                     dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = "", deviceUid = "", bodyUid = "", name = "",
+                        gender = "", birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0, regDate = LocalDate.now().toString()))
+                  }else {
+                     dataManager.updateUser(User(idToken = user.idToken, type = user.type, email = user.email, regDate = LocalDate.now().toString()))
+                  }
 
-               val getUser2 = dataManager.getUser(user.type, user.email)
+                  val getUser2 = dataManager.getUser(user.type, user.email)
 
-               if(getUser2.regDate != null && getUser2.regDate != "") {
-                  var check = true
-
-                  // deviceUid 저장
-                  val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
-                  val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
-                  val hardwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") "" else packageManager.getPackageInfo(packageName, 0).versionName
-                  val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
-
-                  RetrofitAPI.api.createDevice("Bearer " + token.accessToken, "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer).enqueue(object : Callback<DeviceResponse> {
-                     override fun onResponse(call: Call<DeviceResponse>, response: Response<DeviceResponse>) {
-                        if(response.isSuccessful) {
-                           Log.e(TAG, "createDevice: ${response.body()}")
-                           dataManager.updateUserStr(TABLE_USER, "deviceUid", response.body()!!.uid)
-                        }else {
-                           Log.e(TAG, "createDevice: $response")
-                           check = false
-                        }
-                     }
-
-                     override fun onFailure(call: Call<DeviceResponse>, t: Throwable) {
-                        Log.e(TAG, "createDevice: $t")
-                        check = false
-                     }
-                  })
-
-                  // bodyUid 저장
-                  RetrofitAPI.api.createBody("Bearer " + token.accessToken, "", "", 0.0, 0.0, 0.0, 0.0,
-                     0.0, 0.0, 1, LocalDateTime.now().toString()).enqueue(object : Callback<BodyResponse> {
-                     override fun onResponse(call: Call<BodyResponse>, response: Response<BodyResponse>) {
-                        if(response.isSuccessful) {
-                           Log.e(TAG, "createBody: ${response.body()}")
-                           dataManager.updateUserStr(TABLE_USER, "bodyUid", response.body()!!.uid)
-                        }else {
-                           Log.e(TAG, "createBody: $response")
-                           check = false
-                        }
-                     }
-
-                     override fun onFailure(call: Call<BodyResponse>, t: Throwable) {
-                        Log.e(TAG, "createBody: $t")
-                        check = false
-                     }
-                  })
-
-                  if(check) {
+                  if(getUser2.type != "" && getUser2.email != "" && getUser2.idToken != "" && getUser2.regDate != "") {
                      MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
-
-                     // 토큰 저장
-                     val getToken = dataManager.getToken()
-                     if(getToken.accessTokenRegDate == "") {
-                        dataManager.insertToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
-                     }else {
-                        dataManager.updateToken(Token(accessToken = token.accessToken, refreshToken = token.refreshToken, accessTokenRegDate = LocalDateTime.now().toString(), refreshTokenRegDate = LocalDateTime.now().toString()))
-                     }
-
                      signUpDialog()
                   }else {
                      Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()

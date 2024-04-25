@@ -1,6 +1,7 @@
 package kr.bodywell.android.service
 
 import retrofit2.Call
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -9,11 +10,6 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface APIService {
-	@GET("/users/{uid}")
-	fun getUser(
-		@Path("uid") uid: String
-	): Call<UserResponse>
-
 	@GET("/devices/{uid}")
 	fun getDevice(
 		@Header("Authorization") apiKey: String,
@@ -25,6 +21,12 @@ interface APIService {
 		@Header("Authorization") apiKey: String,
 		@Path("uid") uid: String
 	): Call<BodyResponse>
+
+	@FormUrlEncoded
+	@POST("/auth/google/login")
+	fun googleLogin(
+		@Field("idToken") idToken: String
+	): Call<TokenResponse>
 
 	@FormUrlEncoded
 	@POST("/devices")
@@ -42,8 +44,6 @@ interface APIService {
 	@POST("/health/bodies")
 	fun createBody(
 		@Header("Authorization") apiKey: String,
-		@Field("birth") birth: String,
-		@Field("gender") gender: String,
 		@Field("height") height: Double,
 		@Field("weight") weight: Double,
 		@Field("bodyFatPercentage") bodyFatPercentage: Double,
@@ -70,4 +70,10 @@ interface APIService {
 		@Field("workoutIntensity") workoutIntensity: Int,
 		@Field("time") time: String
 	): Call<BodyResponse>
+
+	@DELETE("/users/{uid}")
+	fun deleteUser(
+		@Header("Authorization") apiKey: String,
+		@Path("uid") uid: String
+	): Call<Void>
 }

@@ -7,8 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class Token (
     var id: Int = 0,
     var userId: Int = 0,
-    var accessToken: String = "",
-    var refreshToken: String = "",
-    var accessTokenRegDate: String = "",
-    var refreshTokenRegDate: String = ""
+    var access: String = "",
+    var refresh: String = "",
+    var accessRegDate: String = "",
+    var refreshRegDate: String = ""
 ) : Parcelable

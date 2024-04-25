@@ -201,14 +201,14 @@ class SettingFragment : Fragment() {
       var height = "0"
       var weight = "0"
 
-      if(getUser.height != null && getUser.height != "0") {
-         val hSplit = getUser.height!!.split(".")
-         height = if(hSplit[1] == "0") hSplit[0] else getUser.height!!
+      if(getUser.height > 0) {
+         val hSplit = getUser.height.toString().split(".")
+         height = if(hSplit[1] == "0") hSplit[0] else getUser.height.toString()
       }
 
-      if(getUser.weight != null && getUser.weight != "0") {
-         val wSplit = getUser.weight!!.split(".")
-         weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight!!
+      if(getUser.weight > 0) {
+         val wSplit = getUser.weight.toString().split(".")
+         weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight.toString()
       }
 
       binding.tvHeight.text = "${height}cm / ${weight}kg"

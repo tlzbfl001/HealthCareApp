@@ -12,19 +12,20 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import kr.bodywell.android.BuildConfig
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Token
-import kr.bodywell.android.service.UserResponse
-import kr.bodywell.android.service.RetrofitAPI
+import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.view.home.MainActivity
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class LoginActivity : AppCompatActivity() {
@@ -32,8 +33,8 @@ class LoginActivity : AppCompatActivity() {
    private val binding get() = _binding!!
 
    private lateinit var dataManager: DataManager
-//   private var gsc: GoogleSignInClient? = null
-//   private var gso: GoogleSignInOptions? = null
+   private var gsc: GoogleSignInClient? = null
+   private var gso: GoogleSignInOptions? = null
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -59,11 +60,10 @@ class LoginActivity : AppCompatActivity() {
 
       // 구글 로그인
       binding.clGoogle.setOnClickListener {
-         if(!networkStatusCheck(this)){
+         if(!networkStatusCheck(this)) {
             Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            googleWebView()
-//            googleLogin()
+            googleLogin()
          }
       }
 
@@ -76,94 +76,11 @@ class LoginActivity : AppCompatActivity() {
 //      Log.d(TAG, "getKeyHash: " + Utility.getKeyHash(this))
    }
 
-   private fun googleWebView() {
-      binding.cl.visibility = View.GONE
-      binding.webView.visibility = View.VISIBLE
-
-      binding.webView.settings.javaScriptEnabled = true
-      binding.webView.settings.userAgentString = "app_running_android"
-      binding.webView.settings.saveFormData = false
-
-      binding.webView.webChromeClient = object : WebChromeClient() {
-         override fun onConsoleMessage(cmsg: ConsoleMessage): Boolean {
-            if(cmsg.message().contains("accessToken") && cmsg.message().contains("refreshToken")) {
-               binding.webView.visibility = View.GONE
-               val obj = JSONObject(cmsg.message())
-               val access = obj.get("accessToken").toString()
-               val refresh = obj.get("refreshToken").toString()
-               val uid = decodeToken(access)
-
-               Log.d(TAG, "accessToken: $access")
-
-               RetrofitAPI.api.getUser(uid).enqueue(object : Callback<UserResponse> {
-                  override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                     if(response.isSuccessful) {
-                        val getUser = dataManager.getUser("google", response.body()!!.email)
-
-                        if(getUser.regDate == "") {
-                           val username = if(response.body()!!.username == null) "" else response.body()!!.username
-                           val user = UserResponse(uid = response.body()!!.uid, type = "google", email = response.body()!!.email, username = username)
-                           val token = Token(accessToken = access, refreshToken = refresh)
-
-                           val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-                           intent.putExtra("user", user)
-                           intent.putExtra("token", token)
-                           startActivity(intent)
-                        }else {
-                           MyApp.prefs.setPrefs("userId", getUser.id)
-                           val getToken = dataManager.getToken()
-
-                           if(getToken.userId > 0) {
-                              dataManager.updateToken(Token(accessToken = access, refreshToken = refresh, accessTokenRegDate = LocalDateTime.now().toString(),
-                                 refreshTokenRegDate = LocalDateTime.now().toString()))
-                           }else {
-                              dataManager.insertToken(Token(accessToken = access, refreshToken = refresh, accessTokenRegDate = LocalDateTime.now().toString(),
-                                 refreshTokenRegDate = LocalDateTime.now().toString()))
-                           }
-
-                           startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                        }
-                     }else {
-                        binding.cl.visibility = View.VISIBLE
-                        Toast.makeText(this@LoginActivity, "로그인 오류", Toast.LENGTH_SHORT).show()
-                     }
-                  }
-
-                  override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                     binding.cl.visibility = View.VISIBLE
-                     Toast.makeText(this@LoginActivity, "로그인 오류", Toast.LENGTH_SHORT).show()
-                  }
-               })
-
-               binding.webView.destroy()
-            }
-
-            return super.onConsoleMessage(cmsg)
-         }
-      }
-
-      binding.webView.webViewClient = object : WebViewClient() {
-         override fun onPageFinished(view: WebView, url: String) {
-            super.onPageFinished(view, url)
-            view.loadUrl("javascript:console.log(document.body.getElementsByTagName('pre')[0].innerHTML);")
-         }
-      }
-
-      binding.webView.loadUrl("https://api.bodywell.dev/auth/google")
-   }
-
-   private fun decodeToken(token: String): String {
-      val decodeData = String(Base64.decode(token.split(".")[1], Base64.URL_SAFE), charset("UTF-8"))
-      val obj = JSONObject(decodeData)
-      return obj.get("sub").toString()
-   }
-
-   /*private fun googleLogin() {
+   private fun googleLogin() {
       gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
          .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
          .requestEmail()
          .build()
-
       gsc = GoogleSignIn.getClient(this, gso!!)
 
       val signInIntent = gsc!!.signInIntent
@@ -176,14 +93,14 @@ class LoginActivity : AppCompatActivity() {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
             if(it.isSuccessful) {
                val getUser = dataManager.getUser("google", it.result.email.toString())
+               Log.d(TAG, "idToken: ${it.result.idToken}")
+
                if(getUser.regDate == "") { // 초기 가입 작업
                   if(it.result.idToken == "" || it.result.idToken == null || it.result.email == "" || it.result.email == null) {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }else {
-                     val name = if(it.result.displayName == "" || it.result.displayName == "") "" else it.result.displayName
-                     val user = User(type = "google", idToken = it.result.idToken!!, email = it.result.email!!, name = name!!, regDate = LocalDate.now().toString())
                      val intent = Intent(this, SignupActivity::class.java)
-                     intent.putExtra("user", user)
+                     intent.putExtra("user", User(idToken = it.result.idToken!!, type = "google", email = it.result.email!!))
                      startActivity(intent)
                   }
                }else { // 로그인
@@ -197,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
       }
    }
 
-   private fun naverLogin() {
+   /*private fun naverLogin() {
       val oAuthLoginCallback = object : OAuthLoginCallback {
          override fun onSuccess() {
             NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {

@@ -75,8 +75,6 @@ class InputInfoFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      val getUser = dataManager.getUser()
-
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
@@ -130,22 +128,8 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         val name = if(binding.etName.text.toString() != "") {
-            binding.etName.text.toString()
-         }else if(getUser.name != null && getUser.name != "") {
-            getUser.name
-         }else {
-            "바디웰"
-         }
-
-         val birthday = if(binding.tvBirthday.text.toString() != "") {
-            binding.tvBirthday.text.toString()
-         }else if(getUser.birthday != null && getUser.birthday != "") {
-            getUser.birthday
-         }else {
-            "1990-01-01"
-         }
-
+         val name = if(binding.etName.text.toString() != "") binding.etName.text.toString() else "바디웰"
+         val birthday = if(binding.tvBirthday.text.toString() != "") binding.tvBirthday.text.toString() else "1990-01-01"
          val image = if(image != "") image else ""
 
          if(binding.etName.text.length in 1..1) {
@@ -153,8 +137,8 @@ class InputInfoFragment : Fragment() {
          }else if(binding.etName.text.length in 1..1 && !filterText(binding.etName.text.toString())) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager.updateUserStr(TABLE_USER, "name", name!!)
-            dataManager.updateUserStr(TABLE_USER, "birthday", birthday!!)
+            dataManager.updateUserStr(TABLE_USER, "name", name)
+            dataManager.updateUserStr(TABLE_USER, "birthday", birthday)
             dataManager.updateUserStr(TABLE_USER, "image", image!!)
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
