@@ -93,15 +93,14 @@ class LoginActivity : AppCompatActivity() {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
             if(it.isSuccessful) {
                val getUser = dataManager.getUser("google", it.result.email.toString())
-               Log.d(TAG, "idToken: ${it.result.idToken}")
 
-               if(getUser.regDate == "") { // 초기 가입 작업
-                  if(it.result.idToken == "" || it.result.idToken == null || it.result.email == "" || it.result.email == null) {
-                     Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                  }else {
+               if(getUser.regDate == "") { // 초기 가입
+                  if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      val intent = Intent(this, SignupActivity::class.java)
-                     intent.putExtra("user", User(idToken = it.result.idToken!!, type = "google", email = it.result.email!!))
+                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
                      startActivity(intent)
+                  }else {
+                     Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }
                }else { // 로그인
                   MyApp.prefs.setPrefs("userId", getUser.id)

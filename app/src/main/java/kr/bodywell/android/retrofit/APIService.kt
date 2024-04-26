@@ -1,6 +1,11 @@
-package kr.bodywell.android.service
+package kr.bodywell.android.retrofit
 
-import retrofit2.Call
+import kr.bodywell.android.retrofit.dto.BodyDto
+import kr.bodywell.android.retrofit.response.BodyResponse
+import kr.bodywell.android.retrofit.response.DeviceResponse
+import kr.bodywell.android.retrofit.response.TokenResponse
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -11,56 +16,46 @@ import retrofit2.http.Path
 
 interface APIService {
 	@GET("/devices/{uid}")
-	fun getDevice(
-		@Header("Authorization") apiKey: String,
+	suspend fun getDevice(
+		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Call<DeviceResponse>
+	): Response<DeviceResponse>
 
 	@GET("/health/bodies/{uid}")
-	fun getBody(
-		@Header("Authorization") apiKey: String,
+	suspend fun getBody(
+		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Call<BodyResponse>
+	): Response<BodyResponse>
 
 	@FormUrlEncoded
 	@POST("/auth/google/login")
-	fun googleLogin(
+	suspend fun googleLogin(
 		@Field("idToken") idToken: String
-	): Call<TokenResponse>
+	): Response<TokenResponse>
 
 	@FormUrlEncoded
 	@POST("/devices")
-	fun createDevice(
-		@Header("Authorization") apiKey: String,
+	suspend fun createDevice(
+		@Header("Authorization") token: String,
 		@Field("label") label: String,
 		@Field("name") name: String,
 		@Field("manufacturer") manufacturer: String,
 		@Field("model") model: String,
 		@Field("hardwareVersion") hardwareVersion: String,
 		@Field("softwareVersion") softwareVersion: String
-	): Call<DeviceResponse>
+	): Response<DeviceResponse>
 
-	@FormUrlEncoded
 	@POST("/health/bodies")
-	fun createBody(
-		@Header("Authorization") apiKey: String,
-		@Field("height") height: Double,
-		@Field("weight") weight: Double,
-		@Field("bodyFatPercentage") bodyFatPercentage: Double,
-		@Field("skeletalMuscleMass") skeletalMuscleMass: Double,
-		@Field("bodyMassIndex") bodyMassIndex: Double,
-		@Field("basalMetabolicRate") basalMetabolicRate: Double,
-		@Field("workoutIntensity") workoutIntensity: Int,
-		@Field("time") time: String
-	): Call<BodyResponse>
+	suspend fun createBody(
+		@Header("Authorization") token: String,
+		@Body dto: BodyDto
+	): Response<BodyResponse>
 
 	@FormUrlEncoded
 	@POST("/health/bodies/{uid}")
-	fun updateBody(
-		@Header("Authorization") apiKey: String,
+	suspend fun updateBody(
+		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Field("birth") birth: String,
-		@Field("gender") gender: String,
 		@Field("height") height: Double,
 		@Field("weight") weight: Double,
 		@Field("bodyFatPercentage") bodyFatPercentage: Double,
@@ -69,11 +64,16 @@ interface APIService {
 		@Field("basalMetabolicRate") basalMetabolicRate: Double,
 		@Field("workoutIntensity") workoutIntensity: Int,
 		@Field("time") time: String
-	): Call<BodyResponse>
+	): Response<BodyResponse>
+
+	@POST("/auth/refresh-token")
+	suspend fun refreshToken(
+		@Header("Authorization") token: String
+	): Response<TokenResponse>
 
 	@DELETE("/users/{uid}")
-	fun deleteUser(
-		@Header("Authorization") apiKey: String,
+	suspend fun deleteUser(
+		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Call<Void>
+	): Response<Void>
 }

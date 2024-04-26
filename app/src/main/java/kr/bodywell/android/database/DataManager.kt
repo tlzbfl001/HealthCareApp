@@ -981,8 +981,8 @@ class DataManager(private var context: Context?) {
 
    fun updateUser(data: User){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $TABLE_USER set type='${data.type}', email='${data.email}', idToken='${data.idToken}', regDate='${data.regDate}' " +
-         "where type='${data.type}' and email='${data.email}'"
+      val sql = "update $TABLE_USER set idToken='${data.idToken}', userUid='${data.userUid}', deviceUid='${data.deviceUid}', bodyUid='${data.bodyUid}', " +
+         "regDate='${data.regDate}' where type='${data.type}' and email='${data.email}'"
       db.execSQL(sql)
       db.close()
    }

@@ -15,9 +15,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.model.Bluetooth
-import kr.bodywell.android.service.BluetoothService
-import kr.bodywell.android.service.BluetoothService.Companion.btStatus
-import kr.bodywell.android.service.BluetoothService.Companion.deviceNum
+import kr.bodywell.android.util.BluetoothService
+import kr.bodywell.android.util.BluetoothService.Companion.btStatus
+import kr.bodywell.android.util.BluetoothService.Companion.deviceNum
 
 class BtListAdapter (
    private val itemList: ArrayList<Bluetooth>

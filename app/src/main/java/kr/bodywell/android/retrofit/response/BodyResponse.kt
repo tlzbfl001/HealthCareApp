@@ -1,4 +1,4 @@
-package kr.bodywell.android.service
+package kr.bodywell.android.retrofit.response
 
 import com.google.gson.annotations.SerializedName
 
@@ -7,10 +7,10 @@ data class BodyResponse(
 	var uid: String = "",
 
 	@SerializedName("height")
-	var height: String = "",
+	var height: Double = 0.0,
 
 	@SerializedName("weight")
-	var weight: String = "",
+	var weight: Double = 0.0,
 
 	@SerializedName("bodyFatPercentage")
 	var bodyFatPercentage: Double = 0.0,

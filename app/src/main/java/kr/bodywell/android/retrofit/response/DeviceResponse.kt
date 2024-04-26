@@ -1,4 +1,4 @@
-package kr.bodywell.android.service
+package kr.bodywell.android.retrofit.response
 
 import com.google.gson.annotations.SerializedName
 

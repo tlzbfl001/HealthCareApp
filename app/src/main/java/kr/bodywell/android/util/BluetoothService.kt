@@ -1,4 +1,4 @@
-package kr.bodywell.android.service
+package kr.bodywell.android.util
 
 import android.annotation.SuppressLint
 import android.app.Service
