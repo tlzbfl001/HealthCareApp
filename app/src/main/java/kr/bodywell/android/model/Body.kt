@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class Body(
     var id: Int = 0,
     var userId: Int = 0,
+    var bodyUid: String = "",
     var height: Double = 0.0,
     var weight: Double = 0.0,
     var intensity: Int = 0,

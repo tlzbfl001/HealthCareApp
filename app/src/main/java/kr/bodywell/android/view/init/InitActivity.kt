@@ -3,12 +3,18 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.SectionPageAdapter
+import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.databinding.ActivityInitBinding
+import kr.bodywell.android.util.CustomUtil
 import kotlin.system.exitProcess
 
 class InitActivity : AppCompatActivity() {

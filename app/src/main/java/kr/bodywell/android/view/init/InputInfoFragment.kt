@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputInfoBinding
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
@@ -128,9 +130,10 @@ class InputInfoFragment : Fragment() {
       }
 
       binding.cvContinue.setOnClickListener {
-         val name = if(binding.etName.text.toString() != "") binding.etName.text.toString() else "바디웰"
-         val birthday = if(binding.tvBirthday.text.toString() != "") binding.tvBirthday.text.toString() else "1990-01-01"
-         val image = if(image != "") image else ""
+         val name = if(binding.etName.text.toString() == "") "바디웰" else binding.etName.text.toString()
+         val birthday = if(binding.tvBirthday.text.toString() == "") "1990-01-01" else binding.tvBirthday.text.toString()
+         val image = if(image == "") "" else image
+         Log.d(CustomUtil.TAG, "birthday: $birthday")
 
          if(binding.etName.text.length in 1..1) {
             Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()

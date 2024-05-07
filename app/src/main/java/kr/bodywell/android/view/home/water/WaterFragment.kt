@@ -42,7 +42,7 @@ class WaterFragment : Fragment() {
    private var adapter: WaterAdapter? = null
    private var dailyGoal = DailyGoal()
    private var water = Water()
-   private var volume = 200
+   private var mL = 200
    private var count = 0
 
    override fun onAttach(context: Context) {
@@ -92,7 +92,7 @@ class WaterFragment : Fragment() {
             Toast.makeText(requireActivity(), "목표 섭취물은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(etVolume.text.toString() != "") {
-               volume = etVolume.text.toString().toInt()
+               mL = etVolume.text.toString().toInt()
             }
 
             if(dailyGoal.regDate == "") {
@@ -102,12 +102,11 @@ class WaterFragment : Fragment() {
             }
 
             if(water.regDate == "") {
-               dataManager.insertWater(Water(volume = volume, regDate = selectedDate.toString()))
+               dataManager.insertWater(Water(mL = mL, regDate = selectedDate.toString()))
             }else {
-               dataManager.updateIntByDate(TABLE_WATER, "volume", volume, selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_WATER, "mL", mL, selectedDate.toString())
             }
 
-            dailyGoal()
             dailyWater()
 
             dialog.dismiss()
@@ -126,7 +125,6 @@ class WaterFragment : Fragment() {
          selectedDate = selectedDate.minusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
-         dailyGoal()
          dailyWater()
       }
 
@@ -134,7 +132,6 @@ class WaterFragment : Fragment() {
          selectedDate = selectedDate.plusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
-         dailyGoal()
          dailyWater()
       }
 
@@ -158,51 +155,39 @@ class WaterFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      dailyWater()
-      dailyGoal()
+      dailyWater() // 데이터 초기화
 
       return binding.root
    }
 
-   private fun dailyGoal() {
-      // 목표 초기화
+   private fun dailyWater() {
       dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       water = dataManager.getWater(selectedDate.toString())
-
-      binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
-      binding.tvIntake.text = "0잔/0ml"
-      binding.tvVolume.text = "200ml"
-      binding.tvGoal.text = "0잔/0ml"
-      binding.tvRemain.text = "0잔/0ml"
-
-      volume = water.volume
-      count = water.water
+      mL = water.mL
+      count = water.count
 
       if(count > 0) {
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.max = dailyGoal.waterGoal
          binding.pbWater.progress = count
+      }else {
+         binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
+         binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
       }
 
-      binding.tvIntake.text = "${count}잔/${count * volume}ml"
-      binding.tvVolume.text = "${volume}ml"
-      binding.tvGoal.text = "${dailyGoal.waterGoal}잔/${dailyGoal.waterGoal * volume}ml"
+      binding.tvIntake.text = "${count}잔/${count * mL}ml"
+      binding.tvMl.text = "${mL}ml"
+      binding.tvGoal.text = "${dailyGoal.waterGoal}잔/${dailyGoal.waterGoal * mL}ml"
+      binding.tvCount.text = "${count}잔"
+      binding.tvUnit.text = "(${count * mL}ml)"
 
       val remain = dailyGoal.waterGoal - count
       if(remain > 0) {
-         binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
+         binding.tvRemain.text = "${remain}잔/${remain * mL}ml"
       }else {
          binding.tvRemain.text = "0잔/0ml"
       }
-   }
-
-   private fun dailyWater() {
-      binding.tvCount.text = "${count}잔"
-      binding.tvUnit.text = "(${count * volume}ml)"
-
-      water = dataManager.getWater(selectedDate.toString())
 
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
       binding.rv.layoutManager = layoutManager
@@ -223,28 +208,14 @@ class WaterFragment : Fragment() {
             dataManager.deleteItem(TABLE_WATER, "regDate", selectedDate.toString())
          }
 
-         binding.tvCount.text = "${count}잔"
-         binding.tvUnit.text = "(${count * volume}ml)"
-         binding.tvIntake.text = "${count}잔/${count * volume}ml"
-
-         val remain = dailyGoal.waterGoal - count
-         if(remain > 0) {
-            binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-         }else {
-            binding.tvRemain.text = "0잔/0ml"
-         }
-
-         adapter = WaterAdapter(count)
-         binding.rv.adapter = adapter
-
          water = dataManager.getWater(selectedDate.toString())
-         if(count > 0) {
-            if(water.regDate == "") {
-               dataManager.insertWater(Water(water = count, regDate = selectedDate.toString()))
-            }else {
-               dataManager.updateIntByDate(TABLE_WATER, "water", count, selectedDate.toString())
-            }
+         if(water.regDate == "") {
+            dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
+         }else {
+            dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
          }
+
+         resetData()
       }
 
       binding.ivPlus.setOnClickListener {
@@ -257,27 +228,33 @@ class WaterFragment : Fragment() {
          binding.pbWater.max = dailyGoal.waterGoal
          binding.pbWater.progress = count
 
-         binding.tvCount.text = "${count}잔"
-         binding.tvUnit.text = "(${count * volume}ml)"
-         binding.tvIntake.text = "${count}잔/${count * volume}ml"
-
-         val remain = dailyGoal.waterGoal - count
-         if(remain > 0) {
-            binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-         }else {
-            binding.tvRemain.text = "0잔/0ml"
-         }
-
-         adapter = WaterAdapter(count)
-         binding.rv.adapter = adapter
-
          water = dataManager.getWater(selectedDate.toString())
-         if(water.regDate == "") {
-            dataManager.insertWater(Water(water = count, regDate = selectedDate.toString()))
-         }else {
-            dataManager.updateIntByDate(TABLE_WATER, "water", count, selectedDate.toString())
+         if(count > 0) {
+            if(water.regDate == "") {
+               dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
+            }else {
+               dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
+            }
          }
+
+         resetData()
       }
+   }
+
+   private fun resetData() {
+      binding.tvCount.text = "${count}잔"
+      binding.tvUnit.text = "(${count * mL}ml)"
+      binding.tvIntake.text = "${count}잔/${count * mL}ml"
+
+      val remain = dailyGoal.waterGoal - count
+      if(remain > 0) {
+         binding.tvRemain.text = "${remain}잔/${remain * mL}ml"
+      }else {
+         binding.tvRemain.text = "0잔/0ml"
+      }
+
+      adapter = WaterAdapter(count)
+      binding.rv.adapter = adapter
    }
 
    override fun onDetach() {

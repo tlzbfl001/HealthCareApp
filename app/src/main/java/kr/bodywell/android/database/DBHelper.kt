@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 3
+      const val DATABASE_VERSION = 1
       const val TABLE_USER = "user"
       const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
@@ -26,7 +26,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onCreate(db: SQLiteDatabase) {
-      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, email text, idToken text, userUid text, deviceUid text, bodyUid text, name text, " +
+      val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, email text, idToken text, userUid text, deviceUid text, name text, " +
          "gender text, birthday text, image text, height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, regDate text);"
       db.execSQL(user)
 
@@ -41,22 +41,22 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, regDate text);"
       db.execSQL(dailyFood)
 
-      val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, water integer, volume integer, regDate text);"
+      val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, waterUid text, count integer, mL integer, regDate text);"
       db.execSQL(water)
 
       val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, name text, intensity text, workoutTime integer, " +
          "kcal integer, useCount integer, useDate text);"
       db.execSQL(exercise)
 
-      val dailyExercise = "create table $TABLE_DAILY_EXERCISE(id integer primary key autoincrement, userId integer, name text, intensity text, " +
+      val dailyExercise = "create table $TABLE_DAILY_EXERCISE(id integer primary key autoincrement, userId integer, exerciseUid text, name text, intensity text, " +
          "workoutTime integer, kcal integer, regDate text);"
       db.execSQL(dailyExercise)
 
-      val body = "create table $TABLE_BODY(id integer primary key autoincrement, userId integer, height real, weight real, intensity integer, fat real, " +
+      val body = "create table $TABLE_BODY(id integer primary key autoincrement, userId integer, bodyUid text, height real, weight real, intensity integer, fat real, " +
          "muscle real, bmi real, bmr real, regDate text);"
       db.execSQL(body)
 
-      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, userId integer, bedTime integer, wakeTime integer, sleepTime integer, regDate text);"
+      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, userId integer, sleepUid text, bedTime text, wakeTime text, sleepTime integer, regDate text);"
       db.execSQL(sleep)
 
       val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, type text, name text, amount integer, unit text, count integer," +

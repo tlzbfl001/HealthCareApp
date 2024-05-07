@@ -1,6 +1,6 @@
-package kr.bodywell.android.retrofit.dto
+package kr.bodywell.android.api.dto
 
-data class BodyDto(
+data class BodyDTO(
 	var height: Double = 0.0,
 	var weight: Double = 0.0,
 	var bodyMassIndex: Double = 0.0,

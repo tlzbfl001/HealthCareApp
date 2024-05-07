@@ -415,7 +415,7 @@
                    android:textColor="@color/black"
                    app:layout_constraintTop_toTopOf="parent"
                    app:layout_constraintStart_toStartOf="parent"
-                   app:layout_constraintBottom_toTopOf="@id/tvVolume"
+                   app:layout_constraintBottom_toTopOf="@id/tvMl"
                    app:layout_constraintVertical_chainStyle="packed"/>
                <TextView
                   android:id="@+id/tv"
@@ -431,7 +431,7 @@
                   app:layout_constraintStart_toEndOf="@id/tv3"
                   app:layout_constraintEnd_toEndOf="parent"/>
                <TextView
-                  android:id="@+id/tvVolume"
+                  android:id="@+id/tvMl"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:maxWidth="100dp"

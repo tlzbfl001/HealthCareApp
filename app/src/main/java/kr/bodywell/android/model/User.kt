@@ -11,7 +11,6 @@ data class User(
     var idToken: String = "",
     var userUid: String = "",
     var deviceUid: String = "",
-    var bodyUid: String = "",
     var name: String = "",
     var gender: String = "",
     var birthday: String = "",

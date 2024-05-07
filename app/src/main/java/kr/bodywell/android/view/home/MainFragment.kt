@@ -251,7 +251,7 @@ class MainFragment : Fragment() {
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
-      // 프로그래스바 설정
+      // 데이터 설정
       val getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       val foodSum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
       val getWater = dataManager.getWater(selectedDate.toString())
@@ -267,15 +267,15 @@ class MainFragment : Fragment() {
          binding.pbFood.progress = foodSum
       }
 
-      if(getWater.water > 0) {
+      if(getWater.count > 0) {
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
          if(getDailyGoal.waterGoal > 0) {
             binding.pbWater.max = getDailyGoal.waterGoal
-            binding.pbWater.progress = getWater.water
+            binding.pbWater.progress = getWater.count
          }else if(getDailyGoal.waterGoal == 0) {
-            binding.pbWater.max = getWater.water
-            binding.pbWater.progress = getWater.water
+            binding.pbWater.max = getWater.count
+            binding.pbWater.progress = getWater.count
          }
       }
 
@@ -340,7 +340,7 @@ class MainFragment : Fragment() {
       }
 
       binding.tvFood.text = "$foodSum/${getDailyGoal.foodGoal} kcal"
-      binding.tvWater.text = "${getWater.water}/${getDailyGoal.waterGoal}잔"
+      binding.tvWater.text = "${getWater.count}/${getDailyGoal.waterGoal}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyGoal.exerciseGoal} kcal"
       binding.tvBody.text = "$weight/$weightGoal kg"
       binding.tvSleep.text = "${getSleep.sleepTime / 60}h${getSleep.sleepTime % 60}m/$sleep"

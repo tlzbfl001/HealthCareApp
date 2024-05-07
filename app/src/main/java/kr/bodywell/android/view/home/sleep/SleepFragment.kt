@@ -27,6 +27,8 @@ import kr.bodywell.android.view.home.drug.DrugFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
 import kr.bodywell.android.view.home.food.FoodFragment
 import kr.bodywell.android.view.home.water.WaterFragment
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
@@ -36,6 +38,7 @@ class SleepFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var getDailyGoal = DailyGoal()
    private var getSleep = Sleep()
+   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -77,8 +80,8 @@ class SleepFragment : Fragment() {
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
 
       btnSave.setOnClickListener {
-         val hour = if(etHour.text.toString().trim() == "") 7 else { etHour.text.toString().toInt() }
-         val minute = if(etMinute.text.toString().trim() == "") 0 else { etMinute.text.toString().toInt() }
+         val hour = if(etHour.text.toString().trim() == "") 7 else etHour.text.toString().toInt()
+         val minute = if(etMinute.text.toString().trim() == "") 0 else etMinute.text.toString().toInt()
          val total = hour * 60 + minute
 
          if(getDailyGoal.regDate == "") {
@@ -151,22 +154,28 @@ class SleepFragment : Fragment() {
       getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       getSleep = dataManager.getSleep(selectedDate.toString())
 
-      if(getSleep.sleepTime > 0) {
+      if(getSleep.bedTime != "" && getSleep.wakeTime != "") {
+         val bedTime = LocalDateTime.parse(getSleep.bedTime, formatter)
+         val wakeTime = LocalDateTime.parse(getSleep.wakeTime, formatter)
+
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
          binding.pbSleep.max = getDailyGoal.sleepGoal
          binding.pbSleep.progress = getSleep.sleepTime
+         binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"
+         binding.tvWakeTime.text = "${wakeTime.hour}h ${wakeTime.minute}m"
 
-         val result = (getDailyGoal.sleepGoal - getSleep.sleepTime)
-         if(result > 0) {
-            binding.tvRemain.text = "${result / 60}h ${result % 60}m"
+         val remain = (getDailyGoal.sleepGoal - getSleep.sleepTime)
+         if(remain > 0) {
+            binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
          }
+      }else {
+         binding.tvBedtime.text = "0h 0m"
+         binding.tvWakeTime.text = "0h 0m"
       }
 
-      binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
       binding.tvGoal.text = "${getDailyGoal.sleepGoal / 60}h ${getDailyGoal.sleepGoal % 60}m"
-      binding.tvBedtime.text = "${getSleep.bedTime / 60}h ${getSleep.bedTime % 60}m"
-      binding.tvWakeTime.text = "${getSleep.wakeTime / 60}h ${getSleep.wakeTime % 60}m"
+      binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
    }
 
    override fun onDetach() {

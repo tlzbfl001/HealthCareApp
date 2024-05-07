@@ -43,6 +43,6 @@ class MainActivity : AppCompatActivity() {
          true
       }
 
-//      viewModel = ViewModelProvider(this, MainViewModel.Factory(application))[MainViewModel::class.java]
+      viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application))[MainViewModel::class.java]
    }
 }

@@ -22,15 +22,13 @@ import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.retrofit.dto.BodyDto
-import kr.bodywell.android.retrofit.RetrofitAPI
+import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
 import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
@@ -39,11 +37,10 @@ class SignupActivity : AppCompatActivity() {
    private lateinit var dataManager: DataManager
    private var user = User()
    private var isAll = true
-   private var userUid = ""
-   private var deviceUid = ""
-   private var bodyUid = ""
    private var access = ""
    private var refresh = ""
+   private var userUid = ""
+   private var deviceUid = ""
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -145,10 +142,9 @@ class SignupActivity : AppCompatActivity() {
                         CoroutineScope(Dispatchers.IO).launch {
                            val googleLogin = RetrofitAPI.api.googleLogin(user.idToken)
                            if(googleLogin.isSuccessful) {
-                              Log.d(TAG, "googleLogin: ${googleLogin.body()}")
                               access = googleLogin.body()!!.accessToken
                               refresh = googleLogin.body()!!.refreshToken
-                              createData()
+                              registerUser()
                            }else {
                               Log.e(TAG, "googleLogin: $googleLogin")
                            }
@@ -167,10 +163,9 @@ class SignupActivity : AppCompatActivity() {
       }
    }
 
-   private fun createData() {
-      userUid = decodeToken(access)
-      deviceUid = ""
-      bodyUid = ""
+   private fun registerUser() {
+      val userUid = decodeToken(access)
+      var deviceUid = ""
 
       val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
       val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
@@ -179,82 +174,66 @@ class SignupActivity : AppCompatActivity() {
       }else packageManager.getPackageInfo(packageName, 0).versionName
       val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 
-      val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-      val format = LocalDateTime.now().format(formatter)
-      val data = BodyDto(0.0, 0.0, 0.0, 0.0, 0.0,0.0, 1, format)
-
       CoroutineScope(Dispatchers.IO).launch {
          val createDevice = RetrofitAPI.api.createDevice("Bearer $access", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
          if(createDevice.isSuccessful) {
-            Log.d(TAG, "createDevice: ${createDevice.body()}")
             deviceUid = createDevice.body()!!.uid
          }else {
             Log.e(TAG, "createDevice: $createDevice")
          }
 
-         val createBody = RetrofitAPI.api.createBody("Bearer $access", data)
-         if(createBody.isSuccessful) {
-            Log.d(TAG, "createBody: ${createBody.body()}")
-            bodyUid = createBody.body()!!.uid
-         }else {
-            Log.e(TAG, "createBody: $createBody")
-         }
+         if(deviceUid != "") {
+            val getUser = dataManager.getUser(user.type, user.email)
+            val getToken = dataManager.getToken()
 
-         registerUser()
-      }
-   }
-
-   private fun registerUser() {
-      if(userUid != "" && deviceUid != "" && bodyUid != "") {
-         val getUser = dataManager.getUser(user.type, user.email)
-         val token = dataManager.getToken()
-
-         // 사용자 정보 저장
-         if(getUser.regDate == "") {
-            dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, bodyUid = bodyUid,
-               name = "", gender = "", birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0,
-               regDate = LocalDate.now().toString()))
-         }else {
-            dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, bodyUid = bodyUid,
-               regDate = LocalDate.now().toString()))
-         }
-
-         // 토큰 정보 저장
-         if(token.accessRegDate == "") {
-            dataManager.insertToken(Token(access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
-         }else {
-            dataManager.updateToken(Token(access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
-         }
-
-         val getUser2 = dataManager.getUser(user.type, user.email)
-         MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
-
-         runOnUiThread{
-            val dialog = Dialog(this)
-            dialog.setContentView(R.layout.dialog_signup)
-            dialog.setCancelable(false)
-            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
-
-            btnConfirm.setOnClickListener {
-               startActivity(Intent(this, InputActivity::class.java))
-               dialog.dismiss()
-            }
-
-            dialog.show()
-         }
-      }else {
-         CoroutineScope(Dispatchers.IO).launch {
-            val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
-            if(deleteUser.isSuccessful) {
-               Log.d(TAG, "deleteUser: $deleteUser")
+            // 사용자 정보 저장
+            if(getUser.regDate == "") {
+               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, name = "", gender = "",
+                  birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0, regDate = LocalDate.now().toString()))
             }else {
-               Log.e(TAG, "deleteUser: $deleteUser")
+               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid,
+                  regDate = LocalDate.now().toString()))
             }
-         }
 
-         runOnUiThread{
-            Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+            val getUser2 = dataManager.getUser(user.type, user.email)
+            MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
+
+            // 토큰 정보 저장
+            if(getToken.accessRegDate == "") {
+               dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
+                  refreshRegDate = LocalDateTime.now().toString()))
+            }else {
+               dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
+                  refreshRegDate = LocalDateTime.now().toString()))
+            }
+
+            runOnUiThread{
+               val dialog = Dialog(this@SignupActivity)
+               dialog.setContentView(R.layout.dialog_signup)
+               dialog.setCancelable(false)
+               dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+               val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
+
+               btnConfirm.setOnClickListener {
+                  startActivity(Intent(this@SignupActivity, InputActivity::class.java))
+                  dialog.dismiss()
+               }
+
+               dialog.show()
+            }
+         }else {
+            CoroutineScope(Dispatchers.IO).launch {
+               val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
+               if(deleteUser.isSuccessful) {
+                  Log.d(TAG, "deleteUser: $deleteUser")
+               }else {
+                  Log.e(TAG, "deleteUser: $deleteUser")
+               }
+            }
+
+            runOnUiThread{
+               Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+            }
          }
       }
    }

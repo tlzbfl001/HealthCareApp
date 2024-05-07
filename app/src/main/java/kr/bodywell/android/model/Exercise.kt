@@ -7,6 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class Exercise (
    var id: Int = 0,
    var userId: Int = 0,
+   var exerciseUid: String? = "",
    var name: String = "",
    var intensity: String = "",
    var workoutTime: Int = 0,

@@ -1,4 +1,4 @@
-package kr.bodywell.android.retrofit
+package kr.bodywell.android.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

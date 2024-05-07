@@ -174,7 +174,7 @@ class ReportFoodFragment : Fragment() {
       val getWater = ArrayList<Water>()
       val data = dataManager.getWater(calendarDate.toString())
 
-      if(data.water > 0) {
+      if(data.count > 0) {
          binding.chart3.visibility = View.VISIBLE
          binding.tvEmpty3.visibility = View.GONE
          getWater.add(data)
@@ -406,8 +406,8 @@ class ReportFoodFragment : Fragment() {
 
       for(i in 0 until getData.size){
          xVal += format2.format(format1.parse(getData[i].regDate)!!)
-         lineList += (getData[i].water * getData[i].volume).toFloat()
-         barEntries.add(BarEntry(i.toFloat(), (getData[i].water * getData[i].volume).toFloat()))
+         lineList += (getData[i].count * getData[i].mL).toFloat()
+         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].mL).toFloat()))
       }
 
       for (index in lineList.indices) {
