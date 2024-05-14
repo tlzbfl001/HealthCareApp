@@ -3,9 +3,10 @@ package kr.bodywell.android.model
 data class Sleep(
     var id: Int = 0,
     var userId: Int = 0,
-    var sleepUid: String? = "",
-    var bedTime: String = "",
-    var wakeTime: String = "",
-    var sleepTime: Int = 0,
-    var regDate: String = ""
+    var uid: String? = "",
+    var startTime: String = "",
+    var endTime: String = "",
+    var total: Int = 0,
+    var regDate: String = "",
+    var isUpdated: Int = 0
 )

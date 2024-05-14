@@ -22,7 +22,7 @@ class ExerciseDailyEditFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
-	private var intensity = ""
+	private var intensity = "HIGH"
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -55,16 +55,16 @@ class ExerciseDailyEditFragment : Fragment() {
 
 		val id = arguments?.getString("id")!!.toInt()
 
-		val exercise = dataManager.getDailyExercise(id)
+		val exercise = dataManager.getDailyExercise("id", id)
 
 		binding.tvName.text = exercise.name
 		binding.etTime.setText(exercise.workoutTime.toString())
 		binding.etKcal.setText(exercise.kcal.toString())
 
 		when(exercise.intensity) {
-			"상" -> unit1()
-			"중" -> unit2()
-			"하" -> unit3()
+			"HIGH" -> unit1()
+			"MODERATE" -> unit2()
+			"LOW" -> unit3()
 		}
 
 		binding.mainLayout.setOnTouchListener { _, _ ->
@@ -89,15 +89,17 @@ class ExerciseDailyEditFragment : Fragment() {
 		}
 
 		binding.cvSave.setOnClickListener {
-			if(id > -1) {
-				dataManager.updateStr(TABLE_DAILY_EXERCISE, "intensity", intensity, id)
-				dataManager.updateInt(TABLE_DAILY_EXERCISE, "workoutTime", binding.etTime.text.toString().trim().toInt(), id)
-				dataManager.updateInt(TABLE_DAILY_EXERCISE, "kcal", binding.etKcal.text.toString().trim().toInt(), id)
-
-				Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-				replaceFragment1(requireActivity(), ExerciseListFragment())
+			if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
+				|| binding.etKcal.text.toString().toInt() < 1) {
+				Toast.makeText(requireActivity(), "데이터는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show()
+				dataManager.updateStr(TABLE_DAILY_EXERCISE, "intensity", intensity, "id", id)
+				dataManager.updateInt(TABLE_DAILY_EXERCISE, "workoutTime", binding.etTime.text.toString().trim().toInt(), "id", id)
+				dataManager.updateInt(TABLE_DAILY_EXERCISE, "kcal", binding.etKcal.text.toString().trim().toInt(), "id", id)
+				dataManager.updateInt(TABLE_DAILY_EXERCISE, "isUpdated", 1, "id", id)
+
+				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+				replaceFragment1(requireActivity(), ExerciseListFragment())
 			}
 		}
 
@@ -111,7 +113,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = "상"
+		intensity = "HIGH"
 	}
 
 	private fun unit2() {
@@ -121,7 +123,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.WHITE)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = "중"
+		intensity = "MODERATE"
 	}
 
 	private fun unit3() {
@@ -131,7 +133,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
 		binding.tvIntensity3.setTextColor(Color.WHITE)
-		intensity = "하"
+		intensity = "LOW"
 	}
 
 	override fun onDetach() {

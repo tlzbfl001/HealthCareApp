@@ -6,8 +6,8 @@ data class WorkoutResponse (
 	@SerializedName("uid")
 	var uid: String = "",
 
-	@SerializedName("activityType")
-	var activityType: String = "",
+	@SerializedName("kilocalories")
+	var kilocalories: String = "",
 
 	@SerializedName("intensity")
 	var intensity: String = "",

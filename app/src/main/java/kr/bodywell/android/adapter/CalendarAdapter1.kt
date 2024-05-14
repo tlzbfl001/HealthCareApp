@@ -31,12 +31,12 @@ class CalendarAdapter1 (
             holder.tvDate.setBackgroundResource(R.drawable.oval_cal_select)
             holder.tvDate.setTextColor(Color.WHITE)
          }
-      }
 
-      if (!days.contains(null) && date!!.month != days[6]!!.month) {
-         when(type) {
-            1 -> holder.tvDate.setTextColor(Color.WHITE)
-            else -> holder.tvDate.setTextColor(Color.LTGRAY)
+         if (!days.contains(null) && date.month != days[6]!!.month) {
+            when(type) {
+               1 -> holder.tvDate.setTextColor(Color.WHITE)
+               else -> holder.tvDate.setTextColor(Color.LTGRAY)
+            }
          }
       }
    }

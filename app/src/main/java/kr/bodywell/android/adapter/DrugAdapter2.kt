@@ -72,10 +72,10 @@ class DrugAdapter2 (
          if(isChecked) {
             val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
             alarmReceiver.setAlarm(context, itemList[position].id, itemList[position].startDate, itemList[position].endDate, timeList, message)
-            dataManager!!.updateInt(TABLE_DRUG, "isSet", 1, itemList[position].id)
+            dataManager!!.updateInt(TABLE_DRUG, "isSet", 1, "id", itemList[position].id)
          }else {
             alarmReceiver.cancelAlarm(context, itemList[position].id)
-            dataManager!!.updateInt(TABLE_DRUG, "isSet", 0, itemList[position].id)
+            dataManager!!.updateInt(TABLE_DRUG, "isSet", 0, "id", itemList[position].id)
          }
       }
 

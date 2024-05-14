@@ -186,7 +186,7 @@ class NoteFragment : Fragment() {
 
       // 소비 칼로리 계산
       var total = 0
-      val getDailyExercise = dataManager.getDailyExercise(selectedDate.toString())
+      val getDailyExercise = dataManager.getDailyExercise("regDate", selectedDate.toString())
       for(i in 0 until getDailyExercise.size) {
          total += getDailyExercise[i].kcal
       }

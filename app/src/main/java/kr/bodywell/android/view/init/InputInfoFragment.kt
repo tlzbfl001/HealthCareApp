@@ -32,6 +32,7 @@ import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.cameraRequest
 import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
+import java.time.LocalDate
 import kotlin.system.exitProcess
 
 class InputInfoFragment : Fragment() {
@@ -131,9 +132,8 @@ class InputInfoFragment : Fragment() {
 
       binding.cvContinue.setOnClickListener {
          val name = if(binding.etName.text.toString() == "") "바디웰" else binding.etName.text.toString()
-         val birthday = if(binding.tvBirthday.text.toString() == "") "1990-01-01" else binding.tvBirthday.text.toString()
+         val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
          val image = if(image == "") "" else image
-         Log.d(CustomUtil.TAG, "birthday: $birthday")
 
          if(binding.etName.text.length in 1..1) {
             Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()

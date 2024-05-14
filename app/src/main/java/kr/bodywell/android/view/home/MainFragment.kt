@@ -89,11 +89,11 @@ class MainFragment : Fragment() {
 
       val getUser = dataManager.getUser()
 
-      if(getUser.name != null && getUser.name != "") {
+      if(getUser.name != "") {
          binding.tvName.text = getUser.name + " 님"
       }
 
-      if(getUser.image != null && getUser.image != "") {
+      if(getUser.image != "") {
          binding.ivUser.setImageURI(Uri.parse(getUser.image))
       }
 
@@ -315,15 +315,15 @@ class MainFragment : Fragment() {
          "${getDailyGoal.sleepGoal / 60}h${getDailyGoal.sleepGoal % 60}m"
       }
 
-      if(getSleep.sleepTime > 0) {
+      if(getSleep.total > 0) {
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
          if(getDailyGoal.sleepGoal > 0) {
             binding.pbSleep.max = getDailyGoal.sleepGoal
-            binding.pbSleep.progress = getSleep.sleepTime
+            binding.pbSleep.progress = getSleep.total
          }else if(getDailyGoal.sleepGoal == 0) {
-            binding.pbSleep.max = getSleep.sleepTime
-            binding.pbSleep.progress = getSleep.sleepTime
+            binding.pbSleep.max = getSleep.total
+            binding.pbSleep.progress = getSleep.total
          }
       }
 
@@ -343,7 +343,7 @@ class MainFragment : Fragment() {
       binding.tvWater.text = "${getWater.count}/${getDailyGoal.waterGoal}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyGoal.exerciseGoal} kcal"
       binding.tvBody.text = "$weight/$weightGoal kg"
-      binding.tvSleep.text = "${getSleep.sleepTime / 60}h${getSleep.sleepTime % 60}m/$sleep"
+      binding.tvSleep.text = "${getSleep.total / 60}h${getSleep.total % 60}m/$sleep"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyGoal.drugGoal}회"
    }
 

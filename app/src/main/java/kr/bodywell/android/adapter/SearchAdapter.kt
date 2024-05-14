@@ -16,6 +16,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 import kr.bodywell.android.view.home.food.FoodEditFragment
@@ -26,13 +27,12 @@ class SearchAdapter(
     private val type: String
 ) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
     private var bundle = Bundle()
-    private var dataManager: DataManager? = null
+    private var dataManager: DataManager = DataManager(context)
     private var itemList = ArrayList<Item>()
     private var itemClickListener : OnItemClickListener? = null
 
     init {
-        dataManager = DataManager(context)
-        dataManager!!.open()
+        dataManager.open()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -80,7 +80,7 @@ class SearchAdapter(
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].int1)
+                            dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].int1)
 
                             itemList.removeAt(position)
                             notifyDataSetChanged()
@@ -91,20 +91,29 @@ class SearchAdapter(
                         .create().show()
                     dialog.dismiss()
                 }else {
-                    AlertDialog.Builder(context, R.style.AlertDialogStyle)
-                        .setTitle("운동 삭제")
-                        .setMessage("정말 삭제하시겠습니까?")
-                        .setPositiveButton("확인") { _, _ ->
-                            dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].int1)
+                    val getDailyExercise = dataManager.getDailyExercise("exerciseId", itemList[position].int1)
+                    if(getDailyExercise.id > 0) {
+                        Toast.makeText(context, "사용중인 데이터는 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    }else {
+                        AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                            .setTitle("운동 삭제")
+                            .setMessage("정말 삭제하시겠습니까?")
+                            .setPositiveButton("확인") { _, _ ->
+                                dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].int1)
 
-                            itemList.removeAt(position)
-                            notifyDataSetChanged()
+                                if(itemList[position].string2 != "") {
+                                    dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].string2))
+                                }
 
-                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                        }
-                        .setNegativeButton("취소", null)
-                        .create().show()
-                    dialog.dismiss()
+                                itemList.removeAt(position)
+                                notifyDataSetChanged()
+
+                                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton("취소", null)
+                            .create().show()
+                        dialog.dismiss()
+                    }
                 }
             }
 
@@ -113,16 +122,16 @@ class SearchAdapter(
         }
     }
 
+    override fun getItemCount(): Int {
+        return itemList.size
+    }
+
     interface OnItemClickListener {
         fun onClick(v: View, pos: Int)
     }
 
     fun setItemClickListener(onItemClickListener: OnItemClickListener) {
         this.itemClickListener = onItemClickListener
-    }
-
-    override fun getItemCount(): Int {
-        return itemList.size
     }
 
     fun setItems(list: ArrayList<Item>) {

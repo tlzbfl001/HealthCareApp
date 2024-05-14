@@ -285,7 +285,7 @@ class BodyRecordFragment : Fragment() {
          val getUser = dataManager.getUser()
          val current = Calendar.getInstance()
          val currentYear = current.get(Calendar.YEAR)
-         val age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
+         val age = currentYear - getUser.birthday.substring(0 until 4).toInt()
 
          if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "신체 정보를 전부 입력해야합니다.", Toast.LENGTH_SHORT).show()

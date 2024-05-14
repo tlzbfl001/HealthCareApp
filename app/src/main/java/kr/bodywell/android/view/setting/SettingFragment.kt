@@ -1,19 +1,33 @@
 package kr.bodywell.android.view.setting
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kr.bodywell.android.BuildConfig.GOOGLE_WEB_CLIENT_ID
 import kr.bodywell.android.R
+import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -26,6 +40,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_IMAGE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_NOTE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_SLEEP
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_TOKEN
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
 import kr.bodywell.android.database.DataManager
@@ -33,12 +48,18 @@ import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.InitActivity
+import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
+import kr.bodywell.android.view.init.SignupActivity
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Calendar
 import kotlin.system.exitProcess
 
@@ -81,6 +102,9 @@ class SettingFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
+      getUser = dataManager.getUser()
+      getToken = dataManager.getToken()
+
       userProfile()
 
       binding.cvProfile.setOnClickListener {
@@ -106,11 +130,21 @@ class SettingFragment : Fragment() {
                .setTitle("로그아웃")
                .setMessage("정말 로그아웃하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  val getUser = dataManager.getUser()
-
                   when(getUser.type) {
                      "google" -> {
-                        logoutProcess()
+                        val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
+                           .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+                           .requestEmail()
+                           .build()
+
+                        val gsc = GoogleSignIn.getClient(requireActivity(), gso)
+                        gsc.signOut().addOnCompleteListener {
+                           if(it.isSuccessful) {
+                              logoutProcess()
+                           }else {
+                              Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
+                           }
+                        }
                      }
                      "naver" -> {
                         logoutProcess()
@@ -135,12 +169,27 @@ class SettingFragment : Fragment() {
                .setTitle("회원탈퇴")
                .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  getUser = dataManager.getUser()
-                  getToken = dataManager.getToken()
-
                   when(getUser.type) {
                      "google" -> {
-                        resignProcess()
+                        val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
+                        val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
+                           .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+                           .requestEmail()
+                           .build()
+
+                        val gsc = GoogleSignIn.getClient(requireActivity(), gso)
+
+                        if(account == null) {
+                           Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                        }else {
+                           gsc.revokeAccess().addOnCompleteListener {
+                              if(it.isSuccessful) {
+                                 resignProcess()
+                              }else {
+                                 Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              }
+                           }
+                        }
                      }
                      "naver" -> {
                         resignProcess()
@@ -160,38 +209,18 @@ class SettingFragment : Fragment() {
       return binding.root
    }
 
-   private fun logoutProcess() {
-      MyApp.prefs.removePrefs("userId")
-      Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-      finishAffinity(requireActivity())
-      startActivity(Intent(requireActivity(), LoginActivity::class.java))
-      exitProcess(0)
-   }
-
-   private fun resignProcess() {
-      removeData()
-      MyApp.prefs.removePrefs("userId")
-
-      Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
-      finishAffinity(requireActivity())
-      startActivity(Intent(requireActivity(), InitActivity::class.java))
-      exitProcess(0)
-   }
-
    private fun userProfile() {
-      val getUser = dataManager.getUser()
-      if(getUser.name != null && getUser.name != "") binding.tvName.text = getUser.name
-      if(getUser.image != null && getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
+      if(getUser.name != "") binding.tvName.text = getUser.name
+      if(getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
 
-      if(getUser.birthday != null && getUser.birthday != "") {
+      if(getUser.birthday != "") {
          val current = Calendar.getInstance()
          val currentYear = current.get(Calendar.YEAR)
          val currentMonth = current.get(Calendar.MONTH) + 1
          val currentDay = current.get(Calendar.DAY_OF_MONTH)
 
-         var age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
-         if (getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay)
-            age--
+         var age = currentYear - getUser.birthday.substring(0 until 4).toInt()
+         if (getUser.birthday.substring(5 until 7).toInt() * 100 + getUser.birthday.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
 
          val gender = if(getUser.gender == "MALE") "남" else "여"
 
@@ -214,28 +243,55 @@ class SettingFragment : Fragment() {
       binding.tvHeight.text = "${height}cm / ${weight}kg"
    }
 
-   private fun removeData() {
-      val alarmReceiver = AlarmReceiver()
+   private fun logoutProcess() {
+      MyApp.prefs.removePrefs("userId")
+      finishAffinity(requireActivity())
+      startActivity(Intent(requireActivity(), LoginActivity::class.java))
+      exitProcess(0)
+   }
 
-      val getDrugId = dataManager.getDrugId()
-      for(i in 0 until getDrugId.size) {
-         alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
+   private fun resignProcess() {
+      CoroutineScope(Dispatchers.IO).launch {
+         val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}", getUser.userUid)
+         if(response.isSuccessful) {
+            dataManager.deleteTable(TABLE_USER, "id")
+            dataManager.deleteTable(TABLE_TOKEN, "userId")
+            dataManager.deleteTable(TABLE_FOOD, "userId")
+            dataManager.deleteTable(TABLE_DAILY_FOOD, "userId")
+            dataManager.deleteTable(TABLE_WATER, "userId")
+            dataManager.deleteTable(TABLE_EXERCISE, "userId")
+            dataManager.deleteTable(TABLE_DAILY_EXERCISE, "userId")
+            dataManager.deleteTable(TABLE_BODY, "userId")
+            dataManager.deleteTable(TABLE_DRUG, "userId")
+            dataManager.deleteTable(TABLE_DRUG_TIME, "userId")
+            dataManager.deleteTable(TABLE_DRUG_CHECK, "userId")
+            dataManager.deleteTable(TABLE_NOTE, "userId")
+            dataManager.deleteTable(TABLE_SLEEP, "userId")
+            dataManager.deleteTable(TABLE_IMAGE, "userId")
+            dataManager.deleteTable(TABLE_UNUSED, "userId")
+
+            val alarmReceiver = AlarmReceiver()
+            val getDrugId = dataManager.getDrugId()
+
+            for(i in 0 until getDrugId.size) {
+               alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
+            }
+
+            MyApp.prefs.removePrefs("userId")
+
+            requireActivity().runOnUiThread{
+               Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+
+            finishAffinity(requireActivity())
+            startActivity(Intent(requireActivity(), InitActivity::class.java))
+            exitProcess(0)
+         }else {
+            requireActivity().runOnUiThread{
+               Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+            }
+         }
       }
-
-      dataManager.deleteAll(TABLE_USER, "id")
-      dataManager.deleteAll(TABLE_TOKEN, "userId")
-      dataManager.deleteAll(TABLE_FOOD, "userId")
-      dataManager.deleteAll(TABLE_DAILY_FOOD, "userId")
-      dataManager.deleteAll(TABLE_WATER, "userId")
-      dataManager.deleteAll(TABLE_EXERCISE, "userId")
-      dataManager.deleteAll(TABLE_DAILY_EXERCISE, "userId")
-      dataManager.deleteAll(TABLE_BODY, "userId")
-      dataManager.deleteAll(TABLE_DRUG, "userId")
-      dataManager.deleteAll(TABLE_DRUG_TIME, "userId")
-      dataManager.deleteAll(TABLE_DRUG_CHECK, "userId")
-      dataManager.deleteAll(TABLE_NOTE, "userId")
-      dataManager.deleteAll(TABLE_SLEEP, "userId")
-      dataManager.deleteAll(TABLE_IMAGE, "userId")
    }
 
    override fun onDetach() {

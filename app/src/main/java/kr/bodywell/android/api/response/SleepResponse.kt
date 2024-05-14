@@ -12,3 +12,8 @@ data class SleepResponse (
 	@SerializedName("ends")
 	var ends: String = ""
 )
+
+data class SleepsResponse (
+	@SerializedName("sleeps")
+	var sleeps: List<SleepResponse>
+)

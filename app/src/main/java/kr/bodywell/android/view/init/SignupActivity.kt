@@ -5,24 +5,24 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.databinding.ActivitySignupBinding
+import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
@@ -40,7 +40,6 @@ class SignupActivity : AppCompatActivity() {
    private var access = ""
    private var refresh = ""
    private var userUid = ""
-   private var deviceUid = ""
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -140,13 +139,30 @@ class SignupActivity : AppCompatActivity() {
                   when(user.type) {
                      "google" -> {
                         CoroutineScope(Dispatchers.IO).launch {
-                           val googleLogin = RetrofitAPI.api.googleLogin(user.idToken)
-                           if(googleLogin.isSuccessful) {
-                              access = googleLogin.body()!!.accessToken
-                              refresh = googleLogin.body()!!.refreshToken
-                              registerUser()
+                           val response= RetrofitAPI.api.googleLogin(user.idToken)
+                           if(response.isSuccessful) {
+                              userUid = decodeToken(response.body()!!.accessToken)
+
+                              val deleteUser = RetrofitAPI.api.deleteUser("Bearer ${response.body()!!.accessToken}", userUid)
+                              if(deleteUser.isSuccessful) {
+                                 Log.d(TAG, "deleteUser: $deleteUser")
+                                 val googleLogin = RetrofitAPI.api.googleLogin(user.idToken)
+                                 if(googleLogin.isSuccessful) {
+                                    access = googleLogin.body()!!.accessToken
+                                    refresh = googleLogin.body()!!.refreshToken
+                                    userUid = decodeToken(access)
+                                    registerUser()
+                                 }else {
+                                    Log.e(TAG, "googleLogin: $googleLogin")
+                                    Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                                 }
+                              }else {
+                                 Log.e(TAG, "deleteUser: $deleteUser")
+                                 Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                              }
                            }else {
-                              Log.e(TAG, "googleLogin: $googleLogin")
+                              Log.e(TAG, "googleLogin: $response")
+                              Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
                      }
@@ -164,9 +180,6 @@ class SignupActivity : AppCompatActivity() {
    }
 
    private fun registerUser() {
-      val userUid = decodeToken(access)
-      var deviceUid = ""
-
       val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
       val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
       val hardwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
@@ -175,12 +188,8 @@ class SignupActivity : AppCompatActivity() {
       val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 
       CoroutineScope(Dispatchers.IO).launch {
-         val createDevice = RetrofitAPI.api.createDevice("Bearer $access", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
-         if(createDevice.isSuccessful) {
-            deviceUid = createDevice.body()!!.uid
-         }else {
-            Log.e(TAG, "createDevice: $createDevice")
-         }
+         val response = RetrofitAPI.api.createDevice("Bearer $access", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
+         val deviceUid = if(response.isSuccessful) response.body()!!.uid else ""
 
          if(deviceUid != "") {
             val getUser = dataManager.getUser(user.type, user.email)
@@ -191,8 +200,7 @@ class SignupActivity : AppCompatActivity() {
                dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, name = "", gender = "",
                   birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0, regDate = LocalDate.now().toString()))
             }else {
-               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid,
-                  regDate = LocalDate.now().toString()))
+               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
             }
 
             val getUser2 = dataManager.getUser(user.type, user.email)
@@ -215,21 +223,17 @@ class SignupActivity : AppCompatActivity() {
                val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
 
                btnConfirm.setOnClickListener {
-                  startActivity(Intent(this@SignupActivity, InputActivity::class.java))
+                  val intent = Intent(this@SignupActivity, InputActivity::class.java)
+                  intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                  startActivity(intent)
                   dialog.dismiss()
                }
 
                dialog.show()
             }
          }else {
-            CoroutineScope(Dispatchers.IO).launch {
-               val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
-               if(deleteUser.isSuccessful) {
-                  Log.d(TAG, "deleteUser: $deleteUser")
-               }else {
-                  Log.e(TAG, "deleteUser: $deleteUser")
-               }
-            }
+            val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
+            if(deleteUser.isSuccessful) Log.d(TAG, "deleteUser: $deleteUser") else Log.e(TAG, "deleteUser: $deleteUser")
 
             runOnUiThread{
                Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()

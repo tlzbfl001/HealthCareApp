@@ -24,7 +24,7 @@ class ExerciseInputFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
-   private var intensity = "상"
+   private var intensity = "HIGH"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -71,7 +71,7 @@ class ExerciseInputFragment : Fragment() {
          binding.tvIntensity2.setTextColor(Color.BLACK)
          binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
          binding.tvIntensity3.setTextColor(Color.BLACK)
-         intensity = "상"
+         intensity = "HIGH"
       }
 
       binding.tvIntensity2.setOnClickListener {
@@ -81,7 +81,7 @@ class ExerciseInputFragment : Fragment() {
          binding.tvIntensity2.setTextColor(Color.WHITE)
          binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
          binding.tvIntensity3.setTextColor(Color.BLACK)
-         intensity = "중"
+         intensity = "MODERATE"
       }
 
       binding.tvIntensity3.setOnClickListener {
@@ -91,20 +91,23 @@ class ExerciseInputFragment : Fragment() {
          binding.tvIntensity2.setTextColor(Color.BLACK)
          binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
          binding.tvIntensity3.setTextColor(Color.WHITE)
-         intensity = "하"
+         intensity = "LOW"
       }
 
       binding.cvSave.setOnClickListener {
-         val workoutTime = if(binding.etTime.text.toString() == "") 0 else binding.etTime.text.toString().trim().toInt()
-         val calories = if(binding.etKcal.text.toString() == "") 0 else binding.etKcal.text.toString().trim().toInt()
-
          if(binding.etName.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
+            || binding.etKcal.text.toString().toInt() < 1) {
+            Toast.makeText(requireActivity(), "데이터는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
-               kcal = calories, useCount = 1, useDate = LocalDateTime.now().toString()))
-            dataManager.insertDailyExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = workoutTime,
-               kcal = calories, regDate = selectedDate.toString()))
+            dataManager.insertExercise(Exercise(uid = "", name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = binding.etTime.text.toString().toInt(),
+               kcal = binding.etKcal.text.toString().toInt(), useCount = 1, useDate = LocalDateTime.now().toString()))
+
+            val getExercise = dataManager.getExercise("name", binding.etName.text.toString().trim())
+
+            dataManager.insertDailyExercise(Exercise(uid = "", exerciseId = getExercise.id, name = binding.etName.text.toString().trim(), intensity = intensity,
+               workoutTime = binding.etTime.text.toString().toInt(), kcal = binding.etKcal.text.toString().toInt(), regDate = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), ExerciseListFragment())

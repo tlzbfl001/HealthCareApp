@@ -41,7 +41,7 @@ class WaterFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var adapter: WaterAdapter? = null
    private var dailyGoal = DailyGoal()
-   private var water = Water()
+   private var getWater = Water()
    private var mL = 200
    private var count = 0
 
@@ -101,8 +101,8 @@ class WaterFragment : Fragment() {
                dataManager.updateIntByDate(TABLE_DAILY_GOAL, "waterGoal", etGoal.text.toString().toInt(), selectedDate.toString())
             }
 
-            if(water.regDate == "") {
-               dataManager.insertWater(Water(mL = mL, regDate = selectedDate.toString()))
+            if(getWater.regDate == "") {
+               dataManager.insertWater(Water(ml = mL, regDate = selectedDate.toString()))
             }else {
                dataManager.updateIntByDate(TABLE_WATER, "mL", mL, selectedDate.toString())
             }
@@ -162,9 +162,9 @@ class WaterFragment : Fragment() {
 
    private fun dailyWater() {
       dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
-      water = dataManager.getWater(selectedDate.toString())
-      mL = water.mL
-      count = water.count
+      getWater = dataManager.getWater(selectedDate.toString())
+      mL = getWater.ml
+      count = getWater.count
 
       if(count > 0) {
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
@@ -208,11 +208,15 @@ class WaterFragment : Fragment() {
             dataManager.deleteItem(TABLE_WATER, "regDate", selectedDate.toString())
          }
 
-         water = dataManager.getWater(selectedDate.toString())
-         if(water.regDate == "") {
+         getWater = dataManager.getWater(selectedDate.toString())
+         if(getWater.regDate == "") {
             dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
          }else {
             dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
+         }
+
+         if(getWater.uid != null) {
+            dataManager.updateIntByDate(TABLE_WATER, "isUpdated", 1, selectedDate.toString())
          }
 
          resetData()
@@ -228,13 +232,17 @@ class WaterFragment : Fragment() {
          binding.pbWater.max = dailyGoal.waterGoal
          binding.pbWater.progress = count
 
-         water = dataManager.getWater(selectedDate.toString())
+         getWater = dataManager.getWater(selectedDate.toString())
          if(count > 0) {
-            if(water.regDate == "") {
+            if(getWater.regDate == "") {
                dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
             }else {
                dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
             }
+         }
+
+         if(getWater.uid != null) {
+            dataManager.updateIntByDate(TABLE_WATER, "isUpdated", 1, selectedDate.toString())
          }
 
          resetData()

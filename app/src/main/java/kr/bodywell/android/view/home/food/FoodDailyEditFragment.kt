@@ -137,7 +137,7 @@ class FoodDailyEditFragment : Fragment() {
             dataManager.insertImage(imageList[i])
          }
 
-         dataManager.updateInt(TABLE_DAILY_FOOD, "count", count, dataId)
+         dataManager.updateInt(TABLE_DAILY_FOOD, "count", count, "id", dataId)
 
          Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment()

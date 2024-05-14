@@ -406,8 +406,8 @@ class ReportFoodFragment : Fragment() {
 
       for(i in 0 until getData.size){
          xVal += format2.format(format1.parse(getData[i].regDate)!!)
-         lineList += (getData[i].count * getData[i].mL).toFloat()
-         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].mL).toFloat()))
+         lineList += (getData[i].count * getData[i].ml).toFloat()
+         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].ml).toFloat()))
       }
 
       for (index in lineList.indices) {

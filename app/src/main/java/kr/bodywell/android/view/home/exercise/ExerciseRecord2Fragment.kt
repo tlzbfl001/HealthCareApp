@@ -136,10 +136,9 @@ class ExerciseRecord2Fragment : Fragment() {
                binding.rv2.visibility = View.GONE
                adapter.clearItems()
             }else {
-               // 검색 단어를 포함하는지 확인
                for(i in 0 until itemList.size) {
                   if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].name))
+                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].uid, string2 = itemList[i].name))
                   }
                   adapter.setItems(searchList)
                }

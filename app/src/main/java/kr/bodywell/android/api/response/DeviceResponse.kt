@@ -30,3 +30,8 @@ data class DeviceResponse(
 	@SerializedName("updatedAt")
 	var updatedAt: String = ""
 )
+
+data class DevicesResponse (
+	@SerializedName("devices")
+	var devices: List<DeviceResponse>
+)

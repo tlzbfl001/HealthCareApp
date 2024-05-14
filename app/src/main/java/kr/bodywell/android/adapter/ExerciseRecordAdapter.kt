@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Unused
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 
@@ -24,12 +27,11 @@ class ExerciseRecordAdapter (
    private val back: String
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
+   private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
 
    init {
-      dataManager = DataManager(context)
-      dataManager!!.open()
+      dataManager.open()
    }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -64,20 +66,29 @@ class ExerciseRecordAdapter (
          }
 
          clDelete.setOnClickListener {
-            AlertDialog.Builder(context, R.style.AlertDialogStyle)
-               .setTitle("운동 삭제")
-               .setMessage("정말 삭제하시겠습니까?")
-               .setPositiveButton("확인") { _, _ ->
-                  dataManager!!.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
+            val getDailyExercise = dataManager.getDailyExercise("exerciseId", itemList[position].id)
+            if(getDailyExercise.id > 0) {
+               Toast.makeText(context, "사용중인 데이터는 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                  .setTitle("운동 삭제")
+                  .setMessage("정말 삭제하시겠습니까?")
+                  .setPositiveButton("확인") { _, _ ->
+                     dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
 
-                  itemList.removeAt(position)
-                  notifyDataSetChanged()
+                     if(itemList[position].uid != "") {
+                        dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].uid))
+                     }
 
-                  Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-               }
-               .setNegativeButton("취소", null)
-               .create().show()
-            dialog.dismiss()
+                     itemList.removeAt(position)
+                     notifyDataSetChanged()
+
+                     Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                  }
+                  .setNegativeButton("취소", null)
+                  .create().show()
+               dialog.dismiss()
+            }
          }
 
          dialog.setContentView(bottomSheetView)

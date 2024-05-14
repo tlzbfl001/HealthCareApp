@@ -182,7 +182,7 @@ class ExerciseFragment : Fragment() {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager.getDailyExercise(selectedDate.toString())
+      val getExercise = dataManager.getDailyExercise("regDate", selectedDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

@@ -97,8 +97,8 @@ class FoodAddFragment : Fragment() {
 						protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1))
 				}
 
-				dataManager.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, id)
-				dataManager.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), id)
+				dataManager.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, "id", id)
+				dataManager.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), "id", id)
 
 				Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 

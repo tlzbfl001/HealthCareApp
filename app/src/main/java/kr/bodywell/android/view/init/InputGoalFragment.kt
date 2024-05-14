@@ -68,7 +68,9 @@ class InputGoalFragment : Fragment() {
       }
 
       binding.tvSkip.setOnClickListener {
-         startActivity(Intent(activity, MainActivity::class.java))
+         val intent = Intent(activity, MainActivity::class.java)
+         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+         startActivity(intent)
       }
 
       binding.cvContinue.setOnClickListener {
@@ -82,7 +84,9 @@ class InputGoalFragment : Fragment() {
          dataManager.updateUserInt(TABLE_USER, "waterGoal", waterGoal)
          dataManager.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
 
-         startActivity(Intent(requireActivity(), MainActivity::class.java))
+         val intent = Intent(activity, MainActivity::class.java)
+         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+         startActivity(intent)
       }
 
       return binding.root

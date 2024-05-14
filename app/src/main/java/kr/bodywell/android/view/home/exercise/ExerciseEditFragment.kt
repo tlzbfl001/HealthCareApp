@@ -22,7 +22,7 @@ class ExerciseEditFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
-	private var intensity = ""
+	private var intensity = "HIGH"
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -62,9 +62,9 @@ class ExerciseEditFragment : Fragment() {
 		binding.etKcal.setText(exercise.kcal.toString())
 
 		when(exercise.intensity) {
-			"상" -> unit1()
-			"중" -> unit2()
-			"하" -> unit3()
+			"HIGH" -> unit1()
+			"MODERATE" -> unit2()
+			"LOW" -> unit3()
 		}
 
 		binding.mainLayout.setOnTouchListener { _, _ ->
@@ -89,18 +89,19 @@ class ExerciseEditFragment : Fragment() {
 		}
 
 		binding.cvEdit.setOnClickListener {
-			if(id > -1) {
+			if(id > 0) {
 				val getData = dataManager.getExercise("name", binding.etName.text.toString().trim())
 
 				if(binding.etName.text.toString().trim() == "") {
 					Toast.makeText(context, "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
-				}else if (getData.name != "" && (getData.name != exercise.name)) {
+				}else if(getData.name != "" && (getData.name != exercise.name)) {
 					Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
+				}else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
+					|| binding.etKcal.text.toString().toInt() < 1) {
+					Toast.makeText(requireActivity(), "데이터는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 				}else {
-					dataManager.updateExercise(
-						Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
-						workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt())
-					)
+					dataManager.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
+						workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt(), isUpdated = 1))
 
 					Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 					replaceFragment()
@@ -120,7 +121,7 @@ class ExerciseEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = "상"
+		intensity = "HIGH"
 	}
 
 	private fun unit2() {
@@ -130,7 +131,7 @@ class ExerciseEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.WHITE)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = "중"
+		intensity = "MODERATE"
 	}
 
 	private fun unit3() {
@@ -140,7 +141,7 @@ class ExerciseEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
 		binding.tvIntensity3.setTextColor(Color.WHITE)
-		intensity = "하"
+		intensity = "LOW"
 	}
 
 	private fun replaceFragment() {

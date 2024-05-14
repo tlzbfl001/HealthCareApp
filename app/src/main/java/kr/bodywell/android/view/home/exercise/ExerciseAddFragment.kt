@@ -25,7 +25,6 @@ class ExerciseAddFragment : Fragment() {
     private lateinit var callback: OnBackPressedCallback
     private lateinit var dataManager: DataManager
     private var exercise = Exercise()
-    private var intensity = "상"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,6 +63,12 @@ class ExerciseAddFragment : Fragment() {
         binding.tvTime.text = exercise.workoutTime.toString()
         binding.tvKcal.text = exercise.kcal.toString()
 
+        when(exercise.intensity) {
+            "HIGH" -> binding.tvIntensity.text = "상"
+            "MODERATE" -> binding.tvIntensity.text = "중"
+            "LOW" -> binding.tvIntensity.text = "하"
+        }
+
         binding.mainLayout.setOnTouchListener { _, _ ->
             hideKeyboard(requireActivity())
             true
@@ -78,12 +83,12 @@ class ExerciseAddFragment : Fragment() {
             val calories = if(binding.tvKcal.text.toString().trim() == "") 0 else binding.tvKcal.text.toString().toInt()
 
             if(id > 0) {
-                dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = intensity, workoutTime = workoutTime,
-                    kcal = calories, regDate = selectedDate.toString()))
+                dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = exercise.intensity, workoutTime = workoutTime, kcal = calories,
+                    regDate = selectedDate.toString()))
 
                 val getExercise = dataManager.getExercise("name", exercise.name)
-                dataManager.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, getExercise.id)
-                dataManager.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), getExercise.id)
+                dataManager.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
+                dataManager.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 replaceFragment1(requireActivity(), ExerciseListFragment())

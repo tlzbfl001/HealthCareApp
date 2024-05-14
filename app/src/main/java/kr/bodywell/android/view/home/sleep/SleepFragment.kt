@@ -38,7 +38,7 @@ class SleepFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var getDailyGoal = DailyGoal()
    private var getSleep = Sleep()
-   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -154,18 +154,18 @@ class SleepFragment : Fragment() {
       getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       getSleep = dataManager.getSleep(selectedDate.toString())
 
-      if(getSleep.bedTime != "" && getSleep.wakeTime != "") {
-         val bedTime = LocalDateTime.parse(getSleep.bedTime, formatter)
-         val wakeTime = LocalDateTime.parse(getSleep.wakeTime, formatter)
+      if(getSleep.startTime != "" && getSleep.endTime != "") {
+         val bedTime = LocalDateTime.parse(getSleep.startTime, formatter)
+         val wakeTime = LocalDateTime.parse(getSleep.endTime, formatter)
 
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
          binding.pbSleep.max = getDailyGoal.sleepGoal
-         binding.pbSleep.progress = getSleep.sleepTime
+         binding.pbSleep.progress = getSleep.total
          binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"
          binding.tvWakeTime.text = "${wakeTime.hour}h ${wakeTime.minute}m"
 
-         val remain = (getDailyGoal.sleepGoal - getSleep.sleepTime)
+         val remain = (getDailyGoal.sleepGoal - getSleep.total)
          if(remain > 0) {
             binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
          }
@@ -175,7 +175,7 @@ class SleepFragment : Fragment() {
       }
 
       binding.tvGoal.text = "${getDailyGoal.sleepGoal / 60}h ${getDailyGoal.sleepGoal % 60}m"
-      binding.tvSleep.text = "${getSleep.sleepTime / 60}h ${getSleep.sleepTime % 60}m"
+      binding.tvSleep.text = "${getSleep.total / 60}h ${getSleep.total % 60}m"
    }
 
    override fun onDetach() {

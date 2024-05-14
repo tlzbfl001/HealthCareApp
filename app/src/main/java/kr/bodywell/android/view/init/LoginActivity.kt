@@ -1,23 +1,26 @@
 package kr.bodywell.android.view.init
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.webkit.ConsoleMessage
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kr.bodywell.android.BuildConfig
+import kr.bodywell.android.R
+import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
+import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
@@ -25,8 +28,10 @@ import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.view.home.MainActivity
 import org.json.JSONObject
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
@@ -35,6 +40,10 @@ class LoginActivity : AppCompatActivity() {
    private lateinit var dataManager: DataManager
    private var gsc: GoogleSignInClient? = null
    private var gso: GoogleSignInOptions? = null
+   private var user = User()
+   private var access = ""
+   private var refresh = ""
+   private var userUid = ""
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -96,9 +105,45 @@ class LoginActivity : AppCompatActivity() {
 
                if(getUser.regDate == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
-                     val intent = Intent(this, SignupActivity::class.java)
-                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
-                     startActivity(intent)
+                     var check = false
+                     CoroutineScope(Dispatchers.IO).launch {
+                        val response = RetrofitAPI.api.getUsers()
+                        if(response.isSuccessful) {
+                           for(i in 0 until response.body()!!.users.size) {
+                              if(response.body()!!.users[i].email == it.result.email.toString()) {
+                                 check = true
+                              }
+                           }
+                        }
+
+                        if(check) {
+                           runOnUiThread{
+                              AlertDialog.Builder(this@LoginActivity, R.style.AlertDialogStyle)
+                                 .setTitle("회원가입")
+                                 .setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
+                                 .setPositiveButton("확인") { _, _ ->
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                       val response = RetrofitAPI.api.googleLogin(it.result.idToken!!)
+                                       if(response.isSuccessful) {
+                                          user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
+                                          userUid = decodeToken(response.body()!!.accessToken)
+                                          access = response.body()!!.accessToken
+                                          refresh = response.body()!!.refreshToken
+                                          registerUser()
+                                       }else {
+                                          Log.e(TAG, "googleLogin: $response")
+                                       }
+                                    }
+                                 }
+                                 .setNegativeButton("취소", null)
+                                 .create().show()
+                           }
+                        }else {
+                           val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                           intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
+                           startActivity(intent)
+                        }
+                     }
                   }else {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }
@@ -225,6 +270,67 @@ class LoginActivity : AppCompatActivity() {
          }
       }
    }*/
+
+   private fun registerUser() {
+      CoroutineScope(Dispatchers.IO).launch {
+         var deviceUid = ""
+
+         val getDevices = RetrofitAPI.api.getDevices("Bearer $access")
+         if(getDevices.isSuccessful) deviceUid = getDevices.body()!!.devices[0].uid
+
+         if(deviceUid != "") {
+            val getUser = dataManager.getUser(user.type, user.email)
+            val getToken = dataManager.getToken()
+
+            // 사용자 정보 저장
+            if(getUser.regDate == "") {
+               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, name = "", gender = "",
+                  birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0, regDate = LocalDate.now().toString()))
+            }else {
+               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
+            }
+
+            val getUser2 = dataManager.getUser(user.type, user.email)
+            MyApp.prefs.setPrefs("userId", getUser2.id)
+
+            // 토큰 정보 저장
+            if(getToken.accessRegDate == "") {
+               dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
+                  refreshRegDate = LocalDateTime.now().toString()))
+            }else {
+               dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
+                  refreshRegDate = LocalDateTime.now().toString()))
+            }
+
+            val response = RetrofitAPI.api.getSleeps("Bearer $access")
+            if(response.isSuccessful) {
+               for(i in 0 until response.body()!!.sleeps.size) {
+                  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                  val bedTime = LocalDateTime.parse(response.body()!!.sleeps[i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
+                  val wakeTime = LocalDateTime.parse(response.body()!!.sleeps[i].ends, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
+                  val regDate = LocalDateTime.parse(response.body()!!.sleeps[i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")).format(formatter)
+
+                  val startDT = LocalDateTime.of(bedTime.year, bedTime.monthValue, bedTime.dayOfMonth, bedTime.hour, bedTime.minute)
+                  val endDT = LocalDateTime.of(wakeTime.year, wakeTime.monthValue, wakeTime.dayOfMonth, wakeTime.hour, wakeTime.minute)
+                  val diff = Duration.between(startDT, endDT)
+
+                  dataManager.insertSleep(Sleep(uid = response.body()!!.sleeps[i].uid, startTime = response.body()!!.sleeps[i].starts,
+                     endTime = response.body()!!.sleeps[i].ends, total = diff.toMinutes().toInt(), regDate = regDate.toString()))
+               }
+            }
+
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+         }else {
+            Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+         }
+      }
+   }
+
+   private fun decodeToken(token: String): String {
+      val decodeData = String(Base64.decode(token.split(".")[1], Base64.URL_SAFE), charset("UTF-8"))
+      val obj = JSONObject(decodeData)
+      return obj.get("sub").toString()
+   }
 
    override fun onDestroy() {
       super.onDestroy()

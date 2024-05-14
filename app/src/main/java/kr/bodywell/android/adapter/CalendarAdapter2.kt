@@ -32,20 +32,20 @@ class CalendarAdapter2 (
             holder.tvWeek.setTextColor(Color.WHITE)
             holder.tvDate.setTextColor(Color.WHITE)
          }
-      }
 
-      if (!days.contains(null) && date!!.month != days[6]!!.month) {
-         holder.tvDate.setTextColor(Color.WHITE)
-      }
+         if (!days.contains(null) && date.month != days[6]!!.month) {
+            holder.tvDate.setTextColor(Color.WHITE)
+         }
 
-      when(days[position]!!.dayOfWeek) {
-         DayOfWeek.SUNDAY -> holder.tvWeek.text = "SUN"
-         DayOfWeek.MONDAY -> holder.tvWeek.text = "MON"
-         DayOfWeek.TUESDAY -> holder.tvWeek.text = "TUE"
-         DayOfWeek.WEDNESDAY -> holder.tvWeek.text = "WED"
-         DayOfWeek.THURSDAY -> holder.tvWeek.text = "THU"
-         DayOfWeek.FRIDAY -> holder.tvWeek.text = "FRI"
-         else -> holder.tvWeek.text = "SAT"
+         when(days[position]!!.dayOfWeek) {
+            DayOfWeek.SUNDAY -> holder.tvWeek.text = "SUN"
+            DayOfWeek.MONDAY -> holder.tvWeek.text = "MON"
+            DayOfWeek.TUESDAY -> holder.tvWeek.text = "TUE"
+            DayOfWeek.WEDNESDAY -> holder.tvWeek.text = "WED"
+            DayOfWeek.THURSDAY -> holder.tvWeek.text = "THU"
+            DayOfWeek.FRIDAY -> holder.tvWeek.text = "FRI"
+            else -> holder.tvWeek.text = "SAT"
+         }
       }
    }
 

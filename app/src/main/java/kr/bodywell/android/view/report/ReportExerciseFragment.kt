@@ -167,7 +167,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val dates = ArrayList<String>()
-      val getExercise = dataManager.getDailyExercise(calendarDate.toString())
+      val getExercise = dataManager.getDailyExercise("regDate", calendarDate.toString())
 
       if(getExercise.size > 0) {
          dates.add(calendarDate.toString())
@@ -246,7 +246,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
 
-         val getDailyExercise = dataManager.getDailyExercise(getData[i])
+         val getDailyExercise = dataManager.getDailyExercise("regDate", getData[i])
          for(j in 0 until getDailyExercise.size) {
             if(getDailyExercise[j].workoutTime > 0) {
                total += getDailyExercise[j].workoutTime.toFloat()
@@ -317,7 +317,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
 
-         val getDailyExercise = dataManager.getDailyExercise(getData[i])
+         val getDailyExercise = dataManager.getDailyExercise("regDate", getData[i])
          for(j in 0 until getDailyExercise.size) {
             if(getDailyExercise[j].kcal > 0) {
                total += getDailyExercise[j].kcal.toFloat()

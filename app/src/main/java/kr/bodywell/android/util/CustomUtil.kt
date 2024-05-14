@@ -143,7 +143,7 @@ class CustomUtil {
          dataManager.open()
 
          var sum = 0
-         val getExercise = dataManager.getDailyExercise(date)
+         val getExercise = dataManager.getDailyExercise("regDate", date)
 
          if(getExercise.size > 0) {
             for(i in 0 until getExercise.size) {
