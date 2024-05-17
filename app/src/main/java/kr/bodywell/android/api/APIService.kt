@@ -2,6 +2,7 @@ package kr.bodywell.android.api
 
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
+import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
@@ -11,6 +12,7 @@ import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
 import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DevicesResponse
+import kr.bodywell.android.api.response.DietResponse
 import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.api.response.SleepResponse
 import kr.bodywell.android.api.response.SleepsResponse
@@ -67,6 +69,12 @@ interface APIService {
 		@Body dto: FoodDTO
 	): Response<FoodResponse>
 
+	@POST("/health/diets")
+	suspend fun createDiets(
+		@Header("Authorization") token: String,
+		@Body dto: DietDTO
+	): Response<DietResponse>
+
 	@POST("/health/waters")
 	suspend fun createWater(
 		@Header("Authorization") token: String,
@@ -85,7 +93,6 @@ interface APIService {
 		@Body dto: ActivityDTO
 	): Response<ActivityResponse>
 
-
 	@POST("/health/workouts")
 	suspend fun createWorkout(
 		@Header("Authorization") token: String,
@@ -102,6 +109,20 @@ interface APIService {
 	suspend fun refreshToken(
 		@Header("Authorization") token: String
 	): Response<TokenResponse>
+
+	@PATCH("/health/foods/{uid}")
+	suspend fun updateFood(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Body dto: FoodDTO
+	): Response<FoodResponse>
+
+	@PATCH("/health/diets/{uid}")
+	suspend fun updateDiets(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Body dto: DietDTO
+	): Response<DietResponse>
 
 	@PATCH("/health/waters/{uid}")
 	suspend fun updateWater(
@@ -125,7 +146,6 @@ interface APIService {
 	): Response<ActivityResponse>
 
 	@PATCH("/health/workouts/{uid}")
-
 	suspend fun updateWorkout(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,

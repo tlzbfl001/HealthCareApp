@@ -42,7 +42,7 @@ class WaterFragment : Fragment() {
    private var adapter: WaterAdapter? = null
    private var dailyGoal = DailyGoal()
    private var getWater = Water()
-   private var mL = 200
+   private var ml = 200
    private var count = 0
 
    override fun onAttach(context: Context) {
@@ -92,7 +92,7 @@ class WaterFragment : Fragment() {
             Toast.makeText(requireActivity(), "목표 섭취물은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(etVolume.text.toString() != "") {
-               mL = etVolume.text.toString().toInt()
+               ml = etVolume.text.toString().toInt()
             }
 
             if(dailyGoal.regDate == "") {
@@ -102,9 +102,9 @@ class WaterFragment : Fragment() {
             }
 
             if(getWater.regDate == "") {
-               dataManager.insertWater(Water(ml = mL, regDate = selectedDate.toString()))
+               dataManager.insertWater(Water(uid = "", ml = ml, regDate = selectedDate.toString()))
             }else {
-               dataManager.updateIntByDate(TABLE_WATER, "mL", mL, selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_WATER, "mL", ml, selectedDate.toString())
             }
 
             dailyWater()
@@ -163,7 +163,7 @@ class WaterFragment : Fragment() {
    private fun dailyWater() {
       dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
       getWater = dataManager.getWater(selectedDate.toString())
-      mL = getWater.ml
+      ml = getWater.ml
       count = getWater.count
 
       if(count > 0) {
@@ -176,15 +176,15 @@ class WaterFragment : Fragment() {
          binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
       }
 
-      binding.tvIntake.text = "${count}잔/${count * mL}ml"
-      binding.tvMl.text = "${mL}ml"
-      binding.tvGoal.text = "${dailyGoal.waterGoal}잔/${dailyGoal.waterGoal * mL}ml"
+      binding.tvIntake.text = "${count}잔/${count * ml}ml"
+      binding.tvMl.text = "${ml}ml"
+      binding.tvGoal.text = "${dailyGoal.waterGoal}잔/${dailyGoal.waterGoal * ml}ml"
       binding.tvCount.text = "${count}잔"
-      binding.tvUnit.text = "(${count * mL}ml)"
+      binding.tvUnit.text = "(${count * ml}ml)"
 
       val remain = dailyGoal.waterGoal - count
       if(remain > 0) {
-         binding.tvRemain.text = "${remain}잔/${remain * mL}ml"
+         binding.tvRemain.text = "${remain}잔/${remain * ml}ml"
       }else {
          binding.tvRemain.text = "0잔/0ml"
       }
@@ -210,7 +210,7 @@ class WaterFragment : Fragment() {
 
          getWater = dataManager.getWater(selectedDate.toString())
          if(getWater.regDate == "") {
-            dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
+            dataManager.insertWater(Water(uid = "", count = count, regDate = selectedDate.toString()))
          }else {
             dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
          }
@@ -235,7 +235,7 @@ class WaterFragment : Fragment() {
          getWater = dataManager.getWater(selectedDate.toString())
          if(count > 0) {
             if(getWater.regDate == "") {
-               dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
+               dataManager.insertWater(Water(uid = "", count = count, regDate = selectedDate.toString()))
             }else {
                dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
             }
@@ -251,12 +251,12 @@ class WaterFragment : Fragment() {
 
    private fun resetData() {
       binding.tvCount.text = "${count}잔"
-      binding.tvUnit.text = "(${count * mL}ml)"
-      binding.tvIntake.text = "${count}잔/${count * mL}ml"
+      binding.tvUnit.text = "(${count * ml}ml)"
+      binding.tvIntake.text = "${count}잔/${count * ml}ml"
 
       val remain = dailyGoal.waterGoal - count
       if(remain > 0) {
-         binding.tvRemain.text = "${remain}잔/${remain * mL}ml"
+         binding.tvRemain.text = "${remain}잔/${remain * ml}ml"
       }else {
          binding.tvRemain.text = "0잔/0ml"
       }

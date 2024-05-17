@@ -27,7 +27,7 @@ class FoodAddFragment : Fragment() {
 	private lateinit var dataManager: DataManager
 	private var bundle = Bundle()
 	private var getFood = Food()
-	private var type = "1"
+	private var type = "BREAKFAST"
 	private var unit = "g"
 
 	override fun onAttach(context: Context) {
@@ -59,7 +59,7 @@ class FoodAddFragment : Fragment() {
 		dataManager = DataManager(activity)
 		dataManager.open()
 
-		val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
+		val id = arguments?.getString("id").toString().toInt()
 		type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
@@ -86,30 +86,27 @@ class FoodAddFragment : Fragment() {
 		}
 
 		binding.cvSave.setOnClickListener {
-			if(id > -1) {
-				val getDailyFood = dataManager.getDailyFood(type = type.toInt(), name = getFood.name, selectedDate.toString())
-				if(getDailyFood.regDate == "") {
-					dataManager.insertDailyFood(Food(type = type.toInt(), name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
-						carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
-						regDate = selectedDate.toString()))
-				}else {
-					dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
-						protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1))
-				}
+			val getDailyFood = dataManager.getDailyFood(type = type, name = getFood.name, selectedDate.toString())
 
-				dataManager.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, "id", id)
-				dataManager.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), "id", id)
-
-				Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-
-				when(type) {
-					"1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-					"2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-					"3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-					"4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
-				}
+			if(getDailyFood.regDate == "") {
+				dataManager.insertDailyFood(Food(uid = "", type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
+					carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
+					regDate = selectedDate.toString()))
 			}else {
-				Toast.makeText(context, "오류 발생", Toast.LENGTH_SHORT).show()
+				dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
+					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1))
+			}
+
+			dataManager.updateInt(TABLE_FOOD, "useCount", getFood.useCount + 1, "id", id)
+			dataManager.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), "id", id)
+
+			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+
+			when(type) {
+				"BREAKFAST" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+				"LUNCH" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+				"DINNER" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+				else -> replaceFragment1(requireActivity(), FoodSnackFragment())
 			}
 		}
 

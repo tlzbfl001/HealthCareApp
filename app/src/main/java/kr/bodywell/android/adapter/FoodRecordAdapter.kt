@@ -12,9 +12,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
@@ -25,12 +27,11 @@ class FoodRecordAdapter (
    private val type: String
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
+   private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
 
    init {
-      dataManager = DataManager(context)
-      dataManager!!.open()
+      dataManager.open()
    }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -60,27 +61,36 @@ class FoodRecordAdapter (
          clEdit.setOnClickListener {
             bundle.putString("id", itemList[position].id.toString())
             bundle.putString("type", type)
-            bundle.putString("back", "1")
+            bundle.putString("back", back)
             replaceFragment2(context, FoodEditFragment(), bundle)
             dialog.dismiss()
          }
 
          clDelete.setOnClickListener {
-            AlertDialog.Builder(context, R.style.AlertDialogStyle)
-               .setTitle("음식 삭제")
-               .setMessage("정말 삭제하시겠습니까?")
-               .setPositiveButton("확인") { _, _ ->
-                  dataManager!!.deleteItem(TABLE_FOOD, "id", itemList[position].id)
+            val getDailyFood = dataManager.getDailyFood("foodId", itemList[position].id)
+            if(getDailyFood.id > 0) {
+               Toast.makeText(context, "사용중인 데이터는 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                  .setTitle("음식 삭제")
+                  .setMessage("정말 삭제하시겠습니까?")
+                  .setPositiveButton("확인") { _, _ ->
+                     dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
 
-                  itemList.removeAt(position)
-                  notifyDataSetChanged()
+                     if(itemList[position].uid != "") {
+                        dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid))
+                     }
 
-                  Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-               }
-               .setNegativeButton("취소", null)
-               .create().show()
+                     itemList.removeAt(position)
+                     notifyDataSetChanged()
 
-            dialog.dismiss()
+                     Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                  }
+                  .setNegativeButton("취소", null)
+                  .create().show()
+
+               dialog.dismiss()
+            }
          }
 
          dialog.setContentView(bottomSheetView)

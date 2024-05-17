@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
+import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
@@ -28,7 +29,7 @@ class FoodInputFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private var bundle = Bundle()
-   private var type = 1
+   private var type = "BREAKFAST"
    private var unit = "mg"
 
    override fun onAttach(context: Context) {
@@ -60,8 +61,8 @@ class FoodInputFragment : Fragment() {
       val dataManager = DataManager(requireActivity())
       dataManager.open()
 
-      type = arguments?.getString("type")!!.toInt()
-      bundle.putString("type", type.toString())
+      type = arguments?.getString("type")!!
+      bundle.putString("type", type)
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -342,11 +343,12 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {
             // 음식데이터 저장
-            dataManager.insertFood(Food(type = type, name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
+            dataManager.insertFood(Food(uid = "", name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
                protein = protein, fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString()))
 
-            // 일일 음식데이터 수정 or 저장
             val getDaily = dataManager.getDailyFood(type, name, selectedDate.toString())
+
+            // 일일 음식데이터 수정 or 저장
             if(getDaily.regDate != "") {
                dataManager.updateDailyFood(Food(id = getDaily.id, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
                   protein = protein, fat = fat, salt = salt, sugar = sugar, count = getDaily.count + 1))
@@ -358,10 +360,10 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 
             when(type) {
-               1 -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-               2 -> replaceFragment1(requireActivity(), FoodLunchFragment())
-               3 -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-               4 -> replaceFragment1(requireActivity(), FoodSnackFragment())
+               "BREAKFAST" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+               "LUNCH" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+               "DINNER" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+               else -> replaceFragment1(requireActivity(), FoodSnackFragment())
             }
          }
       }

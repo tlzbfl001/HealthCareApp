@@ -106,6 +106,7 @@ class LoginActivity : AppCompatActivity() {
                if(getUser.regDate == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      var check = false
+
                      CoroutineScope(Dispatchers.IO).launch {
                         val response = RetrofitAPI.api.getUsers()
                         if(response.isSuccessful) {
@@ -116,7 +117,11 @@ class LoginActivity : AppCompatActivity() {
                            }
                         }
 
+                        Log.e(TAG, "check: $check")
+
                         if(check) {
+                           Log.e(TAG, "check: 1")
+
                            runOnUiThread{
                               AlertDialog.Builder(this@LoginActivity, R.style.AlertDialogStyle)
                                  .setTitle("회원가입")
@@ -139,6 +144,7 @@ class LoginActivity : AppCompatActivity() {
                                  .create().show()
                            }
                         }else {
+                           Log.e(TAG, "check: 2")
                            val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                            intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
                            startActivity(intent)

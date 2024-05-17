@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.home.MainFragment
@@ -256,10 +258,10 @@ class FoodFragment : Fragment() {
       val imageList = ArrayList<Image>()
       binding.viewPager.adapter = null
 
-      val getData1 = dataManager.getImage(1, selectedDate.toString())
-      val getData2 = dataManager.getImage(2, selectedDate.toString())
-      val getData3 = dataManager.getImage(3, selectedDate.toString())
-      val getData4 = dataManager.getImage(4, selectedDate.toString())
+      val getData1 = dataManager.getImage("1", selectedDate.toString())
+      val getData2 = dataManager.getImage("2", selectedDate.toString())
+      val getData3 = dataManager.getImage("3", selectedDate.toString())
+      val getData4 = dataManager.getImage("4", selectedDate.toString())
 
       for(i in 0 until getData1.size) {
          imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
@@ -299,6 +301,10 @@ class FoodFragment : Fragment() {
    }
 
    private fun listView() {
+      itemList1.clear()
+      itemList2.clear()
+      itemList3.clear()
+      itemList4.clear()
       binding.clView1.visibility = View.GONE
       binding.ivExpand1.setImageResource(R.drawable.arrow_down)
       binding.clView2.visibility = View.GONE
@@ -308,30 +314,24 @@ class FoodFragment : Fragment() {
       binding.clView4.visibility = View.GONE
       binding.ivExpand4.setImageResource(R.drawable.arrow_down)
 
-      itemList1.clear()
-      itemList2.clear()
-      itemList3.clear()
-      itemList4.clear()
-
-      val getUser = dataManager.getUser()
-      val getFood1 = dataManager.getDailyFood(1, selectedDate.toString())
-      val getFood2 = dataManager.getDailyFood(2, selectedDate.toString())
-      val getFood3 = dataManager.getDailyFood(3, selectedDate.toString())
-      val getFood4 = dataManager.getDailyFood(4, selectedDate.toString())
+      val getDailyFood1 = dataManager.getDailyFood("BREAKFAST", selectedDate.toString())
+      val getDailyFood2 = dataManager.getDailyFood("LUNCH", selectedDate.toString())
+      val getDailyFood3 = dataManager.getDailyFood("DINNER", selectedDate.toString())
+      val getDailyFood4 = dataManager.getDailyFood("SNACK", selectedDate.toString())
 
       var kcal1 = 0
       var carbohydrate1 = 0.0
       var protein1 = 0.0
       var fat1 = 0.0
-      for(i in 0 until getFood1.size) {
-         kcal1 += getFood1[i].kcal * getFood1[i].count
-         carbohydrate1 += getFood1[i].carbohydrate * getFood1[i].count
-         protein1 += getFood1[i].protein * getFood1[i].count
-         fat1 += getFood1[i].fat * getFood1[i].count
+      for(i in 0 until getDailyFood1.size) {
+         kcal1 += getDailyFood1[i].kcal * getDailyFood1[i].count
+         carbohydrate1 += getDailyFood1[i].carbohydrate * getDailyFood1[i].count
+         protein1 += getDailyFood1[i].protein * getDailyFood1[i].count
+         fat1 += getDailyFood1[i].fat * getDailyFood1[i].count
 
-         itemList1.add(Food(id = getFood1[i].id, name = getFood1[i].name, unit = getFood1[i].unit, amount = getFood1[i].amount, count = getFood1[i].count,
-               kcal = getFood1[i].kcal, carbohydrate = getFood1[i].carbohydrate, protein = getFood1[i].protein, fat = getFood1[i].fat,
-               salt = getFood1[i].salt, sugar = getFood1[i].sugar, type = getFood1[i].type, regDate = getFood1[i].regDate)
+         itemList1.add(Food(id = getDailyFood1[i].id, name = getDailyFood1[i].name, unit = getDailyFood1[i].unit, amount = getDailyFood1[i].amount,
+            count = getDailyFood1[i].count, kcal = getDailyFood1[i].kcal, carbohydrate = getDailyFood1[i].carbohydrate, protein = getDailyFood1[i].protein,
+            fat = getDailyFood1[i].fat, salt = getDailyFood1[i].salt, sugar = getDailyFood1[i].sugar, type = getDailyFood1[i].type, regDate = getDailyFood1[i].regDate)
          )
       }
 
@@ -339,15 +339,15 @@ class FoodFragment : Fragment() {
       var carbohydrate2 = 0.0
       var protein2 = 0.0
       var fat2 = 0.0
-      for(i in 0 until getFood2.size) {
-         kcal2 += getFood2[i].kcal * getFood2[i].count
-         carbohydrate2 += getFood2[i].carbohydrate * getFood2[i].count
-         protein2 += getFood2[i].protein * getFood2[i].count
-         fat2 += getFood2[i].fat * getFood2[i].count
+      for(i in 0 until getDailyFood2.size) {
+         kcal2 += getDailyFood2[i].kcal * getDailyFood2[i].count
+         carbohydrate2 += getDailyFood2[i].carbohydrate * getDailyFood2[i].count
+         protein2 += getDailyFood2[i].protein * getDailyFood2[i].count
+         fat2 += getDailyFood2[i].fat * getDailyFood2[i].count
 
-         itemList2.add(Food(id = getFood2[i].id, name = getFood2[i].name, unit = getFood2[i].unit, amount = getFood2[i].amount, count = getFood2[i].count,
-               kcal = getFood2[i].kcal, carbohydrate = getFood2[i].carbohydrate, protein = getFood2[i].protein, fat = getFood2[i].fat,
-               salt = getFood2[i].salt, sugar = getFood2[i].sugar, type = getFood2[i].type, regDate = getFood2[i].regDate)
+         itemList2.add(Food(id = getDailyFood2[i].id, name = getDailyFood2[i].name, unit = getDailyFood2[i].unit, amount = getDailyFood2[i].amount,
+            count = getDailyFood2[i].count, kcal = getDailyFood2[i].kcal, carbohydrate = getDailyFood2[i].carbohydrate, protein = getDailyFood2[i].protein,
+            fat = getDailyFood2[i].fat, salt = getDailyFood2[i].salt, sugar = getDailyFood2[i].sugar, type = getDailyFood2[i].type, regDate = getDailyFood2[i].regDate)
          )
       }
 
@@ -355,15 +355,15 @@ class FoodFragment : Fragment() {
       var carbohydrate3 = 0.0
       var protein3 = 0.0
       var fat3 = 0.0
-      for(i in 0 until getFood3.size) {
-         kcal3 += getFood3[i].kcal * getFood3[i].count
-         carbohydrate3 += getFood3[i].carbohydrate * getFood3[i].count
-         protein3 += getFood3[i].protein * getFood3[i].count
-         fat3 += getFood3[i].fat * getFood3[i].count
+      for(i in 0 until getDailyFood3.size) {
+         kcal3 += getDailyFood3[i].kcal * getDailyFood3[i].count
+         carbohydrate3 += getDailyFood3[i].carbohydrate * getDailyFood3[i].count
+         protein3 += getDailyFood3[i].protein * getDailyFood3[i].count
+         fat3 += getDailyFood3[i].fat * getDailyFood3[i].count
 
-         itemList3.add(Food(id = getFood3[i].id, name = getFood3[i].name, unit = getFood3[i].unit, amount = getFood3[i].amount, count = getFood3[i].count,
-               kcal = getFood3[i].kcal, carbohydrate = getFood3[i].carbohydrate, protein = getFood3[i].protein, fat = getFood3[i].fat,
-               salt = getFood3[i].salt, sugar = getFood3[i].sugar, type = getFood3[i].type, regDate = getFood3[i].regDate)
+         itemList3.add(Food(id = getDailyFood3[i].id, name = getDailyFood3[i].name, unit = getDailyFood3[i].unit, amount = getDailyFood3[i].amount,
+            count = getDailyFood3[i].count, kcal = getDailyFood3[i].kcal, carbohydrate = getDailyFood3[i].carbohydrate, protein = getDailyFood3[i].protein,
+            fat = getDailyFood3[i].fat, salt = getDailyFood3[i].salt, sugar = getDailyFood3[i].sugar, type = getDailyFood3[i].type, regDate = getDailyFood3[i].regDate)
          )
       }
 
@@ -371,15 +371,15 @@ class FoodFragment : Fragment() {
       var carbohydrate4 = 0.0
       var protein4 = 0.0
       var fat4 = 0.0
-      for(i in 0 until getFood4.size) {
-         kcal4 += getFood4[i].kcal * getFood4[i].count
-         carbohydrate4 += getFood4[i].carbohydrate * getFood4[i].count
-         protein4 += getFood4[i].protein * getFood4[i].count
-         fat4 += getFood4[i].fat * getFood4[i].count
+      for(i in 0 until getDailyFood4.size) {
+         kcal4 += getDailyFood4[i].kcal * getDailyFood4[i].count
+         carbohydrate4 += getDailyFood4[i].carbohydrate * getDailyFood4[i].count
+         protein4 += getDailyFood4[i].protein * getDailyFood4[i].count
+         fat4 += getDailyFood4[i].fat * getDailyFood4[i].count
 
-         itemList4.add(Food(id = getFood4[i].id, name = getFood4[i].name, unit = getFood4[i].unit, amount = getFood4[i].amount, count = getFood4[i].count,
-               kcal = getFood4[i].kcal, carbohydrate = getFood4[i].carbohydrate, protein = getFood4[i].protein, fat = getFood4[i].fat,
-               salt = getFood4[i].salt, sugar = getFood4[i].sugar, type = getFood4[i].type, regDate = getFood4[i].regDate)
+         itemList4.add(Food(id = getDailyFood4[i].id, name = getDailyFood4[i].name, unit = getDailyFood4[i].unit, amount = getDailyFood4[i].amount,
+            count = getDailyFood4[i].count, kcal = getDailyFood4[i].kcal, carbohydrate = getDailyFood4[i].carbohydrate, protein = getDailyFood4[i].protein,
+            fat = getDailyFood4[i].fat, salt = getDailyFood4[i].salt, sugar = getDailyFood4[i].sugar, type = getDailyFood4[i].type, regDate = getDailyFood4[i].regDate)
          )
       }
 

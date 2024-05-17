@@ -197,7 +197,7 @@ class NoteFragment : Fragment() {
    }
 
    private fun setImageView() {
-      val dataList = dataManager.getImage(5, selectedDate.toString())
+      val dataList = dataManager.getImage("5", selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
       binding.viewPager.setPadding(140, 0, 140, 0)
@@ -277,7 +277,7 @@ class NoteFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   uri = saveFile(requireActivity(), "image/jpeg", img)
 
-                  dataManager.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+                  dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), regDate = selectedDate.toString()))
                   setImageView()
 
                   dialog!!.dismiss()
@@ -289,7 +289,7 @@ class NoteFragment : Fragment() {
                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
 
-               dataManager.insertImage(Image(imageUri = uri.toString(), type = 5, regDate = selectedDate.toString()))
+               dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), regDate = selectedDate.toString()))
                setImageView()
 
                dialog!!.dismiss()

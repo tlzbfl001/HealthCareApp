@@ -2,7 +2,7 @@ package kr.bodywell.android.api.response
 
 import com.google.gson.annotations.SerializedName
 
-data class DietsResponse(
+data class DietResponse(
 	@SerializedName("uid")
 	var uid: String = "",
 
@@ -19,14 +19,29 @@ data class DietsResponse(
 	var foodName: String = "",
 
 	@SerializedName("calories")
-	var calories: String = "",
+	var calories: Double = 0.0,
 
-	@SerializedName("softwareVersion")
-	var softwareVersion: String = "",
+	@SerializedName("carbohydrate")
+	var carbohydrate: Double = 0.0,
 
-	@SerializedName("createdAt")
-	var createdAt: String = "",
+	@SerializedName("protein")
+	var protein: Double = 0.0,
 
-	@SerializedName("updatedAt")
-	var updatedAt: String = ""
+	@SerializedName("fat")
+	var fat: Double = 0.0,
+
+	@SerializedName("quantity")
+	var quantity: Int = 0,
+
+	@SerializedName("quantityUnit")
+	var quantityUnit: String = "",
+
+	@SerializedName("volume")
+	var volume: Int = 0,
+
+	@SerializedName("volumeUnit")
+	var volumeUnit: String = "",
+
+	@SerializedName("photos")
+	var photos: ArrayList<String> = ArrayList()
 )

@@ -37,9 +37,7 @@ class FoodSnackFragment : Fragment() {
     private lateinit var dataManager: DataManager
     private var bundle = Bundle()
     private var photoAdapter: PhotoViewAdapter? = null
-    private var intakeAdapter: FoodIntakeAdapter? = null
-    private var imageData = ArrayList<Image>()
-    private var type = 4
+    private var type = "SNACK"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -75,7 +73,7 @@ class FoodSnackFragment : Fragment() {
         }
 
         binding.cvInput.setOnClickListener {
-            bundle.putString("type", "$type")
+            bundle.putString("type", type)
             replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
         }
 
@@ -91,14 +89,7 @@ class FoodSnackFragment : Fragment() {
             replaceFragment1(requireActivity(), FoodDinnerFragment())
         }
 
-        photoView()
-        listView()
-
-        return binding.root
-    }
-
-    private fun photoView() {
-        imageData = dataManager.getImage(type, selectedDate.toString())
+        val imageData = dataManager.getImage(type, selectedDate.toString())
 
         if(imageData.size > 0) {
             photoAdapter = PhotoViewAdapter(imageData)
@@ -145,6 +136,7 @@ class FoodSnackFragment : Fragment() {
                     }
                 }
             }
+
             binding.viewPager.setPageTransformer(transformer)
 
             binding.cvLeft.setOnClickListener {
@@ -155,17 +147,15 @@ class FoodSnackFragment : Fragment() {
                 binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
             }
         }
-    }
 
-    private fun listView() {
         val dataList = dataManager.getDailyFood(type, selectedDate.toString())
 
         if(dataList.size != 0) {
             // 섭취한 식단 설정
-            intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList, type)
+            val intakeAdapter = FoodIntakeAdapter(requireActivity(), dataList, type)
             binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-            intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+            intakeAdapter.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onItemClick(pos: Int) {
                     val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
@@ -185,7 +175,7 @@ class FoodSnackFragment : Fragment() {
                             }
 
                             dataList.removeAt(pos)
-                            intakeAdapter!!.notifyDataSetChanged()
+                            intakeAdapter.notifyDataSetChanged()
 
                             Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         }
@@ -197,6 +187,8 @@ class FoodSnackFragment : Fragment() {
 
             binding.rv.adapter = intakeAdapter
         }
+
+        return binding.root
     }
 
     override fun onDetach() {

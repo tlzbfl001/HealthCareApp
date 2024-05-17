@@ -38,7 +38,7 @@ class FoodLunchFragment : Fragment() {
     private var photoAdapter: PhotoViewAdapter? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
     private var imageData = ArrayList<Image>()
-    private var type = 2
+    private var type = "LUNCH"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -75,7 +75,7 @@ class FoodLunchFragment : Fragment() {
 
         binding.cvInput.setOnClickListener {
             val bundle = Bundle()
-            bundle.putString("type", "$type")
+            bundle.putString("type", type)
             replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
         }
 

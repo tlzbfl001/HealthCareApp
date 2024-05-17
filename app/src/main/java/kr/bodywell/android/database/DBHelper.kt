@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 4
+      const val DATABASE_VERSION = 9
       const val TABLE_USER = "user"
       const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
@@ -21,8 +21,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_DRUG_TIME = "drugTime"
       const val TABLE_DRUG_CHECK = "drugCheck"
       const val TABLE_NOTE = "note"
-      const val TABLE_IMAGE = "image"
       const val TABLE_DAILY_GOAL = "dailyGoal"
+      const val TABLE_IMAGE = "image"
       const val TABLE_UNUSED = "unused"
    }
 
@@ -34,11 +34,11 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, access text, refresh text, accessRegDate text, refreshRegDate text);"
       db.execSQL(token)
 
-      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, userId integer, name text, unit text, amount integer, kcal integer, " +
+      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, userId integer, uid text, name text, unit text, amount integer, kcal integer, " +
          "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, isUpdated integer);"
       db.execSQL(food)
 
-      val dailyFood = "create table $TABLE_DAILY_FOOD(id integer primary key autoincrement, userId integer, type integer, name text, unit text, amount integer, " +
+      val dailyFood = "create table $TABLE_DAILY_FOOD(id integer primary key autoincrement, userId integer, uid text, type text, name text, unit text, amount integer, " +
          "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, regDate text, isUpdated integer);"
       db.execSQL(dailyFood)
 
@@ -74,12 +74,12 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, regDate text);"
       db.execSQL(note)
 
-      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, imageUri text, type integer, dataId integer, regDate text);"
-      db.execSQL(image)
-
       val dailyGoal = "create table $TABLE_DAILY_GOAL(id integer primary key autoincrement, userId integer, foodGoal integer, waterGoal integer, exerciseGoal integer," +
          "bodyGoal real, sleepGoal integer, drugGoal integer, regDate text);"
       db.execSQL(dailyGoal)
+
+      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, type text, dataId integer, imageUri text, regDate text);"
+      db.execSQL(image)
 
       val unused = "create TABLE $TABLE_UNUSED(id integer primary key autoincrement, userId integer, type text, value text);"
       db.execSQL(unused)
@@ -99,8 +99,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $TABLE_DRUG_CHECK")
       db.execSQL("drop table if exists $TABLE_NOTE")
       db.execSQL("drop table if exists $TABLE_SLEEP")
-      db.execSQL("drop table if exists $TABLE_IMAGE")
       db.execSQL("drop table if exists $TABLE_DAILY_GOAL")
+      db.execSQL("drop table if exists $TABLE_IMAGE")
       db.execSQL("drop table if exists $TABLE_UNUSED")
       onCreate(db)
    }

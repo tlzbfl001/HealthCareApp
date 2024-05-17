@@ -25,7 +25,6 @@ class FoodEditFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private var bundle = Bundle()
-	private var type = "1"
 	private var unit = "mg"
 
 	override fun onAttach(context: Context) {
@@ -57,8 +56,8 @@ class FoodEditFragment : Fragment() {
 		val dataManager = DataManager(requireActivity())
 		dataManager.open()
 
-		val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
-		type = arguments?.getString("type").toString()
+		val id = arguments?.getString("id").toString().toInt()
+		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
 		val getFood = dataManager.getFood(id)
@@ -318,26 +317,22 @@ class FoodEditFragment : Fragment() {
 		})
 
 		binding.cvEdit.setOnClickListener {
-			if(id > -1) {
-				val getData = dataManager.getFood(binding.etName.text.toString().trim())
+			val getFoodByName = dataManager.getFood(binding.etName.text.toString().trim())
 
-				if(binding.etName.text.length < 2) {
-					Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
-				}else if(!filterText(binding.etName.text.toString())) {
-					Toast.makeText(context, "특수문자는 입력 불가능합니다.", Toast.LENGTH_SHORT).show()
-				}else if (getData.name != "" && (getData.name != getFood.name)) {
-					Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
-				}else {
-					dataManager.updateFood(Food(id = id, name = binding.etName.text.toString().trim(), unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
-						kcal = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
-						protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
-						salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble()))
-
-					Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-					replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-				}
+			if(binding.etName.text.length < 2) {
+				Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+			}else if(!filterText(binding.etName.text.toString())) {
+				Toast.makeText(context, "특수문자는 입력 불가능합니다.", Toast.LENGTH_SHORT).show()
+			}else if (getFoodByName.name != "" && getFoodByName.name != getFood.name) {
+				Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				Toast.makeText(context, "수정 실패", Toast.LENGTH_SHORT).show()
+				dataManager.updateFood(Food(id = id, name = binding.etName.text.toString().trim(), unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
+					kcal = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
+					protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
+					salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1))
+
+				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+				replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
 			}
 		}
 

@@ -12,6 +12,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.view.home.MainActivity
 import java.util.regex.Pattern
 
@@ -69,26 +70,26 @@ class CustomUtil {
 
          var sum = 0
          val item = Item()
-         val getFood1 = dataManager.getDailyFood(1, date)
-         val getFood2 = dataManager.getDailyFood(2, date)
-         val getFood3 = dataManager.getDailyFood(3, date)
-         val getFood4 = dataManager.getDailyFood(4, date)
+         val getDailyFood1 = dataManager.getDailyFood("BREAKFAST", date)
+         val getDailyFood2 = dataManager.getDailyFood("LUNCH", date)
+         val getDailyFood3 = dataManager.getDailyFood("DINNER", date)
+         val getDailyFood4 = dataManager.getDailyFood("SNACK", date)
 
-         for(i in 0 until getFood1.size) {
-            sum += getFood1[i].kcal * getFood1[i].count
-            item.int1 = item.int1.plus(getFood1[i].kcal * getFood1[i].count)
+         for(i in 0 until getDailyFood1.size) {
+            sum += getDailyFood1[i].kcal * getDailyFood1[i].count
+            item.int1.plus(getDailyFood1[i].kcal * getDailyFood1[i].count)
          }
-         for(i in 0 until getFood2.size) {
-            sum += getFood2[i].kcal * getFood2[i].count
-            item.int2 = item.int2.plus(getFood2[i].kcal * getFood2[i].count)
+         for(i in 0 until getDailyFood2.size) {
+            sum += getDailyFood2[i].kcal * getDailyFood2[i].count
+            item.int2.plus(getDailyFood2[i].kcal * getDailyFood2[i].count)
          }
-         for(i in 0 until getFood3.size) {
-            sum += getFood3[i].kcal * getFood3[i].count
-            item.int3 = item.int3.plus(getFood3[i].kcal * getFood3[i].count)
+         for(i in 0 until getDailyFood3.size) {
+            sum += getDailyFood3[i].kcal * getDailyFood3[i].count
+            item.int3.plus(getDailyFood3[i].kcal * getDailyFood3[i].count)
          }
-         for(i in 0 until getFood4.size) {
-            sum += getFood4[i].kcal * getFood4[i].count
-            item.int4 = item.int4.plus(getFood4[i].kcal * getFood4[i].count)
+         for(i in 0 until getDailyFood4.size) {
+            sum += getDailyFood4[i].kcal * getDailyFood4[i].count
+            item.int4.plus(getDailyFood4[i].kcal * getDailyFood4[i].count)
          }
 
          item.int5 = sum
@@ -100,10 +101,10 @@ class CustomUtil {
          val dataManager = DataManager(context)
          dataManager.open()
 
-         val getFood1 = dataManager.getDailyFood(1, date)
-         val getFood2 = dataManager.getDailyFood(2, date)
-         val getFood3 = dataManager.getDailyFood(3, date)
-         val getFood4 = dataManager.getDailyFood(4, date)
+         val getFood1 = dataManager.getDailyFood("BREAKFAST", date)
+         val getFood2 = dataManager.getDailyFood("LUNCH", date)
+         val getFood3 = dataManager.getDailyFood("DINNER", date)
+         val getFood4 = dataManager.getDailyFood("SNACK", date)
 
          var carbohydrate = 0.0
          var protein = 0.0

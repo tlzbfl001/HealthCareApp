@@ -11,13 +11,17 @@ import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.Activity
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
+import kr.bodywell.android.api.dto.DietDTO
+import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_SLEEP
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
@@ -54,6 +58,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private fun updateData() = viewModelScope.launch {
       while(true) {
          if(networkStatusCheck(context)) {
+            val getUnused = dataManager.getUnused()
+            val getFoodUid = dataManager.getFoodUid()
+            val getFoodUpdated = dataManager.getFoodUpdated()
+            val getDailyFoodUid = dataManager.getDailyFoodUid()
+            val getDailyFoodUpdated = dataManager.getDailyFoodUpdated()
             val getWaterUid = dataManager.getWaterUid()
             val getWaterUpdated = dataManager.getWaterUpdated()
             val getExerciseUid = dataManager.getExerciseUid()
@@ -64,7 +73,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val getBodyUpdated = dataManager.getBodyUpdated()
             val getSleepUid = dataManager.getSleepUid()
             val getSleepUpdated = dataManager.getSleepUpdated()
-            val getUnused = dataManager.getUnused()
 
             val accessDiff = Duration.between(LocalDateTime.parse(getToken.accessRegDate), LocalDateTime.now())
             val refreshDiff = Duration.between(LocalDateTime.parse(getToken.refreshRegDate), LocalDateTime.now())
@@ -90,6 +98,78 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                }
             }
 
+            for(i in 0 until getFoodUid.size) {
+               val data = FoodDTO("", getFoodUid[i].name, getFoodUid[i].kcal, getFoodUid[i].carbohydrate,
+                  getFoodUid[i].protein, getFoodUid[i].fat, getFoodUid[i].amount, getFoodUid[i].unit, 0, "")
+               val response = RetrofitAPI.api.createFood("Bearer ${getToken.access}", data)
+
+               if(response.isSuccessful) {
+                  Log.d(TAG, "createFood: ${response.body()}")
+                  dataManager.updateStr(TABLE_FOOD, "uid", response.body()!!.uid, "id", getFoodUid[i].id)
+               }else {
+                  Log.d(TAG, "createFood: $response")
+               }
+            }
+
+            for(i in 0 until getFoodUpdated.size) {
+               if(getFoodUpdated[i].uid != "") {
+                  val data = FoodDTO("", getFoodUpdated[i].name, getFoodUpdated[i].kcal, getFoodUpdated[i].carbohydrate,
+                     getFoodUpdated[i].protein, getFoodUpdated[i].fat, getFoodUpdated[i].amount, getFoodUpdated[i].unit, 0, "")
+                  val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", getFoodUpdated[i].uid, data)
+
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "updateFood: ${response.body()}")
+                     dataManager.updateInt(TABLE_FOOD, "isUpdated", 0, "id", getFoodUpdated[i].id)
+                  }else {
+                     Log.d(TAG, "updateFood: $response")
+                  }
+               }
+            }
+
+            for(i in 0 until getDailyFoodUid.size) {
+               val photos = ArrayList<String>()
+               val getImage = dataManager.getImage(getDailyFoodUid[i].type, getDailyFoodUid[i].regDate)
+
+               for(j in 0 until getImage.size) {
+                  photos.add(getImage[j].imageUri)
+               }
+
+               val data = DietDTO(getDailyFoodUid[i].id.toString(), getDailyFoodUid[i].type, "", getDailyFoodUid[i].name, getDailyFoodUid[i].kcal,
+                  getDailyFoodUid[i].carbohydrate, getDailyFoodUid[i].protein, getDailyFoodUid[i].fat, getDailyFoodUid[i].count, getDailyFoodUid[i].unit,
+                  0, "", photos)
+               val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", data)
+
+               if(response.isSuccessful) {
+                  Log.d(TAG, "createDiets: ${response.body()}")
+                  dataManager.updateStr(TABLE_DAILY_FOOD, "uid", response.body()!!.uid, "id", getDailyFoodUid[i].id)
+               }else {
+                  Log.d(TAG, "createDiets: $response")
+               }
+            }
+
+            for(i in 0 until getDailyFoodUpdated.size) {
+               if(getDailyFoodUpdated[i].uid != "") {
+                  val photos = ArrayList<String>()
+                  val getImage = dataManager.getImage(getDailyFoodUpdated[i].type, getDailyFoodUpdated[i].regDate)
+
+                  for(j in 0 until getImage.size) {
+                     photos.add(getImage[j].imageUri)
+                  }
+
+                  val data = DietDTO(getDailyFoodUpdated[i].id.toString(), getDailyFoodUpdated[i].type, "", getDailyFoodUpdated[i].name, getDailyFoodUpdated[i].kcal,
+                     getDailyFoodUpdated[i].carbohydrate, getDailyFoodUpdated[i].protein, getDailyFoodUpdated[i].fat, getDailyFoodUpdated[i].count, getDailyFoodUpdated[i].unit,
+                     0, "", photos)
+                  val response = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", getDailyFoodUpdated[i].uid, data)
+
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "updateDiets: ${response.body()}")
+                     dataManager.updateInt(TABLE_DAILY_FOOD, "isUpdated", 0, "id", getDailyFoodUpdated[i].id)
+                  }else {
+                     Log.d(TAG, "updateDiets: $response")
+                  }
+               }
+            }
+
             for(i in 0 until getWaterUid.size) {
                val data = WaterDTO(getWaterUid[i].ml, getWaterUid[i].count, getWaterUid[i].regDate)
                val response = RetrofitAPI.api.createWater("Bearer ${getToken.access}", data)
@@ -105,16 +185,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getWaterUpdated.size) {
-               val data = WaterDTO(getWaterUpdated[i].ml, getWaterUpdated[i].count, getWaterUpdated[i].regDate)
-               val response = RetrofitAPI.api.updateWater("Bearer ${getToken.access}", getWaterUpdated[i].uid!!, data)
+               if(getWaterUpdated[i].uid != "" ) {
+                  val data = WaterDTO(getWaterUpdated[i].ml, getWaterUpdated[i].count, getWaterUpdated[i].regDate)
+                  val response = RetrofitAPI.api.updateWater("Bearer ${getToken.access}", getWaterUpdated[i].uid!!, data)
 
-               if(response.isSuccessful) {
-                  Toast.makeText(context, response.body().toString(), Toast.LENGTH_SHORT).show()
-                  Log.d(TAG, "updateWater: ${response.body()}")
-                  dataManager.updateInt(TABLE_WATER, "isUpdated", 0, "id", getWaterUpdated[i].id)
-               }else {
-                  Toast.makeText(context, response.toString(), Toast.LENGTH_SHORT).show()
-                  Log.d(TAG, "updateWater: $response")
+                  if(response.isSuccessful) {
+                     Toast.makeText(context, response.body().toString(), Toast.LENGTH_SHORT).show()
+                     Log.d(TAG, "updateWater: ${response.body()}")
+                     dataManager.updateInt(TABLE_WATER, "isUpdated", 0, "id", getWaterUpdated[i].id)
+                  }else {
+                     Toast.makeText(context, response.toString(), Toast.LENGTH_SHORT).show()
+                     Log.d(TAG, "updateWater: $response")
+                  }
                }
             }
 

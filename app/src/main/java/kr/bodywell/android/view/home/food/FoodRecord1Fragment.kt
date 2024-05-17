@@ -28,9 +28,8 @@ class FoodRecord1Fragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
    private var bundle = Bundle()
-   private var itemList = ArrayList<Food>()
    private val searchList = ArrayList<Item>()
-   private var type = "1"
+   private var type = "BREAKFAST"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -97,16 +96,7 @@ class FoodRecord1Fragment : Fragment() {
          replaceFragment2(requireActivity(), FoodInputFragment(), bundle)
       }
 
-      listView()
-      searchView()
-
-      return binding.root
-   }
-
-   private fun listView() {
-      itemList.clear()
-
-      itemList = dataManager.getSearchFood("useCount")
+      val itemList = dataManager.getSearchFood("useCount")
 
       if(itemList.size > 0) {
          binding.tvEmpty.visibility = View.GONE
@@ -124,9 +114,7 @@ class FoodRecord1Fragment : Fragment() {
 
          binding.rv1.adapter = adapter
       }
-   }
 
-   private fun searchView() {
       val adapter = SearchAdapter(requireActivity(), "1", type)
 
       binding.etSearch.addTextChangedListener(object: TextWatcher{
@@ -143,7 +131,7 @@ class FoodRecord1Fragment : Fragment() {
             }else {
                for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
                   if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].name))
+                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].uid, string2 = itemList[i].name))
                   }
                   adapter.setItems(searchList)
                }
@@ -162,6 +150,8 @@ class FoodRecord1Fragment : Fragment() {
       })
 
       binding.rv2.adapter = adapter
+
+      return binding.root
    }
 
    private fun replaceFragment() {

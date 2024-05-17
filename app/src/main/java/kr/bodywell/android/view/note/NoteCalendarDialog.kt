@@ -155,7 +155,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
    }
 
    private fun setImageView() {
-      val getImage = dataManager!!.getImage(5, selectedDate.toString())
+      val getImage = dataManager!!.getImage("5", selectedDate.toString())
 
       if (getImage.size > 0) {
          viewPager?.visibility = View.VISIBLE

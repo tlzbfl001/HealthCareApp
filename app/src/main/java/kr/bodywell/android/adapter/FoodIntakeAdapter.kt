@@ -11,21 +11,21 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodDailyEditFragment
 
 class FoodIntakeAdapter (
     private val context: Activity,
     private var itemList: ArrayList<Food> = ArrayList(),
-    private val type: Int
+    private val type: String
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var bundle = Bundle()
     private var onItemClickListener: OnItemClickListener? = null
-    private var dataManager: DataManager? = null
+    private var dataManager: DataManager = DataManager(context)
 
     init {
-        dataManager = DataManager(context)
-        dataManager!!.open()
+        dataManager.open()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,16 +35,14 @@ class FoodIntakeAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val count = itemList[position].count
-        val kcal = itemList[position].kcal
-        val amount = itemList[position].amount
 
         holder.tvName.text = itemList[position].name
-        holder.tvKcal.text = "${kcal * count} kcal"
-        holder.tvDesc.text = "${count}개/${amount * count}${itemList[position].unit}"
+        holder.tvKcal.text = "${itemList[position].kcal * count} kcal"
+        holder.tvDesc.text = "${count}개/${itemList[position].amount * count}${itemList[position].unit}"
 
         holder.cl.setOnClickListener {
-            bundle.putString("dataId", itemList[position].id.toString())
-            bundle.putString("type", type.toString())
+            bundle.putString("dailyFoodId", itemList[position].id.toString())
+            bundle.putString("type", type)
             replaceFragment2(context, FoodDailyEditFragment(), bundle)
         }
 

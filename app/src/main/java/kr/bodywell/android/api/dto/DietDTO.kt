@@ -2,7 +2,7 @@ package kr.bodywell.android.api.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class DietsDTO(
+data class DietDTO(
 	@SerializedName("itemId")
 	var itemId: String = "",
 
@@ -16,7 +16,7 @@ data class DietsDTO(
 	var foodName: String = "",
 
 	@SerializedName("calories")
-	var calories: Double = 0.0,
+	var calories: Int = 0,
 
 	@SerializedName("carbohydrate")
 	var carbohydrate: Double = 0.0,

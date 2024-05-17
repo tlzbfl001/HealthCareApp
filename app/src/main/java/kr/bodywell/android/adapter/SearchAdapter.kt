@@ -41,7 +41,7 @@ class SearchAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = itemList[position].string1
+        holder.textView.text = itemList[position].string2
 
         holder.textView.setOnClickListener {
             itemClickListener?.onClick(it, holder.adapterPosition)
@@ -80,40 +80,47 @@ class SearchAdapter(
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].int1)
+                            val result = dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].int1)
 
-                            itemList.removeAt(position)
-                            notifyDataSetChanged()
-
-                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                        }
-                        .setNegativeButton("취소", null)
-                        .create().show()
-                    dialog.dismiss()
-                }else {
-                    val getDailyExercise = dataManager.getDailyExercise("exerciseId", itemList[position].int1)
-                    if(getDailyExercise.id > 0) {
-                        Toast.makeText(context, "사용중인 데이터는 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show()
-                    }else {
-                        AlertDialog.Builder(context, R.style.AlertDialogStyle)
-                            .setTitle("운동 삭제")
-                            .setMessage("정말 삭제하시겠습니까?")
-                            .setPositiveButton("확인") { _, _ ->
-                                dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].int1)
-
-                                if(itemList[position].string2 != "") {
-                                    dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].string2))
+                            if(result > 0) {
+                                if(itemList[position].string1 != "") {
+                                    dataManager.insertUnused(Unused(type = "food", value = itemList[position].string1))
                                 }
 
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()
 
                                 Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                            }else {
+                                Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
                             }
-                            .setNegativeButton("취소", null)
-                            .create().show()
-                        dialog.dismiss()
-                    }
+                        }
+                        .setNegativeButton("취소", null)
+                        .create().show()
+                    dialog.dismiss()
+                }else {
+                    AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                        .setTitle("운동 삭제")
+                        .setMessage("정말 삭제하시겠습니까?")
+                        .setPositiveButton("확인") { _, _ ->
+                            val result = dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].int1)
+
+                            if(result > 0) {
+                                if(itemList[position].string1 != "") {
+                                    dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].string1))
+                                }
+
+                                itemList.removeAt(position)
+                                notifyDataSetChanged()
+
+                                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                            }else {
+                                Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .setNegativeButton("취소", null)
+                        .create().show()
+                    dialog.dismiss()
                 }
             }
 

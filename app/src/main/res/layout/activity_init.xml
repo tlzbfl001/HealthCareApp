@@ -13,7 +13,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toTopOf="@id/cl1"
-      app:layout_constraintVertical_weight="7" />
+      app:layout_constraintVertical_weight="8" />
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/cl1"
       android:layout_width="match_parent"

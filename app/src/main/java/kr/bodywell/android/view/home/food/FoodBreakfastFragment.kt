@@ -38,7 +38,7 @@ class FoodBreakfastFragment : Fragment() {
    private var photoAdapter: PhotoViewAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
    private var imageData = ArrayList<Image>()
-   private var type = 1
+   private var type = "BREAKFAST"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -75,7 +75,7 @@ class FoodBreakfastFragment : Fragment() {
 
       binding.cvInput.setOnClickListener {
          val bundle = Bundle()
-         bundle.putString("type", type.toString())
+         bundle.putString("type", type)
          replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
@@ -174,7 +174,7 @@ class FoodBreakfastFragment : Fragment() {
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
                      dataManager.deleteItem(TABLE_DAILY_FOOD, "id", dataList[pos].id)
-                     dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
+                     dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id, "type", type)
 
                      if (imageData.size > 0) {
                         imageData.stream().filter { x -> x.dataId == dataList[pos].id }
