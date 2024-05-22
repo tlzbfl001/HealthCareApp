@@ -290,8 +290,7 @@ class LoginActivity : AppCompatActivity() {
 
             // 사용자 정보 저장
             if(getUser.regDate == "") {
-               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, name = "", gender = "",
-                  birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0, regDate = LocalDate.now().toString()))
+               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
             }else {
                dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
             }

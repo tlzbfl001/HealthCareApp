@@ -16,10 +16,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseBinding
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
@@ -38,7 +38,7 @@ class ExerciseFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
    private var adapter: ExerciseAdapter? = null
-   private var dailyGoal = DailyGoal()
+   private var dailyGoal = Goal()
    private var sum = 0
 
    override fun onAttach(context: Context) {
@@ -86,9 +86,11 @@ class ExerciseFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.regDate == "") {
-               dataManager.insertDailyGoal(DailyGoal(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
             binding.pbExercise.max = et.text.toString().toInt()
@@ -162,7 +164,7 @@ class ExerciseFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getGoal(selectedDate.toString())
       sum = getExerciseCalories(requireActivity(), selectedDate.toString())
 
       if(sum > 0) {

@@ -46,6 +46,10 @@ class ExerciseRecordAdapter (
          onItemClickListener!!.onItemClick(position)
       }
 
+      if(itemList[position].basic == 1) {
+         holder.cl.visibility = View.GONE
+      }
+
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
          val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu, null)

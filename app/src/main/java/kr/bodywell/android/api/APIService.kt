@@ -4,16 +4,20 @@ import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.FoodDTO
+import kr.bodywell.android.api.dto.GoalDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
+import kr.bodywell.android.api.response.ActivitiesResponse
 import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
 import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DevicesResponse
 import kr.bodywell.android.api.response.DietResponse
 import kr.bodywell.android.api.response.FoodResponse
+import kr.bodywell.android.api.response.FoodsResponse
+import kr.bodywell.android.api.response.GoalResponse
 import kr.bodywell.android.api.response.SleepResponse
 import kr.bodywell.android.api.response.SleepsResponse
 import kr.bodywell.android.api.response.TokenResponse
@@ -34,6 +38,16 @@ import retrofit2.http.Path
 interface APIService {
 	@GET("/users")
 	suspend fun getUsers(): Response<UserResponse>
+
+	@GET("/health/foods")
+	suspend fun getFoods(
+		@Header("Authorization") token: String
+	): Response<FoodsResponse>
+
+	@GET("/health/activities")
+	suspend fun getActivities(
+		@Header("Authorization") token: String
+	): Response<ActivitiesResponse>
 
 	@GET("/devices")
 	suspend fun getDevices(
@@ -105,6 +119,12 @@ interface APIService {
 		@Body dto: SleepDTO
 	): Response<SleepResponse>
 
+	@POST("/goals")
+	suspend fun createGoal(
+		@Header("Authorization") token: String,
+		@Body dto: GoalDTO
+	): Response<GoalResponse>
+
 	@POST("/auth/refresh-token")
 	suspend fun refreshToken(
 		@Header("Authorization") token: String
@@ -159,14 +179,39 @@ interface APIService {
 		@Body dto: SleepDTO
 	): Response<SleepResponse>
 
+	@PATCH("/goals/{uid}")
+	suspend fun updateGoal(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Body dto: GoalDTO
+	): Response<GoalResponse>
+
 	@DELETE("/users/{uid}")
 	suspend fun deleteUser(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 
+	@DELETE("/health/foods/{uid}")
+	suspend fun deleteFood(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<Void>
+
+	@DELETE("/health/diets/{uid}")
+	suspend fun deleteDiets(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<Void>
+
 	@DELETE("/health/activities/{uid}")
 	suspend fun deleteActivity(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<Void>
+
+	@DELETE("/health/workouts/{uid}")
+	suspend fun deleteWorkout(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>

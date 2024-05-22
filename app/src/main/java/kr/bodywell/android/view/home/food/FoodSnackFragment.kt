@@ -23,6 +23,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_IMAGE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
 import kr.bodywell.android.model.Image
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
@@ -173,6 +174,8 @@ class FoodSnackFragment : Fragment() {
                                 }
                                 photoAdapter!!.notifyDataSetChanged()
                             }
+
+                            if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyFood", value = dataList[pos].uid))
 
                             dataList.removeAt(pos)
                             intakeAdapter.notifyDataSetChanged()

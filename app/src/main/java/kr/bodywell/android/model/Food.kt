@@ -19,5 +19,6 @@ data class Food(
     var useCount: Int = 0,
     var regDate: String = "",
     var useDate: String = "",
+    var basic: Int = 0,
     var isUpdated: Int = 0
 )

@@ -82,19 +82,15 @@ class ExerciseAddFragment : Fragment() {
             val workoutTime = if(binding.tvTime.text.toString().trim() == "") 0 else binding.tvTime.text.toString().toInt()
             val calories = if(binding.tvKcal.text.toString().trim() == "") 0 else binding.tvKcal.text.toString().toInt()
 
-            if(id > 0) {
-                dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = exercise.intensity, workoutTime = workoutTime, kcal = calories,
-                    regDate = selectedDate.toString()))
+            dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = exercise.intensity, workoutTime = workoutTime, kcal = calories,
+                regDate = selectedDate.toString()))
 
-                val getExercise = dataManager.getExercise("name", exercise.name)
-                dataManager.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
-                dataManager.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
+            val getExercise = dataManager.getExercise("name", exercise.name)
+            dataManager.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
+            dataManager.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
 
-                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                replaceFragment1(requireActivity(), ExerciseListFragment())
-            }else {
-                Toast.makeText(requireActivity(), "오류 발생", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+            replaceFragment1(requireActivity(), ExerciseListFragment())
         }
 
         return binding.root

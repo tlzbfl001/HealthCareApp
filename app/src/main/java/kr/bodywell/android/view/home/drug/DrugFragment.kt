@@ -21,10 +21,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
@@ -44,7 +44,7 @@ class DrugFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var adapter: DrugAdapter1? = null
    private val itemList = ArrayList<DrugList>()
-   private var dailyGoal = DailyGoal()
+   private var dailyGoal = Goal()
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -97,9 +97,11 @@ class DrugFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.regDate == "") {
-               dataManager.insertDailyGoal(DailyGoal(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
             recordView()
@@ -166,7 +168,7 @@ class DrugFragment : Fragment() {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
 
-      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getGoal(selectedDate.toString())
       binding.pbDrug.max = dailyGoal.drugGoal
       binding.tvGoal.text = "${dailyGoal.drugGoal}회"
 

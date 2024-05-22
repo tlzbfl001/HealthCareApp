@@ -60,7 +60,7 @@ class FoodEditFragment : Fragment() {
 		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
-		val getFood = dataManager.getFood(id)
+		val getFood = dataManager.getFood("id", id)
 
 		binding.etName.setText(getFood.name)
 		binding.etAmount.setText(getFood.amount.toString())
@@ -317,7 +317,7 @@ class FoodEditFragment : Fragment() {
 		})
 
 		binding.cvEdit.setOnClickListener {
-			val getFoodByName = dataManager.getFood(binding.etName.text.toString().trim())
+			val getFoodByName = dataManager.getFood("name", binding.etName.text.toString().trim())
 
 			if(binding.etName.text.length < 2) {
 				Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()

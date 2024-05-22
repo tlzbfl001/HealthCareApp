@@ -63,7 +63,7 @@ class FoodAddFragment : Fragment() {
 		type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
-		getFood = dataManager.getFood(id)
+		getFood = dataManager.getFood("id", id)
 
 		unit = getFood.unit
 		binding.tvName.text = getFood.name
@@ -81,7 +81,7 @@ class FoodAddFragment : Fragment() {
 			true
 		}
 
-		binding.clBack.setOnClickListener {
+		binding.clX.setOnClickListener {
 			replaceFragment()
 		}
 
@@ -89,7 +89,7 @@ class FoodAddFragment : Fragment() {
 			val getDailyFood = dataManager.getDailyFood(type = type, name = getFood.name, selectedDate.toString())
 
 			if(getDailyFood.regDate == "") {
-				dataManager.insertDailyFood(Food(uid = "", type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
+				dataManager.insertDailyFood(Food(type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
 					carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
 					regDate = selectedDate.toString()))
 			}else {

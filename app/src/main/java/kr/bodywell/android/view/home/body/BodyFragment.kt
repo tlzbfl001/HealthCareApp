@@ -16,11 +16,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
@@ -38,7 +38,7 @@ class BodyFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
-   private var dailyGoal: DailyGoal? = null
+   private var dailyGoal: Goal? = null
    private var getBody: Body? = null
    private var isExpand = false
 
@@ -90,9 +90,11 @@ class BodyFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal!!.regDate == "") {
-               dataManager.insertDailyGoal(DailyGoal(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+               dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateDoubleByDate(TABLE_DAILY_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
+               dataManager.updateDoubleByDate(TABLE_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal!!.id)
             }
 
             dailyGoal()
@@ -196,7 +198,7 @@ class BodyFragment : Fragment() {
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getGoal(selectedDate.toString())
 
       if (dailyGoal!!.bodyGoal > 0) {
          binding.pbBody.max = dailyGoal!!.bodyGoal.roundToInt()

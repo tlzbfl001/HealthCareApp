@@ -36,6 +36,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_IMAGE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_NOTE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_SLEEP
@@ -267,6 +268,7 @@ class SettingFragment : Fragment() {
             dataManager.deleteTable(TABLE_DRUG_CHECK, "userId")
             dataManager.deleteTable(TABLE_NOTE, "userId")
             dataManager.deleteTable(TABLE_SLEEP, "userId")
+            dataManager.deleteTable(TABLE_GOAL, "userId")
             dataManager.deleteTable(TABLE_IMAGE, "userId")
             dataManager.deleteTable(TABLE_UNUSED, "userId")
 

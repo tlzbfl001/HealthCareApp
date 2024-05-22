@@ -30,3 +30,8 @@ data class FoodResponse (
 	@SerializedName("quantityUnit")
 	var quantityUnit: String = ""
 )
+
+data class FoodsResponse (
+	@SerializedName("foods")
+	var foods: List<FoodResponse>
+)

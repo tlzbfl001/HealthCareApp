@@ -252,7 +252,7 @@ class MainFragment : Fragment() {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
 
       // 데이터 설정
-      val getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      val getDailyGoal = dataManager.getGoal(selectedDate.toString())
       val foodSum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
       val getWater = dataManager.getWater(selectedDate.toString())
       val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())

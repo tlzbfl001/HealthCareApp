@@ -17,11 +17,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.WaterAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentWaterBinding
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
@@ -40,7 +41,7 @@ class WaterFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
    private var adapter: WaterAdapter? = null
-   private var dailyGoal = DailyGoal()
+   private var dailyGoal = Goal()
    private var getWater = Water()
    private var ml = 200
    private var count = 0
@@ -96,13 +97,15 @@ class WaterFragment : Fragment() {
             }
 
             if(dailyGoal.regDate == "") {
-               dataManager.insertDailyGoal(DailyGoal(waterGoal = etGoal.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(waterGoal = etGoal.text.toString().toInt(), regDate = selectedDate.toString()))
+               dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "waterGoal", etGoal.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "waterGoal", etGoal.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
             if(getWater.regDate == "") {
-               dataManager.insertWater(Water(uid = "", ml = ml, regDate = selectedDate.toString()))
+               dataManager.insertWater(Water(ml = ml, regDate = selectedDate.toString()))
             }else {
                dataManager.updateIntByDate(TABLE_WATER, "mL", ml, selectedDate.toString())
             }
@@ -161,7 +164,7 @@ class WaterFragment : Fragment() {
    }
 
    private fun dailyWater() {
-      dailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getGoal(selectedDate.toString())
       getWater = dataManager.getWater(selectedDate.toString())
       ml = getWater.ml
       count = getWater.count
@@ -210,12 +213,12 @@ class WaterFragment : Fragment() {
 
          getWater = dataManager.getWater(selectedDate.toString())
          if(getWater.regDate == "") {
-            dataManager.insertWater(Water(uid = "", count = count, regDate = selectedDate.toString()))
+            dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
          }else {
             dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
          }
 
-         if(getWater.uid != null) {
+         if(getWater.uid != "") {
             dataManager.updateIntByDate(TABLE_WATER, "isUpdated", 1, selectedDate.toString())
          }
 
@@ -235,13 +238,13 @@ class WaterFragment : Fragment() {
          getWater = dataManager.getWater(selectedDate.toString())
          if(count > 0) {
             if(getWater.regDate == "") {
-               dataManager.insertWater(Water(uid = "", count = count, regDate = selectedDate.toString()))
+               dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
             }else {
                dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
             }
          }
 
-         if(getWater.uid != null) {
+         if(getWater.uid != "") {
             dataManager.updateIntByDate(TABLE_WATER, "isUpdated", 1, selectedDate.toString())
          }
 

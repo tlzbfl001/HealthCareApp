@@ -40,5 +40,8 @@ data class DietDTO(
 	var volumeUnit: String = "",
 
 	@SerializedName("photos")
-	var photos: ArrayList<String> = ArrayList()
+	var photos: ArrayList<String> = ArrayList(),
+
+	@SerializedName("date")
+	var date: String = ""
 )

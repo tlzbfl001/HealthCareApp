@@ -21,6 +21,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
+import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
@@ -154,15 +156,15 @@ class SignupActivity : AppCompatActivity() {
                                     registerUser()
                                  }else {
                                     Log.e(TAG, "googleLogin: $googleLogin")
-                                    Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                                    runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                                  }
                               }else {
                                  Log.e(TAG, "deleteUser: $deleteUser")
-                                 Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                                 runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                               }
                            }else {
                               Log.e(TAG, "googleLogin: $response")
-                              Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                              runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                            }
                         }
                      }
@@ -188,19 +190,21 @@ class SignupActivity : AppCompatActivity() {
       val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 
       CoroutineScope(Dispatchers.IO).launch {
-         val response = RetrofitAPI.api.createDevice("Bearer $access", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
-         val deviceUid = if(response.isSuccessful) response.body()!!.uid else ""
+         val createDevice = RetrofitAPI.api.createDevice("Bearer $access", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
+         val getFoods = RetrofitAPI.api.getFoods("Bearer $access")
+         val getActivities = RetrofitAPI.api.getActivities("Bearer $access")
 
-         if(deviceUid != "") {
+         if(createDevice.isSuccessful && getFoods.isSuccessful && getActivities.isSuccessful) {
             val getUser = dataManager.getUser(user.type, user.email)
             val getToken = dataManager.getToken()
 
             // 사용자 정보 저장
             if(getUser.regDate == "") {
-               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, name = "", gender = "",
-                  birthday = "", image = "", height = 0.0, weight = 0.0, weightGoal = 0.0, kcalGoal = 0, waterGoal = 0, waterUnit = 0, regDate = LocalDate.now().toString()))
+               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = createDevice.body()!!.uid,
+                  regDate = LocalDate.now().toString()))
             }else {
-               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
+               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = createDevice.body()!!.uid,
+                  regDate = LocalDate.now().toString()))
             }
 
             val getUser2 = dataManager.getUser(user.type, user.email)
@@ -213,6 +217,19 @@ class SignupActivity : AppCompatActivity() {
             }else {
                dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
                   refreshRegDate = LocalDateTime.now().toString()))
+            }
+
+            for(i in 0 until getFoods.body()!!.foods.size) {
+               dataManager.insertFood(Food(basic = 1, uid = getFoods.body()!!.foods[i].uid, name = getFoods.body()!!.foods[i].foodName,
+                  unit = getFoods.body()!!.foods[i].quantityUnit, amount = getFoods.body()!!.foods[i].quantity, kcal = getFoods.body()!!.foods[i].calories,
+                  carbohydrate = getFoods.body()!!.foods[i].carbohydrate, protein = getFoods.body()!!.foods[i].protein, fat = getFoods.body()!!.foods[i].fat,
+                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString())
+               )
+            }
+
+            for(i in 0 until getActivities.body()!!.activities.size) {
+               dataManager.insertExercise(Exercise(basic = 1, uid = getActivities.body()!!.activities[i].uid, name = getActivities.body()!!.activities[i].name,
+                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString()))
             }
 
             runOnUiThread{
@@ -235,9 +252,7 @@ class SignupActivity : AppCompatActivity() {
             val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
             if(deleteUser.isSuccessful) Log.d(TAG, "deleteUser: $deleteUser") else Log.e(TAG, "deleteUser: $deleteUser")
 
-            runOnUiThread{
-               Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-            }
+            runOnUiThread{Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()}
          }
       }
    }

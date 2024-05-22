@@ -333,7 +333,7 @@ class FoodInputFragment : Fragment() {
             if(binding.etSugar.text.toString() != "") sugar = binding.etSugar.text.toString().trim().toDouble()
          }
 
-         val getFood = dataManager.getFood(name)
+         val getFood = dataManager.getFood("name", name)
 
          if(name.length < 2) {
             Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
@@ -343,7 +343,7 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
          }else {
             // 음식데이터 저장
-            dataManager.insertFood(Food(uid = "", name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
+            dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
                protein = protein, fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString()))
 
             val getDaily = dataManager.getDailyFood(type, name, selectedDate.toString())

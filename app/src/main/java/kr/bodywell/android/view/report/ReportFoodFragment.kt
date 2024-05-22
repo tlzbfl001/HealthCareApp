@@ -27,9 +27,11 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
 import kr.bodywell.android.model.Water
+import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.monthArray2
 import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
 import kr.bodywell.android.util.CalendarUtil.Companion.weekFormat
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
@@ -172,7 +174,7 @@ class ReportFoodFragment : Fragment() {
       }
 
       val getWater = ArrayList<Water>()
-      val data = dataManager.getWater(calendarDate.toString())
+      val data = dataManager.getWater(selectedDate.toString())
 
       if(data.count > 0) {
          binding.chart3.visibility = View.VISIBLE

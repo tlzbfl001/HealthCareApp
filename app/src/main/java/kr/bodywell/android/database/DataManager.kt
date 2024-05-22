@@ -6,7 +6,7 @@ import android.database.SQLException
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
@@ -20,7 +20,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugTime
@@ -130,47 +130,47 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun getFood(id: Int) : Food {
+   fun getFood(column: String, data: Int) : Food {
       val db = dbHelper!!.readableDatabase
       val values = Food()
-      val sql = "select * from $TABLE_FOOD where id = $id"
+      val sql = "select * from $TABLE_FOOD where userId = ${MyApp.prefs.getId()} and $column = $data"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id=cursor.getInt(0)
-         values.name=cursor.getString(3)
-         values.unit=cursor.getString(4)
-         values.amount= cursor.getInt(5)
-         values.kcal= cursor.getInt(6)
-         values.carbohydrate= cursor.getDouble(7)
-         values.protein= cursor.getDouble(8)
-         values.fat= cursor.getDouble(9)
-         values.salt= cursor.getDouble(10)
-         values.sugar= cursor.getDouble(11)
-         values.useCount= cursor.getInt(12)
-         values.useDate = cursor.getString(13)
+         values.name=cursor.getString(4)
+         values.unit=cursor.getString(5)
+         values.amount= cursor.getInt(6)
+         values.kcal= cursor.getInt(7)
+         values.carbohydrate= cursor.getDouble(8)
+         values.protein= cursor.getDouble(9)
+         values.fat= cursor.getDouble(10)
+         values.salt= cursor.getDouble(11)
+         values.sugar= cursor.getDouble(12)
+         values.useCount= cursor.getInt(13)
+         values.useDate = cursor.getString(14)
       }
       cursor.close()
       return values
    }
 
-   fun getFood(name: String) : Food {
+   fun getFood(column: String, data: String) : Food {
       val db = dbHelper!!.readableDatabase
       val values = Food()
-      val sql = "select * from $TABLE_FOOD where userId = ${MyApp.prefs.getId()} and name = '$name'"
+      val sql = "select * from $TABLE_FOOD where userId = ${MyApp.prefs.getId()} and $column = '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id=cursor.getInt(0)
-         values.name=cursor.getString(3)
-         values.unit=cursor.getString(4)
-         values.amount= cursor.getInt(5)
-         values.kcal= cursor.getInt(6)
-         values.carbohydrate= cursor.getDouble(7)
-         values.protein= cursor.getDouble(8)
-         values.fat= cursor.getDouble(9)
-         values.salt= cursor.getDouble(10)
-         values.sugar= cursor.getDouble(11)
-         values.useCount= cursor.getInt(12)
-         values.useDate = cursor.getString(13)
+         values.name=cursor.getString(4)
+         values.unit=cursor.getString(5)
+         values.amount= cursor.getInt(6)
+         values.kcal= cursor.getInt(7)
+         values.carbohydrate= cursor.getDouble(8)
+         values.protein= cursor.getDouble(9)
+         values.fat= cursor.getDouble(10)
+         values.salt= cursor.getDouble(11)
+         values.sugar= cursor.getDouble(12)
+         values.useCount= cursor.getInt(13)
+         values.useDate = cursor.getString(14)
       }
       cursor.close()
       return values
@@ -184,17 +184,18 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Food()
          values.id=cursor.getInt(0)
-         values.name=cursor.getString(3)
-         values.unit=cursor.getString(4)
-         values.amount= cursor.getInt(5)
-         values.kcal= cursor.getInt(6)
-         values.carbohydrate= cursor.getDouble(7)
-         values.protein= cursor.getDouble(8)
-         values.fat= cursor.getDouble(9)
-         values.salt= cursor.getDouble(10)
-         values.sugar= cursor.getDouble(11)
-         values.useCount= cursor.getInt(12)
-         values.useDate = cursor.getString(13)
+         values.uid=cursor.getString(3)
+         values.name=cursor.getString(4)
+         values.unit=cursor.getString(5)
+         values.amount= cursor.getInt(6)
+         values.kcal= cursor.getInt(7)
+         values.carbohydrate= cursor.getDouble(8)
+         values.protein= cursor.getDouble(9)
+         values.fat= cursor.getDouble(10)
+         values.salt= cursor.getDouble(11)
+         values.sugar= cursor.getDouble(12)
+         values.useCount= cursor.getInt(13)
+         values.useDate = cursor.getString(14)
          list.add(values)
       }
       cursor.close()
@@ -209,18 +210,18 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Food()
          values.id=cursor.getInt(0)
-         values.uid=cursor.getString(2)
-         values.name=cursor.getString(3)
-         values.unit=cursor.getString(4)
-         values.amount= cursor.getInt(5)
-         values.kcal= cursor.getInt(6)
-         values.carbohydrate= cursor.getDouble(7)
-         values.protein= cursor.getDouble(8)
-         values.fat= cursor.getDouble(9)
-         values.salt= cursor.getDouble(10)
-         values.sugar= cursor.getDouble(11)
-         values.useCount= cursor.getInt(12)
-         values.useDate = cursor.getString(13)
+         values.uid=cursor.getString(3)
+         values.name=cursor.getString(4)
+         values.unit=cursor.getString(5)
+         values.amount= cursor.getInt(6)
+         values.kcal= cursor.getInt(7)
+         values.carbohydrate= cursor.getDouble(8)
+         values.protein= cursor.getDouble(9)
+         values.fat= cursor.getDouble(10)
+         values.salt= cursor.getDouble(11)
+         values.sugar= cursor.getDouble(12)
+         values.useCount= cursor.getInt(13)
+         values.useDate = cursor.getString(14)
          list.add(values)
       }
       cursor.close()
@@ -235,18 +236,19 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Food()
          values.id=cursor.getInt(0)
-         values.uid=cursor.getString(2)
-         values.name=cursor.getString(3)
-         values.unit=cursor.getString(4)
-         values.amount= cursor.getInt(5)
-         values.kcal= cursor.getInt(6)
-         values.carbohydrate= cursor.getDouble(7)
-         values.protein= cursor.getDouble(8)
-         values.fat= cursor.getDouble(9)
-         values.salt= cursor.getDouble(10)
-         values.sugar= cursor.getDouble(11)
-         values.useCount= cursor.getInt(12)
-         values.useDate = cursor.getString(13)
+         values.basic=cursor.getInt(2)
+         values.uid=cursor.getString(3)
+         values.name=cursor.getString(4)
+         values.unit=cursor.getString(5)
+         values.amount= cursor.getInt(6)
+         values.kcal= cursor.getInt(7)
+         values.carbohydrate= cursor.getDouble(8)
+         values.protein= cursor.getDouble(9)
+         values.fat= cursor.getDouble(10)
+         values.salt= cursor.getDouble(11)
+         values.sugar= cursor.getDouble(12)
+         values.useCount= cursor.getInt(13)
+         values.useDate = cursor.getString(14)
          list.add(values)
       }
       cursor.close()
@@ -285,6 +287,7 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Food()
          values.id=cursor.getInt(0)
+         values.uid = cursor.getString(2)
          values.type = cursor.getString(3)
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
@@ -457,13 +460,13 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
-         values.uid=cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.intensity =cursor.getString(4)
-         values.workoutTime = cursor.getInt(5)
-         values.kcal = cursor.getInt(6)
-         values.useCount = cursor.getInt(7)
-         values.useDate = cursor.getString(8)
+         values.uid=cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.intensity =cursor.getString(5)
+         values.workoutTime = cursor.getInt(6)
+         values.kcal = cursor.getInt(7)
+         values.useCount = cursor.getInt(8)
+         values.useDate = cursor.getString(9)
       }
       cursor.close()
       return values
@@ -476,13 +479,13 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
-         values.uid=cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.intensity =cursor.getString(4)
-         values.workoutTime = cursor.getInt(5)
-         values.kcal = cursor.getInt(6)
-         values.useCount = cursor.getInt(7)
-         values.useDate = cursor.getString(8)
+         values.uid=cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.intensity =cursor.getString(5)
+         values.workoutTime = cursor.getInt(6)
+         values.kcal = cursor.getInt(7)
+         values.useCount = cursor.getInt(8)
+         values.useDate = cursor.getString(9)
       }
       cursor.close()
       return values
@@ -496,13 +499,13 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.uid=cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.intensity =cursor.getString(4)
-         values.workoutTime = cursor.getInt(5)
-         values.kcal = cursor.getInt(6)
-         values.useCount = cursor.getInt(7)
-         values.useDate = cursor.getString(8)
+         values.uid=cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.intensity =cursor.getString(5)
+         values.workoutTime = cursor.getInt(6)
+         values.kcal = cursor.getInt(7)
+         values.useCount = cursor.getInt(8)
+         values.useDate = cursor.getString(9)
          list.add(values)
       }
       cursor.close()
@@ -517,13 +520,13 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.uid=cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.intensity =cursor.getString(4)
-         values.workoutTime = cursor.getInt(5)
-         values.kcal = cursor.getInt(6)
-         values.useCount = cursor.getInt(7)
-         values.useDate = cursor.getString(8)
+         values.uid=cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.intensity =cursor.getString(5)
+         values.workoutTime = cursor.getInt(6)
+         values.kcal = cursor.getInt(7)
+         values.useCount = cursor.getInt(8)
+         values.useDate = cursor.getString(9)
          list.add(values)
       }
       cursor.close()
@@ -537,11 +540,11 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
-         values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.regDate = cursor.getString(8)
+         values.name = cursor.getString(3)
+         values.intensity =cursor.getString(4)
+         values.workoutTime = cursor.getInt(5)
+         values.kcal = cursor.getInt(6)
+         values.regDate = cursor.getString(7)
       }
       cursor.close()
       return values
@@ -555,13 +558,12 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.exerciseId=cursor.getInt(2)
-         values.uid=cursor.getString(3)
-         values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.regDate = cursor.getString(8)
+         values.uid=cursor.getString(2)
+         values.name = cursor.getString(3)
+         values.intensity =cursor.getString(4)
+         values.workoutTime = cursor.getInt(5)
+         values.kcal = cursor.getInt(6)
+         values.regDate = cursor.getString(7)
          list.add(values)
       }
       cursor.close()
@@ -576,13 +578,12 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.exerciseId=cursor.getInt(2)
-         values.uid=cursor.getString(3)
-         values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.regDate = cursor.getString(8)
+         values.uid=cursor.getString(2)
+         values.name = cursor.getString(3)
+         values.intensity =cursor.getString(4)
+         values.workoutTime = cursor.getInt(5)
+         values.kcal = cursor.getInt(6)
+         values.regDate = cursor.getString(7)
          list.add(values)
       }
       cursor.close()
@@ -597,13 +598,12 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.exerciseId=cursor.getInt(2)
-         values.uid=cursor.getString(3)
-         values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.regDate = cursor.getString(8)
+         values.uid=cursor.getString(2)
+         values.name = cursor.getString(3)
+         values.intensity =cursor.getString(4)
+         values.workoutTime = cursor.getInt(5)
+         values.kcal = cursor.getInt(6)
+         values.regDate = cursor.getString(7)
          list.add(values)
       }
       cursor.close()
@@ -613,13 +613,14 @@ class DataManager(private var context: Context?) {
    fun getSearchExercise(column: String) : ArrayList<Exercise> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Exercise>()
-      val sql = "select id, uid, name from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} group by name order by $column desc"
+      val sql = "select id, basic, uid, name from $TABLE_EXERCISE where userId = ${MyApp.prefs.getId()} group by name order by $column desc"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.uid = cursor.getString(1)
-         values.name = cursor.getString(2)
+         values.basic = cursor.getInt(1)
+         values.uid = cursor.getString(2)
+         values.name = cursor.getString(3)
          list.add(values)
       }
       cursor.close()
@@ -892,24 +893,6 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getDailyGoal(date: String) : DailyGoal {
-      val db = dbHelper!!.readableDatabase
-      val values = DailyGoal()
-      val sql = "select * from $TABLE_DAILY_GOAL where userId = ${MyApp.prefs.getId()} and regDate = '$date'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         values.foodGoal = cursor.getInt(2)
-         values.waterGoal = cursor.getInt(3)
-         values.exerciseGoal = cursor.getInt(4)
-         values.bodyGoal = cursor.getDouble(5)
-         values.sleepGoal = cursor.getInt(6)
-         values.drugGoal = cursor.getInt(7)
-         values.regDate = cursor.getString(8)
-      }
-      cursor.close()
-      return values
-   }
-
    fun getExerciseRanking(date: String) : ArrayList<Item> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Item>()
@@ -1002,6 +985,87 @@ class DataManager(private var context: Context?) {
       return values
    }
 
+   fun getGoal(id: Int) : Goal {
+      val db = dbHelper!!.readableDatabase
+      val values = Goal()
+      val sql = "select * from $TABLE_GOAL where userId = ${MyApp.prefs.getId()} and id = $id"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         values.foodGoal = cursor.getInt(3)
+         values.waterGoal = cursor.getInt(4)
+         values.exerciseGoal = cursor.getInt(5)
+         values.bodyGoal = cursor.getDouble(6)
+         values.sleepGoal = cursor.getInt(7)
+         values.drugGoal = cursor.getInt(8)
+         values.regDate = cursor.getString(9)
+      }
+      cursor.close()
+      return values
+   }
+
+   fun getGoal(date: String) : Goal {
+      val db = dbHelper!!.readableDatabase
+      val values = Goal()
+      val sql = "select * from $TABLE_GOAL where userId = ${MyApp.prefs.getId()} and regDate = '$date'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         values.id = cursor.getInt(0)
+         values.foodGoal = cursor.getInt(3)
+         values.waterGoal = cursor.getInt(4)
+         values.exerciseGoal = cursor.getInt(5)
+         values.bodyGoal = cursor.getDouble(6)
+         values.sleepGoal = cursor.getInt(7)
+         values.drugGoal = cursor.getInt(8)
+         values.regDate = cursor.getString(9)
+      }
+      cursor.close()
+      return values
+   }
+
+   fun getGoalUid() : ArrayList<Goal> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Goal>()
+      val sql = "select * from $TABLE_GOAL where userId = ${MyApp.prefs.getId()} and uid is ''"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Goal()
+         values.id = cursor.getInt(0)
+         values.uid = cursor.getString(2)
+         values.foodGoal = cursor.getInt(3)
+         values.waterGoal = cursor.getInt(4)
+         values.exerciseGoal = cursor.getInt(5)
+         values.bodyGoal = cursor.getDouble(6)
+         values.sleepGoal = cursor.getInt(7)
+         values.drugGoal = cursor.getInt(8)
+         values.regDate = cursor.getString(9)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getGoalUpdated() : ArrayList<Goal> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Goal>()
+      val sql = "select * from $TABLE_GOAL where userId = ${MyApp.prefs.getId()} and isUpdated = 1"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Goal()
+         values.id = cursor.getInt(0)
+         values.uid = cursor.getString(2)
+         values.foodGoal = cursor.getInt(3)
+         values.waterGoal = cursor.getInt(4)
+         values.exerciseGoal = cursor.getInt(5)
+         values.bodyGoal = cursor.getDouble(6)
+         values.sleepGoal = cursor.getInt(7)
+         values.drugGoal = cursor.getInt(8)
+         values.regDate = cursor.getString(9)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
    fun getImage(type: String, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Image> = ArrayList()
@@ -1091,6 +1155,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
+      values.put("basic", data.basic)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("unit", data.unit)
@@ -1103,6 +1168,8 @@ class DataManager(private var context: Context?) {
       values.put("sugar", data.sugar)
       values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
+      values.put("useDate", data.useDate)
+      values.put("isUpdated", data.isUpdated)
       db!!.insert(TABLE_FOOD, null, values)
    }
 
@@ -1123,6 +1190,7 @@ class DataManager(private var context: Context?) {
       values.put("sugar", data.sugar)
       values.put("count", data.count)
       values.put("regDate", data.regDate)
+      values.put("isUpdated", data.isUpdated)
       db!!.insert(TABLE_DAILY_FOOD, null, values)
    }
 
@@ -1141,6 +1209,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
+      values.put("basic", data.basic)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("intensity", data.intensity)
@@ -1155,7 +1224,6 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
-      values.put("exerciseId", data.exerciseId)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("intensity", data.intensity)
@@ -1228,10 +1296,11 @@ class DataManager(private var context: Context?) {
       db!!.insert(TABLE_DRUG_CHECK, null, values)
    }
 
-   fun insertDailyGoal(data: DailyGoal) {
+   fun insertGoal(data: Goal) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
+      values.put("uid", data.uid)
       values.put("foodGoal", data.foodGoal)
       values.put("waterGoal", data.waterGoal)
       values.put("exerciseGoal", data.exerciseGoal)
@@ -1239,7 +1308,7 @@ class DataManager(private var context: Context?) {
       values.put("sleepGoal", data.sleepGoal)
       values.put("drugGoal", data.drugGoal)
       values.put("regDate", data.regDate)
-      db!!.insert(TABLE_DAILY_GOAL, null, values)
+      db!!.insert(TABLE_GOAL, null, values)
    }
 
    fun insertNote(data: Note) {

@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodBinding
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
@@ -44,7 +44,7 @@ class FoodFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
-   private var getDailyGoal = DailyGoal()
+   private var dailyGoal = Goal()
    private val itemList1 = ArrayList<Food>()
    private val itemList2 = ArrayList<Food>()
    private val itemList3 = ArrayList<Food>()
@@ -97,10 +97,12 @@ class FoodFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getDailyGoal.regDate == "") {
-               dataManager.insertDailyGoal(DailyGoal(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.regDate == "") {
+               dataManager.insertGoal(Goal(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_DAILY_GOAL, "foodGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "foodGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
             binding.pbFood.max = et.text.toString().toInt()
@@ -233,20 +235,20 @@ class FoodFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getGoal(selectedDate.toString())
       sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
 
       if(sum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
          binding.pbFood.setProgressEndColor(Color.parseColor("#EE6685"))
-         binding.pbFood.max = getDailyGoal.foodGoal
+         binding.pbFood.max = dailyGoal.foodGoal
          binding.pbFood.progress = sum
       }
 
-      binding.tvGoal.text = "${getDailyGoal.foodGoal} kcal"
+      binding.tvGoal.text = "${dailyGoal.foodGoal} kcal"
       binding.tvIntake.text = "$sum kcal"
 
-      val remain = getDailyGoal.foodGoal - sum
+      val remain = dailyGoal.foodGoal - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {

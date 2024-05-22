@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodRecord1Binding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
@@ -131,7 +133,7 @@ class FoodRecord1Fragment : Fragment() {
             }else {
                for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
                   if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].uid, string2 = itemList[i].name))
+                     searchList.add(Item(int1 = itemList[i].id, int2 = itemList[i].basic, string1 = itemList[i].uid, string2 = itemList[i].name))
                   }
                   adapter.setItems(searchList)
                }

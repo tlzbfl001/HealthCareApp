@@ -14,6 +14,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
 
@@ -22,11 +23,10 @@ class ExerciseListAdapter (
    private val itemList: ArrayList<Exercise>
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
+   private var dataManager: DataManager = DataManager(context)
 
    init {
-      dataManager = DataManager(context)
-      dataManager!!.open()
+      dataManager.open()
    }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,7 +49,9 @@ class ExerciseListAdapter (
             .setTitle("운동 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)
+               dataManager.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)
+
+               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyExercise", value = itemList[pos].uid))
 
                itemList.removeAt(pos)
                notifyDataSetChanged()

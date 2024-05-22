@@ -13,10 +13,10 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepBinding
-import kr.bodywell.android.model.DailyGoal
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
@@ -36,7 +36,7 @@ class SleepFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
-   private var getDailyGoal = DailyGoal()
+   private var dailyGoal = Goal()
    private var getSleep = Sleep()
    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")
 
@@ -84,10 +84,12 @@ class SleepFragment : Fragment() {
          val minute = if(etMinute.text.toString().trim() == "") 0 else etMinute.text.toString().toInt()
          val total = hour * 60 + minute
 
-         if(getDailyGoal.regDate == "") {
-            dataManager.insertDailyGoal(DailyGoal(sleepGoal = total, regDate = selectedDate.toString()))
+         if(dailyGoal.regDate == "") {
+            dataManager.insertGoal(Goal(sleepGoal = total, regDate = selectedDate.toString()))
+            dailyGoal = dataManager.getGoal(selectedDate.toString())
          }else {
-            dataManager.updateIntByDate(TABLE_DAILY_GOAL, "sleepGoal", total, selectedDate.toString())
+            dataManager.updateIntByDate(TABLE_GOAL, "sleepGoal", total, selectedDate.toString())
+            dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
          }
 
          dailyView()
@@ -151,7 +153,7 @@ class SleepFragment : Fragment() {
       binding.tvGoal.text = "0h 0m"
       binding.tvRemain.text = "0h 0m"
 
-      getDailyGoal = dataManager.getDailyGoal(selectedDate.toString())
+      dailyGoal = dataManager.getGoal(selectedDate.toString())
       getSleep = dataManager.getSleep(selectedDate.toString())
 
       if(getSleep.startTime != "" && getSleep.endTime != "") {
@@ -160,12 +162,12 @@ class SleepFragment : Fragment() {
 
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
-         binding.pbSleep.max = getDailyGoal.sleepGoal
+         binding.pbSleep.max = dailyGoal.sleepGoal
          binding.pbSleep.progress = getSleep.total
          binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"
          binding.tvWakeTime.text = "${wakeTime.hour}h ${wakeTime.minute}m"
 
-         val remain = (getDailyGoal.sleepGoal - getSleep.total)
+         val remain = (dailyGoal.sleepGoal - getSleep.total)
          if(remain > 0) {
             binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
          }
@@ -174,7 +176,7 @@ class SleepFragment : Fragment() {
          binding.tvWakeTime.text = "0h 0m"
       }
 
-      binding.tvGoal.text = "${getDailyGoal.sleepGoal / 60}h ${getDailyGoal.sleepGoal % 60}m"
+      binding.tvGoal.text = "${dailyGoal.sleepGoal / 60}h ${dailyGoal.sleepGoal % 60}m"
       binding.tvSleep.text = "${getSleep.total / 60}h ${getSleep.total % 60}m"
    }
 

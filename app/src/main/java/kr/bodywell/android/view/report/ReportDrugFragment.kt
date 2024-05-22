@@ -233,7 +233,7 @@ class ReportDrugFragment : Fragment() {
       var count = 0
 
       for(i in 0 until getData.size){
-         val getDailyGoal = dataManager.getDailyGoal(getData[i])
+         val getDailyGoal = dataManager.getGoal(getData[i])
          val getDrugCheckCount = dataManager.getDrugCheckCount(getData[i])
 
          if(getDrugCheckCount > 0) {
