@@ -9,6 +9,9 @@ data class ActivityResponse (
 	@SerializedName("name")
 	var name: String = "",
 
+	@SerializedName("registerType")
+	var registerType: String = "",
+
 	@SerializedName("usageDate")
 	var usageDate: String = "",
 
@@ -16,7 +19,7 @@ data class ActivityResponse (
 	var usageCount: Int = 0
 )
 
-data class ActivitiesResponse (
+data class ActivityResponses (
 	@SerializedName("activities")
 	var activities: List<ActivityResponse>
 )

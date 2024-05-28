@@ -9,20 +9,23 @@ import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
-import kr.bodywell.android.api.response.ActivitiesResponse
+import kr.bodywell.android.api.response.ActivityResponses
 import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
+import kr.bodywell.android.api.response.BodyResponses
 import kr.bodywell.android.api.response.DeviceResponse
-import kr.bodywell.android.api.response.DevicesResponse
+import kr.bodywell.android.api.response.DeviceResponses
 import kr.bodywell.android.api.response.DietResponse
+import kr.bodywell.android.api.response.DietResponses
 import kr.bodywell.android.api.response.FoodResponse
-import kr.bodywell.android.api.response.FoodsResponse
+import kr.bodywell.android.api.response.FoodResponses
 import kr.bodywell.android.api.response.GoalResponse
 import kr.bodywell.android.api.response.SleepResponse
-import kr.bodywell.android.api.response.SleepsResponse
+import kr.bodywell.android.api.response.SleepResponses
 import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
+import kr.bodywell.android.api.response.WaterResponses
 import kr.bodywell.android.api.response.WorkoutResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -42,22 +45,37 @@ interface APIService {
 	@GET("/health/foods")
 	suspend fun getFoods(
 		@Header("Authorization") token: String
-	): Response<FoodsResponse>
+	): Response<FoodResponses>
+
+	@GET("/health/diets")
+	suspend fun getDiets(
+		@Header("Authorization") token: String
+	): Response<DietResponses>
+
+	@GET("/health/waters")
+	suspend fun getWater(
+		@Header("Authorization") token: String
+	): Response<WaterResponses>
 
 	@GET("/health/activities")
 	suspend fun getActivities(
 		@Header("Authorization") token: String
-	): Response<ActivitiesResponse>
+	): Response<ActivityResponses>
+
+	@GET("/health/bodies")
+	suspend fun getBody(
+		@Header("Authorization") token: String
+	): Response<BodyResponses>
 
 	@GET("/devices")
 	suspend fun getDevices(
 		@Header("Authorization") token: String
-	): Response<DevicesResponse>
+	): Response<DeviceResponses>
 
 	@GET("/health/sleep")
 	suspend fun getSleeps(
 		@Header("Authorization") token: String
-	): Response<SleepsResponse>
+	): Response<SleepResponses>
 
 	@FormUrlEncoded
 	@POST("/auth/google/login")

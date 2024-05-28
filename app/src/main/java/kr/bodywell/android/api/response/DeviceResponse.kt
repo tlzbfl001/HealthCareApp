@@ -31,7 +31,7 @@ data class DeviceResponse(
 	var updatedAt: String = ""
 )
 
-data class DevicesResponse (
+data class DeviceResponses (
 	@SerializedName("devices")
 	var devices: List<DeviceResponse>
 )

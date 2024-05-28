@@ -28,10 +28,19 @@ data class FoodResponse (
 	var quantity: Int = 0,
 
 	@SerializedName("quantityUnit")
-	var quantityUnit: String = ""
+	var quantityUnit: String = "",
+
+	@SerializedName("registerType")
+	var registerType: String = "",
+
+	@SerializedName("usageDate")
+	var usageDate: String = "",
+
+	@SerializedName("usageCount")
+	var usageCount: Int = 0
 )
 
-data class FoodsResponse (
+data class FoodResponses (
 	@SerializedName("foods")
 	var foods: List<FoodResponse>
 )

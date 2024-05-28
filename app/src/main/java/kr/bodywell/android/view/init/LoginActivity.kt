@@ -20,9 +20,14 @@ import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
+import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Food
+import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
@@ -307,20 +312,85 @@ class LoginActivity : AppCompatActivity() {
                   refreshRegDate = LocalDateTime.now().toString()))
             }
 
-            val response = RetrofitAPI.api.getSleeps("Bearer $access")
-            if(response.isSuccessful) {
-               for(i in 0 until response.body()!!.sleeps.size) {
+            val getFoods = RetrofitAPI.api.getFoods("Bearer $access")
+            if(getFoods.isSuccessful) {
+               for(i in 0 until getFoods.body()!!.foods.size) {
+                  if(getFoods.body()!!.foods[i].registerType == "ADMIN") {
+                     dataManager.insertFood(Food(userId = getUser2.id, basic = 1, uid = getFoods.body()!!.foods[i].uid, name = getFoods.body()!!.foods[i].foodName,
+                        unit = getFoods.body()!!.foods[i].quantityUnit, amount = getFoods.body()!!.foods[i].quantity, kcal = getFoods.body()!!.foods[i].calories,
+                        protein = getFoods.body()!!.foods[i].protein, fat = getFoods.body()!!.foods[i].fat, useCount = getFoods.body()!!.foods[i].usageCount,
+                        useDate = getFoods.body()!!.foods[i].usageDate))
+                  }else {
+                     dataManager.insertFood(Food(userId = getUser2.id, basic = 0, uid = getFoods.body()!!.foods[i].uid, name = getFoods.body()!!.foods[i].foodName,
+                        unit = getFoods.body()!!.foods[i].quantityUnit, amount = getFoods.body()!!.foods[i].quantity, kcal = getFoods.body()!!.foods[i].calories,
+                        protein = getFoods.body()!!.foods[i].protein, fat = getFoods.body()!!.foods[i].fat, useCount = getFoods.body()!!.foods[i].usageCount,
+                        useDate = getFoods.body()!!.foods[i].usageDate))
+                  }
+               }
+            }
+
+            val getDiets = RetrofitAPI.api.getDiets("Bearer $access")
+            if(getDiets.isSuccessful) {
+               for(i in 0 until getDiets.body()!!.diets.size) {
+                  dataManager.insertDailyFood(Food(userId = getUser2.id, uid = getDiets.body()!!.diets[i].uid, type = getDiets.body()!!.diets[i].mealTime,
+                     name = getDiets.body()!!.diets[i].foodName, unit = getDiets.body()!!.diets[i].volumeUnit, amount = getDiets.body()!!.diets[i].volume,
+                     kcal = getDiets.body()!!.diets[i].calories, carbohydrate = getDiets.body()!!.diets[i].carbohydrate, protein = getDiets.body()!!.diets[i].protein,
+                     fat = getDiets.body()!!.diets[i].fat, count = getDiets.body()!!.diets[i].quantity, regDate = getDiets.body()!!.diets[i].date))
+
+                  if(getDiets.body()!!.diets[i].photos.size > 0) {
+                     for(j in 0 until getDiets.body()!!.diets[i].photos.size) {
+                        dataManager.insertImage(Image(userId = getUser2.id, type = getDiets.body()!!.diets[i].mealTime, dataId = getDiets.body()!!.diets[i].itemId.toInt(),
+                           imageUri = getDiets.body()!!.diets[i].photos[j], regDate = getDiets.body()!!.diets[i].date))
+                     }
+                  }
+               }
+            }
+
+            val getWater = RetrofitAPI.api.getWater("Bearer $access")
+            if(getWater.isSuccessful) {
+               for(i in 0 until getWater.body()!!.waters.size) {
+                  dataManager.insertWater(Water(userId = getUser2.id, uid = getWater.body()!!.waters[i].uid, count = getWater.body()!!.waters[i].count,
+                     ml = getWater.body()!!.waters[i].mL, regDate = getWater.body()!!.waters[i].date))
+               }
+            }
+
+            val getActivities = RetrofitAPI.api.getActivities("Bearer $access")
+            if(getActivities.isSuccessful) {
+               for(i in 0 until getActivities.body()!!.activities.size) {
+                  if(getActivities.body()!!.activities[i].registerType == "ADMIN") {
+                     dataManager.insertExercise(Exercise(userId = getUser2.id, basic = 1, uid = getActivities.body()!!.activities[i].uid, name = getActivities.body()!!.activities[i].name,
+                        useCount = getActivities.body()!!.activities[i].usageCount, useDate = getActivities.body()!!.activities[i].usageDate))
+                  }else {
+                     dataManager.insertExercise(Exercise(userId = getUser2.id, basic = 0, uid = getActivities.body()!!.activities[i].uid, name = getActivities.body()!!.activities[i].name,
+                        useCount = getActivities.body()!!.activities[i].usageCount, useDate = getActivities.body()!!.activities[i].usageDate))
+                  }
+               }
+            }
+
+            val getBody = RetrofitAPI.api.getBody("Bearer $access")
+            if(getBody.isSuccessful) {
+               for(i in 0 until getBody.body()!!.bodies.size) {
+                  dataManager.insertBody(Body(userId = getUser2.id, uid = getBody.body()!!.bodies[i].uid, height = getBody.body()!!.bodies[i].height,
+                     weight = getBody.body()!!.bodies[i].weight, intensity = getBody.body()!!.bodies[i].workoutIntensity, fat = getBody.body()!!.bodies[i].bodyFatPercentage,
+                     muscle = getBody.body()!!.bodies[i].skeletalMuscleMass, bmi = getBody.body()!!.bodies[i].bodyMassIndex, bmr = getBody.body()!!.bodies[i].basalMetabolicRate,
+                     regDate = getBody.body()!!.bodies[i].createdAt))
+               }
+            }
+
+            val getSleeps = RetrofitAPI.api.getSleeps("Bearer $access")
+            if(getSleeps.isSuccessful) {
+               for(i in 0 until getSleeps.body()!!.sleeps.size) {
                   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                  val bedTime = LocalDateTime.parse(response.body()!!.sleeps[i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
-                  val wakeTime = LocalDateTime.parse(response.body()!!.sleeps[i].ends, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
-                  val regDate = LocalDateTime.parse(response.body()!!.sleeps[i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")).format(formatter)
+                  val bedTime = LocalDateTime.parse(getSleeps.body()!!.sleeps[i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
+                  val wakeTime = LocalDateTime.parse(getSleeps.body()!!.sleeps[i].ends, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
+                  val regDate = LocalDateTime.parse(getSleeps.body()!!.sleeps[i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")).format(formatter)
 
                   val startDT = LocalDateTime.of(bedTime.year, bedTime.monthValue, bedTime.dayOfMonth, bedTime.hour, bedTime.minute)
                   val endDT = LocalDateTime.of(wakeTime.year, wakeTime.monthValue, wakeTime.dayOfMonth, wakeTime.hour, wakeTime.minute)
                   val diff = Duration.between(startDT, endDT)
 
-                  dataManager.insertSleep(Sleep(uid = response.body()!!.sleeps[i].uid, startTime = response.body()!!.sleeps[i].starts,
-                     endTime = response.body()!!.sleeps[i].ends, total = diff.toMinutes().toInt(), regDate = regDate.toString()))
+                  dataManager.insertSleep(Sleep(uid = getSleeps.body()!!.sleeps[i].uid, startTime = getSleeps.body()!!.sleeps[i].starts,
+                     endTime = getSleeps.body()!!.sleeps[i].ends, total = diff.toMinutes().toInt(), regDate = regDate.toString()))
                }
             }
 

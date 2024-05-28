@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
@@ -46,9 +48,7 @@ class FoodRecordAdapter (
          onItemClickListener!!.onItemClick(position)
       }
 
-      if(itemList[position].basic == 1) {
-         holder.cl.visibility = View.GONE
-      }
+      if(itemList[position].basic == 0) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
@@ -71,30 +71,25 @@ class FoodRecordAdapter (
          }
 
          clDelete.setOnClickListener {
-            val getDailyFood = dataManager.getDailyFood("foodId", itemList[position].id)
-            if(getDailyFood.id > 0) {
-               Toast.makeText(context, "사용중인 데이터는 삭제할 수 없습니다.", Toast.LENGTH_SHORT).show()
-            }else {
-               AlertDialog.Builder(context, R.style.AlertDialogStyle)
-                  .setTitle("음식 삭제")
-                  .setMessage("정말 삭제하시겠습니까?")
-                  .setPositiveButton("확인") { _, _ ->
-                     dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
+            AlertDialog.Builder(context, R.style.AlertDialogStyle)
+               .setTitle("음식 삭제")
+               .setMessage("정말 삭제하시겠습니까?")
+               .setPositiveButton("확인") { _, _ ->
+                  dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
 
-                     if(itemList[position].uid != "") {
-                        dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid))
-                     }
-
-                     itemList.removeAt(position)
-                     notifyDataSetChanged()
-
-                     Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                  if(itemList[position].uid != "") {
+                     dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid))
                   }
-                  .setNegativeButton("취소", null)
-                  .create().show()
 
-               dialog.dismiss()
-            }
+                  itemList.removeAt(position)
+                  notifyDataSetChanged()
+
+                  Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+               }
+               .setNegativeButton("취소", null)
+               .create().show()
+
+            dialog.dismiss()
          }
 
          dialog.setContentView(bottomSheetView)

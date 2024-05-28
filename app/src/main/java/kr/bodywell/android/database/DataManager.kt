@@ -57,18 +57,6 @@ class DataManager(private var context: Context?) {
       return count
    }
 
-   fun getUserById() : Int {
-      val db = dbHelper!!.readableDatabase
-      var count = 0
-      val sql = "select count(id) from $TABLE_USER where id = ${MyApp.prefs.getId()}"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         count = cursor.getInt(0)
-      }
-      cursor.close()
-      return count
-   }
-
    fun getUser(type: String, email: String) : User {
       val db = dbHelper!!.readableDatabase
       val values = User()
@@ -160,6 +148,7 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id=cursor.getInt(0)
+         values.uid=cursor.getString(3)
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
@@ -668,7 +657,7 @@ class DataManager(private var context: Context?) {
    fun getBodyUid() : ArrayList<Body> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Body>()
-      val sql = "select * from $TABLE_BODY where userId = ${MyApp.prefs.getId()} and uid is null"
+      val sql = "select * from $TABLE_BODY where userId = ${MyApp.prefs.getId()} and uid is ''"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = Body()
@@ -1168,7 +1157,6 @@ class DataManager(private var context: Context?) {
       values.put("sugar", data.sugar)
       values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
-      values.put("useDate", data.useDate)
       values.put("isUpdated", data.isUpdated)
       db!!.insert(TABLE_FOOD, null, values)
    }
@@ -1237,6 +1225,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
+      values.put("uid", data.uid)
       values.put("height", data.height)
       values.put("weight", data.weight)
       values.put("intensity", data.intensity)

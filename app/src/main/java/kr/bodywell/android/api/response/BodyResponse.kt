@@ -36,3 +36,8 @@ data class BodyResponse(
 	@SerializedName("updatedAt")
 	var updatedAt: String = ""
 )
+
+data class BodyResponses (
+	@SerializedName("bodies")
+	var bodies: List<BodyResponse>
+)

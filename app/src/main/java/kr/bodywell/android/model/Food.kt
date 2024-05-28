@@ -3,7 +3,6 @@ package kr.bodywell.android.model
 data class Food(
     var id: Int = 0,
     var userId: Int = 0,
-    var foodId: Int = 0,
     var uid: String = "",
     var type: String = "",
     var name: String = "",

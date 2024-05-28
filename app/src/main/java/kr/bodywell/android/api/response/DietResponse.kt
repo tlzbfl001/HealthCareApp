@@ -19,7 +19,7 @@ data class DietResponse(
 	var foodName: String = "",
 
 	@SerializedName("calories")
-	var calories: Double = 0.0,
+	var calories: Int = 0,
 
 	@SerializedName("carbohydrate")
 	var carbohydrate: Double = 0.0,
@@ -43,5 +43,13 @@ data class DietResponse(
 	var volumeUnit: String = "",
 
 	@SerializedName("photos")
-	var photos: ArrayList<String> = ArrayList()
+	var photos: ArrayList<String> = ArrayList(),
+
+	@SerializedName("date")
+	var date: String = ""
+)
+
+data class DietResponses (
+	@SerializedName("diets")
+	var diets: List<DietResponse>
 )

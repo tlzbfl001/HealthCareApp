@@ -115,6 +115,7 @@ class FoodRecord1Fragment : Fragment() {
          })
 
          binding.rv1.adapter = adapter
+         binding.rv1.requestLayout()
       }
 
       val adapter = SearchAdapter(requireActivity(), "1", type)
