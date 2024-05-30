@@ -10,7 +10,13 @@ data class SleepResponse (
 	var starts: String = "",
 
 	@SerializedName("ends")
-	var ends: String = ""
+	var ends: String = "",
+
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
 )
 
 data class SleepResponses (

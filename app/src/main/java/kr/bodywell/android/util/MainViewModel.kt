@@ -8,18 +8,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.api.dto.Activity
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DietDTO
-import kr.bodywell.android.api.dto.Food
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.GoalDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -129,7 +126,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   val response = RetrofitAPI.api.deleteWorkout("Bearer ${getToken.access}", getUnused[i].value)
 
                   if(response.isSuccessful) {
-                     Log.d(TAG, "deleteWorkout: ${response.body()}")
+                     Log.d(TAG, "deleteWorkout: $response")
                      dataManager.deleteItem(TABLE_UNUSED, "id", getUnused[i].id)
                   }else {
                      Log.d(TAG, "deleteWorkout: $response")
@@ -165,29 +162,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                }
             }
 
-//            for(i in 0 until getDailyFoodUid.size) {
-//               val photos = ArrayList<String>()
-//               val getImage = dataManager.getImage(getDailyFoodUid[i].type, getDailyFoodUid[i].regDate)
-//
-//               for(j in 0 until getImage.size) {
-//                  photos.add(getImage[j].imageUri)
-//               }
-//
-//               val getFood = dataManager.getFood("name", getDailyFoodUid[i].name)
-//
-//               val timeFormat = LocalDate.parse(getDailyFoodUid[i].regDate).atStartOfDay().format(formatter)
-//               val data = DietDTO(getDailyFoodUid[i].id.toString(), getDailyFoodUid[i].type, "", getDailyFoodUid[i].name, getDailyFoodUid[i].kcal,
-//                  getDailyFoodUid[i].carbohydrate, getDailyFoodUid[i].protein, getDailyFoodUid[i].fat, getDailyFoodUid[i].count, "",
-//                  getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, timeFormat, Food(uid = getFood.uid))
-//               val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", data)
-//
-//               if(response.isSuccessful) {
-//                  Log.d(TAG, "createDiets: ${response.body()}")
-//                  dataManager.updateStr(TABLE_DAILY_FOOD, "uid", response.body()!!.uid, "id", getDailyFoodUid[i].id)
-//               }else {
-//                  Log.d(TAG, "createDiets: $response")
-//               }
-//            }
+            for(i in 0 until getDailyFoodUid.size) {
+               val photos = ArrayList<String>()
+               val getImage = dataManager.getImage(getDailyFoodUid[i].type, getDailyFoodUid[i].regDate)
+
+               for(j in 0 until getImage.size) {
+                  photos.add(getImage[j].imageUri)
+               }
+
+               val getFood = dataManager.getFood("name", getDailyFoodUid[i].name)
+
+               val timeFormat = LocalDate.parse(getDailyFoodUid[i].regDate).atStartOfDay().format(formatter)
+               val data = DietDTO(getDailyFoodUid[i].id.toString(), getDailyFoodUid[i].type, "null", getDailyFoodUid[i].name, getDailyFoodUid[i].kcal,
+                  getDailyFoodUid[i].carbohydrate, getDailyFoodUid[i].protein, getDailyFoodUid[i].fat, getDailyFoodUid[i].count, "null",
+                  getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, timeFormat, getFood.uid)
+               val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", data)
+
+               if(response.isSuccessful) {
+                  Log.d(TAG, "createDiets: ${response.body()}")
+                  dataManager.updateStr(TABLE_DAILY_FOOD, "uid", response.body()!!.uid, "id", getDailyFoodUid[i].id)
+               }else {
+                  Log.d(TAG, "createDiets: $response")
+               }
+            }
 
             for(i in 0 until getDailyFoodUpdated.size) {
                if(getDailyFoodUpdated[i].uid != "") {
@@ -203,7 +200,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   val timeFormat = LocalDate.parse(getDailyFoodUpdated[i].regDate).atStartOfDay().format(formatter)
                   val data = DietDTO(getDailyFoodUpdated[i].id.toString(), getDailyFoodUpdated[i].type, "", getDailyFoodUpdated[i].name, getDailyFoodUpdated[i].kcal,
                      getDailyFoodUpdated[i].carbohydrate, getDailyFoodUpdated[i].protein, getDailyFoodUpdated[i].fat, getDailyFoodUpdated[i].count, "",
-                     getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, timeFormat, Food(uid = getFood.uid))
+                     getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, timeFormat, getFood.uid)
                   val response = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", getDailyFoodUpdated[i].uid, data)
 
                   if(response.isSuccessful) {
@@ -269,20 +266,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                }
             }
 
-//            for(i in 0 until getDailyExerciseUid.size) {
-//               val getExercise = dataManager.getExercise("name", getDailyExerciseUid[i].name)
-//               val timeFormat = LocalDate.parse(getDailyExerciseUid[i].regDate).atStartOfDay().format(formatter)
-//               val data = WorkoutDTO(getDailyExerciseUid[i].id.toString(), getDailyExerciseUid[i].name, getDailyExerciseUid[i].kcal, getDailyExerciseUid[i].intensity,
-//                  getDailyExerciseUid[i].workoutTime, timeFormat, true, Activity(uid = getExercise.uid))
-//               val response = RetrofitAPI.api.createWorkout("Bearer ${getToken.access}", data)
-//
-//               if(response.isSuccessful) {
-//                  Log.d(TAG, "createWorkout: ${response.body()}")
-//                  dataManager.updateStr(TABLE_DAILY_EXERCISE, "uid", response.body()!!.uid, "id", getDailyExerciseUid[i].id)
-//               }else {
-//                  Log.d(TAG, "createWorkout: $response")
-//               }
-//            }
+            for(i in 0 until getDailyExerciseUid.size) {
+               val getExercise = dataManager.getExercise("name", getDailyExerciseUid[i].name)
+               val timeFormat = LocalDate.parse(getDailyExerciseUid[i].regDate).atStartOfDay().format(formatter)
+               val data = WorkoutDTO(getDailyExerciseUid[i].id.toString(), getDailyExerciseUid[i].name, getDailyExerciseUid[i].kcal, getDailyExerciseUid[i].intensity,
+                  getDailyExerciseUid[i].workoutTime, timeFormat, true, getExercise.uid)
+               val response = RetrofitAPI.api.createWorkout("Bearer ${getToken.access}", data)
+
+               if(response.isSuccessful) {
+                  Log.d(TAG, "createWorkout: ${response.body()}")
+                  dataManager.updateStr(TABLE_DAILY_EXERCISE, "uid", response.body()!!.uid, "id", getDailyExerciseUid[i].id)
+               }else {
+                  Log.d(TAG, "createWorkout: $response")
+               }
+            }
 
             for(i in 0 until getDailyExerciseUpdated.size) {
                val data = WorkoutUpdateDTO(calories=getDailyExerciseUpdated[i].kcal, intensity=getDailyExerciseUpdated[i].intensity, time=getDailyExerciseUpdated[i].workoutTime)
@@ -297,7 +294,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getBodyUid.size) {
-               val timeFormat = getBodyUid[i].regDate.format(formatter)
+               val timeFormat = LocalDate.parse(getBodyUid[i].regDate).atStartOfDay().format(formatter)
                val data = BodyDTO(getBodyUid[i].height, getBodyUid[i].weight, getBodyUid[i].bmi, getBodyUid[i].fat, getBodyUid[i].muscle, getBodyUid[i].bmr,
                   getBodyUid[i].intensity, timeFormat)
                val response = RetrofitAPI.api.createBody("Bearer ${getToken.access}", data)
@@ -311,7 +308,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getBodyUpdated.size) {
-               val timeFormat = getBodyUpdated[i].regDate.format(formatter)
+               val timeFormat = LocalDate.parse(getBodyUpdated[i].regDate).atStartOfDay().format(formatter)
                val data = BodyDTO(getBodyUpdated[i].height, getBodyUpdated[i].weight, getBodyUpdated[i].bmi, getBodyUpdated[i].fat, getBodyUpdated[i].muscle,
                   getBodyUpdated[i].bmr, getBodyUpdated[i].intensity, timeFormat)
                val response = RetrofitAPI.api.updateBody("Bearer ${getToken.access}", getBodyUpdated[i].uid!!, data)
@@ -337,19 +334,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getSleepUpdated.size) {
-               val data = SleepDTO(getSleepUpdated[i].startTime, getSleepUpdated[i].endTime)
-               val response = RetrofitAPI.api.updateSleep("Bearer ${getToken.access}", getSleepUpdated[i].uid!!, data)
+               if(getSleepUpdated[i].uid != "") {
+                  val data = SleepDTO(getSleepUpdated[i].startTime, getSleepUpdated[i].endTime)
+                  val response = RetrofitAPI.api.updateSleep("Bearer ${getToken.access}", getSleepUpdated[i].uid, data)
 
-               if(response.isSuccessful) {
-                  Log.d(TAG, "updateSleep: ${response.body()}")
-                  dataManager.updateInt(TABLE_SLEEP, "isUpdated", 0, "id", getSleepUpdated[i].id)
-               }else {
-                  Log.d(TAG, "updateSleep: $response")
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "updateSleep: ${response.body()}")
+                     dataManager.updateInt(TABLE_SLEEP, "isUpdated", 0, "id", getSleepUpdated[i].id)
+                  }else {
+                     Log.d(TAG, "updateSleep: $response")
+                  }
                }
             }
 
             for(i in 0 until getGoalUid.size) {
-               Log.d(TAG, "getGoalUid: $getGoalUid")
                val getGoal = dataManager.getGoal(getGoalUid[i].id)
                if(getGoal.uid == "") {
                   val data = GoalDTO(getGoalUid[i].bodyGoal, getGoalUid[i].foodGoal, getGoalUid[i].exerciseGoal, getGoalUid[i].waterGoal,

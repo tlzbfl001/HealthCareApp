@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseEditBinding
 import kr.bodywell.android.model.Exercise
@@ -53,7 +55,7 @@ class ExerciseEditFragment : Fragment() {
 		dataManager = DataManager(activity)
 		dataManager.open()
 
-		val id = arguments?.getString("id")!!.toInt()
+		var id = arguments?.getString("id")!!.toInt()
 
 		val exercise = dataManager.getExercise(id)
 
@@ -89,25 +91,23 @@ class ExerciseEditFragment : Fragment() {
 		}
 
 		binding.cvEdit.setOnClickListener {
-			if(id > 0) {
-				val getData = dataManager.getExercise("name", binding.etName.text.toString().trim())
+			val getData = dataManager.getExercise("name", binding.etName.text.toString().trim())
 
-				if(binding.etName.text.toString().trim() == "") {
-					Toast.makeText(context, "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
-				}else if(getData.name != "" && (getData.name != exercise.name)) {
-					Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
-				}else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
-					|| binding.etKcal.text.toString().toInt() < 1) {
-					Toast.makeText(requireActivity(), "데이터는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
-				}else {
-					dataManager.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
-						workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt(), isUpdated = 1))
-
-					Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-					replaceFragment()
-				}
+			if(binding.etName.text.toString().trim() == "") {
+				Toast.makeText(context, "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
+			}else if(getData.name != "" && (getData.name != exercise.name)) {
+				Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
+			}else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
+				|| binding.etKcal.text.toString().toInt() < 1) {
+				Toast.makeText(requireActivity(), "데이터는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				Toast.makeText(context, "수정 실패", Toast.LENGTH_SHORT).show()
+				dataManager.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
+					workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt()))
+
+				if(binding.etName.text.toString().trim() != exercise.name.trim()) dataManager.updateInt(TABLE_EXERCISE, "isUpdated", 1, "id", id)
+
+				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+				replaceFragment()
 			}
 		}
 

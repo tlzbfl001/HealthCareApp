@@ -131,7 +131,7 @@ interface APIService {
 		@Body dto: WorkoutDTO
 	): Response<WorkoutResponse>
 
-	@POST("/health/sleep")
+	@POST("/health/sleeps")
 	suspend fun createSleep(
 		@Header("Authorization") token: String,
 		@Body dto: SleepDTO
@@ -190,7 +190,7 @@ interface APIService {
 		@Body dto: WorkoutUpdateDTO
 	): Response<WorkoutResponse>
 
-	@PATCH("/health/sleep/{uid}")
+	@PATCH("/health/sleeps/{uid}")
 	suspend fun updateSleep(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,

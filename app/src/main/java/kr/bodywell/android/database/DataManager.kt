@@ -852,7 +852,7 @@ class DataManager(private var context: Context?) {
    fun getSleepUid() : ArrayList<Sleep> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Sleep>()
-      val sql = "select id, startTime, endTime from $TABLE_SLEEP where userId = ${MyApp.prefs.getId()} and uid is null"
+      val sql = "select id, startTime, endTime from $TABLE_SLEEP where userId = ${MyApp.prefs.getId()} and uid is ''"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = Sleep()

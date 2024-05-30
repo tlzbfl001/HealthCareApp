@@ -3,6 +3,7 @@ package kr.bodywell.android.view.home.sleep
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import nl.joery.timerangepicker.TimeRangePicker
 import java.time.Duration
@@ -109,7 +111,7 @@ class SleepRecordFragment : Fragment() {
          val diff = Duration.between(startDT, endDT)
 
          if(getSleep.regDate == "") {
-            dataManager.insertSleep(Sleep(uid = null, startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), regDate = selectedDate.toString()))
+            dataManager.insertSleep(Sleep(uid = "", startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), regDate = selectedDate.toString()))
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
          }else {

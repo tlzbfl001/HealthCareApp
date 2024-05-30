@@ -45,11 +45,6 @@ data class DietDTO(
 	@SerializedName("date")
 	var date: String = "",
 
-	@SerializedName("food")
-	var food: Food
-)
-
-data class Food(
-	@SerializedName("uid")
-	var uid: String = ""
+	@SerializedName("foodUid")
+	var foodUid: String = ""
 )
