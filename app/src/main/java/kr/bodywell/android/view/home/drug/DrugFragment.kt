@@ -176,14 +176,13 @@ class DrugFragment : Fragment() {
       val check = dataManager.getDrugCheckCount(selectedDate.toString())
 
       // 약복용 리스트 생성
-      val getDrugDaily = dataManager.getDrugDaily(selectedDate.toString())
+      val getDrugDaily = dataManager.getDrug(selectedDate.toString())
       for(i in 0 until getDrugDaily.size) {
          val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
             val getDrugCheckCount = dataManager.getDrugCheckCount(getDrugTime[j].id, selectedDate.toString())
             itemList.add(DrugList(drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name,
-               amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = String.format("%02d", getDrugTime[j].hour)+":"+String.format("%02d", getDrugTime[j].minute),
-               initCheck = check, checked = getDrugCheckCount)
+               amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheckCount)
             )
          }
       }

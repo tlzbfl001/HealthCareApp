@@ -5,6 +5,9 @@ import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.GoalDTO
+import kr.bodywell.android.api.dto.MedicineDTO
+import kr.bodywell.android.api.dto.MedicineIntakeDTO
+import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
@@ -20,6 +23,9 @@ import kr.bodywell.android.api.response.DietResponses
 import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.api.response.FoodResponses
 import kr.bodywell.android.api.response.GoalResponse
+import kr.bodywell.android.api.response.MedicineIntakeResponse
+import kr.bodywell.android.api.response.MedicineResponse
+import kr.bodywell.android.api.response.MedicineTimeResponse
 import kr.bodywell.android.api.response.SleepResponse
 import kr.bodywell.android.api.response.SleepResponses
 import kr.bodywell.android.api.response.TokenResponse
@@ -137,6 +143,26 @@ interface APIService {
 		@Body dto: SleepDTO
 	): Response<SleepResponse>
 
+	@POST("/health/medicines")
+	suspend fun createMedicine(
+		@Header("Authorization") token: String,
+		@Body dto: MedicineDTO
+	): Response<MedicineResponse>
+
+	@POST("/health/medicines/{uid}/times")
+	suspend fun createMedicineTime(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Body dto: MedicineTimeDTO
+	): Response<MedicineTimeResponse>
+
+	@POST("/health/medicines/times/{uid}/intakes")
+	suspend fun createMedicineIntake(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Body dto: MedicineIntakeDTO
+	): Response<MedicineIntakeResponse>
+
 	@POST("/goals")
 	suspend fun createGoal(
 		@Header("Authorization") token: String,
@@ -231,6 +257,19 @@ interface APIService {
 	@DELETE("/health/workouts/{uid}")
 	suspend fun deleteWorkout(
 		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<Void>
+
+	@DELETE("/health/medicines/intakes/{uid}")
+	suspend fun deleteMedicineIntake(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<Void>
+
+	@DELETE("/health/medicines/times/{uid}")
+	suspend fun deleteMedicineTime(
+		@Header("Authorization") token: String,
+		@Path("medicineUid") medicineUid: String,
 		@Path("uid") uid: String
 	): Response<Void>
 }

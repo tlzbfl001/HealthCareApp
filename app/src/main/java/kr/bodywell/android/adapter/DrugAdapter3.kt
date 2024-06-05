@@ -19,7 +19,7 @@ class DrugAdapter3 (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvCount.text = "${itemList[position].drugId}회"
-        holder.tvTime.text = String.format("%02d", itemList[position].hour)+":"+String.format("%02d", itemList[position].minute)
+        holder.tvTime.text = itemList[position].time
     }
 
     override fun getItemCount(): Int {

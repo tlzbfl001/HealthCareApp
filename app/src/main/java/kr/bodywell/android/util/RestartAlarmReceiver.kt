@@ -22,14 +22,14 @@ class RestartAlarmReceiver : BroadcastReceiver() {
                 val dataManager = DataManager(context)
                 dataManager.open()
 
-                val getDrugDaily = dataManager.getDrugDaily(LocalDate.now().toString())
+                val getDrugDaily = dataManager.getDrug(LocalDate.now().toString())
                 for(i in 0 until getDrugDaily.size) {
                     if(getDrugDaily[i].isSet == 1) {
                         val timeList = ArrayList<DrugTime>()
                         val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
 
                         for(j in 0 until getDrugTime.size) {
-                            timeList.add(DrugTime(hour = getDrugTime[j].hour, minute = getDrugTime[j].minute))
+                            timeList.add(DrugTime(time = getDrugTime[j].time))
                         }
 
                         val message = getDrugDaily[i].name + " " + getDrugDaily[i].amount + getDrugDaily[i].unit

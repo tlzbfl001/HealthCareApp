@@ -708,15 +708,15 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Drug()
          values.id = cursor.getInt(0)
-         values.type = cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.amount = cursor.getInt(4)
-         values.unit = cursor.getString(5)
-         values.count = cursor.getInt(6)
-         values.startDate = cursor.getString(7)
-         values.endDate = cursor.getString(8)
-         values.isSet = cursor.getInt(9)
-         values.regDate = cursor.getString(10)
+         values.type = cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.amount = cursor.getInt(5)
+         values.unit = cursor.getString(6)
+         values.count = cursor.getInt(7)
+         values.startDate = cursor.getString(8)
+         values.endDate = cursor.getString(9)
+         values.isSet = cursor.getInt(10)
+         values.regDate = cursor.getString(11)
          list.add(values)
       }
       cursor.close()
@@ -730,15 +730,16 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
-         values.type = cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.amount = cursor.getInt(4)
-         values.unit = cursor.getString(5)
-         values.count = cursor.getInt(6)
-         values.startDate = cursor.getString(7)
-         values.endDate = cursor.getString(8)
-         values.isSet = cursor.getInt(9)
-         values.regDate = cursor.getString(10)
+         values.uid = cursor.getString(2)
+         values.type = cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.amount = cursor.getInt(5)
+         values.unit = cursor.getString(6)
+         values.count = cursor.getInt(7)
+         values.startDate = cursor.getString(8)
+         values.endDate = cursor.getString(9)
+         values.isSet = cursor.getInt(10)
+         values.regDate = cursor.getString(11)
       }
       cursor.close()
       return values
@@ -776,33 +777,109 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Drug()
          values.id = cursor.getInt(0)
-         values.type = cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.amount = cursor.getInt(4)
-         values.unit = cursor.getString(5)
-         values.count = cursor.getInt(6)
-         values.startDate = cursor.getString(7)
-         values.endDate = cursor.getString(8)
-         values.isSet = cursor.getInt(9)
-         values.regDate = cursor.getString(10)
+         values.type = cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.amount = cursor.getInt(5)
+         values.unit = cursor.getString(6)
+         values.count = cursor.getInt(7)
+         values.startDate = cursor.getString(8)
+         values.endDate = cursor.getString(9)
+         values.isSet = cursor.getInt(10)
+         values.regDate = cursor.getString(11)
          list.add(values)
       }
       cursor.close()
       return list
    }
 
+   fun getDrugUid() : ArrayList<Drug> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Drug>()
+      val sql = "select * from $TABLE_DRUG where userId = ${MyApp.prefs.getId()} and uid is ''"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Drug()
+         values.id = cursor.getInt(0)
+         values.type = cursor.getString(3)
+         values.name = cursor.getString(4)
+         values.amount = cursor.getInt(5)
+         values.unit = cursor.getString(6)
+         values.count = cursor.getInt(7)
+         values.startDate = cursor.getString(8)
+         values.endDate = cursor.getString(9)
+         values.isSet = cursor.getInt(10)
+         values.regDate = cursor.getString(11)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getDrugTime(data: String) : Int {
+      val db = dbHelper!!.readableDatabase
+      var value = 0
+      val sql = "select drugId from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and uid = '$data'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         value = cursor.getInt(0)
+      }
+      cursor.close()
+      return value
+   }
+
    fun getDrugTime(id: Int) : ArrayList<DrugTime> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<DrugTime> = ArrayList()
-      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and drugId = $id order by hour, minute"
+      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and drugId = $id order by time"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = DrugTime()
          values.id = cursor.getInt(0)
-         values.hour = cursor.getInt(2)
-         values.minute = cursor.getInt(3)
-         values.drugId = cursor.getInt(4)
+         values.drugId = cursor.getInt(2)
+         values.uid = cursor.getString(3)
+         values.time = cursor.getString(4)
          list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getDrugTimeUid(data: Int) : DrugTime {
+      val db = dbHelper!!.readableDatabase
+      val values = DrugTime()
+      val sql = "select uid from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and id = $data"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         values.uid = cursor.getString(0)
+      }
+      cursor.close()
+      return values
+   }
+
+   fun getDrugTimeUid() : ArrayList<DrugTime> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<DrugTime>()
+      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and uid is ''"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = DrugTime()
+         values.id = cursor.getInt(0)
+         values.drugId = cursor.getInt(2)
+         values.uid = cursor.getString(3)
+         values.time = cursor.getString(4)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getDrugCheck(drugTimeId: Int) : ArrayList<String> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<String> = ArrayList()
+      val sql = "select uid from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and drugTimeId = $drugTimeId"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         list.add(cursor.getString(0))
       }
       cursor.close()
       return list
@@ -830,6 +907,24 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return count
+   }
+
+   fun getDrugCheckUid() : ArrayList<DrugCheck> {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<DrugCheck>()
+      val sql = "select * from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and uid is ''"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = DrugCheck()
+         values.id = cursor.getInt(0)
+         values.drugId = cursor.getInt(2)
+         values.drugTimeId = cursor.getInt(3)
+         values.uid = cursor.getString(4)
+         values.regDate = cursor.getString(5)
+         list.add(values)
+      }
+      cursor.close()
+      return list
    }
 
    fun getSleep(date: String) : Sleep {
@@ -1253,6 +1348,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
+      values.put("uid", data.uid)
       values.put("type", data.type)
       values.put("name", data.name)
       values.put("amount", data.amount)
@@ -1269,9 +1365,9 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put("userId", MyApp.prefs.getId())
-      values.put("hour", data.hour)
-      values.put("minute", data.minute)
       values.put("drugId", data.drugId)
+      values.put("uid", data.uid)
+      values.put("time", data.time)
       db!!.insert(TABLE_DRUG_TIME, null, values)
    }
 
@@ -1281,6 +1377,7 @@ class DataManager(private var context: Context?) {
       values.put("userId", MyApp.prefs.getId())
       values.put("drugId", data.drugId)
       values.put("drugTimeId", data.drugTimeId)
+      values.put("uid", data.uid)
       values.put("regDate", data.regDate)
       db!!.insert(TABLE_DRUG_CHECK, null, values)
    }

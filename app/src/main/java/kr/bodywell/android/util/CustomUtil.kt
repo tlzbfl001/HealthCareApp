@@ -155,8 +155,8 @@ class CustomUtil {
          return sum
       }
 
-      fun setDrugTimeList(h: Int, m: Int) {
-         drugTimeList.add(DrugTime(hour = h, minute = m))
+      fun setDrugTimeList(data: String) {
+         drugTimeList.add(DrugTime(time = data))
       }
    }
 }

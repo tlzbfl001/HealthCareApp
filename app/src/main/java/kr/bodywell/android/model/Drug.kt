@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 data class Drug(
    var id: Int = 0,
    var userId: Int = 0,
+   var uid: String = "",
    var type: String = "",
    var name: String = "",
    var amount: Int = 0,
@@ -21,9 +22,9 @@ data class Drug(
 data class DrugTime(
    var id: Int = 0,
    var userId: Int = 0,
-   var hour: Int = 0,
-   var minute: Int = 0,
-   var drugId: Int = 0
+   var drugId: Int = 0,
+   var uid: String = "",
+   var time: String = ""
 ) : Parcelable
 
 data class DrugCheck(
@@ -31,6 +32,7 @@ data class DrugCheck(
    var userId: Int = 0,
    var drugId: Int = 0,
    var drugTimeId: Int = 0,
+   var uid: String = "",
    var regDate: String = ""
 )
 

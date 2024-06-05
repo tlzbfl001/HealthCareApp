@@ -64,14 +64,12 @@ class DrugAdapter1 (
         holder.tvCheck.setOnClickListener {
             val getDrugCheckCount = dataManager!!.getDrugCheckCount(itemList[position].drugTimeId, itemList[position].date)
             if(holder.tvCheck.isChecked) {
-                check++
+                check += 1
                 if(getDrugCheckCount == 0) {
                     dataManager!!.insertDrugCheck(DrugCheck(drugId = itemList[position].drugId, drugTimeId = itemList[position].drugTimeId, regDate = itemList[position].date))
                 }
             }else {
-                if(check > 0) {
-                    check--
-                }
+                if(check > 0) check -= 1
                 if(getDrugCheckCount > 0) {
                     dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[position].drugTimeId, "regDate", itemList[position].date)
                 }

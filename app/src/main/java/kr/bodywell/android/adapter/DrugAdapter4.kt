@@ -18,11 +18,10 @@ class DrugAdapter4 (
     private val context: Context,
     private val itemList: ArrayList<Drug>
 ) : RecyclerView.Adapter<DrugAdapter4.ViewHolder>() {
-    private var dataManager: DataManager? = null
+    private var dataManager: DataManager = DataManager(context)
 
     init {
-        dataManager = DataManager(context)
-        dataManager!!.open()
+        dataManager.open()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,9 +40,7 @@ class DrugAdapter4 (
             itemList.clear()
 
             for(i in 0 until drugTimeList.size) {
-                val hour = String.format("%02d", drugTimeList[i].hour)
-                val minute = String.format("%02d", drugTimeList[i].minute)
-                itemList.add(Drug(name = "$hour:$minute", count = i + 1))
+                itemList.add(Drug(name = "${drugTimeList[i].time}", count = i + 1))
             }
 
             fragment.binding.tvDesc.text = "${fragment.count}일동안 ${drugTimeList.size}회 복용"

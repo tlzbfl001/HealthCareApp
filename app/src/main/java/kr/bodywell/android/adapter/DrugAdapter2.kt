@@ -58,7 +58,7 @@ class DrugAdapter2 (
          timeList.clear()
 
          for(i in 0 until getDrugTime.size) {
-            timeList.add(DrugTime(id = getDrugTime[i].id, hour = getDrugTime[i].hour, minute = getDrugTime[i].minute, drugId = i+1))
+            timeList.add(DrugTime(id = getDrugTime[i].id, time = getDrugTime[i].time, drugId = i+1))
          }
 
          val adapter = DrugAdapter3(timeList)

@@ -13,13 +13,20 @@ import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.GoalDTO
+import kr.bodywell.android.api.dto.MedicineDTO
+import kr.bodywell.android.api.dto.MedicineIntakeDTO
+import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
@@ -74,6 +81,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val getBodyUpdated = dataManager.getBodyUpdated()
             val getSleepUid = dataManager.getSleepUid()
             val getSleepUpdated = dataManager.getSleepUpdated()
+            val getDrugUid = dataManager.getDrugUid()
+            val getDrugTimeUid = dataManager.getDrugTimeUid()
+            val getDrugCheckUid = dataManager.getDrugCheckUid()
             val getGoalUid = dataManager.getGoalUid()
             val getGoalUpdated = dataManager.getGoalUpdated()
 
@@ -130,6 +140,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                      dataManager.deleteItem(TABLE_UNUSED, "id", getUnused[i].id)
                   }else {
                      Log.d(TAG, "deleteWorkout: $response")
+                  }
+               }
+
+               if(getUnused[i].type == "drugCheck") {
+                  val response = RetrofitAPI.api.deleteMedicineIntake("Bearer ${getToken.access}", getUnused[i].value)
+
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "deleteMedicineIntake: $response")
+                     dataManager.deleteItem(TABLE_UNUSED, "id", getUnused[i].id)
+                  }else {
+                     Log.d(TAG, "deleteMedicineIntake: $response")
+                  }
+               }
+
+               if(getUnused[i].type == "drugTime") {
+                  val getDrugId = dataManager.getDrugTime(getUnused[i].value)
+                  val getDrug = dataManager.getDrug(getDrugId)
+                  val response = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", getDrug.uid, getUnused[i].value)
+
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "deleteMedicineTime: ${response.body()}")
+                     dataManager.deleteItem(TABLE_UNUSED, "id", getUnused[i].id)
+                  }else {
+                     Log.d(TAG, "deleteMedicineTime: $response")
                   }
                }
             }
@@ -343,6 +377,54 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                      dataManager.updateInt(TABLE_SLEEP, "isUpdated", 0, "id", getSleepUpdated[i].id)
                   }else {
                      Log.d(TAG, "updateSleep: $response")
+                  }
+               }
+            }
+
+            for(i in 0 until getDrugUid.size) {
+               val startDate = LocalDate.parse(getDrugUid[i].startDate).atStartOfDay().format(formatter)
+               val endDate = LocalDate.parse(getDrugUid[i].endDate).atStartOfDay().format(formatter)
+               val data = MedicineDTO("medicine"+getDrugUid[i].id, getDrugUid[i].type, getDrugUid[i].name, getDrugUid[i].amount, getDrugUid[i].unit, startDate, endDate)
+               val response = RetrofitAPI.api.createMedicine("Bearer ${getToken.access}", data)
+               Log.d(TAG, "data: $data")
+
+               if(response.isSuccessful) {
+                  Log.d(TAG, "createMedicine: ${response.body()}")
+                  dataManager.updateStr(TABLE_DRUG, "uid", response.body()!!.uid, "id", getDrugUid[i].id)
+               }else {
+                  Log.d(TAG, "createMedicine: $response")
+               }
+            }
+
+            for(i in 0 until getDrugTimeUid.size) {
+               val getDrug = dataManager.getDrug(getDrugTimeUid[i].drugId)
+
+               if(getDrug.uid != "") {
+                  val data = MedicineTimeDTO(getDrugTimeUid[i].time)
+                  val response = RetrofitAPI.api.createMedicineTime("Bearer ${getToken.access}", getDrug.uid, data)
+
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "createMedicineTime: ${response.body()}")
+                     dataManager.updateStr(TABLE_DRUG_TIME, "uid", response.body()!!.uid, "id", getDrugTimeUid[i].id)
+                  }else {
+                     Log.d(TAG, "createMedicineTime: $response")
+                  }
+               }
+            }
+
+            for(i in 0 until getDrugCheckUid.size) {
+               val getUid = dataManager.getDrugTimeUid(getDrugCheckUid[i].drugTimeId)
+
+               if(getUid.uid != "") {
+                  val regDate = LocalDate.parse(getDrugCheckUid[i].regDate).atStartOfDay().format(formatter)
+                  val data = MedicineIntakeDTO("medicine"+getDrugCheckUid[i].id, regDate)
+                  val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", getUid.uid, data)
+
+                  if(response.isSuccessful) {
+                     Log.d(TAG, "createMedicineIntake: ${response.body()}")
+                     dataManager.updateStr(TABLE_DRUG_CHECK, "uid", response.body()!!.uid, "id", getDrugCheckUid[i].id)
+                  }else {
+                     Log.d(TAG, "createMedicineIntake: $response")
                   }
                }
             }

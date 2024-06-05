@@ -21,12 +21,14 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugAddBinding
 import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.drugTimeList
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.setDrugTimeList
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DrugAddFragment : Fragment() {
@@ -38,7 +40,8 @@ class DrugAddFragment : Fragment() {
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
-   private val idList= ArrayList<Int>()
+   private val saveList= ArrayList<DrugTime>()
+   private val delList= ArrayList<DrugTime>()
    private var unit = "정"
    var count = 1
 
@@ -77,9 +80,9 @@ class DrugAddFragment : Fragment() {
       drugTimeList.clear()
 
       val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
+      val getDrug = dataManager.getDrug(id)
 
       if(id > -1) {
-         val getDrug = dataManager.getDrug(id)
          binding.etType.setText(getDrug.type)
          binding.etName.setText(getDrug.name)
          binding.etAmount.setText(getDrug.amount.toString())
@@ -98,7 +101,7 @@ class DrugAddFragment : Fragment() {
 
          val getDrugTime = dataManager.getDrugTime(id)
          for(i in 0 until getDrugTime.size) {
-            setDrugTimeList(getDrugTime[i].hour, getDrugTime[i].minute)
+            setDrugTimeList(getDrugTime[i].time)
          }
 
          binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
@@ -173,52 +176,64 @@ class DrugAddFragment : Fragment() {
          if(itemList.size == 0) {
             Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
-            val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
+            if(id > -1) { // 데이터 수정
+               val endDate = LocalDate.parse(getDrug.startDate).plusDays((count - 1).toLong()).toString()
 
-            if(id > 0) { // 데이터 수정
                dataManager.updateDrug(Drug(id = id, type = type, name = name, amount = amount, unit = unit, count = count,
-                  startDate = selectedDate.toString(), endDate = endDate, isSet = 1))
+                  startDate = getDrug.startDate, endDate = endDate, isSet = 1))
 
                val getDrugTime = dataManager.getDrugTime(id)
+
                for(i in 0 until getDrugTime.size) {
                   var check = false
                   for(j in 0 until drugTimeList.size) {
-                     if(getDrugTime[i].hour == drugTimeList[j].hour && getDrugTime[i].minute == drugTimeList[j].minute) {
+                     if(getDrugTime[i].time == drugTimeList[j].time) {
                         check = true
+                        saveList.add(DrugTime(id=getDrugTime[i].id, time=getDrugTime[i].time))
                      }
 
-                     if(j == (drugTimeList.size - 1) && !check) idList.add(getDrugTime[i].id)
+                     if(j == (drugTimeList.size - 1) && !check) delList.add(DrugTime(id=getDrugTime[i].id, uid=getDrugTime[i].uid, time=getDrugTime[i].time))
                   }
                }
 
-               if(idList.size > 0) {
-                  for(i in 0 until idList.size) {
-                     dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", idList[i])
-                  }
-               }
+               for(i in 0 until delList.size) {
+                  val getDrugCheck = dataManager.getDrugCheck(delList[i].id)
 
-               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", id)
+                  for(j in 0 until getDrugCheck.size) {
+                     if(getDrugCheck[j] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck[j]))
+                  }
+
+                  if(delList[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = delList[i].uid))
+
+                  dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", delList[i].id)
+                  dataManager.deleteItem(TABLE_DRUG_TIME, "id", delList[i].id)
+               }
 
                for(i in 0 until drugTimeList.size) {
-                  dataManager.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = id))
+                  var check = false
+                  for(j in 0 until saveList.size) {
+                     if(drugTimeList[i].time == saveList[j].time) check = true
+                     if(j == (saveList.size - 1) && !check) dataManager.insertDrugTime(DrugTime(drugId = id, time = drugTimeList[i].time))
+                  }
                }
 
                alarmReceiver!!.cancelAlarm(requireActivity(), id)
-
                alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }else { // 데이터 저장
+               val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
+
                dataManager.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count,
                   startDate = selectedDate.toString(), endDate = endDate, isSet = 1, regDate = selectedDate.toString()))
 
-               val getDrugId = dataManager.getDrugId(selectedDate.toString())
+               val getDrugId = dataManager.getDrugId(selectedDate.toString()).id
 
                for(i in 0 until drugTimeList.size) {
-                  dataManager.insertDrugTime(DrugTime(hour = drugTimeList[i].hour, minute = drugTimeList[i].minute, drugId = getDrugId.id))
+                  dataManager.insertDrugTime(DrugTime(time = drugTimeList[i].time, drugId = getDrugId))
                }
 
-               alarmReceiver!!.setAlarm(requireActivity(), getDrugId.id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
+               alarmReceiver!!.setAlarm(requireActivity(), getDrugId, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -249,7 +264,7 @@ class DrugAddFragment : Fragment() {
                   m = dateTime.minute
                }
 
-               setDrugTimeList(h, m)
+               setDrugTimeList(String.format("%02d", h)+":"+String.format("%02d", m))
                showTimeList()
             }
 
@@ -265,9 +280,7 @@ class DrugAddFragment : Fragment() {
       itemList.clear()
 
       for(i in 0 until drugTimeList.size) {
-         val hour = String.format("%02d", drugTimeList[i].hour)
-         val minute = String.format("%02d", drugTimeList[i].minute)
-         itemList.add(Drug(name = "$hour:$minute", count = i + 1))
+         itemList.add(Drug(name = "${drugTimeList[i].time}", count = i + 1))
       }
 
       if(itemList.isEmpty()) {

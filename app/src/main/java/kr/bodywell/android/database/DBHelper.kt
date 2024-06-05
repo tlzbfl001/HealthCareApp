@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 1
+      const val DATABASE_VERSION = 2
       const val TABLE_USER = "user"
       const val TABLE_TOKEN = "token"
       const val TABLE_FOOD = "food"
@@ -61,14 +61,14 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "regDate text, isUpdated integer);"
       db.execSQL(sleep)
 
-      val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, type text, name text, amount integer, unit text, count integer," +
-         "startDate text, endDate text, isSet integer, regDate text);"
+      val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, uid text, type text, name text, amount integer, unit text, " +
+         "count integer, startDate text, endDate text, isSet integer, regDate text);"
       db.execSQL(drug)
 
-      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, hour integer, minute integer, drugId integer);"
+      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, drugId integer, uid text, time text);"
       db.execSQL(drugTime)
 
-      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, drugId integer, drugTimeId integer, regDate text);"
+      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, drugId integer, drugTimeId integer, uid text, regDate text);"
       db.execSQL(drugCheck)
 
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, regDate text);"

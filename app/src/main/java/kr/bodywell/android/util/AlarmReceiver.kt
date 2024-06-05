@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kr.bodywell.android.R
 import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.util.CustomUtil.Companion.drugTimeList
 import java.time.LocalDate
 import java.util.Calendar
 
@@ -66,14 +67,15 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         val today = LocalDate.now()
+        val cal = Calendar.getInstance()
 
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { //설정된 알람주기동안 실행
-            val cal = Calendar.getInstance()
             val currentTime = System.currentTimeMillis() //현재시간(밀리세컨드)
 
             for(i in 0 until timeList.size) {
-                cal.set(Calendar.HOUR_OF_DAY, timeList[i].hour)
-                cal.set(Calendar.MINUTE, timeList[i].minute)
+                val split = timeList[i].time.split(":")
+                cal.set(Calendar.HOUR_OF_DAY, split[0].toInt())
+                cal.set(Calendar.MINUTE, split[1].toInt())
                 cal.set(Calendar.SECOND, 0)
                 cal.set(Calendar.MILLISECOND, 0)
                 var selectTime = cal.timeInMillis
@@ -87,8 +89,8 @@ class AlarmReceiver : BroadcastReceiver() {
                     return
                 }else if(i == (timeList.size - 1)) {
                     cal.add(Calendar.DATE, 1)
-                    cal.set(Calendar.HOUR_OF_DAY, timeList[0].hour)
-                    cal.set(Calendar.MINUTE, timeList[0].minute)
+                    cal.set(Calendar.HOUR_OF_DAY, split[0].toInt())
+                    cal.set(Calendar.MINUTE, split[1].toInt())
                     cal.set(Calendar.SECOND, 0)
                     cal.set(Calendar.MILLISECOND, 0)
                     selectTime = cal.timeInMillis
@@ -103,11 +105,10 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         if(today < LocalDate.parse(startDate)) {
-            val cal = Calendar.getInstance()
-
+            val split = timeList[0].time.split(":")
             cal.add(Calendar.DATE, 1)
-            cal.set(Calendar.HOUR_OF_DAY, timeList[0].hour)
-            cal.set(Calendar.MINUTE, timeList[0].minute)
+            cal.set(Calendar.HOUR_OF_DAY, split[0].toInt())
+            cal.set(Calendar.MINUTE, split[1].toInt())
             cal.set(Calendar.SECOND, 0)
             cal.set(Calendar.MILLISECOND, 0)
             val selectTime = cal.timeInMillis
