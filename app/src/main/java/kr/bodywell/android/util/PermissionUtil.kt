@@ -67,6 +67,7 @@ class PermissionUtil {
                     if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_2),
                             REQUEST_CODE
+
                         )
                         check = false
                     }

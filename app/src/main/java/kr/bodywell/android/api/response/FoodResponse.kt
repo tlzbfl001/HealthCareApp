@@ -33,8 +33,20 @@ data class FoodResponse (
 	@SerializedName("registerType")
 	var registerType: String = "",
 
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = "",
+
+	@SerializedName("user")
+	var user: User,
+
+	@SerializedName("userUid")
+	var userUid: String = "",
+
 	@SerializedName("usageDate")
-	var usageDate: String = "",
+	var usageDate: String? = "",
 
 	@SerializedName("usageCount")
 	var usageCount: Int = 0
@@ -43,4 +55,9 @@ data class FoodResponse (
 data class FoodResponses (
 	@SerializedName("foods")
 	var foods: List<FoodResponse>
+)
+
+data class User (
+	@SerializedName("uid")
+	var uid: String = ""
 )

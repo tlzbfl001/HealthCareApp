@@ -15,7 +15,6 @@ import kr.bodywell.android.api.dto.WorkoutUpdateDTO
 import kr.bodywell.android.api.response.ActivityResponses
 import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
-import kr.bodywell.android.api.response.BodyResponses
 import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DeviceResponses
 import kr.bodywell.android.api.response.DietResponse
@@ -71,7 +70,7 @@ interface APIService {
 	@GET("/health/bodies")
 	suspend fun getBody(
 		@Header("Authorization") token: String
-	): Response<BodyResponses>
+	): Response<List<BodyResponse>>
 
 	@GET("/devices")
 	suspend fun getDevices(

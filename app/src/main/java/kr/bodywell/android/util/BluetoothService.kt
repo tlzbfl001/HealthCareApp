@@ -22,7 +22,6 @@ class BluetoothService : Service() {
    private var sendReceive: SendReceive? = null
    private var inputStream: InputStream? = null
    private var outputStream: OutputStream? = null
-
    private val stateConnected = 1
    private val stateConnectionFailed = 2
    private val stateMessageReceived = 3

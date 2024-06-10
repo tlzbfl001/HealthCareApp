@@ -315,16 +315,18 @@ class LoginActivity : AppCompatActivity() {
             val getFoods = RetrofitAPI.api.getFoods("Bearer $access")
             if(getFoods.isSuccessful) {
                for(i in 0 until getFoods.body()!!.foods.size) {
+                  val useDate = if(getFoods.body()!!.foods[i].usageDate == null) "" else getFoods.body()!!.foods[i].usageDate
+
                   if(getFoods.body()!!.foods[i].registerType == "ADMIN") {
                      dataManager.insertFood(Food(userId = getUser2.id, basic = 1, uid = getFoods.body()!!.foods[i].uid, name = getFoods.body()!!.foods[i].foodName,
                         unit = getFoods.body()!!.foods[i].quantityUnit, amount = getFoods.body()!!.foods[i].quantity, kcal = getFoods.body()!!.foods[i].calories,
                         protein = getFoods.body()!!.foods[i].protein, fat = getFoods.body()!!.foods[i].fat, useCount = getFoods.body()!!.foods[i].usageCount,
-                        useDate = getFoods.body()!!.foods[i].usageDate))
+                        useDate = useDate!!))
                   }else {
                      dataManager.insertFood(Food(userId = getUser2.id, basic = 0, uid = getFoods.body()!!.foods[i].uid, name = getFoods.body()!!.foods[i].foodName,
                         unit = getFoods.body()!!.foods[i].quantityUnit, amount = getFoods.body()!!.foods[i].quantity, kcal = getFoods.body()!!.foods[i].calories,
                         protein = getFoods.body()!!.foods[i].protein, fat = getFoods.body()!!.foods[i].fat, useCount = getFoods.body()!!.foods[i].usageCount,
-                        useDate = getFoods.body()!!.foods[i].usageDate))
+                        useDate = useDate!!))
                   }
                }
             }
@@ -357,23 +359,24 @@ class LoginActivity : AppCompatActivity() {
             val getActivities = RetrofitAPI.api.getActivities("Bearer $access")
             if(getActivities.isSuccessful) {
                for(i in 0 until getActivities.body()!!.activities.size) {
+                  val useDate = if(getActivities.body()!!.activities[i].usageDate == null) "" else getActivities.body()!!.activities[i].usageDate
+
                   if(getActivities.body()!!.activities[i].registerType == "ADMIN") {
                      dataManager.insertExercise(Exercise(userId = getUser2.id, basic = 1, uid = getActivities.body()!!.activities[i].uid, name = getActivities.body()!!.activities[i].name,
-                        useCount = getActivities.body()!!.activities[i].usageCount, useDate = getActivities.body()!!.activities[i].usageDate))
+                        useCount = getActivities.body()!!.activities[i].usageCount, useDate = useDate!!))
                   }else {
                      dataManager.insertExercise(Exercise(userId = getUser2.id, basic = 0, uid = getActivities.body()!!.activities[i].uid, name = getActivities.body()!!.activities[i].name,
-                        useCount = getActivities.body()!!.activities[i].usageCount, useDate = getActivities.body()!!.activities[i].usageDate))
+                        useCount = getActivities.body()!!.activities[i].usageCount, useDate = useDate!!))
                   }
                }
             }
 
             val getBody = RetrofitAPI.api.getBody("Bearer $access")
             if(getBody.isSuccessful) {
-               for(i in 0 until getBody.body()!!.bodies.size) {
-                  dataManager.insertBody(Body(userId = getUser2.id, uid = getBody.body()!!.bodies[i].uid, height = getBody.body()!!.bodies[i].height,
-                     weight = getBody.body()!!.bodies[i].weight, intensity = getBody.body()!!.bodies[i].workoutIntensity, fat = getBody.body()!!.bodies[i].bodyFatPercentage,
-                     muscle = getBody.body()!!.bodies[i].skeletalMuscleMass, bmi = getBody.body()!!.bodies[i].bodyMassIndex, bmr = getBody.body()!!.bodies[i].basalMetabolicRate,
-                     regDate = getBody.body()!!.bodies[i].createdAt))
+               for(i in 0 until getBody.body()!!.size) {
+                  dataManager.insertBody(Body(userId = getUser2.id, uid = getBody.body()!![i].uid, height = getBody.body()!![i].height, weight = getBody.body()!![i].weight,
+                     intensity = getBody.body()!![i].workoutIntensity, fat = getBody.body()!![i].bodyFatPercentage, muscle = getBody.body()!![i].skeletalMuscleMass,
+                     bmi = getBody.body()!![i].bodyMassIndex, bmr = getBody.body()!![i].basalMetabolicRate, regDate = getBody.body()!![i].createdAt))
                }
             }
 

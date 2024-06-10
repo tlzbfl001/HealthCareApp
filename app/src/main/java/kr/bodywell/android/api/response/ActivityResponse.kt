@@ -12,8 +12,14 @@ data class ActivityResponse (
 	@SerializedName("registerType")
 	var registerType: String = "",
 
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = "",
+
 	@SerializedName("usageDate")
-	var usageDate: String = "",
+	var usageDate: String? = "",
 
 	@SerializedName("usageCount")
 	var usageCount: Int = 0

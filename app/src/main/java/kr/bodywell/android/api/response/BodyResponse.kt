@@ -39,8 +39,3 @@ data class BodyResponse(
 	@SerializedName("healthUid")
 	var healthUid: String = ""
 )
-
-data class BodyResponses (
-	@SerializedName("bodies")
-	var bodies: List<BodyResponse>
-)
