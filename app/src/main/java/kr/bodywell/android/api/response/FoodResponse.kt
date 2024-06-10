@@ -30,6 +30,12 @@ data class FoodResponse (
 	@SerializedName("quantityUnit")
 	var quantityUnit: String = "",
 
+	@SerializedName("volume")
+	var volume: Int = 0,
+
+	@SerializedName("volumeUnit")
+	var volumeUnit: String = "",
+
 	@SerializedName("registerType")
 	var registerType: String = "",
 
@@ -39,25 +45,20 @@ data class FoodResponse (
 	@SerializedName("updatedAt")
 	var updatedAt: String = "",
 
-	@SerializedName("user")
-	var user: User,
+	@SerializedName("foodUsages")
+	var foodUsages: ArrayList<FoodUsages>
+)
 
-	@SerializedName("userUid")
-	var userUid: String = "",
-
-	@SerializedName("usageDate")
-	var usageDate: String? = "",
+data class FoodUsages (
+	@SerializedName("uid")
+	var uid: String = "",
 
 	@SerializedName("usageCount")
-	var usageCount: Int = 0
-)
+	var usageCount: Int = 0,
 
-data class FoodResponses (
-	@SerializedName("foods")
-	var foods: List<FoodResponse>
-)
+	@SerializedName("createdAt")
+	var createdAt: String = "",
 
-data class User (
-	@SerializedName("uid")
-	var uid: String = ""
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
 )

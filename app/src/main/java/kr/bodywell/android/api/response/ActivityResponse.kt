@@ -18,14 +18,20 @@ data class ActivityResponse (
 	@SerializedName("updatedAt")
 	var updatedAt: String = "",
 
-	@SerializedName("usageDate")
-	var usageDate: String? = "",
-
-	@SerializedName("usageCount")
-	var usageCount: Int = 0
+	@SerializedName("activityUsages")
+	var activityUsages: ArrayList<ActivityUsages>
 )
 
-data class ActivityResponses (
-	@SerializedName("activities")
-	var activities: List<ActivityResponse>
+data class ActivityUsages (
+	@SerializedName("uid")
+	var uid: String = "",
+
+	@SerializedName("usageCount")
+	var usageCount: Int = 0,
+
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
 )

@@ -46,10 +46,11 @@ data class DietResponse(
 	var photos: ArrayList<String> = ArrayList(),
 
 	@SerializedName("date")
-	var date: String = ""
-)
+	var date: String = "",
 
-data class DietResponses (
-	@SerializedName("diets")
-	var diets: List<DietResponse>
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = "",
 )

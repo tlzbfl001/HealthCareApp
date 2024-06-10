@@ -15,8 +15,3 @@ data class WaterResponse (
 	@SerializedName("date")
 	var date: String = ""
 )
-
-data class WaterResponses (
-	@SerializedName("waters")
-	var waters: List<WaterResponse>
-)

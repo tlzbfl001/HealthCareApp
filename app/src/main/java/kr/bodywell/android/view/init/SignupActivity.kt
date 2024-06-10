@@ -19,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.api.dto.DeviceDTO
+import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Exercise
@@ -62,6 +64,8 @@ class SignupActivity : AppCompatActivity() {
       dataManager.open()
 
       user = intent.getParcelableExtra("user")!!
+
+      Log.d(TAG, "user: $user")
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -150,6 +154,7 @@ class SignupActivity : AppCompatActivity() {
                                  Log.d(TAG, "deleteUser: $deleteUser")
                                  val googleLogin = RetrofitAPI.api.googleLogin(user.idToken)
                                  if(googleLogin.isSuccessful) {
+                                    Log.e(TAG, "googleLogin: ${googleLogin.body()}")
                                     access = googleLogin.body()!!.accessToken
                                     refresh = googleLogin.body()!!.refreshToken
                                     userUid = decodeToken(access)
@@ -185,16 +190,16 @@ class SignupActivity : AppCompatActivity() {
       val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
       val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
       val hardwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
-         ""
-      }else packageManager.getPackageInfo(packageName, 0).versionName
+         "" }else packageManager.getPackageInfo(packageName, 0).versionName
       val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 
       CoroutineScope(Dispatchers.IO).launch {
-         val createDevice = RetrofitAPI.api.createDevice("Bearer $access", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
-         val getFoods = RetrofitAPI.api.getFoods("Bearer $access")
-         val getActivities = RetrofitAPI.api.getActivities("Bearer $access")
+         val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
+         val createDevice = RetrofitAPI.api.createDevice("Bearer $access", data)
+         val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
+         val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer $access")
 
-         if(createDevice.isSuccessful && getFoods.isSuccessful && getActivities.isSuccessful) {
+         if(createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful) {
             val getUser = dataManager.getUser(user.type, user.email)
             val getToken = dataManager.getToken()
 
@@ -219,16 +224,17 @@ class SignupActivity : AppCompatActivity() {
                   refreshRegDate = LocalDateTime.now().toString()))
             }
 
-            for(i in 0 until getFoods.body()!!.foods.size) {
-               dataManager.insertFood(Food(basic = 1, uid = getFoods.body()!!.foods[i].uid, name = getFoods.body()!!.foods[i].foodName,
-                  unit = getFoods.body()!!.foods[i].quantityUnit, amount = getFoods.body()!!.foods[i].quantity, kcal = getFoods.body()!!.foods[i].calories,
-                  carbohydrate = getFoods.body()!!.foods[i].carbohydrate, protein = getFoods.body()!!.foods[i].protein, fat = getFoods.body()!!.foods[i].fat,
+            // 서버 데이터 저장
+            for(i in 0 until getAllFood.body()!!.size) {
+               dataManager.insertFood(Food(basic = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
+                  unit = getAllFood.body()!![i].volumeUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calories,
+                  carbohydrate = getAllFood.body()!![i].carbohydrate, protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
                   useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString())
                )
             }
 
-            for(i in 0 until getActivities.body()!!.activities.size) {
-               dataManager.insertExercise(Exercise(basic = 1, uid = getActivities.body()!!.activities[i].uid, name = getActivities.body()!!.activities[i].name,
+            for(i in 0 until getAllActivity.body()!!.size) {
+               dataManager.insertExercise(Exercise(basic = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name,
                   useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString()))
             }
 

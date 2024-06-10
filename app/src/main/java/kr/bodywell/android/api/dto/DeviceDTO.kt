@@ -1,11 +1,8 @@
-package kr.bodywell.android.api.response
+package kr.bodywell.android.api.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class DeviceResponse(
-	@SerializedName("uid")
-	var uid: String = "",
-
+data class DeviceDTO(
 	@SerializedName("label")
 	var label: String = "",
 
@@ -22,11 +19,5 @@ data class DeviceResponse(
 	var hardwareVersion: String = "",
 
 	@SerializedName("softwareVersion")
-	var softwareVersion: String = "",
-
-	@SerializedName("createdAt")
-	var createdAt: String = "",
-
-	@SerializedName("updatedAt")
-	var updatedAt: String = ""
+	var softwareVersion: String = ""
 )

@@ -2,6 +2,7 @@ package kr.bodywell.android.api
 
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
+import kr.bodywell.android.api.dto.DeviceDTO
 import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.GoalDTO
@@ -12,15 +13,11 @@ import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
-import kr.bodywell.android.api.response.ActivityResponses
 import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
 import kr.bodywell.android.api.response.DeviceResponse
-import kr.bodywell.android.api.response.DeviceResponses
 import kr.bodywell.android.api.response.DietResponse
-import kr.bodywell.android.api.response.DietResponses
 import kr.bodywell.android.api.response.FoodResponse
-import kr.bodywell.android.api.response.FoodResponses
 import kr.bodywell.android.api.response.GoalResponse
 import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
@@ -30,7 +27,6 @@ import kr.bodywell.android.api.response.SleepResponses
 import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
-import kr.bodywell.android.api.response.WaterResponses
 import kr.bodywell.android.api.response.WorkoutResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -45,42 +41,54 @@ import retrofit2.http.Path
 
 interface APIService {
 	@GET("/users")
-	suspend fun getUsers(): Response<UserResponse>
+	suspend fun getAllUser(): Response<List<UserResponse>>
 
-	@GET("/health/foods")
-	suspend fun getFoods(
+	@GET("/devices")
+	suspend fun getAllDevice(
 		@Header("Authorization") token: String
-	): Response<FoodResponses>
+	): Response<List<DeviceResponse>>
+
+	@GET("/foods")
+	suspend fun getAllFood(
+		@Header("Authorization") token: String
+	): Response<List<FoodResponse>>
+
+	@GET("/diets/{uid}")
+	suspend fun getWorkout(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+	): Response<WorkoutResponse>
 
 	@GET("/health/diets")
-	suspend fun getDiets(
+	suspend fun getAllDiet(
 		@Header("Authorization") token: String
-	): Response<DietResponses>
+	): Response<List<DietResponse>>
+
+	@GET("/diets/{uid}")
+	suspend fun getDiet(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+	): Response<DietResponse>
 
 	@GET("/health/waters")
-	suspend fun getWater(
+	suspend fun getAllWater(
 		@Header("Authorization") token: String
-	): Response<WaterResponses>
+	): Response<List<WaterResponse>>
 
-	@GET("/health/activities")
-	suspend fun getActivities(
+	@GET("/activities")
+	suspend fun getAllActivity(
 		@Header("Authorization") token: String
-	): Response<ActivityResponses>
+	): Response<List<ActivityResponse>>
 
 	@GET("/health/bodies")
-	suspend fun getBody(
+	suspend fun getAllBody(
 		@Header("Authorization") token: String
 	): Response<List<BodyResponse>>
 
-	@GET("/devices")
-	suspend fun getDevices(
-		@Header("Authorization") token: String
-	): Response<DeviceResponses>
-
 	@GET("/health/sleep")
-	suspend fun getSleeps(
+	suspend fun getAllSleep(
 		@Header("Authorization") token: String
-	): Response<SleepResponses>
+	): Response<List<SleepResponse>>
 
 	@FormUrlEncoded
 	@POST("/auth/google/login")
@@ -88,16 +96,10 @@ interface APIService {
 		@Field("idToken") idToken: String
 	): Response<TokenResponse>
 
-	@FormUrlEncoded
 	@POST("/devices")
 	suspend fun createDevice(
 		@Header("Authorization") token: String,
-		@Field("label") label: String,
-		@Field("name") name: String,
-		@Field("manufacturer") manufacturer: String,
-		@Field("model") model: String,
-		@Field("hardwareVersion") hardwareVersion: String,
-		@Field("softwareVersion") softwareVersion: String
+		@Body dto: DeviceDTO
 	): Response<DeviceResponse>
 
 	@POST("/health/foods")
