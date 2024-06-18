@@ -20,6 +20,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.drug.DrugAddFragment
@@ -29,14 +30,12 @@ class DrugAdapter2 (
    private val itemList: ArrayList<Drug> = ArrayList()
 ) : RecyclerView.Adapter<DrugAdapter2.ViewHolder>() {
    private var bundle = Bundle()
-   private var dataManager: DataManager? = null
+   private var dataManager: DataManager = DataManager(context)
    private var alarmReceiver: AlarmReceiver
    private val timeList: ArrayList<DrugTime> = ArrayList()
 
    init {
-      dataManager = DataManager(context)
-      dataManager!!.open()
-
+      dataManager.open()
       alarmReceiver = AlarmReceiver()
    }
 
@@ -50,7 +49,7 @@ class DrugAdapter2 (
       holder.tvName.text = itemList[position].name
       holder.tvCount.text = itemList[position].amount.toString() + itemList[position].unit
 
-      val getDrugTime = dataManager!!.getDrugTime(itemList[position].id)
+      val getDrugTime = dataManager.getDrugTime(itemList[position].id)
 
       holder.tvPeriod.text = "${itemList[position].count}일동안 ${getDrugTime.size}회 복용"
 
@@ -72,10 +71,10 @@ class DrugAdapter2 (
          if(isChecked) {
             val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
             alarmReceiver.setAlarm(context, itemList[position].id, itemList[position].startDate, itemList[position].endDate, timeList, message)
-            dataManager!!.updateInt(TABLE_DRUG, "isSet", 1, "id", itemList[position].id)
+            dataManager.updateInt(TABLE_DRUG, "isSet", 1, "id", itemList[position].id)
          }else {
             alarmReceiver.cancelAlarm(context, itemList[position].id)
-            dataManager!!.updateInt(TABLE_DRUG, "isSet", 0, "id", itemList[position].id)
+            dataManager.updateInt(TABLE_DRUG, "isSet", 0, "id", itemList[position].id)
          }
       }
 
@@ -89,13 +88,15 @@ class DrugAdapter2 (
             .setTitle("복용약 삭제")
             .setMessage("해당 약과 관련된 모든 데이터가 삭제됩니다.\n정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
-               dataManager!!.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
-               dataManager!!.deleteItem(TABLE_DRUG, "id", itemList[position].id)
+               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
+               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
+               dataManager.deleteItem(TABLE_DRUG, "id", itemList[position].id)
+
+               if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid))
 
                alarmReceiver.cancelAlarm(context, itemList[position].id)
-
                itemList.removeAt(position)
+
                notifyDataSetChanged()
 
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()

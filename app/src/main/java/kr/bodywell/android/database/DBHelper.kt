@@ -42,7 +42,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, regDate text, isUpdated integer);"
       db.execSQL(dailyFood)
 
-      val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, uid text, count integer, ml integer, regDate text, isUpdated integer);"
+      val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, uid text, count integer, volume integer, regDate text, isUpdated integer);"
       db.execSQL(water)
 
       val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, basic integer, uid text, name text, intensity text, " +
@@ -74,8 +74,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, regDate text);"
       db.execSQL(note)
 
-      val goal = "create table $TABLE_GOAL(id integer primary key autoincrement, userId integer, uid text, foodGoal integer, waterGoal integer, " +
-         "exerciseGoal integer, bodyGoal real, sleepGoal integer, drugGoal integer, regDate text, isUpdated integer);"
+      val goal = "create table $TABLE_GOAL(id integer primary key autoincrement, userId integer, uid text, food integer, waterVolume integer, water integer, " +
+         "exercise integer, body real, sleep integer, drug integer, regDate text, isUpdated integer);"
       db.execSQL(goal)
 
       val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, type text, dataId integer, imageUri text, regDate text);"

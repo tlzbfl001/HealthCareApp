@@ -27,7 +27,6 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.monthArray2
 import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
@@ -408,8 +407,8 @@ class ReportFoodFragment : Fragment() {
 
       for(i in 0 until getData.size){
          xVal += format2.format(format1.parse(getData[i].regDate)!!)
-         lineList += (getData[i].count * getData[i].ml).toFloat()
-         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].ml).toFloat()))
+         lineList += (getData[i].count * getData[i].volume).toFloat()
+         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].volume).toFloat()))
       }
 
       for (index in lineList.indices) {

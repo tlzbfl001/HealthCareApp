@@ -35,5 +35,5 @@ data class MedicineIntakeDTO(
 	var itemId: String = "",
 
 	@SerializedName("intakedAt")
-	var intakeAt: String = ""
+	var intakedAt: String = ""
 )

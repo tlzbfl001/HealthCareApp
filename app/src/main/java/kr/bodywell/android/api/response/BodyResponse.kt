@@ -34,8 +34,5 @@ data class BodyResponse(
 	var createdAt: String = "",
 
 	@SerializedName("updatedAt")
-	var updatedAt: String = "",
-
-	@SerializedName("healthUid")
-	var healthUid: String = ""
+	var updatedAt: String = ""
 )

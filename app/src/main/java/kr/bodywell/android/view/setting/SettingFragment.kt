@@ -21,10 +21,16 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
+import com.kakao.sdk.user.UserApiClient
+import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.NidOAuthLogin
+import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.BuildConfig.GOOGLE_WEB_CLIENT_ID
+import kr.bodywell.android.BuildConfig.NAVER_CLIENT_ID
+import kr.bodywell.android.BuildConfig.NAVER_CLIENT_SECRET
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DBHelper
@@ -50,6 +56,7 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.MyApp
@@ -139,19 +146,20 @@ class SettingFragment : Fragment() {
                            .build()
 
                         val gsc = GoogleSignIn.getClient(requireActivity(), gso)
+
                         gsc.signOut().addOnCompleteListener {
-                           if(it.isSuccessful) {
-                              logoutProcess()
-                           }else {
-                              Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
-                           }
+                           if(it.isSuccessful) logoutProcess() else Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                         }
                      }
                      "naver" -> {
+                        NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(R.string.app_name))
+                        NaverIdLoginSDK.logout()
                         logoutProcess()
                      }
                      "kakao" -> {
-                        logoutProcess()
+                        UserApiClient.instance.logout { error ->
+                           if(error != null) Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show() else logoutProcess()
+                        }
                      }
                   }
                }
@@ -184,19 +192,46 @@ class SettingFragment : Fragment() {
                            Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            gsc.revokeAccess().addOnCompleteListener {
-                              if(it.isSuccessful) {
-                                 resignProcess()
-                              }else {
-                                 Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
-                              }
+                              if(it.isSuccessful) resignProcess() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
                      }
                      "naver" -> {
-                        resignProcess()
+                        NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(R.string.app_name))
+
+                        if(NaverIdLoginSDK.getAccessToken() == null) {
+                           Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                        }else {
+                           lifecycleScope.launch {
+                              NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
+                                 override fun onSuccess() {
+                                    resignProcess()
+                                 }
+
+                                 override fun onFailure(httpStatus: Int, message: String) {
+                                    Log.e(TAG, "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
+                                    Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                                 }
+
+                                 override fun onError(errorCode: Int, message: String) {
+                                    onFailure(errorCode, message)
+                                 }
+                              })
+                           }
+                        }
                      }
                      "kakao" -> {
-                        resignProcess()
+                        UserApiClient.instance.accessTokenInfo { token, error ->
+                           if(error != null) {
+                              Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                           }else if (token != null) {
+                              UserApiClient.instance.unlink { error ->
+                                 lifecycleScope.launch{
+                                    if(error != null) Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show() else resignProcess()
+                                 }
+                              }
+                           }
+                        }
                      }
                   }
                }
@@ -254,6 +289,7 @@ class SettingFragment : Fragment() {
    private fun resignProcess() {
       CoroutineScope(Dispatchers.IO).launch {
          val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}", getUser.userUid)
+
          if(response.isSuccessful) {
             dataManager.deleteTable(TABLE_USER, "id")
             dataManager.deleteTable(TABLE_TOKEN, "userId")
@@ -275,13 +311,11 @@ class SettingFragment : Fragment() {
             val alarmReceiver = AlarmReceiver()
             val getDrugId = dataManager.getDrugId()
 
-            for(i in 0 until getDrugId.size) {
-               alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
-            }
+            for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
 
             MyApp.prefs.removePrefs("userId")
 
-            requireActivity().runOnUiThread{
+            requireActivity().runOnUiThread {
                Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
@@ -289,7 +323,7 @@ class SettingFragment : Fragment() {
             startActivity(Intent(requireActivity(), InitActivity::class.java))
             exitProcess(0)
          }else {
-            requireActivity().runOnUiThread{
+            requireActivity().runOnUiThread {
                Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
             }
          }

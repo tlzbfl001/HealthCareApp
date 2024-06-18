@@ -237,7 +237,7 @@ class ReportDrugFragment : Fragment() {
          val getDrugCheckCount = dataManager.getDrugCheckCount(getData[i])
 
          if(getDrugCheckCount > 0) {
-            val pt = if(getDailyGoal.drugGoal == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drugGoal.toFloat()) * 100
+            val pt = if(getDailyGoal.drug == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drug.toFloat()) * 100
 
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += pt

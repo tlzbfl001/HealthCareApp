@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +26,6 @@ import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.home.MainFragment
@@ -98,7 +96,7 @@ class FoodFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(foodGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(food = et.text.toString().toInt(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "foodGoal", et.text.toString().toInt(), selectedDate.toString())
@@ -241,14 +239,14 @@ class FoodFragment : Fragment() {
       if(sum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
          binding.pbFood.setProgressEndColor(Color.parseColor("#EE6685"))
-         binding.pbFood.max = dailyGoal.foodGoal
+         binding.pbFood.max = dailyGoal.food
          binding.pbFood.progress = sum
       }
 
-      binding.tvGoal.text = "${dailyGoal.foodGoal} kcal"
+      binding.tvGoal.text = "${dailyGoal.food} kcal"
       binding.tvIntake.text = "$sum kcal"
 
-      val remain = dailyGoal.foodGoal - sum
+      val remain = dailyGoal.food - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {

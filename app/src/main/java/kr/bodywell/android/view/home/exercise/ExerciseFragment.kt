@@ -86,7 +86,7 @@ class ExerciseFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(exerciseGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
@@ -170,14 +170,14 @@ class ExerciseFragment : Fragment() {
       if(sum > 0) {
          binding.pbExercise.setProgressStartColor(Color.parseColor("#FFB846"))
          binding.pbExercise.setProgressEndColor(Color.parseColor("#FFB846"))
-         binding.pbExercise.max = dailyGoal.exerciseGoal
+         binding.pbExercise.max = dailyGoal.exercise
          binding.pbExercise.progress = sum
       }
 
-      binding.tvGoal.text = "${dailyGoal.exerciseGoal} kcal"
+      binding.tvGoal.text = "${dailyGoal.exercise} kcal"
       binding.tvConsume.text = "$sum kcal"
 
-      val remain = dailyGoal.exerciseGoal - sum
+      val remain = dailyGoal.exercise - sum
       if(remain > 0) {
          binding.tvRemain.text = "$remain kcal"
       }else {

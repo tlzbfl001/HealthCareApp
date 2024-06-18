@@ -115,7 +115,7 @@ class SleepRecordFragment : Fragment() {
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
          }else {
-            dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), regDate = selectedDate.toString(), isUpdated = 1))
+            dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), regDate = selectedDate.toString()))
             Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment1(requireActivity(), SleepFragment())
          }

@@ -97,7 +97,7 @@ class DrugFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(drugGoal = et.text.toString().toInt(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
@@ -169,8 +169,8 @@ class DrugFragment : Fragment() {
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
 
       dailyGoal = dataManager.getGoal(selectedDate.toString())
-      binding.pbDrug.max = dailyGoal.drugGoal
-      binding.tvGoal.text = "${dailyGoal.drugGoal}회"
+      binding.pbDrug.max = dailyGoal.drug
+      binding.tvGoal.text = "${dailyGoal.drug}회"
 
       // 약복용 체크값 초기화
       val check = dataManager.getDrugCheckCount(selectedDate.toString())
@@ -187,7 +187,7 @@ class DrugFragment : Fragment() {
          }
       }
 
-      adapter = DrugAdapter1(requireActivity(), itemList, dailyGoal.drugGoal)
+      adapter = DrugAdapter1(requireActivity(), itemList, dailyGoal.drug)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()

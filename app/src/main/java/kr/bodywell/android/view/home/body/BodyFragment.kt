@@ -90,7 +90,7 @@ class BodyFragment : Fragment() {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal!!.regDate == "") {
-               dataManager.insertGoal(Goal(bodyGoal = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+               dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateDoubleByDate(TABLE_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
@@ -200,13 +200,13 @@ class BodyFragment : Fragment() {
 
       dailyGoal = dataManager.getGoal(selectedDate.toString())
 
-      if (dailyGoal!!.bodyGoal > 0) {
-         binding.pbBody.max = dailyGoal!!.bodyGoal.roundToInt()
+      if (dailyGoal!!.body > 0) {
+         binding.pbBody.max = dailyGoal!!.body.roundToInt()
 
-         val split = dailyGoal!!.bodyGoal.toString().split(".")
+         val split = dailyGoal!!.body.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
-            else -> binding.tvGoal.text = "${dailyGoal!!.bodyGoal} kg"
+            else -> binding.tvGoal.text = "${dailyGoal!!.body} kg"
          }
       }
 
@@ -224,7 +224,7 @@ class BodyFragment : Fragment() {
          }
       }
 
-      val remain = dailyGoal!!.bodyGoal - getBody!!.weight.toString().toDouble()
+      val remain = dailyGoal!!.body - getBody!!.weight.toString().toDouble()
       if (remain > 0) {
          val split = remain.toString().split(".")
          when (split[1]) {

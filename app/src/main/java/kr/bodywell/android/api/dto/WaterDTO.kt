@@ -3,6 +3,9 @@ package kr.bodywell.android.api.dto
 import com.google.gson.annotations.SerializedName
 
 data class WaterDTO(
+	@SerializedName("itemId")
+	var itemId: String = "",
+
 	@SerializedName("mL")
 	var mL: Int = 0,
 

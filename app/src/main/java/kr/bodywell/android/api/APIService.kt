@@ -2,14 +2,17 @@ package kr.bodywell.android.api
 
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
+import kr.bodywell.android.api.dto.BodyUpdateDTO
 import kr.bodywell.android.api.dto.DeviceDTO
 import kr.bodywell.android.api.dto.DietDTO
+import kr.bodywell.android.api.dto.DietUpdateDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.GoalDTO
 import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.SleepDTO
+import kr.bodywell.android.api.dto.SleepUpdateDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
@@ -23,7 +26,6 @@ import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
 import kr.bodywell.android.api.response.SleepResponse
-import kr.bodywell.android.api.response.SleepResponses
 import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
@@ -53,13 +55,13 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<FoodResponse>>
 
-	@GET("/diets/{uid}")
+	@GET("/workouts/{uid}")
 	suspend fun getWorkout(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 	): Response<WorkoutResponse>
 
-	@GET("/health/diets")
+	@GET("/diets")
 	suspend fun getAllDiet(
 		@Header("Authorization") token: String
 	): Response<List<DietResponse>>
@@ -70,7 +72,7 @@ interface APIService {
 		@Path("uid") uid: String,
 	): Response<DietResponse>
 
-	@GET("/health/waters")
+	@GET("/waters")
 	suspend fun getAllWater(
 		@Header("Authorization") token: String
 	): Response<List<WaterResponse>>
@@ -80,12 +82,12 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<ActivityResponse>>
 
-	@GET("/health/bodies")
+	@GET("/bodies")
 	suspend fun getAllBody(
 		@Header("Authorization") token: String
 	): Response<List<BodyResponse>>
 
-	@GET("/health/sleep")
+	@GET("/sleeps")
 	suspend fun getAllSleep(
 		@Header("Authorization") token: String
 	): Response<List<SleepResponse>>
@@ -102,62 +104,62 @@ interface APIService {
 		@Body dto: DeviceDTO
 	): Response<DeviceResponse>
 
-	@POST("/health/foods")
+	@POST("/foods")
 	suspend fun createFood(
 		@Header("Authorization") token: String,
 		@Body dto: FoodDTO
 	): Response<FoodResponse>
 
-	@POST("/health/diets")
+	@POST("/diets")
 	suspend fun createDiets(
 		@Header("Authorization") token: String,
 		@Body dto: DietDTO
 	): Response<DietResponse>
 
-	@POST("/health/waters")
+	@POST("/waters")
 	suspend fun createWater(
 		@Header("Authorization") token: String,
 		@Body dto: WaterDTO
 	): Response<WaterResponse>
 
-	@POST("/health/bodies")
+	@POST("/bodies")
 	suspend fun createBody(
 		@Header("Authorization") token: String,
 		@Body dto: BodyDTO
 	): Response<BodyResponse>
 
-	@POST("/health/activities")
+	@POST("/activities")
 	suspend fun createActivity(
 		@Header("Authorization") token: String,
 		@Body dto: ActivityDTO
 	): Response<ActivityResponse>
 
-	@POST("/health/workouts")
+	@POST("/workouts")
 	suspend fun createWorkout(
 		@Header("Authorization") token: String,
 		@Body dto: WorkoutDTO
 	): Response<WorkoutResponse>
 
-	@POST("/health/sleeps")
+	@POST("/sleeps")
 	suspend fun createSleep(
 		@Header("Authorization") token: String,
 		@Body dto: SleepDTO
 	): Response<SleepResponse>
 
-	@POST("/health/medicines")
+	@POST("/medicines")
 	suspend fun createMedicine(
 		@Header("Authorization") token: String,
 		@Body dto: MedicineDTO
 	): Response<MedicineResponse>
 
-	@POST("/health/medicines/{uid}/times")
+	@POST("/medicines/{uid}/times")
 	suspend fun createMedicineTime(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 		@Body dto: MedicineTimeDTO
 	): Response<MedicineTimeResponse>
 
-	@POST("/health/medicines/times/{uid}/intakes")
+	@POST("/medicines/times/{uid}/intakes")
 	suspend fun createMedicineIntake(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
@@ -175,53 +177,53 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<TokenResponse>
 
-	@PATCH("/health/foods/{uid}")
+	@PATCH("/foods/{uid}")
 	suspend fun updateFood(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 		@Body dto: FoodDTO
 	): Response<FoodResponse>
 
-	@PATCH("/health/diets/{uid}")
+	@PATCH("/diets/{uid}")
 	suspend fun updateDiets(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Body dto: DietDTO
+		@Body dto: DietUpdateDTO
 	): Response<DietResponse>
 
-	@PATCH("/health/waters/{uid}")
+	@PATCH("/waters/{uid}")
 	suspend fun updateWater(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 		@Body dto: WaterDTO
 	): Response<WaterResponse>
 
-	@PATCH("/health/bodies/{uid}")
+	@PATCH("/bodies/{uid}")
 	suspend fun updateBody(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Body dto: BodyDTO
+		@Body dto: BodyUpdateDTO
 	): Response<BodyResponse>
 
-	@PATCH("/health/activities/{uid}")
+	@PATCH("/activities/{uid}")
 	suspend fun updateActivity(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 		@Body dto: ActivityDTO
 	): Response<ActivityResponse>
 
-	@PATCH("/health/workouts/{uid}")
+	@PATCH("/workouts/{uid}")
 	suspend fun updateWorkout(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 		@Body dto: WorkoutUpdateDTO
 	): Response<WorkoutResponse>
 
-	@PATCH("/health/sleeps/{uid}")
+	@PATCH("/sleeps/{uid}")
 	suspend fun updateSleep(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Body dto: SleepDTO
+		@Body dto: SleepUpdateDTO
 	): Response<SleepResponse>
 
 	@PATCH("/goals/{uid}")
@@ -237,40 +239,45 @@ interface APIService {
 		@Path("uid") uid: String
 	): Response<Void>
 
-	@DELETE("/health/foods/{uid}")
+	@DELETE("/foods/{uid}")
 	suspend fun deleteFood(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 
-	@DELETE("/health/diets/{uid}")
+	@DELETE("/diets/{uid}")
 	suspend fun deleteDiets(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 
-	@DELETE("/health/activities/{uid}")
+	@DELETE("/activities/{uid}")
 	suspend fun deleteActivity(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 
-	@DELETE("/health/workouts/{uid}")
+	@DELETE("/workouts/{uid}")
 	suspend fun deleteWorkout(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 
-	@DELETE("/health/medicines/intakes/{uid}")
+	@DELETE("/medicines/intakes/{uid}")
 	suspend fun deleteMedicineIntake(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 
-	@DELETE("/health/medicines/times/{uid}")
+	@DELETE("/medicines/times/{uid}")
 	suspend fun deleteMedicineTime(
 		@Header("Authorization") token: String,
-		@Path("medicineUid") medicineUid: String,
+		@Path("uid") uid: String
+	): Response<Void>
+
+	@DELETE("/medicines/{uid}")
+	suspend fun deleteMedicine(
+		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<Void>
 }

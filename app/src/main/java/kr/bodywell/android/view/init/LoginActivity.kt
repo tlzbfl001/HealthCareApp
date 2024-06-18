@@ -12,14 +12,21 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.user.UserApiClient
+import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.NidOAuthLogin
+import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.navercorp.nid.profile.NidProfileCallback
+import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.BuildConfig
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.api.response.DietResponse
-import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Body
@@ -35,7 +42,6 @@ import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.view.home.MainActivity
 import org.json.JSONObject
-import retrofit2.Response
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -77,18 +83,18 @@ class LoginActivity : AppCompatActivity() {
 
       // 구글 로그인
       binding.clGoogle.setOnClickListener {
-         if(!networkStatusCheck(this)) {
-            Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
-         }else {
-            googleLogin()
-         }
+         if(networkStatusCheck(this)) googleLogin() else Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
       }
 
       // 네이버 로그인
-      binding.clNaver.setOnClickListener {}
+      binding.clNaver.setOnClickListener {
+         if(networkStatusCheck(this)) naverLogin() else Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
+      }
 
       // 카카오 로그인
-      binding.clKakao.setOnClickListener {}
+      binding.clKakao.setOnClickListener {
+         if(networkStatusCheck(this)) kakaoLogin() else Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
+      }
 
 //      Log.d(TAG, "getKeyHash: " + Utility.getKeyHash(this))
    }
@@ -171,7 +177,7 @@ class LoginActivity : AppCompatActivity() {
       }
    }
 
-   /*private fun naverLogin() {
+   private fun naverLogin() {
       val oAuthLoginCallback = object : OAuthLoginCallback {
          override fun onSuccess() {
             NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
@@ -182,14 +188,7 @@ class LoginActivity : AppCompatActivity() {
                      if(NaverIdLoginSDK.getAccessToken() == "" || NaverIdLoginSDK.getAccessToken() == null || result.profile?.email == "" || result.profile?.email == null) {
                         Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                      }else {
-                        val name = if(result.profile?.name == "" || result.profile?.name == null) "" else result.profile?.name
-                        val nickname = if(result.profile?.nickname == "" || result.profile?.nickname == null) "" else result.profile?.nickname
-                        val birthday = if(result.profile?.birthYear == "" || result.profile?.birthYear == null || result.profile?.birthday == "" ||
-                           result.profile?.birthday == null) "" else result.profile?.birthYear + "-" + result.profile?.birthday
-                        val profileImage = if(result.profile?.profileImage == "" || result.profile?.profileImage == null) "" else result.profile?.profileImage
-
-                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, name = name,
-                           nickname = nickname, birthday = birthday, profileImage = profileImage!!, regDate = LocalDate.now().toString())
+                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, regDate = LocalDate.now().toString())
 
                         val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                         intent.putExtra("user", user)
@@ -221,8 +220,7 @@ class LoginActivity : AppCompatActivity() {
       }
 
       // SDK 객체 초기화
-      NaverIdLoginSDK.initialize(this, BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(
-         R.string.app_name))
+      NaverIdLoginSDK.initialize(this, BuildConfig.NAVER_CLIENT_ID, BuildConfig.NAVER_CLIENT_SECRET, getString(R.string.app_name))
       NaverIdLoginSDK.authenticate(this, oAuthLoginCallback)
    }
 
@@ -259,19 +257,13 @@ class LoginActivity : AppCompatActivity() {
          if(error != null) {
             Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
          }else {
-            val getUser = dataManager.getUser("kakao", user?.kakaoAccount!!.email.toString()) // 사용자 가입여부 체크
-            if(getUser.regDate == "") { // 초기 가입 작업
+            val getUser = dataManager.getUser("kakao", user?.kakaoAccount!!.email.toString())
+
+            if(getUser.regDate == "") { // 회원 가입
                if(token.idToken == "" || token.idToken == null || user.kakaoAccount?.email == "" || user.kakaoAccount?.email == null) {
                   Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
                }else {
-                  val name = if(user.kakaoAccount?.name == "" || user.kakaoAccount?.name == null) "" else user.kakaoAccount?.name
-                  val nickname = if(user.kakaoAccount?.profile?.nickname == "" || user.kakaoAccount?.profile?.nickname == null) "" else user.kakaoAccount?.profile?.nickname
-                  val profileImage = if(user.kakaoAccount?.profile?.profileImageUrl == "" || user.kakaoAccount?.profile?.profileImageUrl == null){
-                     ""
-                  }else user.kakaoAccount?.profile?.profileImageUrl
-
-                  val data = User(type = "kakao", idToken = token.idToken!!, email = user.kakaoAccount?.email!!, name = name, nickname = nickname, profileImage = profileImage,
-                     regDate = LocalDate.now().toString())
+                  val data = User(type = "kakao", idToken = token.idToken!!, email = user.kakaoAccount?.email!!, regDate = LocalDate.now().toString())
                   val intent = Intent(this, SignupActivity::class.java)
                   intent.putExtra("user", data)
                   startActivity(intent)
@@ -282,7 +274,7 @@ class LoginActivity : AppCompatActivity() {
             }
          }
       }
-   }*/
+   }
 
    private fun registerUser() {
       CoroutineScope(Dispatchers.IO).launch {
@@ -362,7 +354,7 @@ class LoginActivity : AppCompatActivity() {
             if(getAllWater.isSuccessful) {
                for(i in 0 until getAllWater.body()!!.size) {
                   dataManager.insertWater(Water(userId = getUser2.id, uid = getAllWater.body()!![i].uid, count = getAllWater.body()!![i].count,
-                     ml = getAllWater.body()!![i].mL, regDate = getAllWater.body()!![i].date))
+                     volume = getAllWater.body()!![i].mL, regDate = getAllWater.body()!![i].date))
                }
             }
 

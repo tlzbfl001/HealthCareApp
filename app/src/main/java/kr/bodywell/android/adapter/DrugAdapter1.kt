@@ -21,12 +21,11 @@ class DrugAdapter1 (
     private val itemList: List<DrugList>,
     private val drugGoal: Int
 ) : RecyclerView.Adapter<DrugAdapter1.ViewHolder>() {
-    private var dataManager: DataManager? = null
+    private var dataManager: DataManager = DataManager(context)
     private var check = 0
 
     init {
-        dataManager = DataManager(context)
-        dataManager!!.open()
+        dataManager.open()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -62,16 +61,16 @@ class DrugAdapter1 (
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheckCount = dataManager!!.getDrugCheckCount(itemList[position].drugTimeId, itemList[position].date)
+            val getDrugCheckCount = dataManager.getDrugCheckCount(itemList[position].drugTimeId, itemList[position].date)
             if(holder.tvCheck.isChecked) {
                 check += 1
                 if(getDrugCheckCount == 0) {
-                    dataManager!!.insertDrugCheck(DrugCheck(drugId = itemList[position].drugId, drugTimeId = itemList[position].drugTimeId, regDate = itemList[position].date))
+                    dataManager.insertDrugCheck(DrugCheck(drugId = itemList[position].drugId, drugTimeId = itemList[position].drugTimeId, regDate = itemList[position].date))
                 }
             }else {
                 if(check > 0) check -= 1
                 if(getDrugCheckCount > 0) {
-                    dataManager!!.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[position].drugTimeId, "regDate", itemList[position].date)
+                    dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[position].drugTimeId, "regDate", itemList[position].date)
                 }
             }
 

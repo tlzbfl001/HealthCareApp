@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseEditBinding
@@ -55,15 +54,15 @@ class ExerciseEditFragment : Fragment() {
 		dataManager = DataManager(activity)
 		dataManager.open()
 
-		var id = arguments?.getString("id")!!.toInt()
+		val id = arguments?.getString("id")!!.toInt()
 
-		val exercise = dataManager.getExercise(id)
+		val getExercise = dataManager.getExercise(id)
 
-		binding.etName.setText(exercise.name)
-		binding.etTime.setText(exercise.workoutTime.toString())
-		binding.etKcal.setText(exercise.kcal.toString())
+		binding.etName.setText(getExercise.name)
+		binding.etTime.setText(getExercise.workoutTime.toString())
+		binding.etKcal.setText(getExercise.kcal.toString())
 
-		when(exercise.intensity) {
+		when(getExercise.intensity) {
 			"HIGH" -> unit1()
 			"MODERATE" -> unit2()
 			"LOW" -> unit3()
@@ -95,7 +94,7 @@ class ExerciseEditFragment : Fragment() {
 
 			if(binding.etName.text.toString().trim() == "") {
 				Toast.makeText(context, "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
-			}else if(getData.name != "" && (getData.name != exercise.name)) {
+			}else if(getData.name != "" && (getData.name != getExercise.name)) {
 				Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
 			}else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
 				|| binding.etKcal.text.toString().toInt() < 1) {
@@ -104,7 +103,7 @@ class ExerciseEditFragment : Fragment() {
 				dataManager.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
 					workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt()))
 
-				if(binding.etName.text.toString().trim() != exercise.name.trim()) dataManager.updateInt(TABLE_EXERCISE, "isUpdated", 1, "id", id)
+				if(binding.etName.text.toString().trim() != getExercise.name.trim()) dataManager.updateInt(TABLE_EXERCISE, "isUpdated", 1, "id", id)
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 				replaceFragment()

@@ -341,21 +341,15 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else if(getFood.name != "") {
             Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
+         }else if(amount < 1){
+            Toast.makeText(context, "섭취량을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             // 음식데이터 저장
             dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
                protein = protein, fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString()))
 
-            val getDaily = dataManager.getDailyFood(type, name, selectedDate.toString())
-
-            // 일일 음식데이터 수정 or 저장
-            if(getDaily.regDate != "") {
-               dataManager.updateDailyFood(Food(id = getDaily.id, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-                  protein = protein, fat = fat, salt = salt, sugar = sugar, count = getDaily.count + 1))
-            }else {
-               dataManager.insertDailyFood(Food(type = type, name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-                  protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, regDate = selectedDate.toString()))
-            }
+            dataManager.insertDailyFood(Food(type = type, name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
+               protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, regDate = selectedDate.toString()))
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 

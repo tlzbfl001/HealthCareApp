@@ -150,11 +150,13 @@ class SignupActivity : AppCompatActivity() {
                               userUid = decodeToken(response.body()!!.accessToken)
 
                               val deleteUser = RetrofitAPI.api.deleteUser("Bearer ${response.body()!!.accessToken}", userUid)
+
                               if(deleteUser.isSuccessful) {
                                  Log.d(TAG, "deleteUser: $deleteUser")
                                  val googleLogin = RetrofitAPI.api.googleLogin(user.idToken)
+
                                  if(googleLogin.isSuccessful) {
-                                    Log.e(TAG, "googleLogin: ${googleLogin.body()}")
+                                    Log.d(TAG, "googleLogin: ${googleLogin.body()}")
                                     access = googleLogin.body()!!.accessToken
                                     refresh = googleLogin.body()!!.refreshToken
                                     userUid = decodeToken(access)
@@ -213,6 +215,7 @@ class SignupActivity : AppCompatActivity() {
             }
 
             val getUser2 = dataManager.getUser(user.type, user.email)
+
             MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
 
             // 토큰 정보 저장
@@ -227,7 +230,7 @@ class SignupActivity : AppCompatActivity() {
             // 서버 데이터 저장
             for(i in 0 until getAllFood.body()!!.size) {
                dataManager.insertFood(Food(basic = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
-                  unit = getAllFood.body()!![i].volumeUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calories,
+                  unit = getAllFood.body()!![i].volumeUnit, amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calories,
                   carbohydrate = getAllFood.body()!![i].carbohydrate, protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
                   useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString())
                )
@@ -282,9 +285,7 @@ class SignupActivity : AppCompatActivity() {
 
       tvTitle.text = title
 
-      clX.setOnClickListener {
-         dialog.dismiss()
-      }
+      clX.setOnClickListener { dialog.dismiss() }
 
       when(id) {
          1 -> terms1.visibility = View.VISIBLE

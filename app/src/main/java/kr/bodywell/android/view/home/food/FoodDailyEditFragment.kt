@@ -140,7 +140,7 @@ class FoodDailyEditFragment : Fragment() {
 
          dataManager.updateDailyFood(Food(id = dailyFoodId, amount = getDailyFood.amount * count, kcal = getDailyFood.kcal * count,
             carbohydrate = getDailyFood.carbohydrate * count, protein = getDailyFood.protein * count, fat = getDailyFood.fat * count,
-            salt = getDailyFood.salt * count, sugar = getDailyFood.sugar * count, count = count, isUpdated = 1))
+            salt = getDailyFood.salt * count, sugar = getDailyFood.sugar * count, count = count))
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 

@@ -85,7 +85,7 @@ class SleepFragment : Fragment() {
          val total = hour * 60 + minute
 
          if(dailyGoal.regDate == "") {
-            dataManager.insertGoal(Goal(sleepGoal = total, regDate = selectedDate.toString()))
+            dataManager.insertGoal(Goal(sleep = total, regDate = selectedDate.toString()))
             dailyGoal = dataManager.getGoal(selectedDate.toString())
          }else {
             dataManager.updateIntByDate(TABLE_GOAL, "sleepGoal", total, selectedDate.toString())
@@ -162,12 +162,12 @@ class SleepFragment : Fragment() {
 
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
-         binding.pbSleep.max = dailyGoal.sleepGoal
+         binding.pbSleep.max = dailyGoal.sleep
          binding.pbSleep.progress = getSleep.total
          binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"
          binding.tvWakeTime.text = "${wakeTime.hour}h ${wakeTime.minute}m"
 
-         val remain = (dailyGoal.sleepGoal - getSleep.total)
+         val remain = (dailyGoal.sleep - getSleep.total)
          if(remain > 0) {
             binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
          }
@@ -176,7 +176,7 @@ class SleepFragment : Fragment() {
          binding.tvWakeTime.text = "0h 0m"
       }
 
-      binding.tvGoal.text = "${dailyGoal.sleepGoal / 60}h ${dailyGoal.sleepGoal % 60}m"
+      binding.tvGoal.text = "${dailyGoal.sleep / 60}h ${dailyGoal.sleep % 60}m"
       binding.tvSleep.text = "${getSleep.total / 60}h ${getSleep.total % 60}m"
    }
 
