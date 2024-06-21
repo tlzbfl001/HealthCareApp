@@ -43,7 +43,6 @@ class DrugFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
    private var adapter: DrugAdapter1? = null
-   private val itemList = ArrayList<DrugList>()
    private var dailyGoal = Goal()
 
    override fun onAttach(context: Context) {
@@ -161,13 +160,13 @@ class DrugFragment : Fragment() {
    }
 
    private fun recordView() {
-      itemList.clear()
+      val itemList = ArrayList<DrugList>()
+
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
-
       dailyGoal = dataManager.getGoal(selectedDate.toString())
       binding.pbDrug.max = dailyGoal.drug
       binding.tvGoal.text = "${dailyGoal.drug}회"
@@ -180,9 +179,9 @@ class DrugFragment : Fragment() {
       for(i in 0 until getDrugDaily.size) {
          val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
-            val getDrugCheckCount = dataManager.getDrugCheckCount(getDrugTime[j].id, selectedDate.toString())
-            itemList.add(DrugList(drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = selectedDate.toString(), name = getDrugDaily[i].name,
-               amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheckCount)
+            val getDrugCheck = dataManager.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
+            itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = selectedDate.toString(),
+               name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheck.id)
             )
          }
       }

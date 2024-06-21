@@ -746,29 +746,6 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun getDrugDaily(date: String): ArrayList<Drug> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Drug> = ArrayList()
-      val sql = "select * from $TABLE_DRUG where userId = ${MyApp.prefs.getId()} and date('$date') between date(startDate) and date(endDate)"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val values = Drug()
-         values.id = cursor.getInt(0)
-         values.type = cursor.getString(3)
-         values.name = cursor.getString(4)
-         values.amount = cursor.getInt(5)
-         values.unit = cursor.getString(6)
-         values.count = cursor.getInt(7)
-         values.startDate = cursor.getString(8)
-         values.endDate = cursor.getString(9)
-         values.isSet = cursor.getInt(10)
-         values.regDate = cursor.getString(11)
-         list.add(values)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getDrugUid() : Drug {
       val db = dbHelper!!.readableDatabase
       val values = Drug()
@@ -790,10 +767,22 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun getDrugTime(id: Int) : ArrayList<DrugTime> {
+   fun getDrugUid(table: String, column: String, data: Int) : ArrayList<String> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<String> = ArrayList()
+      val sql = "select uid from $table where userId = ${MyApp.prefs.getId()} and $column = $data"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         list.add(cursor.getString(0))
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getDrugTime(data: Int) : ArrayList<DrugTime> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<DrugTime> = ArrayList()
-      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and drugId = $id order by time"
+      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and drugId = $data order by time"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = DrugTime()
@@ -807,7 +796,7 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getDrugTimeUid(data: Int) : DrugTime {
+   fun getDrugTimeUidById(data: Int) : DrugTime {
       val db = dbHelper!!.readableDatabase
       val values = DrugTime()
       val sql = "select uid from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and id = $data"
@@ -819,29 +808,18 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun
-      getDrugTimeUid() : DrugTime {
+   fun getDrugTimeUid() : ArrayList<DrugTime> {
       val db = dbHelper!!.readableDatabase
-      val values = DrugTime()
-      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and uid is '' limit 1"
+      val list: ArrayList<DrugTime> = ArrayList()
+      val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and uid is '' and regDate=(select min(regDate) from $TABLE_DRUG_TIME)"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
+         val values = DrugTime()
          values.id = cursor.getInt(0)
          values.drugId = cursor.getInt(2)
          values.uid = cursor.getString(3)
          values.time = cursor.getString(4)
-      }
-      cursor.close()
-      return values
-   }
-
-   fun getDrugCheck(drugTimeId: Int) : ArrayList<String> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<String> = ArrayList()
-      val sql = "select uid from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and drugTimeId = $drugTimeId"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         list.add(cursor.getString(0))
+         list.add(values)
       }
       cursor.close()
       return list
@@ -859,16 +837,17 @@ class DataManager(private var context: Context?) {
       return count
    }
 
-   fun getDrugCheckCount(drugTimeId: Int, date: String) : Int {
+   fun getDrugCheck(drugTimeId: Int, date: String) : DrugCheck {
       val db = dbHelper!!.readableDatabase
-      var count = 0
-      val sql = "select count(id) from $TABLE_DRUG_CHECK where userId=${MyApp.prefs.getId()} and drugTimeId=$drugTimeId and regDate='$date'"
+      val values = DrugCheck()
+      val sql = "select id, uid from $TABLE_DRUG_CHECK where userId=${MyApp.prefs.getId()} and drugTimeId=$drugTimeId and regDate='$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         count = cursor.getInt(0)
+         values.id = cursor.getInt(0)
+         values.uid = cursor.getString(1)
       }
       cursor.close()
-      return count
+      return values
    }
 
    fun getDrugCheckUid() : DrugCheck {
@@ -1148,7 +1127,7 @@ class DataManager(private var context: Context?) {
    fun getUnused() : Unused {
       val db = dbHelper!!.readableDatabase
       val values = Unused()
-      val sql = "select * from $TABLE_UNUSED where userId = ${MyApp.prefs.getId()} limit 1"
+      val sql = "select * from $TABLE_UNUSED where userId = ${MyApp.prefs.getId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
@@ -1157,6 +1136,22 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return values
+   }
+
+   fun getUnused(data: String) : ArrayList<Unused> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Unused> = ArrayList()
+      val sql = "select * from $TABLE_UNUSED where userId = ${MyApp.prefs.getId()} and regDate = '$data'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Unused()
+         values.id = cursor.getInt(0)
+         values.type = cursor.getString(2)
+         values.value = cursor.getString(3)
+         list.add(values)
+      }
+      cursor.close()
+      return list
    }
 
    fun insertUser(data: User) {
@@ -1325,6 +1320,7 @@ class DataManager(private var context: Context?) {
       values.put("drugId", data.drugId)
       values.put("uid", data.uid)
       values.put("time", data.time)
+      values.put("regDate", data.regDate)
       db!!.insert(TABLE_DRUG_TIME, null, values)
    }
 
@@ -1383,6 +1379,7 @@ class DataManager(private var context: Context?) {
       values.put("userId", MyApp.prefs.getId())
       values.put("type", data.type)
       values.put("value", data.value)
+      values.put("regDate", data.regDate)
       db!!.insert(TABLE_UNUSED, null, values)
    }
 

@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,9 @@ import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.AlarmReceiver
+import kr.bodywell.android.util.CalendarUtil
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
@@ -88,16 +92,31 @@ class DrugAdapter2 (
             .setTitle("복용약 삭제")
             .setMessage("해당 약과 관련된 모든 데이터가 삭제됩니다.\n정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
-               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
-               dataManager.deleteItem(TABLE_DRUG, "id", itemList[position].id)
+               val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
+               for(i in 0 until drugCheckUid.size) {
+                  Log.d(CustomUtil.TAG, "drugCheckUid: ${drugCheckUid[i]}")
+                  if(drugCheckUid[i] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i], regDate = selectedDate.toString()))
+               }
 
-               if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid))
+               val drugTimeUid = dataManager.getDrugUid(TABLE_DRUG_TIME, "drugId", itemList[position].id)
+               for(i in 0 until drugTimeUid.size) {
+                  Log.d(CustomUtil.TAG, "drugTimeUid: ${drugTimeUid[i]}")
+                  if(drugTimeUid[i] != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i], regDate = selectedDate.toString()))
+               }
 
-               alarmReceiver.cancelAlarm(context, itemList[position].id)
-               itemList.removeAt(position)
+               if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid, regDate = selectedDate.toString()))
 
-               notifyDataSetChanged()
+               val getUnused = dataManager.getUnused(selectedDate.toString())
+               Log.d(CustomUtil.TAG, "getUnused: $getUnused")
+
+//               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
+//               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
+//               dataManager.deleteItem(TABLE_DRUG, "id", itemList[position].id)
+//
+//               alarmReceiver.cancelAlarm(context, itemList[position].id)
+//               itemList.removeAt(position)
+//
+//               notifyDataSetChanged()
 
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
             }

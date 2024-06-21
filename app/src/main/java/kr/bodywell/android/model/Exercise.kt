@@ -9,7 +9,7 @@ data class Exercise (
    var userId: Int = 0,
    var uid: String = "",
    var name: String = "",
-   var intensity: String = "",
+   var intensity: String = "HIGH",
    var workoutTime: Int = 0,
    var kcal: Int = 0,
    var useCount: Int = 0,

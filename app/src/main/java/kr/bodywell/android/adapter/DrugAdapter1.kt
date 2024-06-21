@@ -13,6 +13,9 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
+import kr.bodywell.android.model.Unused
+import kr.bodywell.android.util.CalendarUtil
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.home.drug.DrugFragment
 
@@ -24,24 +27,22 @@ class DrugAdapter1 (
     private var dataManager: DataManager = DataManager(context)
     private var check = 0
 
-    init {
-        dataManager.open()
-    }
+    init { dataManager.open() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_daily, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
         val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugFragment
 
-        holder.tvTime.text = itemList[position].time
-        holder.tvName.text = itemList[position].name
-        holder.tvAmount.text = itemList[position].amount.toString() + itemList[position].unit
+        holder.tvTime.text = itemList[pos].time
+        holder.tvName.text = itemList[pos].name
+        holder.tvAmount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
-        // 복용횟수 초기화
-        check = itemList[position].initCheck
+        check = itemList[pos].initCheck
+
         if(check > 0) {
             fragment.binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
             fragment.binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
@@ -52,32 +53,30 @@ class DrugAdapter1 (
             fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
         }
 
-        if(itemList[position].checked == 1) holder.tvCheck.isChecked = true
+        if(itemList[pos].checked > 0) holder.tvCheck.isChecked = true
 
         var result = drugGoal - check
-        if(result > 0) {
-            fragment.binding.tvRemain.text = "${result}회"
-        }
+        if(result > 0) fragment.binding.tvRemain.text = "${result}회"
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheckCount = dataManager.getDrugCheckCount(itemList[position].drugTimeId, itemList[position].date)
+            val getDrugCheck = dataManager.getDrugCheck(itemList[pos].drugTimeId, itemList[pos].date)
+
             if(holder.tvCheck.isChecked) {
                 check += 1
-                if(getDrugCheckCount == 0) {
-                    dataManager.insertDrugCheck(DrugCheck(drugId = itemList[position].drugId, drugTimeId = itemList[position].drugTimeId, regDate = itemList[position].date))
+                if(getDrugCheck.id == 0) {
+                    dataManager.insertDrugCheck(DrugCheck(uid = "", drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, regDate = itemList[pos].date))
                 }
             }else {
                 if(check > 0) check -= 1
-                if(getDrugCheckCount > 0) {
-                    dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[position].drugTimeId, "regDate", itemList[position].date)
+                if(getDrugCheck.id > 0) {
+                    dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, "regDate", itemList[pos].date)
+                    if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "drugCheck", value = itemList[pos].uid, regDate = selectedDate.toString()))
                 }
             }
 
             result = drugGoal - check
-            if(result > 0) {
-                fragment.binding.tvRemain.text = "${result}회"
-            }
+            if(result > 0) fragment.binding.tvRemain.text = "${result}회"
 
             if(check > 0) {
                 fragment.binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))

@@ -124,7 +124,6 @@ class LoginActivity : AppCompatActivity() {
 //                     val intent = Intent(this@LoginActivity, SignupActivity::class.java)
 //                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
 //                     startActivity(intent)
-                     Log.d(TAG, "check: ${it.result.idToken}")
 
                      CoroutineScope(Dispatchers.IO).launch {
                         val response = RetrofitAPI.api.getAllUser()

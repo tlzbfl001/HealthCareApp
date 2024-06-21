@@ -186,6 +186,7 @@ class DrugAddFragment : Fragment() {
 
                for(i in 0 until getDrugTime.size) {
                   var check = false
+
                   for(j in 0 until drugTimeList.size) {
                      if(getDrugTime[i].time == drugTimeList[j].time) {
                         check = true
@@ -197,11 +198,9 @@ class DrugAddFragment : Fragment() {
                }
 
                for(i in 0 until delList.size) {
-                  val getDrugCheck = dataManager.getDrugCheck(delList[i].id)
+                  val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugTimeId", delList[i].id)
 
-                  for(j in 0 until getDrugCheck.size) {
-                     if(getDrugCheck[j] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck[j]))
-                  }
+                  for(j in 0 until drugCheckUid.size) if(drugCheckUid[j] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[j]))
 
                   if(delList[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = delList[i].uid))
 
@@ -211,9 +210,10 @@ class DrugAddFragment : Fragment() {
 
                for(i in 0 until drugTimeList.size) {
                   var check = false
+
                   for(j in 0 until saveList.size) {
                      if(drugTimeList[i].time == saveList[j].time) check = true
-                     if(j == (saveList.size - 1) && !check) dataManager.insertDrugTime(DrugTime(drugId = id, time = drugTimeList[i].time))
+                     if(j == (saveList.size - 1) && !check) dataManager.insertDrugTime(DrugTime(drugId = id, time = drugTimeList[i].time, regDate = selectedDate.toString()))
                   }
                }
 
@@ -229,9 +229,7 @@ class DrugAddFragment : Fragment() {
 
                val getDrugId = dataManager.getDrugId(selectedDate.toString()).id
 
-               for(i in 0 until drugTimeList.size) {
-                  dataManager.insertDrugTime(DrugTime(time = drugTimeList[i].time, drugId = getDrugId))
-               }
+               for(i in 0 until drugTimeList.size) dataManager.insertDrugTime(DrugTime(drugId = getDrugId, time = drugTimeList[i].time, regDate = selectedDate.toString()))
 
                alarmReceiver!!.setAlarm(requireActivity(), getDrugId, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
 

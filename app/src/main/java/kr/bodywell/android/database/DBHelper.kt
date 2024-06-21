@@ -65,10 +65,10 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "count integer, startDate text, endDate text, isSet integer, regDate text);"
       db.execSQL(drug)
 
-      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, drugId integer, uid text, time text);"
+      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, uid text, drugId integer, time text, regDate text);"
       db.execSQL(drugTime)
 
-      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, drugId integer, drugTimeId integer, uid text, regDate text);"
+      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, uid text, drugId integer, drugTimeId integer, regDate text);"
       db.execSQL(drugCheck)
 
       val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, regDate text);"
@@ -81,7 +81,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, type text, dataId integer, imageUri text, regDate text);"
       db.execSQL(image)
 
-      val unused = "create TABLE $TABLE_UNUSED(id integer primary key autoincrement, userId integer, type text, value text);"
+      val unused = "create TABLE $TABLE_UNUSED(id integer primary key autoincrement, userId integer, type text, value text, regDate text);"
       db.execSQL(unused)
    }
 

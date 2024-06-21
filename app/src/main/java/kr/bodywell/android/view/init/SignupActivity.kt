@@ -242,7 +242,7 @@ class SignupActivity : AppCompatActivity() {
             }
 
             for(i in 0 until getAllActivity.body()!!.size) {
-               dataManager.insertExercise(Exercise(basic = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name,
+               dataManager.insertExercise(Exercise(basic = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = "HIGH",
                   useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString()))
             }
 
