@@ -53,9 +53,11 @@
       android:usesCleartextTraffic="true"
       tools:targetApi="33">
       <activity
-         android:name=".view.init.SignupActivity"/>
+         android:name=".view.init.SignupActivity"
+         android:exported="false" />
       <activity
          android:name=".view.init.InputActivity"
+         android:exported="false"
          android:windowSoftInputMode="adjustPan" />
       <activity
          android:name=".view.init.StartActivity"
@@ -66,9 +68,12 @@
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
-      <activity android:name=".view.init.LoginActivity" />
-      <activity android:name=".view.init.InitActivity" />
+      <activity android:name=".view.init.LoginActivity"
+         android:exported="false"  />
+      <activity android:name=".view.init.InitActivity"
+         android:exported="false"  />
       <activity android:name=".view.home.MainActivity"
+         android:exported="false"
          android:windowSoftInputMode="adjustPan" />
       <activity
          android:name=".view.home.HealthConnectActivity"

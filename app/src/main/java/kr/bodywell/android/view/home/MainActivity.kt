@@ -1,10 +1,12 @@
 package kr.bodywell.android.view.home
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ActivityMainBinding
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.note.NoteFragment

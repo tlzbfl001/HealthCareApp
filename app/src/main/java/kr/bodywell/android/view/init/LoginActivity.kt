@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.BuildConfig
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Body
@@ -58,6 +59,7 @@ class LoginActivity : AppCompatActivity() {
    private var access = ""
    private var refresh = ""
    private var userUid = ""
+   private var check = false
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -119,45 +121,44 @@ class LoginActivity : AppCompatActivity() {
 
                if(getUser.regDate == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
-                     var check = false
+//                     val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+//                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
+//                     startActivity(intent)
+                     Log.d(TAG, "check: ${it.result.idToken}")
 
                      CoroutineScope(Dispatchers.IO).launch {
                         val response = RetrofitAPI.api.getAllUser()
+
                         if(response.isSuccessful) {
                            for(i in 0 until response.body()!!.size) {
-                              if(response.body()!![i].email == it.result.email.toString()) {
-                                 check = true
-                              }
+                              if(response.body()!![i].email == it.result.email.toString()) check = true
                            }
                         }
 
                         Log.e(TAG, "check: $check")
 
                         if(check) {
-                           Log.e(TAG, "check: 1")
                            runOnUiThread{
                               AlertDialog.Builder(this@LoginActivity, R.style.AlertDialogStyle)
                                  .setTitle("회원가입")
                                  .setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
                                  .setPositiveButton("확인") { _, _ ->
                                     CoroutineScope(Dispatchers.IO).launch {
-                                       val response = RetrofitAPI.api.googleLogin(it.result.idToken!!)
+                                       val data = LoginDTO(it.result.idToken!!)
+
+                                       val response = RetrofitAPI.api.loginWithGoogle(data)
+
                                        if(response.isSuccessful) {
                                           user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
                                           userUid = decodeToken(response.body()!!.accessToken)
                                           access = response.body()!!.accessToken
                                           refresh = response.body()!!.refreshToken
                                           registerUser()
-                                       }else {
-                                          Log.e(TAG, "googleLogin: $response")
-                                       }
+                                       }else Log.e(TAG, "googleLogin: $response")
                                     }
-                                 }
-                                 .setNegativeButton("취소", null)
-                                 .create().show()
+                                 }.setNegativeButton("취소", null).create().show()
                            }
                         }else {
-                           Log.e(TAG, "check: 2")
                            val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                            intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
                            startActivity(intent)

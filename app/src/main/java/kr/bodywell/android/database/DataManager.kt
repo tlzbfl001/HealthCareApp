@@ -819,7 +819,8 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun getDrugTimeUid() : DrugTime {
+   fun
+      getDrugTimeUid() : DrugTime {
       val db = dbHelper!!.readableDatabase
       val values = DrugTime()
       val sql = "select * from $TABLE_DRUG_TIME where userId = ${MyApp.prefs.getId()} and uid is '' limit 1"
@@ -1511,6 +1512,13 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
+   fun deleteItem(table: String, column: String): Int {
+      val db = dbHelper!!.writableDatabase
+      val result = db.delete(table, "$column=${MyApp.prefs.getId()}", null)
+      db.close()
+      return result
+   }
+
    fun deleteItem(table: String, column: String, data: Int): Int {
       val db = dbHelper!!.writableDatabase
       val result = db.delete(table, "userId=${MyApp.prefs.getId()} and $column=$data", null)
@@ -1528,13 +1536,6 @@ class DataManager(private var context: Context?) {
    fun deleteItem(table: String, column1: String, int: Int, column2: String, str: String): Int {
       val db = dbHelper!!.writableDatabase
       val result = db.delete(table, "userId=${MyApp.prefs.getId()} and $column1=$int and $column2='$str'", null)
-      db.close()
-      return result
-   }
-
-   fun deleteTable(table: String, column: String): Int {
-      val db = dbHelper!!.writableDatabase
-      val result = db.delete(table, "$column=${MyApp.prefs.getId()}", null)
       db.close()
       return result
    }

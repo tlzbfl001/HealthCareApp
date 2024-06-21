@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitAPI {
-	private const val BASE_URL = "https://api.bodywell.dev/"
+	private const val BASE_URL = "https://api.bodywell.dev/v1/"
 
 	private val getRetrofit by lazy {
 		Retrofit.Builder()

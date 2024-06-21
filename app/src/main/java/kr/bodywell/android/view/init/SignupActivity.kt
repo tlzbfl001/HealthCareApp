@@ -20,7 +20,9 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.DeviceDTO
-import kr.bodywell.android.api.dto.FoodDTO
+import kr.bodywell.android.api.dto.LoginDTO
+import kr.bodywell.android.database.DBHelper
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Exercise
@@ -145,7 +147,10 @@ class SignupActivity : AppCompatActivity() {
                   when(user.type) {
                      "google" -> {
                         CoroutineScope(Dispatchers.IO).launch {
-                           val response= RetrofitAPI.api.googleLogin(user.idToken)
+                           val data = LoginDTO(user.idToken)
+
+                           val response = RetrofitAPI.api.loginWithGoogle(data)
+
                            if(response.isSuccessful) {
                               userUid = decodeToken(response.body()!!.accessToken)
 
@@ -153,16 +158,16 @@ class SignupActivity : AppCompatActivity() {
 
                               if(deleteUser.isSuccessful) {
                                  Log.d(TAG, "deleteUser: $deleteUser")
-                                 val googleLogin = RetrofitAPI.api.googleLogin(user.idToken)
+                                 val googleLogin = RetrofitAPI.api.loginWithGoogle(data)
 
                                  if(googleLogin.isSuccessful) {
                                     Log.d(TAG, "googleLogin: ${googleLogin.body()}")
                                     access = googleLogin.body()!!.accessToken
                                     refresh = googleLogin.body()!!.refreshToken
                                     userUid = decodeToken(access)
-                                    registerUser()
+                                    registerUser1()
                                  }else {
-                                    Log.e(TAG, "googleLogin: $googleLogin")
+                                    Log.e(TAG, "googleLogin1: $googleLogin")
                                     runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                                  }
                               }else {
@@ -170,7 +175,7 @@ class SignupActivity : AppCompatActivity() {
                                  runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                               }
                            }else {
-                              Log.e(TAG, "googleLogin: $response")
+                              Log.e(TAG, "googleLogin2: $response")
                               runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                            }
                         }
@@ -188,7 +193,18 @@ class SignupActivity : AppCompatActivity() {
       }
    }
 
-   private fun registerUser() {
+   private fun registerUser1() {
+      val getUser = dataManager.getUser(user.type, user.email)
+
+      // 사용자 정보 저장
+      if(getUser.regDate == "") {
+         dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, regDate = LocalDate.now().toString()))
+      }else {
+         dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, regDate = LocalDate.now().toString()))
+      }
+
+      val getUser2 = dataManager.getUser(user.type, user.email)
+
       val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
       val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
       val hardwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
@@ -196,27 +212,16 @@ class SignupActivity : AppCompatActivity() {
       val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 
       CoroutineScope(Dispatchers.IO).launch {
-         val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
+         val data = DeviceDTO("BodyWell${getUser2.id}", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
          val createDevice = RetrofitAPI.api.createDevice("Bearer $access", data)
          val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
          val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer $access")
 
          if(createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful) {
-            val getUser = dataManager.getUser(user.type, user.email)
-            val getToken = dataManager.getToken()
-
-            // 사용자 정보 저장
-            if(getUser.regDate == "") {
-               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = createDevice.body()!!.uid,
-                  regDate = LocalDate.now().toString()))
-            }else {
-               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = createDevice.body()!!.uid,
-                  regDate = LocalDate.now().toString()))
-            }
-
-            val getUser2 = dataManager.getUser(user.type, user.email)
-
             MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
+            dataManager.updateUserStr(TABLE_USER, "deviceUid", createDevice.body()!!.uid) // deviceUid 저장
+
+            val getToken = dataManager.getToken()
 
             // 토큰 정보 저장
             if(getToken.accessRegDate == "") {
@@ -259,11 +264,55 @@ class SignupActivity : AppCompatActivity() {
             }
          }else {
             val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
-            if(deleteUser.isSuccessful) Log.d(TAG, "deleteUser: $deleteUser") else Log.e(TAG, "deleteUser: $deleteUser")
+
+            if(deleteUser.isSuccessful) {
+               dataManager.deleteItem(TABLE_USER, "userId")
+               Log.d(TAG, "deleteUser: $deleteUser")
+            } else Log.e(TAG, "deleteUser: $deleteUser")
 
             runOnUiThread{Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()}
          }
       }
+   }
+
+   private fun registerUser2() {
+      val getUser = dataManager.getUser(user.type, user.email)
+      val getToken = dataManager.getToken()
+
+      // 사용자 정보 저장
+      if(getUser.regDate == "") {
+         dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, regDate = LocalDate.now().toString()))
+      }else {
+         dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, regDate = LocalDate.now().toString()))
+      }
+
+      val getUser2 = dataManager.getUser(user.type, user.email)
+
+      MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
+
+      // 토큰 정보 저장
+      if(getToken.accessRegDate == "") {
+         dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
+            refreshRegDate = LocalDateTime.now().toString()))
+      }else {
+         dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
+            refreshRegDate = LocalDateTime.now().toString()))
+      }
+
+      val dialog = Dialog(this@SignupActivity)
+      dialog.setContentView(R.layout.dialog_signup)
+      dialog.setCancelable(false)
+      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
+
+      btnConfirm.setOnClickListener {
+         val intent = Intent(this@SignupActivity, InputActivity::class.java)
+         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+         startActivity(intent)
+         dialog.dismiss()
+      }
+
+      dialog.show()
    }
 
    private fun decodeToken(token: String): String {

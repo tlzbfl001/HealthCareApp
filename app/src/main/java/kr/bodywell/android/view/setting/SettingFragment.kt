@@ -1,18 +1,15 @@
 package kr.bodywell.android.view.setting
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat.finishAffinity
@@ -33,7 +30,6 @@ import kr.bodywell.android.BuildConfig.NAVER_CLIENT_ID
 import kr.bodywell.android.BuildConfig.NAVER_CLIENT_SECRET
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -55,19 +51,13 @@ import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.InitActivity
-import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
-import kr.bodywell.android.view.init.SignupActivity
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
 import kotlin.system.exitProcess
 
@@ -291,22 +281,22 @@ class SettingFragment : Fragment() {
          val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}", getUser.userUid)
 
          if(response.isSuccessful) {
-            dataManager.deleteTable(TABLE_USER, "id")
-            dataManager.deleteTable(TABLE_TOKEN, "userId")
-            dataManager.deleteTable(TABLE_FOOD, "userId")
-            dataManager.deleteTable(TABLE_DAILY_FOOD, "userId")
-            dataManager.deleteTable(TABLE_WATER, "userId")
-            dataManager.deleteTable(TABLE_EXERCISE, "userId")
-            dataManager.deleteTable(TABLE_DAILY_EXERCISE, "userId")
-            dataManager.deleteTable(TABLE_BODY, "userId")
-            dataManager.deleteTable(TABLE_DRUG, "userId")
-            dataManager.deleteTable(TABLE_DRUG_TIME, "userId")
-            dataManager.deleteTable(TABLE_DRUG_CHECK, "userId")
-            dataManager.deleteTable(TABLE_NOTE, "userId")
-            dataManager.deleteTable(TABLE_SLEEP, "userId")
-            dataManager.deleteTable(TABLE_GOAL, "userId")
-            dataManager.deleteTable(TABLE_IMAGE, "userId")
-            dataManager.deleteTable(TABLE_UNUSED, "userId")
+            dataManager.deleteItem(TABLE_USER, "id")
+            dataManager.deleteItem(TABLE_TOKEN, "userId")
+            dataManager.deleteItem(TABLE_FOOD, "userId")
+            dataManager.deleteItem(TABLE_DAILY_FOOD, "userId")
+            dataManager.deleteItem(TABLE_WATER, "userId")
+            dataManager.deleteItem(TABLE_EXERCISE, "userId")
+            dataManager.deleteItem(TABLE_DAILY_EXERCISE, "userId")
+            dataManager.deleteItem(TABLE_BODY, "userId")
+            dataManager.deleteItem(TABLE_DRUG, "userId")
+            dataManager.deleteItem(TABLE_DRUG_TIME, "userId")
+            dataManager.deleteItem(TABLE_DRUG_CHECK, "userId")
+            dataManager.deleteItem(TABLE_NOTE, "userId")
+            dataManager.deleteItem(TABLE_SLEEP, "userId")
+            dataManager.deleteItem(TABLE_GOAL, "userId")
+            dataManager.deleteItem(TABLE_IMAGE, "userId")
+            dataManager.deleteItem(TABLE_UNUSED, "userId")
 
             val alarmReceiver = AlarmReceiver()
             val getDrugId = dataManager.getDrugId()
@@ -328,6 +318,40 @@ class SettingFragment : Fragment() {
             }
          }
       }
+   }
+
+   private fun resignTest() {
+      dataManager.deleteItem(TABLE_USER, "id")
+      dataManager.deleteItem(TABLE_TOKEN, "userId")
+      dataManager.deleteItem(TABLE_FOOD, "userId")
+      dataManager.deleteItem(TABLE_DAILY_FOOD, "userId")
+      dataManager.deleteItem(TABLE_WATER, "userId")
+      dataManager.deleteItem(TABLE_EXERCISE, "userId")
+      dataManager.deleteItem(TABLE_DAILY_EXERCISE, "userId")
+      dataManager.deleteItem(TABLE_BODY, "userId")
+      dataManager.deleteItem(TABLE_DRUG, "userId")
+      dataManager.deleteItem(TABLE_DRUG_TIME, "userId")
+      dataManager.deleteItem(TABLE_DRUG_CHECK, "userId")
+      dataManager.deleteItem(TABLE_NOTE, "userId")
+      dataManager.deleteItem(TABLE_SLEEP, "userId")
+      dataManager.deleteItem(TABLE_GOAL, "userId")
+      dataManager.deleteItem(TABLE_IMAGE, "userId")
+      dataManager.deleteItem(TABLE_UNUSED, "userId")
+
+      val alarmReceiver = AlarmReceiver()
+      val getDrugId = dataManager.getDrugId()
+
+      for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
+
+      MyApp.prefs.removePrefs("userId")
+
+      requireActivity().runOnUiThread {
+         Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
+      }
+
+      finishAffinity(requireActivity())
+      startActivity(Intent(requireActivity(), InitActivity::class.java))
+      exitProcess(0)
    }
 
    override fun onDetach() {

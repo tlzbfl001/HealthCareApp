@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -418,9 +419,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
          }
 
-         delay(10000)
+//         inet+=1
+//         Log.d(TAG, "$inet")
+         delay(1000)
       }
    }
+   var inet =0
 
    private suspend fun refreshToken(): Boolean {
       val response = RetrofitAPI.api.refreshToken("Bearer ${getToken.refresh}")

@@ -47,7 +47,7 @@
          android:id="@+id/tv3"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="10dp"
+         android:layout_marginTop="7dp"
          android:text="가장 친근한 솔루션"
          android:textSize="28dp"
          android:textColor="@color/black"

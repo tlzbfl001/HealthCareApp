@@ -1,4 +1,8 @@
 package kr.bodywell.android.api.dto
 
-class LoginDTO {
-}
+import com.google.gson.annotations.SerializedName
+
+data class LoginDTO (
+	@SerializedName("idToken")
+	var idToken: String = ""
+)
