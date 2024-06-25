@@ -12,6 +12,7 @@ import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
+import kr.bodywell.android.api.dto.MedicineUpdateDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
 import kr.bodywell.android.api.dto.WaterDTO
@@ -216,6 +217,13 @@ interface APIService {
 		@Path("uid") uid: String,
 		@Body dto: WorkoutUpdateDTO
 	): Response<WorkoutResponse>
+
+	@PATCH("medicines/{uid}")
+	suspend fun updateMedicine(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Body dto: MedicineUpdateDTO
+	): Response<MedicineResponse>
 
 	@PATCH("sleeps/{uid}")
 	suspend fun updateSleep(

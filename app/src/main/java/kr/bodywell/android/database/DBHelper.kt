@@ -62,10 +62,10 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL(sleep)
 
       val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, uid text, type text, name text, amount integer, unit text, " +
-         "count integer, startDate text, endDate text, isSet integer, regDate text);"
+         "count integer, startDate text, endDate text, isSet integer, regDate text, isUpdated integer);"
       db.execSQL(drug)
 
-      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, uid text, drugId integer, time text, regDate text);"
+      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, uid text, drugId integer, time text);"
       db.execSQL(drugTime)
 
       val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, uid text, drugId integer, drugTimeId integer, regDate text);"

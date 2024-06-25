@@ -93,7 +93,7 @@ class BodyFragment : Fragment() {
                dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateDoubleByDate(TABLE_GOAL, "bodyGoal", et.text.toString().toDouble(), selectedDate.toString())
+               dataManager.updateDoubleByDate(TABLE_GOAL, "body", et.text.toString().toDouble(), selectedDate.toString())
                dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal!!.id)
             }
 

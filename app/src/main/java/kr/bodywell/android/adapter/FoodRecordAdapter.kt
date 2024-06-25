@@ -18,6 +18,8 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
+import kr.bodywell.android.util.CalendarUtil
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
@@ -78,7 +80,7 @@ class FoodRecordAdapter (
                   dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
 
                   if(itemList[position].uid != "") {
-                     dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid))
+                     dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid, regDate = selectedDate.toString()))
                   }
 
                   itemList.removeAt(position)

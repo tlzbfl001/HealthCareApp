@@ -43,6 +43,7 @@ class SignupActivity : AppCompatActivity() {
    private lateinit var dataManager: DataManager
    private var user = User()
    private var isAll = true
+   private var isClickable = true
    private var access = ""
    private var refresh = ""
    private var userUid = ""
@@ -141,54 +142,61 @@ class SignupActivity : AppCompatActivity() {
       }
 
       binding.cvContinue.setOnClickListener {
-         if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-            if(networkStatusCheck(this)) {
-               if(user.type != "" && user.email != "" && user.idToken != "" ) {
-                  when(user.type) {
-                     "google" -> {
-                        CoroutineScope(Dispatchers.IO).launch {
-                           val data = LoginDTO(user.idToken)
+         if(isClickable) {
+            isClickable = false
 
-                           val response = RetrofitAPI.api.loginWithGoogle(data)
+            if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
+               if(networkStatusCheck(this)) {
+                  if(user.type != "" && user.email != "" && user.idToken != "" ) {
+//                  registerUser2()
+                     when(user.type) {
+                        "google" -> {
+                           CoroutineScope(Dispatchers.IO).launch {
+                              val data = LoginDTO(user.idToken)
 
-                           if(response.isSuccessful) {
-                              userUid = decodeToken(response.body()!!.accessToken)
+                              val response = RetrofitAPI.api.loginWithGoogle(data)
 
-                              val deleteUser = RetrofitAPI.api.deleteUser("Bearer ${response.body()!!.accessToken}", userUid)
+                              if(response.isSuccessful) {
+                                 userUid = decodeToken(response.body()!!.accessToken)
 
-                              if(deleteUser.isSuccessful) {
-                                 Log.d(TAG, "deleteUser: $deleteUser")
-                                 val googleLogin = RetrofitAPI.api.loginWithGoogle(data)
+                                 val deleteUser = RetrofitAPI.api.deleteUser("Bearer ${response.body()!!.accessToken}", userUid)
 
-                                 if(googleLogin.isSuccessful) {
-                                    Log.d(TAG, "googleLogin: ${googleLogin.body()}")
-                                    access = googleLogin.body()!!.accessToken
-                                    refresh = googleLogin.body()!!.refreshToken
-                                    userUid = decodeToken(access)
-                                    registerUser1()
+                                 if(deleteUser.isSuccessful) {
+                                    Log.d(TAG, "deleteUser: $deleteUser")
+                                    val googleLogin = RetrofitAPI.api.loginWithGoogle(data)
+
+                                    if(googleLogin.isSuccessful) {
+                                       Log.d(TAG, "googleLogin: ${googleLogin.body()}")
+                                       access = googleLogin.body()!!.accessToken
+                                       refresh = googleLogin.body()!!.refreshToken
+                                       userUid = decodeToken(access)
+                                       registerUser1()
+                                    }else {
+                                       Log.e(TAG, "googleLogin1: $googleLogin")
+                                       runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
+                                    }
                                  }else {
-                                    Log.e(TAG, "googleLogin1: $googleLogin")
+                                    Log.e(TAG, "deleteUser: $deleteUser")
                                     runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                                  }
                               }else {
-                                 Log.e(TAG, "deleteUser: $deleteUser")
+                                 Log.e(TAG, "googleLogin2: $response")
                                  runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                               }
-                           }else {
-                              Log.e(TAG, "googleLogin2: $response")
-                              runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                            }
                         }
                      }
+                  }else {
+                     Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }
                }else {
-                  Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                  Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
                }
             }else {
-               Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
+               Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
             }
-         }else {
-            Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
+
+            it.postDelayed({isClickable = true}, 500)
          }
       }
    }
@@ -225,11 +233,9 @@ class SignupActivity : AppCompatActivity() {
 
             // 토큰 정보 저장
             if(getToken.accessRegDate == "") {
-               dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
-                  refreshRegDate = LocalDateTime.now().toString()))
+               dataManager.insertToken(Token(access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
             }else {
-               dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(),
-                  refreshRegDate = LocalDateTime.now().toString()))
+               dataManager.updateToken(Token(access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
             }
 
             // 서버 데이터 저장
@@ -237,13 +243,15 @@ class SignupActivity : AppCompatActivity() {
                dataManager.insertFood(Food(basic = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
                   unit = getAllFood.body()!![i].volumeUnit, amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calories,
                   carbohydrate = getAllFood.body()!![i].carbohydrate, protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
-                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString())
+                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
+                  regDate = LocalDate.now().toString())
                )
             }
 
             for(i in 0 until getAllActivity.body()!!.size) {
                dataManager.insertExercise(Exercise(basic = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = "HIGH",
-                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString()))
+                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
+                  regDate = LocalDate.now().toString()))
             }
 
             runOnUiThread{

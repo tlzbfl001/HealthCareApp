@@ -3,6 +3,7 @@ package kr.bodywell.android.view.home.exercise
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import kr.bodywell.android.adapter.ExerciseListAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 
 class ExerciseListFragment : Fragment() {

@@ -74,7 +74,7 @@ class WaterFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      dailyWater() // 데이터 초기화
+      dailyView() // 데이터 초기화
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_water_input)
@@ -106,7 +106,7 @@ class WaterFragment : Fragment() {
                dataManager.insertWater(Water(volume = volume, regDate = selectedDate.toString()))
             }else dataManager.updateIntByDate(TABLE_WATER, "volume", volume, selectedDate.toString())
 
-            dailyWater()
+            dailyView()
 
             dialog.dismiss()
          }
@@ -124,14 +124,14 @@ class WaterFragment : Fragment() {
          selectedDate = selectedDate.minusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
-         dailyWater()
+         dailyView()
       }
 
       binding.clNext.setOnClickListener {
          selectedDate = selectedDate.plusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
-         dailyWater()
+         dailyView()
       }
 
       binding.cvFood.setOnClickListener {
@@ -157,7 +157,7 @@ class WaterFragment : Fragment() {
       return binding.root
    }
 
-   private fun dailyWater() {
+   private fun dailyView() {
       dailyGoal = dataManager.getGoal(selectedDate.toString())
       getWater = dataManager.getWater(selectedDate.toString())
       binding.tvDate.text = dateFormat(selectedDate)

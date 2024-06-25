@@ -3,6 +3,7 @@ package kr.bodywell.android.view.report
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
 import kr.bodywell.android.util.CalendarUtil.Companion.weekFormat
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.getNutrition
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
@@ -265,13 +267,14 @@ class ReportFoodFragment : Fragment() {
 
       for(i in 0 until getData.size){
          val foodKcal = getFoodCalories(requireActivity(), getData[i])
+
          if(foodKcal.int5 > 0) {
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += foodKcal.int5.toFloat()
-            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(
-               foodKcal.int4.toFloat(), foodKcal.int3.toFloat(), foodKcal.int2.toFloat(), foodKcal.int1.toFloat()
-            )))
+            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(foodKcal.int4.toFloat(), foodKcal.int3.toFloat(),
+               foodKcal.int2.toFloat(), foodKcal.int1.toFloat())))
             count++
+            Log.d(TAG, "foodKcal: ${foodKcal}")
          }
       }
 
@@ -279,9 +282,7 @@ class ReportFoodFragment : Fragment() {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
 
-         for (index in lineList.indices) {
-            entries.add(Entry(index.toFloat(), lineList[index]))
-         }
+         for(index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
          lineDataSet.color = Color.parseColor("#FB9797")

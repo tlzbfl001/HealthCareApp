@@ -345,8 +345,8 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "섭취량을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             // 음식데이터 저장
-            dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-               protein = protein, fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString()))
+            dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate, protein = protein,
+               fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), regDate = selectedDate.toString()))
 
             dataManager.insertDailyFood(Food(type = type, name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
                protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, regDate = selectedDate.toString()))

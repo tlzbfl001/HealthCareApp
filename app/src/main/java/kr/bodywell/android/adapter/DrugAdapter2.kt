@@ -94,29 +94,24 @@ class DrugAdapter2 (
             .setPositiveButton("확인") { _, _ ->
                val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
                for(i in 0 until drugCheckUid.size) {
-                  Log.d(CustomUtil.TAG, "drugCheckUid: ${drugCheckUid[i]}")
                   if(drugCheckUid[i] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i], regDate = selectedDate.toString()))
                }
 
                val drugTimeUid = dataManager.getDrugUid(TABLE_DRUG_TIME, "drugId", itemList[position].id)
                for(i in 0 until drugTimeUid.size) {
-                  Log.d(CustomUtil.TAG, "drugTimeUid: ${drugTimeUid[i]}")
                   if(drugTimeUid[i] != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i], regDate = selectedDate.toString()))
                }
 
                if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid, regDate = selectedDate.toString()))
 
-               val getUnused = dataManager.getUnused(selectedDate.toString())
-               Log.d(CustomUtil.TAG, "getUnused: $getUnused")
+               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
+               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
+               dataManager.deleteItem(TABLE_DRUG, "id", itemList[position].id)
 
-//               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
-//               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
-//               dataManager.deleteItem(TABLE_DRUG, "id", itemList[position].id)
-//
-//               alarmReceiver.cancelAlarm(context, itemList[position].id)
-//               itemList.removeAt(position)
-//
-//               notifyDataSetChanged()
+               alarmReceiver.cancelAlarm(context, itemList[position].id)
+               itemList.removeAt(position)
+
+               notifyDataSetChanged()
 
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
             }

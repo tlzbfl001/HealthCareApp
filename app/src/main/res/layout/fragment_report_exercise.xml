@@ -229,7 +229,7 @@
       <androidx.cardview.widget.CardView
          android:id="@+id/cv1"
          android:layout_width="match_parent"
-         android:layout_height="95dp"
+         android:layout_height="87dp"
          android:layout_marginTop="5dp"
          android:layout_marginLeft="20dp"
          android:layout_marginRight="20dp"
@@ -262,7 +262,7 @@
          android:layout_height="wrap_content"
          android:layout_marginTop="15dp"
          android:layout_marginLeft="25dp"
-         android:text="운동 시간"
+         android:text="운동 시간(분)"
          android:textSize="15.3dp"
          android:textColor="@color/black"
          android:textStyle="bold"
@@ -282,19 +282,35 @@
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintBottom_toTopOf="@id/tvTitle3">
-         <com.github.mikephil.charting.charts.CombinedChart
-             android:id="@+id/chart1"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:visibility="gone"/>
-         <TextView
-            android:id="@+id/tvEmpty1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="데이터가 없습니다."
-            android:textColor="#EEEEEE"
-            android:textSize="16dp" />
+         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.github.mikephil.charting.charts.CombinedChart
+               android:id="@+id/chart1"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:visibility="gone"
+               android:layout_marginLeft="8dp"
+               android:layout_marginRight="8dp"
+               android:layout_marginTop="3dp"
+               android:layout_marginBottom="8dp"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+               android:id="@+id/tvEmpty1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:text="데이터가 없습니다."
+               android:textColor="#EEEEEE"
+               android:textSize="16dp"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent" />
+         </androidx.constraintlayout.widget.ConstraintLayout>
       </androidx.cardview.widget.CardView>
       <TextView
          android:id="@+id/tvTitle3"
@@ -302,7 +318,7 @@
          android:layout_height="wrap_content"
          android:layout_marginTop="15dp"
          android:layout_marginLeft="25dp"
-         android:text="소모칼로리"
+         android:text="소모칼로리(kcal)"
          android:textSize="15.3dp"
          android:textStyle="bold"
          android:textColor="@color/black"
@@ -325,19 +341,35 @@
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintBottom_toBottomOf="parent">
-         <com.github.mikephil.charting.charts.CombinedChart
-             android:id="@+id/chart2"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:visibility="gone"/>
-         <TextView
-             android:id="@+id/tvEmpty2"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_gravity="center"
-             android:text="데이터가 없습니다."
-             android:textSize="16dp"
-             android:textColor="#EEEEEE"/>
+         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.github.mikephil.charting.charts.CombinedChart
+               android:id="@+id/chart2"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:visibility="gone"
+               android:layout_marginLeft="8dp"
+               android:layout_marginRight="8dp"
+               android:layout_marginTop="3dp"
+               android:layout_marginBottom="8dp"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+               android:id="@+id/tvEmpty2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:text="데이터가 없습니다."
+               android:textSize="16dp"
+               android:textColor="#EEEEEE"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+         </androidx.constraintlayout.widget.ConstraintLayout>
       </androidx.cardview.widget.CardView>
    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

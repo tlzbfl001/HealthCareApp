@@ -15,7 +15,8 @@ data class Drug(
    var startDate: String = "",
    var endDate: String = "",
    var isSet: Int = 0,
-   var regDate: String = ""
+   var regDate: String = "",
+   var isUpdated: Int = 0
 )
 
 @Parcelize

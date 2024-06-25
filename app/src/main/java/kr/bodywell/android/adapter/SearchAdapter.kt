@@ -17,6 +17,8 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Unused
+import kr.bodywell.android.util.CalendarUtil
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 import kr.bodywell.android.view.home.food.FoodEditFragment
@@ -88,19 +90,15 @@ class SearchAdapter(
 
                             if(result > 0) {
                                 if(itemList[position].string1 != "") {
-                                    dataManager.insertUnused(Unused(type = "food", value = itemList[position].string1))
+                                    dataManager.insertUnused(Unused(type = "food", value = itemList[position].string1, regDate = selectedDate.toString()))
                                 }
 
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()
 
                                 Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                            }else {
-                                Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        .setNegativeButton("취소", null)
-                        .create().show()
+                            }else Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
+                        }.setNegativeButton("취소", null).create().show()
                     dialog.dismiss()
                 }else {
                     AlertDialog.Builder(context, R.style.AlertDialogStyle)
@@ -110,9 +108,7 @@ class SearchAdapter(
                             val result = dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].int1)
 
                             if(result > 0) {
-                                if(itemList[position].string1 != "") {
-                                    dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].string1))
-                                }
+                                if(itemList[position].string1 != "") dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].string1, regDate = selectedDate.toString()))
 
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()

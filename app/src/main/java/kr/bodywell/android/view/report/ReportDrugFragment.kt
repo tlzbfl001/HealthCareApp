@@ -84,6 +84,8 @@ class ReportDrugFragment : Fragment() {
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
+      dailyView()
+
       binding.clMenu1.setOnClickListener {
          replaceFragment1(requireActivity(), ReportBodyFragment())
       }
@@ -150,8 +152,6 @@ class ReportDrugFragment : Fragment() {
          binding.tvCalTitle.text = monthFormat(calendarDate)
          monthlyView()
       }
-
-      dailyView()
 
       return binding.root
    }
@@ -251,9 +251,7 @@ class ReportDrugFragment : Fragment() {
          binding.chart.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
 
-         for (index in lineList.indices) {
-            entries.add(Entry(index.toFloat(), lineList[index]))
-         }
+         for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
          lineDataSet.color = Color.parseColor("#4E38A4")
@@ -287,7 +285,6 @@ class ReportDrugFragment : Fragment() {
          chart.isClickable = false
          chart.isHighlightPerDragEnabled = false
          chart.isHighlightPerTapEnabled = false
-         chart.setExtraOffsets(10f, 20f, 15f, 10f)
 
          val xAxis = chart.xAxis
          xAxis.axisLineColor = Color.BLACK
@@ -311,19 +308,12 @@ class ReportDrugFragment : Fragment() {
          leftAxis.enableGridDashedLine(10f, 15f, 0f)
          leftAxis.axisMinimum = 0f
          leftAxis.axisMaximum = 100f
-         leftAxis.valueFormatter = LeftAxisFormatter()
       }
    }
 
    class XValueFormatter : IValueFormatter {
       override fun getFormattedValue(value: Float, entry: Entry, dataSetIndex: Int, viewPortHandler: ViewPortHandler): String {
          return "${value.toInt()}%"
-      }
-   }
-
-   class LeftAxisFormatter : IAxisValueFormatter {
-      override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-         return if(value.toInt() == 0) "0" else "${value.toInt()}%"
       }
    }
 

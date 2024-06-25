@@ -99,7 +99,7 @@ class FoodFragment : Fragment() {
                dataManager.insertGoal(Goal(food = et.text.toString().toInt(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_GOAL, "foodGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "food", et.text.toString().toInt(), selectedDate.toString())
                dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
@@ -129,8 +129,7 @@ class FoodFragment : Fragment() {
          selectedDate = selectedDate.minusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
-         dailyGoal()
-         photoView()
+         dailyView()
          listView()
       }
 
@@ -138,8 +137,7 @@ class FoodFragment : Fragment() {
          selectedDate = selectedDate.plusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
 
-         dailyGoal()
-         photoView()
+         dailyView()
          listView()
       }
 
@@ -219,21 +217,21 @@ class FoodFragment : Fragment() {
          }
       }
 
-      dailyGoal()
-      photoView()
+      dailyView()
       listView()
 
       return binding.root
    }
 
-   private fun dailyGoal() {
+   private fun dailyView() {
       // 목표 초기화
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
       binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
-
       dailyGoal = dataManager.getGoal(selectedDate.toString())
+      binding.tvGoal.text = "${dailyGoal.food} kcal"
+      binding.tvIntake.text = "$sum kcal"
       sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
 
       if(sum > 0) {
@@ -243,41 +241,22 @@ class FoodFragment : Fragment() {
          binding.pbFood.progress = sum
       }
 
-      binding.tvGoal.text = "${dailyGoal.food} kcal"
-      binding.tvIntake.text = "$sum kcal"
-
       val remain = dailyGoal.food - sum
-      if(remain > 0) {
-         binding.tvRemain.text = "$remain kcal"
-      }else {
-         binding.tvRemain.text = "0 kcal"
-      }
-   }
+      if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
-   private fun photoView() {
+      // 갤러리 초기화
       val imageList = ArrayList<Image>()
       binding.viewPager.adapter = null
 
-      val getData1 = dataManager.getImage("1", selectedDate.toString())
-      val getData2 = dataManager.getImage("2", selectedDate.toString())
-      val getData3 = dataManager.getImage("3", selectedDate.toString())
-      val getData4 = dataManager.getImage("4", selectedDate.toString())
+      val getData1 = dataManager.getImage("BREAKFAST", selectedDate.toString())
+      val getData2 = dataManager.getImage("LUNCH", selectedDate.toString())
+      val getData3 = dataManager.getImage("DINNER", selectedDate.toString())
+      val getData4 = dataManager.getImage("SNACK", selectedDate.toString())
 
-      for(i in 0 until getData1.size) {
-         imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
-      }
-
-      for(i in 0 until getData2.size) {
-         imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
-      }
-
-      for(i in 0 until getData3.size) {
-         imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
-      }
-
-      for(i in 0 until getData4.size) {
-         imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
-      }
+      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
+      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
+      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
+      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
 
       if(imageList.size > 0) {
          val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
@@ -286,11 +265,7 @@ class FoodFragment : Fragment() {
 
          binding.clLeft.setOnClickListener {
             val current = binding.viewPager.currentItem
-            if(current == 0) {
-               binding.viewPager.setCurrentItem(0, true)
-            }else {
-               binding.viewPager.setCurrentItem(current-1, true)
-            }
+            if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
          }
 
          binding.clRight.setOnClickListener {

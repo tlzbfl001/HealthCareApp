@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,9 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Unused
+import kr.bodywell.android.util.CalendarUtil
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
 
@@ -25,9 +29,7 @@ class ExerciseListAdapter (
    private var bundle = Bundle()
    private var dataManager: DataManager = DataManager(context)
 
-   init {
-      dataManager.open()
-   }
+   init { dataManager.open() }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list, parent, false)
@@ -49,9 +51,9 @@ class ExerciseListAdapter (
             .setTitle("운동 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               dataManager.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)
+               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyExercise", value = itemList[pos].uid, regDate = itemList[pos].regDate))
 
-               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyExercise", value = itemList[pos].uid))
+               dataManager.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)
 
                itemList.removeAt(pos)
                notifyDataSetChanged()

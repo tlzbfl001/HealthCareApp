@@ -89,7 +89,7 @@ class ExerciseFragment : Fragment() {
                dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_GOAL, "exerciseGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "exercise", et.text.toString().toInt(), selectedDate.toString())
                dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 

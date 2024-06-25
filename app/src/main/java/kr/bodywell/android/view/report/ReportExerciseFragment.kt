@@ -377,7 +377,6 @@ class ReportExerciseFragment : Fragment() {
       chart.isClickable = false
       chart.isHighlightPerDragEnabled = false
       chart.isHighlightPerTapEnabled = false
-      chart.setExtraOffsets(12f, 15f, 15f, 10f)
 
       val xAxis = chart.xAxis
       xAxis.axisLineColor = Color.BLACK
@@ -399,10 +398,6 @@ class ReportExerciseFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
-
-      if(type == 1) {
-         leftAxis.valueFormatter = LeftAxisFormatter()
-      }
    }
 
    class XValueFormatter : IValueFormatter {
@@ -426,12 +421,6 @@ class ReportExerciseFragment : Fragment() {
       }
    }
 
-   class LeftAxisFormatter : IAxisValueFormatter {
-      override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-         return "${value.toInt()}분"
-      }
-   }
-
    private fun rankView(type: Int, start: String, end: String) {
       val itemList = ArrayList<Item>()
 
@@ -444,9 +433,7 @@ class ReportExerciseFragment : Fragment() {
          binding.tvEmpty.visibility = View.GONE
          binding.recyclerView.visibility = View.VISIBLE
 
-         for(i in 0 until getData.size) {
-            itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
-         }
+         for(i in 0 until getData.size) itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
 
          when(getData.size) {
             1 -> {

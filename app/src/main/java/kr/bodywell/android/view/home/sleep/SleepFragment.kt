@@ -88,7 +88,7 @@ class SleepFragment : Fragment() {
             dataManager.insertGoal(Goal(sleep = total, regDate = selectedDate.toString()))
             dailyGoal = dataManager.getGoal(selectedDate.toString())
          }else {
-            dataManager.updateIntByDate(TABLE_GOAL, "sleepGoal", total, selectedDate.toString())
+            dataManager.updateIntByDate(TABLE_GOAL, "sleep", total, selectedDate.toString())
             dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
          }
 

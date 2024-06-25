@@ -6,6 +6,7 @@ import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
 import java.time.LocalDate

@@ -38,6 +38,7 @@ import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
+import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
@@ -119,6 +120,8 @@ class LoginActivity : AppCompatActivity() {
             if(it.isSuccessful) {
                val getUser = dataManager.getUser("google", it.result.email.toString())
 
+               Log.d(TAG, "idToken: ${it.result.idToken}")
+
                if(getUser.regDate == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
 //                     val intent = Intent(this@LoginActivity, SignupActivity::class.java)
@@ -134,8 +137,6 @@ class LoginActivity : AppCompatActivity() {
                            }
                         }
 
-                        Log.e(TAG, "check: $check")
-
                         if(check) {
                            runOnUiThread{
                               AlertDialog.Builder(this@LoginActivity, R.style.AlertDialogStyle)
@@ -143,17 +144,17 @@ class LoginActivity : AppCompatActivity() {
                                  .setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
                                  .setPositiveButton("확인") { _, _ ->
                                     CoroutineScope(Dispatchers.IO).launch {
-                                       val data = LoginDTO(it.result.idToken!!)
+                                       val data2 = LoginDTO(it.result.idToken!!)
 
-                                       val response = RetrofitAPI.api.loginWithGoogle(data)
+                                       val response2 = RetrofitAPI.api.loginWithGoogle(data2)
 
-                                       if(response.isSuccessful) {
+                                       if(response2.isSuccessful) {
                                           user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
-                                          userUid = decodeToken(response.body()!!.accessToken)
-                                          access = response.body()!!.accessToken
-                                          refresh = response.body()!!.refreshToken
+                                          userUid = decodeToken(response2.body()!!.accessToken)
+                                          access = response2.body()!!.accessToken
+                                          refresh = response2.body()!!.refreshToken
                                           registerUser()
-                                       }else Log.e(TAG, "googleLogin: $response")
+                                       }else Log.e(TAG, "googleLogin: $response2")
                                     }
                                  }.setNegativeButton("취소", null).create().show()
                            }

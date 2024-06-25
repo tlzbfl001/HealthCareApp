@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
@@ -28,6 +30,7 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
@@ -74,7 +77,7 @@ class DrugFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      binding.tvDate.text = dateFormat(selectedDate)
+      dailyView()
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
@@ -99,11 +102,11 @@ class DrugFragment : Fragment() {
                dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), regDate = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_GOAL, "drugGoal", et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateIntByDate(TABLE_GOAL, "drug", et.text.toString().toInt(), selectedDate.toString())
                dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
-            recordView()
+            dailyView()
             dialog.dismiss()
          }
       }
@@ -115,13 +118,13 @@ class DrugFragment : Fragment() {
       binding.clPrev.setOnClickListener {
          selectedDate = selectedDate.minusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
-         recordView()
+         dailyView()
       }
 
       binding.clNext.setOnClickListener {
          selectedDate = selectedDate.plusDays(1)
          binding.tvDate.text = dateFormat(selectedDate)
-         recordView()
+         dailyView()
       }
 
       binding.clRecord.setOnClickListener {
@@ -154,25 +157,22 @@ class DrugFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugFragment())
       }
 
-      recordView()
-
       return binding.root
    }
 
-   private fun recordView() {
+   private fun dailyView() {
       val itemList = ArrayList<DrugList>()
-
+      binding.tvDate.text = dateFormat(selectedDate)
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
       dailyGoal = dataManager.getGoal(selectedDate.toString())
-      binding.pbDrug.max = dailyGoal.drug
-      binding.tvGoal.text = "${dailyGoal.drug}회"
-
-      // 약복용 체크값 초기화
       val check = dataManager.getDrugCheckCount(selectedDate.toString())
+      binding.tvGoal.text = "${dailyGoal.drug}회"
+      binding.pbDrug.max = dailyGoal.drug
+      binding.pbDrug.progress = check
 
       // 약복용 리스트 생성
       val getDrugDaily = dataManager.getDrug(selectedDate.toString())
