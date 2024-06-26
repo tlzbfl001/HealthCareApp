@@ -164,7 +164,7 @@ class ReportBodyFragment : Fragment() {
          val entries = ArrayList<Entry>()
          val xValue = ArrayList<String>()
 
-         val date = format2.format(format1.parse(getBody.regDate)!!)
+         val date = format2.format(format1.parse(getBody.created)!!)
          entries.add(Entry(0f, getBody.weight.toFloat()))
          xValue.add(date)
 
@@ -178,7 +178,7 @@ class ReportBodyFragment : Fragment() {
          val entries = ArrayList<Entry>()
          val xValue = ArrayList<String>()
 
-         val date = format2.format(format1.parse(getBody.regDate)!!)
+         val date = format2.format(format1.parse(getBody.created)!!)
          entries.add(Entry(0f, getBody.bmi.toFloat()))
          xValue.add(date)
 
@@ -192,7 +192,7 @@ class ReportBodyFragment : Fragment() {
          val entries = ArrayList<Entry>()
          val xValue = ArrayList<String>()
 
-         val date = format2.format(format1.parse(getBody.regDate)!!)
+         val date = format2.format(format1.parse(getBody.created)!!)
          entries.add(Entry(0f, getBody.fat.toFloat()))
          xValue.add(date)
 
@@ -218,13 +218,13 @@ class ReportBodyFragment : Fragment() {
       val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
-            itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+            itemList1.add(Body(weight = getData[i].weight, created = format2.format(format1.parse(getData[i].created)!!)))
          }
          if (getData[i].bmi > 0) {
-            itemList2.add(Body(bmi = getData[i].bmi, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+            itemList2.add(Body(bmi = getData[i].bmi, created = format2.format(format1.parse(getData[i].created)!!)))
          }
          if (getData[i].fat > 0) {
-            itemList3.add(Body(fat = getData[i].fat, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+            itemList3.add(Body(fat = getData[i].fat, created = format2.format(format1.parse(getData[i].created)!!)))
          }
       }
 
@@ -237,7 +237,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList1.size) {
             entries.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
-            xValue.add(itemList1[i].regDate)
+            xValue.add(itemList1[i].created)
          }
 
          setupChart(binding.lineChart1, entries, xValue)
@@ -252,7 +252,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList2.size) {
             entries.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
-            xValue.add(itemList2[i].regDate)
+            xValue.add(itemList2[i].created)
          }
 
          setupChart(binding.lineChart2, entries, xValue)
@@ -267,7 +267,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList3.size) {
             entries.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
-            xValue.add(itemList3[i].regDate)
+            xValue.add(itemList3[i].created)
          }
 
          setupChart(binding.lineChart3, entries, xValue)
@@ -292,13 +292,13 @@ class ReportBodyFragment : Fragment() {
       val getData = dataManager.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
-            itemList1.add(Body(weight = getData[i].weight, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+            itemList1.add(Body(weight = getData[i].weight, created = format2.format(format1.parse(getData[i].created)!!)))
          }
          if (getData[i].bmi > 0) {
-            itemList2.add(Body(bmi = getData[i].bmi, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+            itemList2.add(Body(bmi = getData[i].bmi, created = format2.format(format1.parse(getData[i].created)!!)))
          }
          if (getData[i].fat > 0) {
-            itemList3.add(Body(fat = getData[i].fat, regDate = format2.format(format1.parse(getData[i].regDate)!!)))
+            itemList3.add(Body(fat = getData[i].fat, created = format2.format(format1.parse(getData[i].created)!!)))
          }
       }
 
@@ -311,7 +311,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList1.size) {
             entries.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
-            xValue.add(itemList1[i].regDate)
+            xValue.add(itemList1[i].created)
          }
 
          setupChart(binding.lineChart1, entries, xValue)
@@ -326,7 +326,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList2.size) {
             entries.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
-            xValue.add(itemList2[i].regDate)
+            xValue.add(itemList2[i].created)
          }
 
          setupChart(binding.lineChart2, entries, xValue)
@@ -341,7 +341,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList3.size) {
             entries.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
-            xValue.add(itemList3[i].regDate)
+            xValue.add(itemList3[i].created)
          }
 
          setupChart(binding.lineChart3, entries, xValue)

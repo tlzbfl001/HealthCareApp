@@ -60,7 +60,7 @@ class BodyRecordFragment : Fragment() {
       val getBody = dataManager.getBody(selectedDate.toString())
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
-      if (getBody.regDate != "") {
+      if (getBody.created != "") {
          if(getBody.bmi > 0.0) binding.etBmi.setText(getBody.bmi.toString())
          if(getBody.fat > 0.0) binding.etFat.setText(getBody.fat.toString())
          if(getBody.muscle > 0.0) binding.etMuscle.setText(getBody.muscle.toString())
@@ -323,8 +323,8 @@ class BodyRecordFragment : Fragment() {
          if(fat > 100) {
             Toast.makeText(requireActivity(), "체지방율은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getBody.regDate == "") {
-               dataManager.insertBody(Body(height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, regDate = selectedDate.toString()))
+            if(getBody.created == "") {
+               dataManager.insertBody(Body(height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, created = selectedDate.toString()))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }else {
                dataManager.updateBody(Body(id = getBody.id, height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr))

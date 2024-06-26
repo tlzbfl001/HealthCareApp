@@ -9,6 +9,6 @@ data class Token (
     var userId: Int = 0,
     var access: String = "",
     var refresh: String = "",
-    var accessRegDate: String = "",
-    var refreshRegDate: String = ""
+    var accessCreated: String = "",
+    var refreshCreated: String = ""
 ) : Parcelable

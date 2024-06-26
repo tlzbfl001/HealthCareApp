@@ -40,8 +40,6 @@ class DrugAddFragment : Fragment() {
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
-   private val saveList= ArrayList<DrugTime>()
-   private val delList= ArrayList<DrugTime>()
    private var unit = "정"
    var count = 1
 
@@ -185,12 +183,12 @@ class DrugAddFragment : Fragment() {
                val getDrugTime = dataManager.getDrugTime(id)
 
                for(i in 0 until getDrugCheck.size) {
-                  if(getDrugCheck[i].uid != "") dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck[i].uid, regDate = selectedDate.toString()))
+                  if(getDrugCheck[i].uid != "") dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck[i].uid, created = selectedDate.toString()))
                   dataManager.deleteItem(TABLE_DRUG_CHECK, "id", getDrugCheck[i].id)
                }
 
                for(i in 0 until getDrugTime.size) {
-                  if(getDrugTime[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = getDrugTime[i].uid, regDate = selectedDate.toString()))
+                  if(getDrugTime[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = getDrugTime[i].uid, created = selectedDate.toString()))
                   dataManager.deleteItem(TABLE_DRUG_TIME, "id", getDrugTime[i].id)
                }
 
@@ -204,7 +202,7 @@ class DrugAddFragment : Fragment() {
                val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
 
                dataManager.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count, startDate = selectedDate.toString(), endDate = endDate,
-                  isSet = 1, regDate = selectedDate.toString()))
+                  isSet = 1, created = selectedDate.toString()))
 
                val getDrugId = dataManager.getDrugId(selectedDate.toString()).id
 

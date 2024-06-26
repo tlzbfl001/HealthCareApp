@@ -170,16 +170,16 @@ class CalendarDialog(context: Context) : Dialog(context) {
 
       // 리스트에 데이터 저장
       for (i in 0 until getImage1.size) {
-         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, created = selectedDate.toString()))
       }
       for (i in 0 until getImage2.size) {
-         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, created = selectedDate.toString()))
       }
       for (i in 0 until getImage3.size) {
-         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, created = selectedDate.toString()))
       }
       for (i in 0 until getImage4.size) {
-         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, regDate = selectedDate.toString()))
+         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, created = selectedDate.toString()))
       }
 
       if (itemList.size > 0) {

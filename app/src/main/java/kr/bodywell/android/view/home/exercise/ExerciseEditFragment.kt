@@ -73,21 +73,13 @@ class ExerciseEditFragment : Fragment() {
 			true
 		}
 
-		binding.clX.setOnClickListener {
-			replaceFragment()
-		}
+		binding.clX.setOnClickListener { replaceFragment() }
 
-		binding.tvIntensity1.setOnClickListener {
-			unit1()
-		}
+		binding.tvIntensity1.setOnClickListener { unit1() }
 
-		binding.tvIntensity2.setOnClickListener {
-			unit2()
-		}
+		binding.tvIntensity2.setOnClickListener { unit2() }
 
-		binding.tvIntensity3.setOnClickListener {
-			unit3()
-		}
+		binding.tvIntensity3.setOnClickListener { unit3() }
 
 		binding.cvEdit.setOnClickListener {
 			val getData = dataManager.getExercise("name", binding.etName.text.toString().trim())

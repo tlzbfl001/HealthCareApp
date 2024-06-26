@@ -274,7 +274,6 @@ class ReportFoodFragment : Fragment() {
             barEntries.add(BarEntry(count.toFloat(), floatArrayOf(foodKcal.int4.toFloat(), foodKcal.int3.toFloat(),
                foodKcal.int2.toFloat(), foodKcal.int1.toFloat())))
             count++
-            Log.d(TAG, "foodKcal: ${foodKcal}")
          }
       }
 
@@ -407,7 +406,7 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
 
       for(i in 0 until getData.size){
-         xVal += format2.format(format1.parse(getData[i].regDate)!!)
+         xVal += format2.format(format1.parse(getData[i].created)!!)
          lineList += (getData[i].count * getData[i].volume).toFloat()
          barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].volume).toFloat()))
       }

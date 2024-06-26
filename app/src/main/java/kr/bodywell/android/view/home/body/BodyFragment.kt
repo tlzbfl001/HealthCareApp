@@ -89,8 +89,8 @@ class BodyFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal!!.regDate == "") {
-               dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), regDate = selectedDate.toString()))
+            if(dailyGoal!!.created == "") {
+               dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateDoubleByDate(TABLE_GOAL, "body", et.text.toString().toDouble(), selectedDate.toString())

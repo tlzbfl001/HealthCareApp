@@ -140,9 +140,9 @@ class InputInfoFragment : Fragment() {
          }else if(binding.etName.text.length in 1..1 && !filterText(binding.etName.text.toString())) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager.updateUserStr(TABLE_USER, "name", name)
-            dataManager.updateUserStr(TABLE_USER, "birthday", birthday)
-            dataManager.updateUserStr(TABLE_USER, "image", image!!)
+            dataManager.updateUserStr("name", name)
+            dataManager.updateUserStr("birthday", birthday)
+            dataManager.updateUserStr("image", image!!)
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                replace(R.id.inputFrame, InputBodyFragment())

@@ -12,14 +12,17 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.view.home.MainActivity
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 class CustomUtil {
    companion object {
       const val TAG = "testTag"
       var drugTimeList = ArrayList<DrugTime>()
+      val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
@@ -55,6 +58,14 @@ class CustomUtil {
             val inputManager: InputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(activity.currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
          }
+      }
+
+      fun isoFormat1(date: String): String {
+         return LocalDate.parse(date).atStartOfDay().format(formatter)
+      }
+
+      fun isoFormat2(date: String, pattern: String): String {
+         return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(pattern)).format(formatter)
       }
 
       fun filterText(text: String): Boolean {
@@ -144,7 +155,7 @@ class CustomUtil {
          dataManager.open()
 
          var sum = 0
-         val getExercise = dataManager.getDailyExercise("regDate", date)
+         val getExercise = dataManager.getDailyExercise("created", date)
 
          if(getExercise.size > 0) {
             for(i in 0 until getExercise.size) {

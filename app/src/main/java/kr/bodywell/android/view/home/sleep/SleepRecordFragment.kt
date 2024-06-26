@@ -15,11 +15,11 @@ import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import nl.joery.timerangepicker.TimeRangePicker
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class SleepRecordFragment : Fragment() {
    private var _binding: FragmentSleepRecordBinding? = null
@@ -29,6 +29,8 @@ class SleepRecordFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var bedHour = 0
    private var bedMinute = 0
+   private var wakeHour = 0
+   private var wakeMinute = 0
    private var sleepHour = 0
    private var sleepMinute = 0
 
@@ -39,7 +41,6 @@ class SleepRecordFragment : Fragment() {
             replaceFragment1(requireActivity(), SleepFragment())
          }
       }
-
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
@@ -75,7 +76,6 @@ class SleepRecordFragment : Fragment() {
 
          override fun onEndTimeChange(endTime: TimeRangePicker.Time) {
             binding.tvWakeupTime.text = "${binding.time.endTime.hour} : ${binding.time.endTime.minute}"
-
          }
 
          override fun onDurationChange(duration: TimeRangePicker.TimeDuration) {
@@ -87,37 +87,48 @@ class SleepRecordFragment : Fragment() {
 
       binding.cvSave.setOnClickListener {
          val getSleep = dataManager.getSleep(selectedDate.toString())
-         var date = selectedDate
-         val bedTime = bedHour * 60 + bedMinute
-         val wakeTime: Int
-         val sleepTime = sleepHour * 60 + sleepMinute
 
-         if(bedTime + sleepTime > 1440) {
-            date = selectedDate.plusDays(1)
-            wakeTime = bedTime + sleepTime - 1440
-         }else wakeTime = bedTime + sleepTime
-
-         val bed = selectedDate.year.toString().substring(2,4) + String.format("%02d", selectedDate.monthValue) + String.format("%02d", selectedDate.dayOfMonth) +
-            String.format("%02d", bedHour) + String.format("%02d", bedMinute)
-         val wake = date.year.toString().substring(2,4) + String.format("%02d", date.monthValue) + String.format("%02d", date.dayOfMonth) +
-            String.format("%02d", wakeTime / 60) + String.format("%02d", wakeTime % 60)
-
-         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")
-         val bedFormat = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(formatter)
-         val wakeFormat = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(formatter)
-
-         val startDT = LocalDateTime.of(selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth, bedHour, bedMinute)
-         val endDT = LocalDateTime.of(date.year, date.monthValue, date.dayOfMonth, wakeTime / 60, wakeTime % 60)
-         val diff = Duration.between(startDT, endDT)
-
-         if(getSleep.regDate == "") {
-            dataManager.insertSleep(Sleep(uid = "", startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), regDate = selectedDate.toString()))
-            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment1(requireActivity(), SleepFragment())
+         if(sleepHour == 0 && sleepMinute == 0) {
+            if(getSleep.created == "") {
+               dataManager.insertSleep(Sleep(uid = "", startTime = "", endTime = "", total = 0, created = selectedDate.toString()))
+               Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment1(requireActivity(), SleepFragment())
+            }else {
+               dataManager.updateSleep(Sleep(startTime = "", endTime = "", total = 0, created = selectedDate.toString()))
+               Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment1(requireActivity(), SleepFragment())
+            }
          }else {
-            dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), regDate = selectedDate.toString()))
-            Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment1(requireActivity(), SleepFragment())
+            var date = selectedDate
+            val bedTime = bedHour * 60 + bedMinute
+            val wakeTime: Int
+            val sleepTime = sleepHour * 60 + sleepMinute
+
+            if(bedTime + sleepTime > 1440) {
+               date = selectedDate.plusDays(1)
+               wakeTime = bedTime + sleepTime - 1440
+            }else wakeTime = bedTime + sleepTime
+
+            val bed = selectedDate.year.toString().substring(2,4) + String.format("%02d", selectedDate.monthValue) + String.format("%02d", selectedDate.dayOfMonth) +
+               String.format("%02d", bedHour) + String.format("%02d", bedMinute)
+            val wake = date.year.toString().substring(2,4) + String.format("%02d", date.monthValue) + String.format("%02d", date.dayOfMonth) +
+               String.format("%02d", wakeTime / 60) + String.format("%02d", wakeTime % 60)
+
+            val bedFormat = isoFormat2(bed, "yyMMddHHmm")
+            val wakeFormat = isoFormat2(wake, "yyMMddHHmm")
+            val startDT = LocalDateTime.of(selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth, bedHour, bedMinute)
+            val endDT = LocalDateTime.of(date.year, date.monthValue, date.dayOfMonth, wakeTime / 60, wakeTime % 60)
+            val diff = Duration.between(startDT, endDT)
+
+            if(getSleep.created == "") {
+               dataManager.insertSleep(Sleep(uid = "", startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), created = selectedDate.toString()))
+               Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment1(requireActivity(), SleepFragment())
+            }else {
+               dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), created = selectedDate.toString()))
+               Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment1(requireActivity(), SleepFragment())
+            }
          }
       }
 

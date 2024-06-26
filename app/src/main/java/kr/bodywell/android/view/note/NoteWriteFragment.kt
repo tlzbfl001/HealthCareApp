@@ -107,13 +107,13 @@ class NoteWriteFragment : Fragment() {
          if(binding.etTitle.text.toString().contains("'") || binding.etContent.text.toString().contains("'")) {
             Toast.makeText(activity, "특수문자 '는 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getNote.regDate == "") {
+            if(getNote.created == "") {
                dataManager.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-                  status = status, regDate = selectedDate.toString()))
+                  status = status, created = selectedDate.toString()))
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }else {
                dataManager.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-                  status = status, regDate = selectedDate.toString()))
+                  status = status, created = selectedDate.toString()))
                Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
@@ -130,7 +130,7 @@ class NoteWriteFragment : Fragment() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
       val getNote = dataManager.getNote(selectedDate.toString())
-      if(getNote.regDate != "") {
+      if(getNote.created != "") {
          binding.etTitle.setText(getNote.title)
          binding.etContent.setText(getNote.content)
          when(getNote.status) {

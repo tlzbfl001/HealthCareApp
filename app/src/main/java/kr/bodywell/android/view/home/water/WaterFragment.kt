@@ -93,8 +93,8 @@ class WaterFragment : Fragment() {
          }else {
             if(etVolume.text.toString() != "") volume = etVolume.text.toString().toInt()
 
-            if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(waterVolume = etVolume.text.toString().toInt(), water = etGoal.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.created == "") {
+               dataManager.insertGoal(Goal(waterVolume = etVolume.text.toString().toInt(), water = etGoal.text.toString().toInt(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "waterVolume", etVolume.text.toString().toInt(), selectedDate.toString())
@@ -102,8 +102,8 @@ class WaterFragment : Fragment() {
                dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
             }
 
-            if(getWater.regDate == "") {
-               dataManager.insertWater(Water(volume = volume, regDate = selectedDate.toString()))
+            if(getWater.created == "") {
+               dataManager.insertWater(Water(volume = volume, created = selectedDate.toString()))
             }else dataManager.updateIntByDate(TABLE_WATER, "volume", volume, selectedDate.toString())
 
             dailyView()
@@ -207,8 +207,8 @@ class WaterFragment : Fragment() {
          }
 
          getWater = dataManager.getWater(selectedDate.toString())
-         if(getWater.regDate == "") {
-            dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
+         if(getWater.created == "") {
+            dataManager.insertWater(Water(count = count, created = selectedDate.toString()))
          }else {
             dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
          }
@@ -232,8 +232,8 @@ class WaterFragment : Fragment() {
 
          getWater = dataManager.getWater(selectedDate.toString())
          if(count > 0) {
-            if(getWater.regDate == "") {
-               dataManager.insertWater(Water(count = count, regDate = selectedDate.toString()))
+            if(getWater.created == "") {
+               dataManager.insertWater(Water(count = count, created = selectedDate.toString()))
             }else {
                dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
             }

@@ -75,7 +75,7 @@
       android:id="@+id/cl1"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginTop="20dp"
+      android:layout_marginTop="12dp"
       android:layout_marginLeft="25dp"
       android:layout_marginRight="25dp"
       app:cardBackgroundColor="#7E7E7E"
@@ -202,7 +202,8 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tvTitle1"
-      app:layout_constraintBottom_toTopOf="@id/tvTitle2">
+      app:layout_constraintBottom_toTopOf="@id/tvTitle2"
+      app:layout_constraintVertical_weight="2">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
@@ -276,7 +277,8 @@
       app:layout_constraintTop_toBottomOf="@id/tvTitle2"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent">
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintVertical_weight="3">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clWrite"
          android:layout_width="match_parent"

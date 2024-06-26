@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
@@ -30,7 +28,6 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
@@ -98,8 +95,8 @@ class DrugFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.created == "") {
+               dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "drug", et.text.toString().toInt(), selectedDate.toString())

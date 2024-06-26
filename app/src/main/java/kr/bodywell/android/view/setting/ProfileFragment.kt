@@ -1,10 +1,12 @@
 package kr.bodywell.android.view.setting
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,21 +16,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
+import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormat1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.cameraRequest
 import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
+import java.time.LocalDate
 
 class ProfileFragment : Fragment() {
 	private var _binding: FragmentProfileBinding? = null
@@ -37,6 +45,7 @@ class ProfileFragment : Fragment() {
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
 	private var dialog: BottomSheetDialog? = null
+	private var gender = "MALE"
 	private var image = ""
 
 	override fun onAttach(context: Context) {
@@ -72,6 +81,11 @@ class ProfileFragment : Fragment() {
 		val getUser = dataManager.getUser()
 
 		if(getUser.name != "") binding.etName.setText(getUser.name)
+
+		when(getUser.gender) {
+			"MALE" -> unit1()
+			else -> unit2()
+		}
 
 		if(getUser.image != "") binding.ivProfile.setImageURI(Uri.parse(getUser.image))
 
@@ -119,6 +133,10 @@ class ProfileFragment : Fragment() {
 				dialog!!.show()
 			}
 		}
+
+		binding.tvMan.setOnClickListener { unit1() }
+
+		binding.tvWoman.setOnClickListener { unit2() }
 
 		binding.etHeight.addTextChangedListener(object : TextWatcher {
 			override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -198,21 +216,43 @@ class ProfileFragment : Fragment() {
 			override fun afterTextChanged(p0: Editable?) {}
 		})
 
-		binding.cvEdit.setOnClickListener {
-			val name = if(binding.etName.text.toString() == "") "" else binding.etName.text.toString()
-			val height = if(binding.etHeight.text.toString() == "") 0.0 else binding.etHeight.text.toString().toDouble()
-			val weight = if(binding.etWeight.text.toString() == "") 0.0 else binding.etWeight.text.toString().toDouble()
+		binding.tvBirthday.setOnClickListener {
+			val dialog = Dialog(requireActivity())
+			dialog.setContentView(R.layout.dialog_date_picker)
+			dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-			if(binding.etName.text.length < 2) {
+			val datePicker = dialog.findViewById<DatePicker>(R.id.datePicker)
+			val tvConfirm = dialog.findViewById<TextView>(R.id.tvConfirm)
+			val tvCancel = dialog.findViewById<TextView>(R.id.tvCancel)
+
+			tvConfirm.setOnClickListener {
+				binding.tvBirthday.text = "${datePicker.year}-${String.format("%02d", datePicker.month + 1)}-${String.format("%02d", datePicker.dayOfMonth)}"
+				dialog.dismiss()
+			}
+
+			tvCancel.setOnClickListener {
+				dialog.dismiss()
+			}
+
+			datePicker.maxDate = System.currentTimeMillis() - 1000
+
+			dialog.show()
+		}
+
+		binding.cvEdit.setOnClickListener {
+			val name = if(binding.etName.text.trim().toString() == "") "" else binding.etName.text.trim().toString()
+			val height = if(binding.etHeight.text.trim().toString() == "") 0.0 else binding.etHeight.text.trim().toString().toDouble()
+			val weight = if(binding.etWeight.text.trim().toString() == "") 0.0 else binding.etWeight.text.trim().toString().toDouble()
+			val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
+
+			if(binding.etName.text.trim().length < 2) {
 				Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
-			}else if(!filterText(binding.etName.text.toString())) {
+			}else if(!filterText(binding.etName.text.trim().toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				dataManager.updateUserStr(TABLE_USER, "name", name)
-				dataManager.updateUserDouble(TABLE_USER, "height", height)
-				dataManager.updateUserDouble(TABLE_USER, "weight", weight)
+				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, updated=isoFormat1(LocalDate.now().toString())))
 
-				if(image != "") dataManager.updateUserStr(TABLE_USER, "image", image)
+				if(image != "") dataManager.updateUserStr("image", image)
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 				replaceFragment1(requireActivity(), SettingFragment())
@@ -250,6 +290,22 @@ class ProfileFragment : Fragment() {
 				}
 			}
 		}
+	}
+
+	private fun unit1() {
+		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
+		binding.tvMan.setTextColor(Color.WHITE)
+		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_border_gray)
+		binding.tvWoman.setTextColor(Color.BLACK)
+		gender = "MALE"
+	}
+
+	private fun unit2() {
+		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
+		binding.tvMan.setTextColor(Color.BLACK)
+		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
+		binding.tvWoman.setTextColor(Color.WHITE)
+		gender = "FEMALE"
 	}
 
 	override fun onDetach() {

@@ -19,7 +19,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_IMAGE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDailyEditBinding
@@ -209,7 +208,7 @@ class FoodDailyEditFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   val uri = saveFile(requireActivity(), "image/jpeg", img)
                   
-                  imageList.add(Image(type = type, dataId = dailyFoodId, imageUri = uri.toString(), regDate = selectedDate.toString()))
+                  imageList.add(Image(type = type, dataId = dailyFoodId, imageUri = uri.toString(), created = selectedDate.toString()))
                   photoView()
 
                   dialog!!.dismiss()
@@ -220,7 +219,7 @@ class FoodDailyEditFragment : Fragment() {
                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
 
-               imageList.add(Image(type = type, dataId = dailyFoodId, imageUri = uri.toString(), regDate = selectedDate.toString()))
+               imageList.add(Image(type = type, dataId = dailyFoodId, imageUri = uri.toString(), created = selectedDate.toString()))
                photoView()
 
                dialog!!.dismiss()

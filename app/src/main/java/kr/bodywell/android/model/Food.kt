@@ -4,6 +4,7 @@ data class Food(
     var id: Int = 0,
     var userId: Int = 0,
     var uid: String = "",
+    var basic: Int = 0,
     var type: String = "",
     var name: String = "",
     var unit: String = "",
@@ -16,8 +17,7 @@ data class Food(
     var sugar: Double = 0.0,
     var count: Int = 1,
     var useCount: Int = 0,
-    var regDate: String = "",
     var useDate: String = "",
-    var basic: Int = 0,
+    var created: String = "",
     var isUpdated: Int = 0
 )

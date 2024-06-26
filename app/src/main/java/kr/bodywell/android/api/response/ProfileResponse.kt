@@ -2,11 +2,6 @@ package kr.bodywell.android.api.response
 
 import com.google.gson.annotations.SerializedName
 
-data class SyncProfileResponse (
-	@SerializedName("data")
-	var data: ProfileResponse
-)
-
 data class ProfileResponse (
 	@SerializedName("uid")
 	var uid: String = "",
@@ -37,4 +32,12 @@ data class ProfileResponse (
 
 	@SerializedName("updatedAt")
 	var updatedAt: String = ""
+)
+
+data class SyncProfileResponse (
+	@SerializedName("data")
+	var data: ProfileResponse,
+
+	@SerializedName("syncedAt")
+	var syncedAt: String = ""
 )

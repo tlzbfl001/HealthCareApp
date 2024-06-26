@@ -15,6 +15,6 @@ data class Body(
     var muscle: Double = 0.0,
     var bmi: Double = 0.0,
     var bmr: Double = 0.0,
-    var regDate: String = "",
+    var created: String = "",
     var isUpdated: Int = 0
 ) : Parcelable

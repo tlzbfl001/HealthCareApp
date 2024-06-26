@@ -161,7 +161,7 @@ class NoteFragment : Fragment() {
       binding.tvYearText.text = selectedDate.month.toString()
 
       val getNote = dataManager.getNote(selectedDate.toString())
-      if(getNote.regDate != "") {
+      if(getNote.created != "") {
          binding.tvTitle.text = getNote.title
          when(getNote.status) {
             1 -> binding.ivFace.setImageResource(R.drawable.face1)
@@ -186,7 +186,7 @@ class NoteFragment : Fragment() {
 
       // 소비 칼로리 계산
       var total = 0
-      val getDailyExercise = dataManager.getDailyExercise("regDate", selectedDate.toString())
+      val getDailyExercise = dataManager.getDailyExercise("created", selectedDate.toString())
       for(i in 0 until getDailyExercise.size) {
          total += getDailyExercise[i].kcal
       }
@@ -277,7 +277,7 @@ class NoteFragment : Fragment() {
                   val img = data.extras?.get("data") as Bitmap
                   uri = saveFile(requireActivity(), "image/jpeg", img)
 
-                  dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), regDate = selectedDate.toString()))
+                  dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), created = selectedDate.toString()))
                   setImageView()
 
                   dialog!!.dismiss()
@@ -289,7 +289,7 @@ class NoteFragment : Fragment() {
                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
 
-               dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), regDate = selectedDate.toString()))
+               dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), created = selectedDate.toString()))
                setImageView()
 
                dialog!!.dismiss()

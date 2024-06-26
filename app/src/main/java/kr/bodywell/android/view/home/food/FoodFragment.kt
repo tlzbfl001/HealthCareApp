@@ -95,8 +95,8 @@ class FoodFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(food = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.created == "") {
+               dataManager.insertGoal(Goal(food = et.text.toString().toInt(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "food", et.text.toString().toInt(), selectedDate.toString())
@@ -306,7 +306,7 @@ class FoodFragment : Fragment() {
 
          itemList1.add(Food(id = getDailyFood1[i].id, name = getDailyFood1[i].name, unit = getDailyFood1[i].unit, amount = getDailyFood1[i].amount,
             count = getDailyFood1[i].count, kcal = getDailyFood1[i].kcal, carbohydrate = getDailyFood1[i].carbohydrate, protein = getDailyFood1[i].protein,
-            fat = getDailyFood1[i].fat, salt = getDailyFood1[i].salt, sugar = getDailyFood1[i].sugar, type = getDailyFood1[i].type, regDate = getDailyFood1[i].regDate)
+            fat = getDailyFood1[i].fat, salt = getDailyFood1[i].salt, sugar = getDailyFood1[i].sugar, type = getDailyFood1[i].type, created = getDailyFood1[i].created)
          )
       }
 
@@ -322,7 +322,7 @@ class FoodFragment : Fragment() {
 
          itemList2.add(Food(id = getDailyFood2[i].id, name = getDailyFood2[i].name, unit = getDailyFood2[i].unit, amount = getDailyFood2[i].amount,
             count = getDailyFood2[i].count, kcal = getDailyFood2[i].kcal, carbohydrate = getDailyFood2[i].carbohydrate, protein = getDailyFood2[i].protein,
-            fat = getDailyFood2[i].fat, salt = getDailyFood2[i].salt, sugar = getDailyFood2[i].sugar, type = getDailyFood2[i].type, regDate = getDailyFood2[i].regDate)
+            fat = getDailyFood2[i].fat, salt = getDailyFood2[i].salt, sugar = getDailyFood2[i].sugar, type = getDailyFood2[i].type, created = getDailyFood2[i].created)
          )
       }
 
@@ -338,7 +338,7 @@ class FoodFragment : Fragment() {
 
          itemList3.add(Food(id = getDailyFood3[i].id, name = getDailyFood3[i].name, unit = getDailyFood3[i].unit, amount = getDailyFood3[i].amount,
             count = getDailyFood3[i].count, kcal = getDailyFood3[i].kcal, carbohydrate = getDailyFood3[i].carbohydrate, protein = getDailyFood3[i].protein,
-            fat = getDailyFood3[i].fat, salt = getDailyFood3[i].salt, sugar = getDailyFood3[i].sugar, type = getDailyFood3[i].type, regDate = getDailyFood3[i].regDate)
+            fat = getDailyFood3[i].fat, salt = getDailyFood3[i].salt, sugar = getDailyFood3[i].sugar, type = getDailyFood3[i].type, created = getDailyFood3[i].created)
          )
       }
 
@@ -354,7 +354,7 @@ class FoodFragment : Fragment() {
 
          itemList4.add(Food(id = getDailyFood4[i].id, name = getDailyFood4[i].name, unit = getDailyFood4[i].unit, amount = getDailyFood4[i].amount,
             count = getDailyFood4[i].count, kcal = getDailyFood4[i].kcal, carbohydrate = getDailyFood4[i].carbohydrate, protein = getDailyFood4[i].protein,
-            fat = getDailyFood4[i].fat, salt = getDailyFood4[i].salt, sugar = getDailyFood4[i].sugar, type = getDailyFood4[i].type, regDate = getDailyFood4[i].regDate)
+            fat = getDailyFood4[i].fat, salt = getDailyFood4[i].salt, sugar = getDailyFood4[i].sugar, type = getDailyFood4[i].type, created = getDailyFood4[i].created)
          )
       }
 

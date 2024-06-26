@@ -6,5 +6,5 @@ data class Image(
     var type: String = "",
     var dataId: Int = 0,
     var imageUri: String = "",
-    var regDate: String = ""
+    var created: String = ""
 )

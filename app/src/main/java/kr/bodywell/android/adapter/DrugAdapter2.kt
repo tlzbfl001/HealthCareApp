@@ -3,7 +3,6 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,9 +22,7 @@ import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.AlarmReceiver
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
@@ -94,15 +91,15 @@ class DrugAdapter2 (
             .setPositiveButton("확인") { _, _ ->
                val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
                for(i in 0 until drugCheckUid.size) {
-                  if(drugCheckUid[i] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i], regDate = selectedDate.toString()))
+                  if(drugCheckUid[i] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i], created = selectedDate.toString()))
                }
 
                val drugTimeUid = dataManager.getDrugUid(TABLE_DRUG_TIME, "drugId", itemList[position].id)
                for(i in 0 until drugTimeUid.size) {
-                  if(drugTimeUid[i] != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i], regDate = selectedDate.toString()))
+                  if(drugTimeUid[i] != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i], created = selectedDate.toString()))
                }
 
-               if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid, regDate = selectedDate.toString()))
+               if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid, created = selectedDate.toString()))
 
                dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
                dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)

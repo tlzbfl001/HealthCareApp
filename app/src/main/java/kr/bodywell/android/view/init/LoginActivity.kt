@@ -38,7 +38,6 @@ import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
@@ -122,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
 
                Log.d(TAG, "idToken: ${it.result.idToken}")
 
-               if(getUser.regDate == "") { // 초기 가입
+               if(getUser.created == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
 //                     val intent = Intent(this@LoginActivity, SignupActivity::class.java)
 //                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
@@ -130,11 +129,8 @@ class LoginActivity : AppCompatActivity() {
 
                      CoroutineScope(Dispatchers.IO).launch {
                         val response = RetrofitAPI.api.getAllUser()
-
                         if(response.isSuccessful) {
-                           for(i in 0 until response.body()!!.size) {
-                              if(response.body()!![i].email == it.result.email.toString()) check = true
-                           }
+                           for(i in 0 until response.body()!!.size) if(response.body()!![i].email == it.result.email.toString()) check = true
                         }
 
                         if(check) {
@@ -147,7 +143,6 @@ class LoginActivity : AppCompatActivity() {
                                        val data2 = LoginDTO(it.result.idToken!!)
 
                                        val response2 = RetrofitAPI.api.loginWithGoogle(data2)
-
                                        if(response2.isSuccessful) {
                                           user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
                                           userUid = decodeToken(response2.body()!!.accessToken)
@@ -164,16 +159,12 @@ class LoginActivity : AppCompatActivity() {
                            startActivity(intent)
                         }
                      }
-                  }else {
-                     Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                  }
+                  }else Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                }else { // 로그인
                   MyApp.prefs.setPrefs("userId", getUser.id)
                   startActivity(Intent(this, MainActivity::class.java))
                }
-            }else {
-               Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
-            }
+            }else Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
          }
       }
    }
@@ -185,11 +176,11 @@ class LoginActivity : AppCompatActivity() {
                override fun onSuccess(result: NidProfileResponse) {
                   val getUser = dataManager.getUser("naver", result.profile?.email.toString())
 
-                  if(getUser.regDate == "") {
+                  if(getUser.created == "") {
                      if(NaverIdLoginSDK.getAccessToken() == "" || NaverIdLoginSDK.getAccessToken() == null || result.profile?.email == "" || result.profile?.email == null) {
                         Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                      }else {
-                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, regDate = LocalDate.now().toString())
+                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, created = LocalDate.now().toString())
 
                         val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                         intent.putExtra("user", user)
@@ -227,11 +218,7 @@ class LoginActivity : AppCompatActivity() {
 
    private fun kakaoLogin() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-         if (error != null) {
-            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
-         }else if (token != null) {
-            createKakaoUser(token)
-         }
+         if (error != null) Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show() else if (token != null) createKakaoUser(token)
       }
 
       // 카카오톡이 설치되어있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
@@ -241,16 +228,10 @@ class LoginActivity : AppCompatActivity() {
                Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
                if(error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                   return@loginWithKakaoTalk
-               }else {
-                  UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-               }
-            }else if(token != null) {
-               createKakaoUser(token)
-            }
+               }else UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+            }else if(token != null) createKakaoUser(token)
          }
-      }else {
-         UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-      }
+      }else UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
    }
 
    private fun createKakaoUser(token: OAuthToken) {
@@ -260,11 +241,11 @@ class LoginActivity : AppCompatActivity() {
          }else {
             val getUser = dataManager.getUser("kakao", user?.kakaoAccount!!.email.toString())
 
-            if(getUser.regDate == "") { // 회원 가입
+            if(getUser.created == "") { // 회원 가입
                if(token.idToken == "" || token.idToken == null || user.kakaoAccount?.email == "" || user.kakaoAccount?.email == null) {
                   Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
                }else {
-                  val data = User(type = "kakao", idToken = token.idToken!!, email = user.kakaoAccount?.email!!, regDate = LocalDate.now().toString())
+                  val data = User(type = "kakao", idToken = token.idToken!!, email = user.kakaoAccount?.email!!, created = LocalDate.now().toString())
                   val intent = Intent(this, SignupActivity::class.java)
                   intent.putExtra("user", data)
                   startActivity(intent)
@@ -289,10 +270,10 @@ class LoginActivity : AppCompatActivity() {
             val getToken = dataManager.getToken()
 
             // 사용자 정보 저장
-            if(getUser.regDate == "") {
-               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
+            if(getUser.created == "") {
+               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, created = LocalDate.now().toString()))
             }else {
-               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, regDate = LocalDate.now().toString()))
+               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, created = LocalDate.now().toString()))
             }
 
             val getUser2 = dataManager.getUser(user.type, user.email)
@@ -300,10 +281,10 @@ class LoginActivity : AppCompatActivity() {
             MyApp.prefs.setPrefs("userId", getUser2.id)
 
             // 토큰 정보 저장
-            if(getToken.accessRegDate == "") {
-               dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
+            if(getToken.accessCreated == "") {
+               dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
             }else {
-               dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
+               dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
             }
 
             // 서버 데이터 저장
@@ -339,12 +320,12 @@ class LoginActivity : AppCompatActivity() {
                   dataManager.insertDailyFood(Food(userId = getUser2.id, uid = getAllDiet.body()!![i].uid, type = getAllDiet.body()!![i].mealTime,
                      name = getAllDiet.body()!![i].foodName, unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume,
                      kcal = getAllDiet.body()!![i].calories, carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein,
-                     fat = getAllDiet.body()!![i].fat, count = getAllDiet.body()!![i].quantity, regDate = getAllDiet.body()!![i].date))
+                     fat = getAllDiet.body()!![i].fat, count = getAllDiet.body()!![i].quantity, created = getAllDiet.body()!![i].date))
 
                   if(getAllDiet.body()!![i].photos.size > 0) {
                      for(j in 0 until getAllDiet.body()!![i].photos.size) {
                         dataManager.insertImage(Image(userId = getUser2.id, type = getAllDiet.body()!![i].mealTime, dataId = getAllDiet.body()!![i].itemId.toInt(),
-                           imageUri = getAllDiet.body()!![i].photos[j], regDate = getAllDiet.body()!![i].date))
+                           imageUri = getAllDiet.body()!![i].photos[j], created = getAllDiet.body()!![i].date))
                      }
                   }
                }
@@ -355,7 +336,7 @@ class LoginActivity : AppCompatActivity() {
             if(getAllWater.isSuccessful) {
                for(i in 0 until getAllWater.body()!!.size) {
                   dataManager.insertWater(Water(userId = getUser2.id, uid = getAllWater.body()!![i].uid, count = getAllWater.body()!![i].count,
-                     volume = getAllWater.body()!![i].mL, regDate = getAllWater.body()!![i].date))
+                     volume = getAllWater.body()!![i].mL, created = getAllWater.body()!![i].date))
                }
             }
 
@@ -388,7 +369,7 @@ class LoginActivity : AppCompatActivity() {
                for(i in 0 until getAllBody.body()!!.size) {
                   dataManager.insertBody(Body(userId = getUser2.id, uid = getAllBody.body()!![i].uid, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
                      intensity = getAllBody.body()!![i].workoutIntensity, fat = getAllBody.body()!![i].bodyFatPercentage, muscle = getAllBody.body()!![i].skeletalMuscleMass,
-                     bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, regDate = getAllBody.body()!![i].createdAt))
+                     bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, created = getAllBody.body()!![i].createdAt))
                }
             }
 
@@ -406,14 +387,12 @@ class LoginActivity : AppCompatActivity() {
                   val diff = Duration.between(startDT, endDT)
 
                   dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].uid, startTime = getAllSleep.body()!![i].starts,
-                     endTime = getAllSleep.body()!![i].ends, total = diff.toMinutes().toInt(), regDate = regDate.toString()))
+                     endTime = getAllSleep.body()!![i].ends, total = diff.toMinutes().toInt(), created = regDate.toString()))
                }
             }
 
             startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-         }else {
-            Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
-         }
+         }else Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
       }
    }
 

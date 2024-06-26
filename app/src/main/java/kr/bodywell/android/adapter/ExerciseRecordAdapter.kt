@@ -3,7 +3,6 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +16,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 
@@ -77,7 +74,7 @@ class ExerciseRecordAdapter (
                   dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
 
                   if(itemList[position].uid != "") {
-                     dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].uid, regDate = selectedDate.toString()))
+                     dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].uid, created = selectedDate.toString()))
                   }
 
                   itemList.removeAt(position)

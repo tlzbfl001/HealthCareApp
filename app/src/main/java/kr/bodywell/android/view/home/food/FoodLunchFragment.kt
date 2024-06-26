@@ -185,7 +185,7 @@ class FoodLunchFragment : Fragment() {
                                 photoAdapter!!.notifyDataSetChanged()
                             }
 
-                            if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyFood", value = dataList[pos].uid, regDate = selectedDate.toString()))
+                            if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyFood", value = dataList[pos].uid, created = selectedDate.toString()))
 
                             dataList.removeAt(pos)
                             intakeAdapter!!.notifyDataSetChanged()

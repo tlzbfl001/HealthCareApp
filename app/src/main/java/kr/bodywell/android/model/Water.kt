@@ -6,6 +6,6 @@ data class Water(
     var uid: String? = "",
     var count: Int = 0,
     var volume: Int = 200,
-    var regDate: String = "",
+    var created: String = "",
     var isUpdated: Int = 0
 )

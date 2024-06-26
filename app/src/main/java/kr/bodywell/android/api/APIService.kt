@@ -13,6 +13,7 @@ import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.MedicineUpdateDTO
+import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
 import kr.bodywell.android.api.dto.WaterDTO
@@ -27,6 +28,8 @@ import kr.bodywell.android.api.response.GoalResponse
 import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
+import kr.bodywell.android.api.response.ProfileResponse
+import kr.bodywell.android.api.response.SyncProfileResponse
 import kr.bodywell.android.api.response.SleepResponse
 import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
@@ -44,6 +47,11 @@ import retrofit2.http.Path
 interface APIService {
 	@GET("users")
 	suspend fun getAllUser(): Response<List<UserResponse>>
+
+	@GET("profile")
+	suspend fun getProfile(
+		@Header("Authorization") token: String
+	): Response<ProfileResponse>
 
 	@GET("devices")
 	suspend fun getAllDevice(
@@ -102,6 +110,12 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Body dto: DeviceDTO
 	): Response<DeviceResponse>
+
+	@POST("profile/sync")
+	suspend fun syncProfile(
+		@Header("Authorization") token: String,
+		@Body dto: ProfileDTO
+	): Response<SyncProfileResponse>
 
 	@POST("foods")
 	suspend fun createFood(

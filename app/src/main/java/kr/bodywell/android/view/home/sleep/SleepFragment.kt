@@ -20,6 +20,7 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.formatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
@@ -28,7 +29,6 @@ import kr.bodywell.android.view.home.exercise.ExerciseFragment
 import kr.bodywell.android.view.home.food.FoodFragment
 import kr.bodywell.android.view.home.water.WaterFragment
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
@@ -38,7 +38,6 @@ class SleepFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var dailyGoal = Goal()
    private var getSleep = Sleep()
-   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -84,8 +83,8 @@ class SleepFragment : Fragment() {
          val minute = if(etMinute.text.toString().trim() == "") 0 else etMinute.text.toString().toInt()
          val total = hour * 60 + minute
 
-         if(dailyGoal.regDate == "") {
-            dataManager.insertGoal(Goal(sleep = total, regDate = selectedDate.toString()))
+         if(dailyGoal.created == "") {
+            dataManager.insertGoal(Goal(sleep = total, created = selectedDate.toString()))
             dailyGoal = dataManager.getGoal(selectedDate.toString())
          }else {
             dataManager.updateIntByDate(TABLE_GOAL, "sleep", total, selectedDate.toString())

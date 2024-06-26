@@ -85,8 +85,8 @@ class ExerciseFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal.regDate == "") {
-               dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), regDate = selectedDate.toString()))
+            if(dailyGoal.created == "") {
+               dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateIntByDate(TABLE_GOAL, "exercise", et.text.toString().toInt(), selectedDate.toString())
@@ -184,7 +184,7 @@ class ExerciseFragment : Fragment() {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager.getDailyExercise("regDate", selectedDate.toString())
+      val getExercise = dataManager.getDailyExercise("created", selectedDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

@@ -15,7 +15,7 @@ data class Drug(
    var startDate: String = "",
    var endDate: String = "",
    var isSet: Int = 0,
-   var regDate: String = "",
+   var created: String = "",
    var isUpdated: Int = 0
 )
 
@@ -26,7 +26,7 @@ data class DrugTime(
    var drugId: Int = 0,
    var uid: String = "",
    var time: String = "",
-   var regDate: String = ""
+   var created: String = ""
 ) : Parcelable
 
 data class DrugCheck(
@@ -35,7 +35,7 @@ data class DrugCheck(
    var drugId: Int = 0,
    var drugTimeId: Int = 0,
    var uid: String = "",
-   var regDate: String = ""
+   var created: String = ""
 )
 
 data class DrugList(

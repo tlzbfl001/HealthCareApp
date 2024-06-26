@@ -3,7 +3,6 @@ package kr.bodywell.android.view.home.food
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodAddBinding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
@@ -90,10 +88,10 @@ class FoodAddFragment : Fragment() {
 		binding.cvSave.setOnClickListener {
 			val getDailyFood = dataManager.getDailyFood(type = type, name = getFood.name, selectedDate.toString())
 
-			if(getDailyFood.regDate == "") {
+			if(getDailyFood.created == "") {
 				dataManager.insertDailyFood(Food(type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
 					carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
-					regDate = selectedDate.toString()))
+					created = selectedDate.toString()))
 			}else {
 				dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
 					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1))

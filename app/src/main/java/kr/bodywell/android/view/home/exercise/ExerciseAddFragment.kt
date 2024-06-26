@@ -83,7 +83,7 @@ class ExerciseAddFragment : Fragment() {
             val calories = if(binding.tvKcal.text.toString().trim() == "") 0 else binding.tvKcal.text.toString().toInt()
 
             dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = exercise.intensity, workoutTime = workoutTime, kcal = calories,
-                regDate = selectedDate.toString()))
+                created = selectedDate.toString()))
 
             val getExercise = dataManager.getExercise("name", exercise.name)
             dataManager.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)

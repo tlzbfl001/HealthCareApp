@@ -38,12 +38,11 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
-
 -keep class com.google.api.client.http.** { *; }
 -keep class org.joda.time.** { *; }
 -keep,allowobfuscation,allowshrinking interface retrofit2.Call
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
 -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 -keep class com.google.googlesignin.** { *; }
--keep public class com.navercorp.nid.* {public *;}
+-keep class com.navercorp.nid.** { *; }
 -keep class com.kakao.sdk.**.model.* { <fields>; }

@@ -178,9 +178,9 @@ class InputBodyFragment : Fragment() {
          val height = if(binding.etHeight.text.toString() == "") height.toDouble() else binding.etHeight.text.toString().toDouble()
          val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else binding.etWeight.text.toString().toDouble()
 
-         dataManager.updateUserStr(TABLE_USER, "gender", gender)
-         dataManager.updateUserDouble(TABLE_USER, "height", height)
-         dataManager.updateUserDouble(TABLE_USER, "weight", weight)
+         dataManager.updateUserStr("gender", gender)
+         dataManager.updateUserDouble("height", height)
+         dataManager.updateUserDouble("weight", weight)
 
          requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.inputFrame, InputGoalFragment())

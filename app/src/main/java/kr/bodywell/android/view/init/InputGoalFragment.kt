@@ -79,10 +79,10 @@ class InputGoalFragment : Fragment() {
          val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else binding.etWaterUnit.text.toString().toInt()
          val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else binding.etWaterGoal.text.toString().toInt()
 
-         dataManager.updateUserDouble(TABLE_USER, "weightGoal", weightGoal)
-         dataManager.updateUserInt(TABLE_USER, "kcalGoal", kcalGoal)
-         dataManager.updateUserInt(TABLE_USER, "waterGoal", waterGoal)
-         dataManager.updateUserInt(TABLE_USER, "waterUnit", waterUnit)
+         dataManager.updateUserDouble("weightGoal", weightGoal)
+         dataManager.updateUserInt("kcalGoal", kcalGoal)
+         dataManager.updateUserInt("waterGoal", waterGoal)
+         dataManager.updateUserInt("waterUnit", waterUnit)
 
          val intent = Intent(activity, MainActivity::class.java)
          intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

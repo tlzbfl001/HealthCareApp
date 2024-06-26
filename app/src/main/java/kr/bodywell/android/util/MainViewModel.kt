@@ -22,6 +22,8 @@ import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.MedicineUpdateDTO
+import kr.bodywell.android.api.dto.ProfileDTO
+import kr.bodywell.android.api.dto.ProfileData
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
 import kr.bodywell.android.api.dto.WaterDTO
@@ -42,12 +44,12 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormat1
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
    private val context = application.applicationContext
@@ -56,7 +58,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private var getToken = Token()
    private var refreshCheck = false
    private var loginCheck = false
-   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+//   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
    init {
       dataManager.open()
@@ -73,6 +75,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       while(true) {
          if(networkStatusCheck(context)) {
             val getUnused = dataManager.getUnused()
+            val getUserUpdated = dataManager.getUserUpdated()
             val getFoodUid = dataManager.getFoodUid()
             val getFoodUpdated = dataManager.getFoodUpdated()
             val getDailyFoodUid = dataManager.getDailyFoodUid()
@@ -93,8 +96,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val getGoalUid = dataManager.getGoalUid()
             val getGoalUpdated = dataManager.getGoalUpdated()
 
-            val accessDiff = Duration.between(LocalDateTime.parse(getToken.accessRegDate), LocalDateTime.now())
-            val refreshDiff = Duration.between(LocalDateTime.parse(getToken.refreshRegDate), LocalDateTime.now())
+            val accessDiff = Duration.between(LocalDateTime.parse(getToken.accessCreated), LocalDateTime.now())
+            val refreshDiff = Duration.between(LocalDateTime.parse(getToken.refreshCreated), LocalDateTime.now())
 
             if ((accessDiff.toHours() in 1..335) && !refreshCheck) refreshCheck = refreshToken()
 
@@ -158,6 +161,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                }
             }
 
+            if(getUserUpdated.profileUid != "") {
+               val data = ProfileDTO(ProfileData(getUserUpdated.profileUid, getUserUpdated.name!!, getUserUpdated.image!!, getUserUpdated.birthday,
+                  getUserUpdated.gender, getUserUpdated.height, getUserUpdated.weight, "Asia/Seoul", isoFormat1(getUserUpdated.created), getUserUpdated.updated))
+
+               val response = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", data)
+
+               if(response.isSuccessful) Log.d(TAG, "syncProfile: ${response.body()}") else Log.d(TAG, "syncProfile: $response")
+            }
+
             for(i in 0 until getFoodUid.size) {
                val data = FoodDTO("null", getFoodUid[i].name, getFoodUid[i].kcal, getFoodUid[i].carbohydrate, getFoodUid[i].protein,
                   getFoodUid[i].fat, getFoodUid[i].count, "null", getFoodUid[i].amount, getFoodUid[i].unit)
@@ -184,17 +196,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             for(i in 0 until getDailyFoodUid.size) {
                val photos = ArrayList<String>()
-               val getImage = dataManager.getImage(getDailyFoodUid[i].type, getDailyFoodUid[i].regDate)
+               val getImage = dataManager.getImage(getDailyFoodUid[i].type, getDailyFoodUid[i].created)
 
                for(j in 0 until getImage.size) photos.add(getImage[j].imageUri)
 
                val getFood = dataManager.getFood("name", getDailyFoodUid[i].name)
 
                if(getFood.uid != "") {
-                  val timeFormat = LocalDate.parse(getDailyFoodUid[i].regDate).atStartOfDay().format(formatter)
                   val data = DietDTO("BodyWell${getDailyFoodUid[i].id}", getDailyFoodUid[i].type, "null", getDailyFoodUid[i].name,
                      getDailyFoodUid[i].kcal, getDailyFoodUid[i].carbohydrate, getDailyFoodUid[i].protein, getDailyFoodUid[i].fat, getDailyFoodUid[i].count,
-                     "null", getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, timeFormat, Food(getFood.uid))
+                     "null", getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, isoFormat1(getDailyFoodUid[i].created), Food(getFood.uid))
 
                   val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", data)
 
@@ -207,14 +218,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             for(i in 0 until getDailyFoodUpdated.size) {
                val photos = ArrayList<String>()
-               val getImage = dataManager.getImage(getDailyFoodUpdated[i].type, getDailyFoodUpdated[i].regDate)
+               val getImage = dataManager.getImage(getDailyFoodUpdated[i].type, getDailyFoodUpdated[i].created)
 
                for(j in 0 until getImage.size) photos.add(getImage[j].imageUri)
 
-               val timeFormat = LocalDate.parse(getDailyFoodUpdated[i].regDate).atStartOfDay().format(formatter)
                val data = DietUpdateDTO(getDailyFoodUpdated[i].type, "", getDailyFoodUpdated[i].name, getDailyFoodUpdated[i].kcal,
                   getDailyFoodUpdated[i].carbohydrate, getDailyFoodUpdated[i].protein, getDailyFoodUpdated[i].fat, getDailyFoodUpdated[i].count,
-                  "", getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, timeFormat)
+                  "", getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, isoFormat1(getDailyFoodUpdated[i].created))
 
                val response = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", getDailyFoodUpdated[i].uid, data)
 
@@ -225,7 +235,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
 				for(i in 0 until getWaterUid.size) {
-					val data = WaterDTO("BodyWell${getWaterUid[i].id}", getWaterUid[i].volume, getWaterUid[i].count, getWaterUid[i].regDate)
+					val data = WaterDTO("BodyWell${getWaterUid[i].id}", getWaterUid[i].volume, getWaterUid[i].count, getWaterUid[i].created)
 
 					val response = RetrofitAPI.api.createWater("Bearer ${getToken.access}", data)
 
@@ -279,9 +289,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getExercise = dataManager.getExercise("name", getDailyExerciseUid[i].name)
 
                if(getExercise.uid != "") {
-                  val timeFormat = LocalDate.parse(getDailyExerciseUid[i].regDate).atStartOfDay().format(formatter)
                   val data = WorkoutDTO("BodyWell${getDailyExerciseUid[i].id}", getDailyExerciseUid[i].name, getDailyExerciseUid[i].kcal,
-                     getDailyExerciseUid[i].intensity, getDailyExerciseUid[i].workoutTime, timeFormat, true, Activity(getExercise.uid))
+                     getDailyExerciseUid[i].intensity, getDailyExerciseUid[i].workoutTime, isoFormat1(getDailyExerciseUid[i].created), true, Activity(getExercise.uid))
 
                   val response = RetrofitAPI.api.createWorkout("Bearer ${getToken.access}", data)
 
@@ -304,9 +313,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
 				for(i in 0 until getBodyUid.size) {
-					val timeFormat = LocalDate.parse(getBodyUid[i].regDate).atStartOfDay().format(formatter)
 					val data = BodyDTO("BodyWell${getBodyUid[i].id}", getBodyUid[i].height, getBodyUid[i].weight, getBodyUid[i].bmi, getBodyUid[i].fat,
-						getBodyUid[i].muscle, getBodyUid[i].bmr, getBodyUid[i].intensity, timeFormat)
+						getBodyUid[i].muscle, getBodyUid[i].bmr, getBodyUid[i].intensity, isoFormat1(getBodyUid[i].created))
 
 					val response = RetrofitAPI.api.createBody("Bearer ${getToken.access}", data)
 
@@ -317,9 +325,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 				}
 
 				for(i in 0 until getBodyUpdated.size) {
-					val timeFormat = LocalDate.parse(getBodyUpdated[i].regDate).atStartOfDay().format(formatter)
 					val data = BodyUpdateDTO(getBodyUpdated[i].height, getBodyUpdated[i].weight, getBodyUpdated[i].bmi, getBodyUpdated[i].fat,
-						getBodyUpdated[i].muscle, getBodyUpdated[i].bmr, getBodyUpdated[i].intensity, timeFormat)
+						getBodyUpdated[i].muscle, getBodyUpdated[i].bmr, getBodyUpdated[i].intensity, isoFormat1(getBodyUpdated[i].created))
 
 					val response = RetrofitAPI.api.updateBody("Bearer ${getToken.access}", getBodyUpdated[i].uid!!, data)
 
@@ -352,9 +359,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getDrugUid.size) {
-               val startDate = LocalDate.parse(getDrugUid[i].startDate).atStartOfDay().format(formatter)
-               val endDate = LocalDate.parse(getDrugUid[i].endDate).atStartOfDay().format(formatter)
-               val data = MedicineDTO("BodyWell${getDrugUid[i].id}", getDrugUid[i].type, getDrugUid[i].name, getDrugUid[i].amount, getDrugUid[i].unit, startDate, endDate)
+               val data = MedicineDTO("BodyWell${getDrugUid[i].id}", getDrugUid[i].type, getDrugUid[i].name, getDrugUid[i].amount, getDrugUid[i].unit,
+                  isoFormat1(getDrugUid[i].startDate), isoFormat1(getDrugUid[i].endDate))
 
                val response = RetrofitAPI.api.createMedicine("Bearer ${getToken.access}", data)
 
@@ -382,9 +388,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getDrugUpdated.size) {
-               val startDate = LocalDate.parse(getDrugUpdated[i].startDate).atStartOfDay().format(formatter)
-               val endDate = LocalDate.parse(getDrugUpdated[i].endDate).atStartOfDay().format(formatter)
-               val data = MedicineUpdateDTO(getDrugUpdated[i].type, getDrugUpdated[i].name, getDrugUpdated[i].amount, getDrugUpdated[i].unit, startDate, endDate)
+               val data = MedicineUpdateDTO(getDrugUpdated[i].type, getDrugUpdated[i].name, getDrugUpdated[i].amount, getDrugUpdated[i].unit,
+                  isoFormat1(getDrugUpdated[i].startDate), isoFormat1(getDrugUpdated[i].endDate))
 
                val response = RetrofitAPI.api.updateMedicine("Bearer ${getToken.access}", getDrugUpdated[i].uid, data)
                if(response.isSuccessful) {
@@ -393,7 +398,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   dataManager.updateInt(TABLE_DRUG, "isUpdated", 0, "id", getDrugUpdated[i].id)
                }else Log.d(TAG, "updateMedicine: $response")
 
-               val getUnusedCheck = dataManager.getUnused("drugCheck", getDrugUpdated[i].regDate)
+               val getUnusedCheck = dataManager.getUnused("drugCheck", getDrugUpdated[i].created)
 
                for(j in 0 until getUnusedCheck.size) {
                   val response2 = RetrofitAPI.api.deleteMedicineIntake("Bearer ${getToken.access}", getUnusedCheck[j].value)
@@ -403,7 +408,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   } else Log.d(TAG, "deleteMedicineIntake: $response2")
                }
 
-               val getUnusedTime = dataManager.getUnused("drugTime", getDrugUpdated[i].regDate)
+               val getUnusedTime = dataManager.getUnused("drugTime", getDrugUpdated[i].created)
 
                for(j in 0 until getUnusedTime.size) {
                   val response3 = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", getUnusedTime[j].value)
@@ -429,8 +434,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getDrugTime = dataManager.getDrugTimeUid(getDrugCheckUid[i].drugTimeId)
 
                if(getDrugTime.uid != "") {
-                  val regDate = LocalDate.parse(getDrugCheckUid[i].regDate).atStartOfDay().format(formatter)
-                  val data = MedicineIntakeDTO("BodyWell${getDrugCheckUid[i].id}", regDate)
+                  val data = MedicineIntakeDTO("BodyWell${getDrugCheckUid[i].id}", isoFormat1(getDrugCheckUid[i].created))
 
                   val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", getDrugTime.uid, data)
 
@@ -445,9 +449,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getGoal = dataManager.getGoal(getGoalUid[i].id)
 
                if(getGoal.uid == "") {
-                  val timeFormat = LocalDate.parse(getGoalUid[i].regDate).atStartOfDay().format(formatter)
                   val data = GoalDTO(getGoalUid[i].body, getGoalUid[i].food, getGoalUid[i].exercise, getGoalUid[i].waterVolume, getGoalUid[i].water,
-                     getGoalUid[i].sleep, getGoalUid[i].drug, timeFormat)
+                     getGoalUid[i].sleep, getGoalUid[i].drug, isoFormat1(getGoalUid[i].created))
 
                   val response = RetrofitAPI.api.createGoal("Bearer ${getToken.access}", data)
 
@@ -480,7 +483,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
       return if(response.isSuccessful) {
          Log.d(TAG, "refreshToken: ${response.body()}")
-         dataManager.updateAccess(Token(access = response.body()!!.accessToken, accessRegDate = LocalDateTime.now().toString()))
+         dataManager.updateAccess(Token(access = response.body()!!.accessToken, accessCreated = LocalDateTime.now().toString()))
          getToken = dataManager.getToken()
          true
       }else {
@@ -496,7 +499,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       return if(response.isSuccessful) {
          Log.d(TAG, "googleLogin: ${response.body()}")
          dataManager.updateToken(Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken,
-            accessRegDate = LocalDateTime.now().toString(), refreshRegDate = LocalDateTime.now().toString()))
+            accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
          getToken = dataManager.getToken()
          true
       }else {

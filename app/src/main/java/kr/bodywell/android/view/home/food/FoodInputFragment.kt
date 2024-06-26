@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
-import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
@@ -346,10 +345,10 @@ class FoodInputFragment : Fragment() {
          }else {
             // 음식데이터 저장
             dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate, protein = protein,
-               fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), regDate = selectedDate.toString()))
+               fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), created = selectedDate.toString()))
 
             dataManager.insertDailyFood(Food(type = type, name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-               protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, regDate = selectedDate.toString()))
+               protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, created = selectedDate.toString()))
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 

@@ -2,7 +2,6 @@ package kr.bodywell.android.adapter
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +14,9 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.home.drug.DrugFragment
-import okhttp3.internal.userAgent
 
 class DrugAdapter1 (
     private val context: Context,
@@ -69,15 +64,15 @@ class DrugAdapter1 (
             if(holder.tvCheck.isChecked) {
                 check += 1
 
-                if(getDrugCheck.regDate == "") {
-                    dataManager.insertDrugCheck(DrugCheck(uid = "", drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, regDate = selectedDate.toString()))
+                if(getDrugCheck.created == "") {
+                    dataManager.insertDrugCheck(DrugCheck(uid = "", drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, created = selectedDate.toString()))
                 }
             }else {
                 if(check > 0) check -= 1
 
-                if(getDrugCheck.regDate != "") {
+                if(getDrugCheck.created != "") {
                     if(getDrugCheck.uid != "") {
-                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, regDate = selectedDate.toString()))
+                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, created = selectedDate.toString()))
                     }
 
                     dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, "regDate", itemList[pos].date)

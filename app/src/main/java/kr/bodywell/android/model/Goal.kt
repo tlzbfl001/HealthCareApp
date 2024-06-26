@@ -11,6 +11,6 @@ data class Goal(
     var body: Double = 0.0,
     var sleep: Int = 0,
     var drug: Int = 0,
-    var regDate: String = "",
+    var created: String = "",
     var isUpdated: Int = 0
 )

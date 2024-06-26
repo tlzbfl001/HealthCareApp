@@ -305,18 +305,12 @@ class SettingFragment : Fragment() {
 
             MyApp.prefs.removePrefs("userId")
 
-            requireActivity().runOnUiThread {
-               Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()
-            }
+            requireActivity().runOnUiThread { Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show() }
 
             finishAffinity(requireActivity())
             startActivity(Intent(requireActivity(), InitActivity::class.java))
             exitProcess(0)
-         }else {
-            requireActivity().runOnUiThread {
-               Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
-            }
-         }
+         }else requireActivity().runOnUiThread { Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show() }
       }
    }
 
