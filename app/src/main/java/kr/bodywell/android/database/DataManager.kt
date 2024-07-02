@@ -925,7 +925,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheckUid() : ArrayList<DrugCheck> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<DrugCheck>()
-      val sql = "select * from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and uid is '' and drugId=(select min(drugId) from $TABLE_DRUG_CHECK)"
+      val sql = "select * from $TABLE_DRUG_CHECK where userId = ${MyApp.prefs.getId()} and drugId=(select drugId from $TABLE_DRUG_CHECK where uid is '' order by drugId limit 1)"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = DrugCheck()
@@ -1525,7 +1525,7 @@ class DataManager(private var context: Context?) {
    fun updateProfile(data: User){
       val db = dbHelper!!.writableDatabase
       val sql = "update $TABLE_USER set name='${data.name}', gender='${data.gender}', birthday='${data.birthday}', height=${data.height}, weight=${data.weight}, " +
-         "updated='${data.updated}', isUpdated=1 where id=${MyApp.prefs.getId()}"
+         "updated='${data.updated}', isUpdated=${data.isUpdated} where id=${MyApp.prefs.getId()}"
       db.execSQL(sql)
       db.close()
    }

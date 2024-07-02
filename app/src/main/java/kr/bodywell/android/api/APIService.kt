@@ -16,6 +16,7 @@ import kr.bodywell.android.api.dto.MedicineUpdateDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
+import kr.bodywell.android.api.dto.SyncedAtDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
@@ -114,7 +115,7 @@ interface APIService {
 	@POST("profile/sync")
 	suspend fun syncProfile(
 		@Header("Authorization") token: String,
-		@Body dto: ProfileDTO
+		@Body dto: SyncedAtDTO
 	): Response<SyncProfileResponse>
 
 	@POST("foods")
@@ -189,6 +190,12 @@ interface APIService {
 	suspend fun refreshToken(
 		@Header("Authorization") token: String
 	): Response<TokenResponse>
+
+	@PATCH("profile/{uid}")
+	suspend fun updateProfile(
+		@Header("Authorization") token: String,
+		@Body dto: ProfileDTO
+	): Response<ProfileResponse>
 
 	@PATCH("foods/{uid}")
 	suspend fun updateFood(

@@ -43,6 +43,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toBottomOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
+         android:id="@+id/cl"
          android:layout_width="match_parent"
          android:layout_height="wrap_content">
          <androidx.cardview.widget.CardView
@@ -136,33 +137,33 @@
                   app:layout_constraintTop_toBottomOf="@id/etName"
                   app:layout_constraintStart_toStartOf="parent"/>
                <TextView
-                  android:id="@+id/tvMan"
+                  android:id="@+id/tvWoman"
                   android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:background="@drawable/rec_25_gray"
                   android:layout_marginTop="3dp"
                   android:paddingTop="6dp"
                   android:paddingBottom="6dp"
-                  android:text="남성"
+                  android:text="여성"
                   android:textColor="@color/white"
                   android:textSize="14.3dp"
                   android:textAlignment="center"
                   app:layout_constraintTop_toBottomOf="@id/tv"
                   app:layout_constraintStart_toStartOf="@id/tv"/>
                <TextView
-                  android:id="@+id/tvWoman"
+                  android:id="@+id/tvMan"
                   android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:background="@drawable/rec_25_border_gray"
                   android:layout_marginLeft="10dp"
                   android:paddingTop="6dp"
                   android:paddingBottom="6dp"
-                  android:text="여성"
+                  android:text="남성"
                   android:textColor="@color/black"
                   android:textSize="14.3dp"
                   android:textAlignment="center"
-                  app:layout_constraintTop_toTopOf="@id/tvMan"
-                  app:layout_constraintStart_toEndOf="@id/tvMan"/>
+                  app:layout_constraintTop_toTopOf="@id/tvWoman"
+                  app:layout_constraintStart_toEndOf="@id/tvWoman"/>
                <TextView
                   android:id="@+id/tv4"
                   android:layout_width="wrap_content"

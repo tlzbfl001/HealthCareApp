@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.Activity
@@ -23,12 +24,13 @@ import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.MedicineUpdateDTO
 import kr.bodywell.android.api.dto.ProfileDTO
-import kr.bodywell.android.api.dto.ProfileData
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
+import kr.bodywell.android.api.dto.SyncedAtDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -46,9 +48,9 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormat1
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -58,6 +60,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private var getToken = Token()
    private var refreshCheck = false
    private var loginCheck = false
+   private var syncedCheck = false
 //   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
    init {
@@ -65,6 +68,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
+
       Log.d(TAG, "getUser: $getUser")
       Log.d(TAG, "getToken: $getToken")
 
@@ -72,7 +76,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    }
 
    private fun updateData() = viewModelScope.launch {
-      while(true) {
+      while(isActive) {
          if(networkStatusCheck(context)) {
             val getUnused = dataManager.getUnused()
             val getUserUpdated = dataManager.getUserUpdated()
@@ -106,6 +110,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                   "google" -> loginCheck = loginWithGoogle()
                }
             }
+
+            if (!syncedCheck) syncedCheck = getSyncedData()
 
             for(i in 0 until getUnused.size) {
                when(getUnused[i].type) {
@@ -162,12 +168,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             if(getUserUpdated.profileUid != "") {
-               val data = ProfileDTO(ProfileData(getUserUpdated.profileUid, getUserUpdated.name!!, getUserUpdated.image!!, getUserUpdated.birthday,
-                  getUserUpdated.gender, getUserUpdated.height, getUserUpdated.weight, "Asia/Seoul", isoFormat1(getUserUpdated.created), getUserUpdated.updated))
+               val data = ProfileDTO(getUserUpdated.name!!, "https://example.com/picture.jpg", getUserUpdated.birthday, getUserUpdated.gender,
+                  getUserUpdated.height, getUserUpdated.weight, "Asia/Seoul")
 
-               val response = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", data)
+               val response = RetrofitAPI.api.updateProfile("Bearer ${getToken.access}", data)
 
-               if(response.isSuccessful) Log.d(TAG, "syncProfile: ${response.body()}") else Log.d(TAG, "syncProfile: $response")
+               if(response.isSuccessful) {
+                  Log.d(TAG, "updateProfile: ${response.body()}")
+                  dataManager.updateInt(DBHelper.TABLE_USER, "isUpdated", 0, "id", getUserUpdated.id)
+               } else Log.d(TAG, "updateProfile: $response")
             }
 
             for(i in 0 until getFoodUid.size) {
@@ -203,9 +212,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getFood = dataManager.getFood("name", getDailyFoodUid[i].name)
 
                if(getFood.uid != "") {
+                  val isoFormat = isoFormat1(getDailyFoodUid[i].created)
                   val data = DietDTO("BodyWell${getDailyFoodUid[i].id}", getDailyFoodUid[i].type, "null", getDailyFoodUid[i].name,
                      getDailyFoodUid[i].kcal, getDailyFoodUid[i].carbohydrate, getDailyFoodUid[i].protein, getDailyFoodUid[i].fat, getDailyFoodUid[i].count,
-                     "null", getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, isoFormat1(getDailyFoodUid[i].created), Food(getFood.uid))
+                     "null", getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, isoFormat, Food(getFood.uid))
 
                   val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", data)
 
@@ -222,9 +232,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                for(j in 0 until getImage.size) photos.add(getImage[j].imageUri)
 
+               val isoFormat = isoFormat1(getDailyFoodUpdated[i].created)
                val data = DietUpdateDTO(getDailyFoodUpdated[i].type, "", getDailyFoodUpdated[i].name, getDailyFoodUpdated[i].kcal,
                   getDailyFoodUpdated[i].carbohydrate, getDailyFoodUpdated[i].protein, getDailyFoodUpdated[i].fat, getDailyFoodUpdated[i].count,
-                  "", getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, isoFormat1(getDailyFoodUpdated[i].created))
+                  "", getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, isoFormat)
 
                val response = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", getDailyFoodUpdated[i].uid, data)
 
@@ -289,8 +300,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getExercise = dataManager.getExercise("name", getDailyExerciseUid[i].name)
 
                if(getExercise.uid != "") {
+                  val isoFormat = isoFormat1(getDailyExerciseUid[i].created)
                   val data = WorkoutDTO("BodyWell${getDailyExerciseUid[i].id}", getDailyExerciseUid[i].name, getDailyExerciseUid[i].kcal,
-                     getDailyExerciseUid[i].intensity, getDailyExerciseUid[i].workoutTime, isoFormat1(getDailyExerciseUid[i].created), true, Activity(getExercise.uid))
+                     getDailyExerciseUid[i].intensity, getDailyExerciseUid[i].workoutTime, isoFormat, true, Activity(getExercise.uid))
 
                   val response = RetrofitAPI.api.createWorkout("Bearer ${getToken.access}", data)
 
@@ -313,8 +325,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
 				for(i in 0 until getBodyUid.size) {
+               val isoFormat = isoFormat1(getBodyUid[i].created)
 					val data = BodyDTO("BodyWell${getBodyUid[i].id}", getBodyUid[i].height, getBodyUid[i].weight, getBodyUid[i].bmi, getBodyUid[i].fat,
-						getBodyUid[i].muscle, getBodyUid[i].bmr, getBodyUid[i].intensity, isoFormat1(getBodyUid[i].created))
+						getBodyUid[i].muscle, getBodyUid[i].bmr, getBodyUid[i].intensity, isoFormat)
 
 					val response = RetrofitAPI.api.createBody("Bearer ${getToken.access}", data)
 
@@ -325,8 +338,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 				}
 
 				for(i in 0 until getBodyUpdated.size) {
+               val isoFormat = isoFormat1(getBodyUpdated[i].created)
 					val data = BodyUpdateDTO(getBodyUpdated[i].height, getBodyUpdated[i].weight, getBodyUpdated[i].bmi, getBodyUpdated[i].fat,
-						getBodyUpdated[i].muscle, getBodyUpdated[i].bmr, getBodyUpdated[i].intensity, isoFormat1(getBodyUpdated[i].created))
+						getBodyUpdated[i].muscle, getBodyUpdated[i].bmr, getBodyUpdated[i].intensity, isoFormat)
 
 					val response = RetrofitAPI.api.updateBody("Bearer ${getToken.access}", getBodyUpdated[i].uid!!, data)
 
@@ -359,8 +373,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getDrugUid.size) {
-               val data = MedicineDTO("BodyWell${getDrugUid[i].id}", getDrugUid[i].type, getDrugUid[i].name, getDrugUid[i].amount, getDrugUid[i].unit,
-                  isoFormat1(getDrugUid[i].startDate), isoFormat1(getDrugUid[i].endDate))
+               val startDate = isoFormat1(getDrugUid[i].startDate)
+               val endDate = isoFormat1(getDrugUid[i].endDate)
+               val data = MedicineDTO("BodyWell${getDrugUid[i].id}", getDrugUid[i].type, getDrugUid[i].name, getDrugUid[i].amount, getDrugUid[i].unit, startDate, endDate)
 
                val response = RetrofitAPI.api.createMedicine("Bearer ${getToken.access}", data)
 
@@ -388,8 +403,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             for(i in 0 until getDrugUpdated.size) {
-               val data = MedicineUpdateDTO(getDrugUpdated[i].type, getDrugUpdated[i].name, getDrugUpdated[i].amount, getDrugUpdated[i].unit,
-                  isoFormat1(getDrugUpdated[i].startDate), isoFormat1(getDrugUpdated[i].endDate))
+               val startDate = isoFormat1(getDrugUpdated[i].startDate)
+               val endDate = isoFormat1(getDrugUpdated[i].endDate)
+               val data = MedicineUpdateDTO(getDrugUpdated[i].type, getDrugUpdated[i].name, getDrugUpdated[i].amount, getDrugUpdated[i].unit, startDate, endDate)
 
                val response = RetrofitAPI.api.updateMedicine("Bearer ${getToken.access}", getDrugUpdated[i].uid, data)
                if(response.isSuccessful) {
@@ -434,7 +450,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getDrugTime = dataManager.getDrugTimeUid(getDrugCheckUid[i].drugTimeId)
 
                if(getDrugTime.uid != "") {
-                  val data = MedicineIntakeDTO("BodyWell${getDrugCheckUid[i].id}", isoFormat1(getDrugCheckUid[i].created))
+                  val isoFormat = isoFormat1(getDrugCheckUid[i].created)
+                  val data = MedicineIntakeDTO("BodyWell${getDrugCheckUid[i].id}", isoFormat)
 
                   val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", getDrugTime.uid, data)
 
@@ -449,8 +466,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                val getGoal = dataManager.getGoal(getGoalUid[i].id)
 
                if(getGoal.uid == "") {
+                  val isoFormat = isoFormat1(getGoalUid[i].created)
                   val data = GoalDTO(getGoalUid[i].body, getGoalUid[i].food, getGoalUid[i].exercise, getGoalUid[i].waterVolume, getGoalUid[i].water,
-                     getGoalUid[i].sleep, getGoalUid[i].drug, isoFormat1(getGoalUid[i].created))
+                     getGoalUid[i].sleep, getGoalUid[i].drug, isoFormat)
 
                   val response = RetrofitAPI.api.createGoal("Bearer ${getToken.access}", data)
 
@@ -474,7 +492,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
          }
 
-         delay(10000)
+         delay(12000)
       }
    }
 
@@ -504,6 +522,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          true
       }else {
          Log.e(TAG, "googleLogin: $response")
+         false
+      }
+   }
+
+   private suspend fun getSyncedData(): Boolean {
+      val date = isoFormat2()
+      val response = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", SyncedAtDTO(date))
+
+      return if(response.isSuccessful) {
+         if(response.body()!!.data.uid != "") {
+            Log.d(TAG, "syncProfile: ${response.body()}")
+            dataManager.updateProfile(User(name=response.body()!!.data.name, gender=response.body()!!.data.gender, birthday=response.body()!!.data.birth,
+               height=response.body()!!.data.height.toDouble(), weight=response.body()!!.data.weight.toDouble(), updated=response.body()!!.data.updatedAt, isUpdated=0))
+         }
+         true
+      }else {
+         Log.e(TAG, "syncProfile: $response")
          false
       }
    }

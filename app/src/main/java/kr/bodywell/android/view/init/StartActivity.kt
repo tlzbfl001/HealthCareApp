@@ -25,8 +25,6 @@ class StartActivity : AppCompatActivity() {
 
       if(MyApp.prefs.getId() < 1 || dataManager.getUserCount() == 0 || (MyApp.prefs.getId() > 0 && dataManager.getUser().created == "")) {
          startActivity(Intent(this, InitActivity::class.java))
-      }else {
-         startActivity(Intent(this, MainActivity::class.java))
-      }
+      }else startActivity(Intent(this, MainActivity::class.java))
    }
 }

@@ -3,14 +3,6 @@ package kr.bodywell.android.api.dto
 import com.google.gson.annotations.SerializedName
 
 data class ProfileDTO (
-	@SerializedName("data")
-	var data: ProfileData
-)
-
-data class ProfileData (
-	@SerializedName("uid")
-	var uid: String = "",
-
 	@SerializedName("name")
 	var name: String = "",
 
@@ -30,11 +22,10 @@ data class ProfileData (
 	var weight: Double = 0.0,
 
 	@SerializedName("timezone")
-	var timezone: String = "",
+	var timezone: String = ""
+)
 
-	@SerializedName("createdAt")
-	var createdAt: String = "",
-
-	@SerializedName("updatedAt")
-	var updatedAt: String = ""
+data class SyncedAtDTO (
+	@SerializedName("syncedAt")
+	var syncedAt: String = ""
 )

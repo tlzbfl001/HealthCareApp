@@ -20,7 +20,7 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.formatter
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
@@ -156,8 +156,8 @@ class SleepFragment : Fragment() {
       getSleep = dataManager.getSleep(selectedDate.toString())
 
       if(getSleep.startTime != "" && getSleep.endTime != "") {
-         val bedTime = LocalDateTime.parse(getSleep.startTime, formatter)
-         val wakeTime = LocalDateTime.parse(getSleep.endTime, formatter)
+         val bedTime = LocalDateTime.parse(getSleep.startTime, isoFormatter)
+         val wakeTime = LocalDateTime.parse(getSleep.endTime, isoFormatter)
 
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))

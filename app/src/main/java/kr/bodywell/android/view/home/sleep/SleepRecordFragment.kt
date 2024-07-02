@@ -3,7 +3,6 @@ package kr.bodywell.android.view.home.sleep
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,12 +13,12 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import nl.joery.timerangepicker.TimeRangePicker
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class SleepRecordFragment : Fragment() {
    private var _binding: FragmentSleepRecordBinding? = null
@@ -29,8 +28,6 @@ class SleepRecordFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var bedHour = 0
    private var bedMinute = 0
-   private var wakeHour = 0
-   private var wakeMinute = 0
    private var sleepHour = 0
    private var sleepMinute = 0
 
@@ -114,8 +111,8 @@ class SleepRecordFragment : Fragment() {
             val wake = date.year.toString().substring(2,4) + String.format("%02d", date.monthValue) + String.format("%02d", date.dayOfMonth) +
                String.format("%02d", wakeTime / 60) + String.format("%02d", wakeTime % 60)
 
-            val bedFormat = isoFormat2(bed, "yyMMddHHmm")
-            val wakeFormat = isoFormat2(wake, "yyMMddHHmm")
+            val bedFormat = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(isoFormatter)
+            val wakeFormat = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(isoFormatter)
             val startDT = LocalDateTime.of(selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth, bedHour, bedMinute)
             val endDT = LocalDateTime.of(date.year, date.monthValue, date.dayOfMonth, wakeTime / 60, wakeTime % 60)
             val diff = Duration.between(startDT, endDT)

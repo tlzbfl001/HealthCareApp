@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
@@ -22,7 +23,7 @@ class CustomUtil {
    companion object {
       const val TAG = "testTag"
       var drugTimeList = ArrayList<DrugTime>()
-      val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+      val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
@@ -61,11 +62,14 @@ class CustomUtil {
       }
 
       fun isoFormat1(date: String): String {
-         return LocalDate.parse(date).atStartOfDay().format(formatter)
+         return LocalDate.parse(date).atStartOfDay().format(isoFormatter)
       }
 
-      fun isoFormat2(date: String, pattern: String): String {
-         return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(pattern)).format(formatter)
+      fun isoFormat2(): String {
+         val date = "${LocalDateTime.now().year}${String.format("%02d", LocalDateTime.now().monthValue)}${String.format("%02d", LocalDateTime.now().dayOfMonth)}" +
+            "${String.format("%02d", LocalDateTime.now().hour)}${String.format("%02d", LocalDateTime.now().minute)}${String.format("%02d", LocalDateTime.now().second)}"
+         val parse = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+         return parse.format(isoFormatter)
       }
 
       fun filterText(text: String): Boolean {

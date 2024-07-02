@@ -23,14 +23,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormat1
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
@@ -45,7 +43,7 @@ class ProfileFragment : Fragment() {
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
 	private var dialog: BottomSheetDialog? = null
-	private var gender = "MALE"
+	private var gender = "FEMALE"
 	private var image = ""
 
 	override fun onAttach(context: Context) {
@@ -83,7 +81,7 @@ class ProfileFragment : Fragment() {
 		if(getUser.name != "") binding.etName.setText(getUser.name)
 
 		when(getUser.gender) {
-			"MALE" -> unit1()
+			"FEMALE" -> unit1()
 			else -> unit2()
 		}
 
@@ -101,7 +99,9 @@ class ProfileFragment : Fragment() {
 			binding.etWeight.setText(weight.toString())
 		}
 
-		binding.mainLayout.setOnTouchListener { _, _ ->
+		if(getUser.birthday != "") binding.tvBirthday.text = getUser.birthday
+
+		binding.cl.setOnTouchListener { _, _ ->
 			hideKeyboard(requireActivity())
 			true
 		}
@@ -134,9 +134,9 @@ class ProfileFragment : Fragment() {
 			}
 		}
 
-		binding.tvMan.setOnClickListener { unit1() }
+		binding.tvWoman.setOnClickListener { unit1() }
 
-		binding.tvWoman.setOnClickListener { unit2() }
+		binding.tvMan.setOnClickListener { unit2() }
 
 		binding.etHeight.addTextChangedListener(object : TextWatcher {
 			override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -250,7 +250,8 @@ class ProfileFragment : Fragment() {
 			}else if(!filterText(binding.etName.text.trim().toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, updated=isoFormat1(LocalDate.now().toString())))
+				val date = isoFormat2()
+				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, updated=date, isUpdated=1))
 
 				if(image != "") dataManager.updateUserStr("image", image)
 
@@ -293,19 +294,19 @@ class ProfileFragment : Fragment() {
 	}
 
 	private fun unit1() {
-		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
-		binding.tvMan.setTextColor(Color.WHITE)
-		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_border_gray)
-		binding.tvWoman.setTextColor(Color.BLACK)
-		gender = "MALE"
+		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
+		binding.tvWoman.setTextColor(Color.WHITE)
+		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
+		binding.tvMan.setTextColor(Color.BLACK)
+		gender = "FEMALE"
 	}
 
 	private fun unit2() {
-		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
-		binding.tvMan.setTextColor(Color.BLACK)
-		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
-		binding.tvWoman.setTextColor(Color.WHITE)
-		gender = "FEMALE"
+		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_border_gray)
+		binding.tvWoman.setTextColor(Color.BLACK)
+		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
+		binding.tvMan.setTextColor(Color.WHITE)
+		gender = "MALE"
 	}
 
 	override fun onDetach() {
