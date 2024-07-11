@@ -13,10 +13,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.WaterAdapter
+import kr.bodywell.android.database.DBHelper.Companion.CREATED
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
 import kr.bodywell.android.database.DataManager
@@ -25,7 +29,9 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
@@ -74,7 +80,41 @@ class WaterFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      dailyView() // 데이터 초기화
+      binding.tvDate.text = dateFormat(selectedDate)
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
+      }
+
+      binding.tvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.tvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
+      }
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_water_input)
@@ -97,17 +137,16 @@ class WaterFragment : Fragment() {
                dataManager.insertGoal(Goal(waterVolume = etVolume.text.toString().toInt(), water = etGoal.text.toString().toInt(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_GOAL, "waterVolume", etVolume.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateIntByDate(TABLE_GOAL, "water", etGoal.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
+               dataManager.updateInt(TABLE_GOAL, "waterVolume", etVolume.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, TABLE_WATER, etGoal.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             if(getWater.created == "") {
                dataManager.insertWater(Water(volume = volume, created = selectedDate.toString()))
-            }else dataManager.updateIntByDate(TABLE_WATER, "volume", volume, selectedDate.toString())
+            }else dataManager.updateInt(TABLE_WATER, "volume", volume, selectedDate.toString())
 
             dailyView()
-
             dialog.dismiss()
          }
       }
@@ -116,43 +155,7 @@ class WaterFragment : Fragment() {
          dialog.show()
       }
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-
-         dailyView()
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-
-         dailyView()
-      }
-
-      binding.cvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.cvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.cvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.cvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.cvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
+      dailyView()
 
       return binding.root
    }
@@ -160,7 +163,6 @@ class WaterFragment : Fragment() {
    private fun dailyView() {
       dailyGoal = dataManager.getGoal(selectedDate.toString())
       getWater = dataManager.getWater(selectedDate.toString())
-      binding.tvDate.text = dateFormat(selectedDate)
       volume = getWater.volume
       count = getWater.count
 
@@ -181,11 +183,7 @@ class WaterFragment : Fragment() {
       binding.tvUnit.text = "(${count * volume}ml)"
 
       val remain = dailyGoal.water - count
-      if(remain > 0) {
-         binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-      }else {
-         binding.tvRemain.text = "0잔/0ml"
-      }
+      if(remain > 0) binding.tvRemain.text = "${remain}잔/${remain * volume}ml" else binding.tvRemain.text = "0잔/0ml"
 
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
       binding.rv.layoutManager = layoutManager
@@ -203,45 +201,39 @@ class WaterFragment : Fragment() {
          if(count == 0) {
             binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
             binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
-            dataManager.deleteItem(TABLE_WATER, "regDate", selectedDate.toString())
+            dataManager.deleteItem(TABLE_WATER, CREATED, selectedDate.toString())
          }
 
          getWater = dataManager.getWater(selectedDate.toString())
          if(getWater.created == "") {
             dataManager.insertWater(Water(count = count, created = selectedDate.toString()))
          }else {
-            dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
+            dataManager.updateInt(TABLE_WATER, "count", count, selectedDate.toString())
          }
 
-         if(getWater.uid != "") {
-            dataManager.updateIntByDate(TABLE_WATER, "isUpdated", 1, selectedDate.toString())
-         }
+         if(getWater.uid != "") dataManager.updateInt(TABLE_WATER, IS_UPDATED, 1, selectedDate.toString())
 
          resetData()
       }
 
       binding.ivPlus.setOnClickListener {
-         if(count < 100) {
-            count += 1
-         }
+         if(count < 100) count += 1
 
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.max = dailyGoal.water
          binding.pbWater.progress = count
-
          getWater = dataManager.getWater(selectedDate.toString())
+
          if(count > 0) {
             if(getWater.created == "") {
                dataManager.insertWater(Water(count = count, created = selectedDate.toString()))
             }else {
-               dataManager.updateIntByDate(TABLE_WATER, "count", count, selectedDate.toString())
+               dataManager.updateInt(TABLE_WATER, "count", count, selectedDate.toString())
             }
          }
 
-         if(getWater.uid != "") {
-            dataManager.updateIntByDate(TABLE_WATER, "isUpdated", 1, selectedDate.toString())
-         }
+         if(getWater.uid != "") dataManager.updateInt(TABLE_WATER, IS_UPDATED, 1, selectedDate.toString())
 
          resetData()
       }
@@ -253,11 +245,7 @@ class WaterFragment : Fragment() {
       binding.tvIntake.text = "${count}잔/${count * volume}ml"
 
       val remain = dailyGoal.water - count
-      if(remain > 0) {
-         binding.tvRemain.text = "${remain}잔/${remain * volume}ml"
-      }else {
-         binding.tvRemain.text = "0잔/0ml"
-      }
+      if(remain > 0) binding.tvRemain.text = "${remain}잔/${remain * volume}ml" else binding.tvRemain.text = "0잔/0ml"
 
       adapter = WaterAdapter(count)
       binding.rv.adapter = adapter

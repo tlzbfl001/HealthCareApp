@@ -43,7 +43,7 @@ class ProfileFragment : Fragment() {
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
 	private var dialog: BottomSheetDialog? = null
-	private var gender = "FEMALE"
+	private var gender = "Female"
 	private var image = ""
 
 	override fun onAttach(context: Context) {
@@ -81,19 +81,19 @@ class ProfileFragment : Fragment() {
 		if(getUser.name != "") binding.etName.setText(getUser.name)
 
 		when(getUser.gender) {
-			"FEMALE" -> unit1()
+			"Female" -> unit1()
 			else -> unit2()
 		}
 
 		if(getUser.image != "") binding.ivProfile.setImageURI(Uri.parse(getUser.image))
 
-		if(getUser.height > 0) {
+		if(getUser.height!! > 0) {
 			val hSplit = getUser.height.toString().split(".")
 			val height = if(hSplit[1] == "0") hSplit[0] else getUser.height
 			binding.etHeight.setText(height.toString())
 		}
 
-		if(getUser.weight > 0) {
+		if(getUser.weight!! > 0) {
 			val wSplit = getUser.weight.toString().split(".")
 			val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight
 			binding.etWeight.setText(weight.toString())
@@ -298,7 +298,7 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setTextColor(Color.WHITE)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMan.setTextColor(Color.BLACK)
-		gender = "FEMALE"
+		gender = "Female"
 	}
 
 	private fun unit2() {
@@ -306,7 +306,7 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setTextColor(Color.BLACK)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
 		binding.tvMan.setTextColor(Color.WHITE)
-		gender = "MALE"
+		gender = "Male"
 	}
 
 	override fun onDetach() {

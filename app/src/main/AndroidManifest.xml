@@ -41,17 +41,20 @@
    <application
       android:name=".util.MyApp"
       android:allowBackup="false"
-      android:fullBackupOnly="false"
-      android:fullBackupContent="false"
-      tools:replace="android:allowBackup"
       android:dataExtractionRules="@xml/data_extraction_rules"
+      android:fullBackupContent="false"
+      android:fullBackupOnly="false"
       android:icon="@drawable/logo2"
       android:label="@string/app_name"
       android:roundIcon="@drawable/logo2"
       android:supportsRtl="true"
       android:theme="@style/Theme.BodyWell"
       android:usesCleartextTraffic="true"
+      tools:replace="android:allowBackup"
       tools:targetApi="33">
+      <activity
+         android:name=".view.home.DetailActivity"
+         android:exported="false" />
       <activity
          android:name=".view.init.SignupActivity"
          android:exported="false" />
@@ -65,14 +68,18 @@
          android:noHistory="true">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
+
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
-      <activity android:name=".view.init.LoginActivity"
-         android:exported="false"  />
-      <activity android:name=".view.init.InitActivity"
-         android:exported="false"  />
-      <activity android:name=".view.home.MainActivity"
+      <activity
+         android:name=".view.init.LoginActivity"
+         android:exported="false" />
+      <activity
+         android:name=".view.init.InitActivity"
+         android:exported="false" />
+      <activity
+         android:name=".view.home.MainActivity"
          android:exported="false"
          android:windowSoftInputMode="adjustPan" />
       <activity
@@ -81,6 +88,7 @@
          <intent-filter>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
          </intent-filter>
+
          <meta-data
             android:name="health_permissions"
             android:resource="@array/health_permissions" />
@@ -90,13 +98,18 @@
          android:exported="true">
          <intent-filter>
             <action android:name="android.intent.action.VIEW" />
+
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:host="oauth"
+
+            <data
+               android:host="oauth"
                android:scheme="@string/kakao_oauth_host" />
          </intent-filter>
       </activity>
+
       <service android:name=".util.BluetoothService" />
+
       <receiver
          android:name=".util.AlarmReceiver"
          android:exported="false" />
@@ -109,4 +122,5 @@
          </intent-filter>
       </receiver>
    </application>
+
 </manifest>

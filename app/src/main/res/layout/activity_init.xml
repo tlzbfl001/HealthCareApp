@@ -66,9 +66,9 @@
                app:layout_constraintBottom_toBottomOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent"
-               app:layout_constraintEnd_toStartOf="@id/ivRight"/>
+               app:layout_constraintEnd_toStartOf="@id/iv"/>
             <ImageView
-               android:id="@+id/ivRight"
+               android:id="@+id/iv"
                android:layout_width="22dp"
                android:layout_height="8dp"
                android:background="@drawable/arrow_right_direction"

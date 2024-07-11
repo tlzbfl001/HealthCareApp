@@ -19,7 +19,10 @@ import kr.bodywell.android.databinding.FragmentFoodRecord1Binding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 
@@ -159,10 +162,10 @@ class FoodRecord1Fragment : Fragment() {
 
    private fun replaceFragment() {
       when(type) {
-         "1" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-         "2" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-         "3" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-         "4" -> replaceFragment1(requireActivity(), FoodSnackFragment())
+         "BREAKFAST" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
+         "LUNCH" -> replaceFragment1(requireActivity(), FoodLunchFragment())
+         "DINNER" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
+         else -> replaceFragment1(requireActivity(), FoodSnackFragment())
       }
    }
 

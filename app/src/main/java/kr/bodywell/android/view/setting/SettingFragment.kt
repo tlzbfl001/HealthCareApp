@@ -30,6 +30,7 @@ import kr.bodywell.android.BuildConfig.NAVER_CLIENT_ID
 import kr.bodywell.android.BuildConfig.NAVER_CLIENT_SECRET
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -46,6 +47,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_TOKEN
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
+import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Token
@@ -77,7 +79,6 @@ class SettingFragment : Fragment() {
             replaceFragment1(requireActivity(), MainFragment())
          }
       }
-
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
@@ -116,9 +117,7 @@ class SettingFragment : Fragment() {
          startActivity(intent)
       }
 
-      binding.tvConnect.setOnClickListener {
-         replaceFragment1(requireActivity(), ConnectFragment())
-      }
+      /*binding.tvConnect.setOnClickListener { replaceFragment1(requireActivity(), ConnectFragment()) }*/
 
       binding.tvLogout.setOnClickListener {
          if(!networkStatusCheck(requireActivity())){
@@ -126,7 +125,7 @@ class SettingFragment : Fragment() {
          }else {
             val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
                .setTitle("로그아웃")
-               .setMessage("정말 로그아웃하시겠습니까?")
+               .setMessage("정말 로그아웃 하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
                      "google" -> {
@@ -165,7 +164,7 @@ class SettingFragment : Fragment() {
             Toast.makeText(context, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
             val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
-               .setTitle("회원탈퇴")
+               .setTitle("회원 탈퇴")
                .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
@@ -179,10 +178,10 @@ class SettingFragment : Fragment() {
                         val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
                         if(account == null) {
-                           Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                           Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            gsc.revokeAccess().addOnCompleteListener {
-                              if(it.isSuccessful) resignProcess() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              if(it.isSuccessful) deleteData() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
                      }
@@ -190,17 +189,16 @@ class SettingFragment : Fragment() {
                         NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(R.string.app_name))
 
                         if(NaverIdLoginSDK.getAccessToken() == null) {
-                           Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                           Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            lifecycleScope.launch {
                               NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
                                  override fun onSuccess() {
-                                    resignProcess()
+                                    deleteData()
                                  }
 
                                  override fun onFailure(httpStatus: Int, message: String) {
-                                    Log.e(TAG, "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
-                                    Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                                  }
 
                                  override fun onError(errorCode: Int, message: String) {
@@ -213,11 +211,11 @@ class SettingFragment : Fragment() {
                      "kakao" -> {
                         UserApiClient.instance.accessTokenInfo { token, error ->
                            if(error != null) {
-                              Toast.makeText(context, "로그아웃 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                              Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                            }else if (token != null) {
-                              UserApiClient.instance.unlink { error ->
+                              UserApiClient.instance.unlink { err ->
                                  lifecycleScope.launch{
-                                    if(error != null) Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show() else resignProcess()
+                                    if(err == null) deleteData() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                  }
                               }
                            }
@@ -245,10 +243,10 @@ class SettingFragment : Fragment() {
          val currentMonth = current.get(Calendar.MONTH) + 1
          val currentDay = current.get(Calendar.DAY_OF_MONTH)
 
-         var age = currentYear - getUser.birthday.substring(0 until 4).toInt()
-         if (getUser.birthday.substring(5 until 7).toInt() * 100 + getUser.birthday.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
+         var age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
+         if(getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
 
-         val gender = if(getUser.gender == "MALE") "남" else "여"
+         val gender = if(getUser.gender == "Female") "여" else "남"
 
          binding.tvAge.text = "만${age}세 / $gender"
       }
@@ -256,12 +254,12 @@ class SettingFragment : Fragment() {
       var height = "0"
       var weight = "0"
 
-      if(getUser.height > 0) {
+      if(getUser.height!! > 0) {
          val hSplit = getUser.height.toString().split(".")
          height = if(hSplit[1] == "0") hSplit[0] else getUser.height.toString()
       }
 
-      if(getUser.weight > 0) {
+      if(getUser.weight!! > 0) {
          val wSplit = getUser.weight.toString().split(".")
          weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight.toString()
       }
@@ -270,7 +268,7 @@ class SettingFragment : Fragment() {
    }
 
    private fun logoutProcess() {
-      MyApp.prefs.removePrefs("userId")
+      MyApp.prefs.removePrefs(USER_ID)
       finishAffinity(requireActivity())
       startActivity(Intent(requireActivity(), LoginActivity::class.java))
       exitProcess(0)
@@ -278,66 +276,46 @@ class SettingFragment : Fragment() {
 
    private fun resignProcess() {
       CoroutineScope(Dispatchers.IO).launch {
-         val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}", getUser.userUid)
-
-         if(response.isSuccessful) {
-            dataManager.deleteItem(TABLE_USER, "id")
-            dataManager.deleteItem(TABLE_TOKEN, "userId")
-            dataManager.deleteItem(TABLE_FOOD, "userId")
-            dataManager.deleteItem(TABLE_DAILY_FOOD, "userId")
-            dataManager.deleteItem(TABLE_WATER, "userId")
-            dataManager.deleteItem(TABLE_EXERCISE, "userId")
-            dataManager.deleteItem(TABLE_DAILY_EXERCISE, "userId")
-            dataManager.deleteItem(TABLE_BODY, "userId")
-            dataManager.deleteItem(TABLE_DRUG, "userId")
-            dataManager.deleteItem(TABLE_DRUG_TIME, "userId")
-            dataManager.deleteItem(TABLE_DRUG_CHECK, "userId")
-            dataManager.deleteItem(TABLE_NOTE, "userId")
-            dataManager.deleteItem(TABLE_SLEEP, "userId")
-            dataManager.deleteItem(TABLE_GOAL, "userId")
-            dataManager.deleteItem(TABLE_IMAGE, "userId")
-            dataManager.deleteItem(TABLE_UNUSED, "userId")
-
-            val alarmReceiver = AlarmReceiver()
-            val getDrugId = dataManager.getDrugId()
-
-            for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
-
-            MyApp.prefs.removePrefs("userId")
-
-            requireActivity().runOnUiThread { Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show() }
-
-            finishAffinity(requireActivity())
-            startActivity(Intent(requireActivity(), InitActivity::class.java))
-            exitProcess(0)
-         }else requireActivity().runOnUiThread { Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show() }
+         var check = false
+         val getAllUser = RetrofitAPI.api.getAllUser()
+         
+         if(getAllUser.isSuccessful) {
+            for(i in 0 until getAllUser.body()!!.size) if(getAllUser.body()!![i].email == getUser.email){
+               check = true
+            }
+            
+            if(check) {
+               val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
+               if(response.isSuccessful) deleteData() else requireActivity().runOnUiThread { Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show() }
+            }else deleteData()
+         }
       }
    }
 
-   private fun resignTest() {
+   private fun deleteData() {
       dataManager.deleteItem(TABLE_USER, "id")
-      dataManager.deleteItem(TABLE_TOKEN, "userId")
-      dataManager.deleteItem(TABLE_FOOD, "userId")
-      dataManager.deleteItem(TABLE_DAILY_FOOD, "userId")
-      dataManager.deleteItem(TABLE_WATER, "userId")
-      dataManager.deleteItem(TABLE_EXERCISE, "userId")
-      dataManager.deleteItem(TABLE_DAILY_EXERCISE, "userId")
-      dataManager.deleteItem(TABLE_BODY, "userId")
-      dataManager.deleteItem(TABLE_DRUG, "userId")
-      dataManager.deleteItem(TABLE_DRUG_TIME, "userId")
-      dataManager.deleteItem(TABLE_DRUG_CHECK, "userId")
-      dataManager.deleteItem(TABLE_NOTE, "userId")
-      dataManager.deleteItem(TABLE_SLEEP, "userId")
-      dataManager.deleteItem(TABLE_GOAL, "userId")
-      dataManager.deleteItem(TABLE_IMAGE, "userId")
-      dataManager.deleteItem(TABLE_UNUSED, "userId")
+      dataManager.deleteItem(TABLE_TOKEN, USER_ID)
+      dataManager.deleteItem(TABLE_FOOD, USER_ID)
+      dataManager.deleteItem(TABLE_DAILY_FOOD, USER_ID)
+      dataManager.deleteItem(TABLE_WATER, USER_ID)
+      dataManager.deleteItem(TABLE_EXERCISE, USER_ID)
+      dataManager.deleteItem(TABLE_DAILY_EXERCISE, USER_ID)
+      dataManager.deleteItem(TABLE_BODY, USER_ID)
+      dataManager.deleteItem(TABLE_DRUG, USER_ID)
+      dataManager.deleteItem(TABLE_DRUG_TIME, USER_ID)
+      dataManager.deleteItem(TABLE_DRUG_CHECK, USER_ID)
+      dataManager.deleteItem(TABLE_NOTE, USER_ID)
+      dataManager.deleteItem(TABLE_SLEEP, USER_ID)
+      dataManager.deleteItem(TABLE_GOAL, USER_ID)
+      dataManager.deleteItem(TABLE_IMAGE, USER_ID)
+      dataManager.deleteItem(TABLE_UNUSED, USER_ID)
 
       val alarmReceiver = AlarmReceiver()
       val getDrugId = dataManager.getDrugId()
 
       for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
 
-      MyApp.prefs.removePrefs("userId")
+      MyApp.prefs.removePrefs(USER_ID)
 
       requireActivity().runOnUiThread {
          Toast.makeText(context, "탈퇴되었습니다.", Toast.LENGTH_SHORT).show()

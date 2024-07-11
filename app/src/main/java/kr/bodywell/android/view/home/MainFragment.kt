@@ -20,6 +20,7 @@ import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
 import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
@@ -38,6 +39,7 @@ class MainFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private var bundle = Bundle()
    private var adapter: CalendarAdapter1? = null
    private var pressedTime: Long = 0
    private var days = ArrayList<LocalDate?>()
@@ -170,10 +172,33 @@ class MainFragment : Fragment() {
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
-      override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+      override fun onDown(p0: MotionEvent): Boolean {
+         return false
+      }
+      override fun onShowPress(p0: MotionEvent) {}
+      override fun onSingleTapUp(p0: MotionEvent): Boolean {
+         return false
+      }
+
+      override fun onScroll(
+         e1: MotionEvent?,
+         e2: MotionEvent,
+         distanceX: Float,
+         distanceY: Float
+      ): Boolean {
+         return false
+      }
+
+      override fun onLongPress(p0: MotionEvent) {}
+      override fun onFling(
+         e1: MotionEvent?,
+         e2: MotionEvent,
+         velocityX: Float,
+         velocityY: Float
+      ): Boolean {
          var result = false
          try {
-            val diffY = e2.y - e1.y
+            val diffY = e2.y - e1!!.y
             val diffX = e2.x - e1.x
             if (abs(diffX) > abs(diffY)) {
                if (abs(diffX) > 100 && abs(velocityX) > 100) {
@@ -194,18 +219,6 @@ class MainFragment : Fragment() {
          }
          return result
       }
-
-      override fun onDown(p0: MotionEvent): Boolean {
-         return false
-      }
-      override fun onShowPress(p0: MotionEvent) {}
-      override fun onSingleTapUp(p0: MotionEvent): Boolean {
-         return false
-      }
-      override fun onScroll(p0: MotionEvent, p1: MotionEvent, p2: Float, p3: Float): Boolean {
-         return false
-      }
-      override fun onLongPress(p0: MotionEvent) {}
    }
 
    class RecyclerItemClickListener(context: Context, private val listener: OnItemClickListener?) : RecyclerView.OnItemTouchListener {

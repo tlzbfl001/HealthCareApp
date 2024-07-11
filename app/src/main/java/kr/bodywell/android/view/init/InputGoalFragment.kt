@@ -48,7 +48,7 @@ class InputGoalFragment : Fragment() {
 
       val getUser = dataManager.getUser()
 
-      if(getUser.gender == "MALE") {
+      if(getUser.gender == "Male") {
          weightGoal = 65.0
          kcalGoal = 2200
          binding.etWeightGoal.hint = weightGoal.toString()

@@ -24,65 +24,69 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val TABLE_GOAL = "goal"
       const val TABLE_IMAGE = "image"
       const val TABLE_UNUSED = "unused"
+      const val USER_ID = "userId"
+      const val CREATED = "created"
+      const val UPDATED = "updated"
+      const val IS_UPDATED = "isUpdated"
    }
 
    override fun onCreate(db: SQLiteDatabase) {
       val user = "create table $TABLE_USER(id integer primary key autoincrement, type text, email text, idToken text, userUid text, profileUid text, deviceUid text, " +
          "name text, gender text, birthday text, image text, height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, " +
-         "created text, updated integer, isUpdated integer);"
+         "$CREATED text, $UPDATED integer, $IS_UPDATED integer);"
       db.execSQL(user)
 
-      val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, userId integer, access text, refresh text, accessCreated text, refreshCreated text);"
+      val token = "create table $TABLE_TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
       db.execSQL(token)
 
-      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, userId integer, basic integer, uid text, name text, unit text, amount integer, kcal integer, " +
-         "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, isUpdated integer);"
+      val food = "create table $TABLE_FOOD(id integer primary key autoincrement, $USER_ID integer, basic integer, uid text, name text, unit text, amount integer, kcal integer, " +
+         "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, $IS_UPDATED integer);"
       db.execSQL(food)
 
-      val dailyFood = "create table $TABLE_DAILY_FOOD(id integer primary key autoincrement, userId integer, uid text, type text, name text, unit text, amount integer, " +
-         "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, created text, isUpdated integer);"
+      val dailyFood = "create table $TABLE_DAILY_FOOD(id integer primary key autoincrement, $USER_ID integer, uid text, type text, name text, unit text, amount integer, " +
+         "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, $CREATED text, $IS_UPDATED integer);"
       db.execSQL(dailyFood)
 
-      val water = "create table $TABLE_WATER(id integer primary key autoincrement, userId integer, uid text, count integer, volume integer, created text, isUpdated integer);"
+      val water = "create table $TABLE_WATER(id integer primary key autoincrement, $USER_ID integer, uid text, count integer, volume integer, $CREATED text, $IS_UPDATED integer);"
       db.execSQL(water)
 
-      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, userId integer, basic integer, uid text, name text, intensity text, " +
-         "workoutTime integer, kcal integer, useCount integer, useDate text, isUpdated integer);"
+      val exercise = "create table $TABLE_EXERCISE(id integer primary key autoincrement, $USER_ID integer, basic integer, uid text, name text, intensity text, " +
+         "workoutTime integer, kcal integer, useCount integer, useDate text, $IS_UPDATED integer);"
       db.execSQL(exercise)
 
-      val dailyExercise = "create table $TABLE_DAILY_EXERCISE(id integer primary key autoincrement, userId integer, uid text, name text, intensity text, " +
-         "workoutTime integer, kcal integer, created text, isUpdated integer);"
+      val dailyExercise = "create table $TABLE_DAILY_EXERCISE(id integer primary key autoincrement, $USER_ID integer, uid text, name text, intensity text, " +
+         "workoutTime integer, kcal integer, $CREATED text, $IS_UPDATED integer);"
       db.execSQL(dailyExercise)
 
-      val body = "create table $TABLE_BODY(id integer primary key autoincrement, userId integer, uid text, height real, weight real, intensity integer, fat real, " +
-         "muscle real, bmi real, bmr real, created text, isUpdated integer);"
+      val body = "create table $TABLE_BODY(id integer primary key autoincrement, $USER_ID integer, uid text, height real, weight real, intensity integer, fat real, " +
+         "muscle real, bmi real, bmr real, $CREATED text, $IS_UPDATED integer);"
       db.execSQL(body)
 
-      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, userId integer, uid text, startTime text, endTime text, total integer, " +
-         "created text, isUpdated integer);"
+      val sleep = "create table $TABLE_SLEEP(id integer primary key autoincrement, $USER_ID integer, uid text, startTime text, endTime text, total integer, " +
+         "$CREATED text, $IS_UPDATED integer);"
       db.execSQL(sleep)
 
-      val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, userId integer, uid text, type text, name text, amount integer, unit text, " +
-         "count integer, startDate text, endDate text, isSet integer, created text, isUpdated integer);"
+      val drug = "create table $TABLE_DRUG(id integer primary key autoincrement, $USER_ID integer, uid text, type text, name text, amount integer, unit text, " +
+         "count integer, startDate text, endDate text, isSet integer, $IS_UPDATED integer);"
       db.execSQL(drug)
 
-      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, userId integer, uid text, drugId integer, time text);"
+      val drugTime = "create table $TABLE_DRUG_TIME(id integer primary key autoincrement, $USER_ID integer, uid text, drugId integer, time text);"
       db.execSQL(drugTime)
 
-      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, userId integer, uid text, drugId integer, drugTimeId integer, created text);"
+      val drugCheck = "create table $TABLE_DRUG_CHECK(id integer primary key autoincrement, $USER_ID integer, uid text, drugId integer, drugTimeId integer, $CREATED text);"
       db.execSQL(drugCheck)
 
-      val note = "create table $TABLE_NOTE(id integer primary key autoincrement, userId integer, title text, content integer, status integer, created text);"
+      val note = "create table $TABLE_NOTE(id integer primary key autoincrement, $USER_ID integer, title text, content integer, status integer, $CREATED text);"
       db.execSQL(note)
 
-      val goal = "create table $TABLE_GOAL(id integer primary key autoincrement, userId integer, uid text, food integer, waterVolume integer, water integer, " +
-         "exercise integer, body real, sleep integer, drug integer, created text, isUpdated integer);"
+      val goal = "create table $TABLE_GOAL(id integer primary key autoincrement, $USER_ID integer, uid text, food integer, waterVolume integer, water integer, " +
+         "exercise integer, body real, sleep integer, drug integer, $CREATED text, $IS_UPDATED integer);"
       db.execSQL(goal)
 
-      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, userId integer, type text, dataId integer, imageUri text, created text);"
+      val image = "create table $TABLE_IMAGE(id integer primary key autoincrement, $USER_ID integer, type text, dataId integer, imageUri text, $CREATED text);"
       db.execSQL(image)
 
-      val unused = "create TABLE $TABLE_UNUSED(id integer primary key autoincrement, userId integer, type text, value text, created text);"
+      val unused = "create TABLE $TABLE_UNUSED(id integer primary key autoincrement, $USER_ID integer, type text, value text, drugUid text, drugTimeUid text, $CREATED text);"
       db.execSQL(unused)
    }
 

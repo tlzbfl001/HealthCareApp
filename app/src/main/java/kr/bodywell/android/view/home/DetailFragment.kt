@@ -1,60 +1,212 @@
 package kr.bodywell.android.view.home
 
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.activityViewModels
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.databinding.FragmentDetailBinding
+import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
+import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment2
+import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment1
+import kr.bodywell.android.util.MainViewModel
+import kr.bodywell.android.view.home.body.BodyFragment
+import kr.bodywell.android.view.home.drug.DrugFragment
+import kr.bodywell.android.view.home.exercise.ExerciseFragment
+import kr.bodywell.android.view.home.food.FoodFragment
+import kr.bodywell.android.view.home.sleep.SleepFragment
+import kr.bodywell.android.view.home.water.WaterFragment
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class DetailFragment : Fragment() {
+   private var _binding: FragmentDetailBinding? = null
+   private val binding get() = _binding!!
 
-/**
- * A simple [Fragment] subclass.
- * Use the [detailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class detailFragment : Fragment() {
-   // TODO: Rename and change types of parameters
-   private var param1: String? = null
-   private var param2: String? = null
+   private lateinit var callback: OnBackPressedCallback
+   private lateinit var dataManager: DataManager
+   private val viewModel: MainViewModel by activityViewModels()
 
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      arguments?.let {
-         param1 = it.getString(ARG_PARAM1)
-         param2 = it.getString(ARG_PARAM2)
+   override fun onAttach(context: Context) {
+      super.onAttach(context)
+      callback = object : OnBackPressedCallback(true) {
+         override fun handleOnBackPressed() {
+            replaceFragment1(requireActivity(), MainFragment())
+         }
       }
+      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
    ): View? {
-      // Inflate the layout for this fragment
-      return inflater.inflate(R.layout.fragment_detail, container, false)
+      _binding = FragmentDetailBinding.inflate(layoutInflater)
+
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
+
+      dataManager = DataManager(activity)
+      dataManager.open()
+
+      binding.tvDate.text = dateFormat(selectedDate)
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
+         viewModel.setDate()
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
+         viewModel.setDate()
+      }
+
+      binding.tvFood.setOnClickListener {
+         setMenu1()
+         replaceDetailFragment2(requireActivity(), FoodFragment())
+      }
+
+      binding.tvWater.setOnClickListener {
+         setMenu2()
+         replaceDetailFragment2(requireActivity(), WaterFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         setMenu3()
+         replaceDetailFragment2(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         setMenu4()
+         replaceDetailFragment2(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         setMenu5()
+         replaceDetailFragment2(requireActivity(), SleepFragment())
+      }
+
+      binding.tvDrug.setOnClickListener {
+         setMenu6()
+         replaceDetailFragment2(requireActivity(), DrugFragment())
+      }
+
+      return binding.root
    }
 
-   companion object {
-      /**
-       * Use this factory method to create a new instance of
-       * this fragment using the provided parameters.
-       *
-       * @param param1 Parameter 1.
-       * @param param2 Parameter 2.
-       * @return A new instance of fragment detailFragment.
-       */
-      // TODO: Rename and change types and number of parameters
-      @JvmStatic
-      fun newInstance(param1: String, param2: String) =
-         detailFragment().apply {
-            arguments = Bundle().apply {
-               putString(ARG_PARAM1, param1)
-               putString(ARG_PARAM2, param2)
-            }
-         }
+   private fun setMenu1() {
+      binding.tvFood.setBackgroundResource(R.drawable.rec_25_food)
+      binding.tvFood.setTextColor(Color.WHITE)
+      binding.tvWater.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWater.setTextColor(Color.BLACK)
+      binding.tvExercise.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvExercise.setTextColor(Color.BLACK)
+      binding.tvBody.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvBody.setTextColor(Color.BLACK)
+      binding.tvSleep.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvSleep.setTextColor(Color.BLACK)
+      binding.tvDrug.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDrug.setTextColor(Color.BLACK)
+   }
+
+   private fun setMenu2() {
+      binding.tvFood.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvFood.setTextColor(Color.BLACK)
+      binding.tvWater.setBackgroundResource(R.drawable.rec_25_water)
+      binding.tvWater.setTextColor(Color.WHITE)
+      binding.tvExercise.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvExercise.setTextColor(Color.BLACK)
+      binding.tvBody.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvBody.setTextColor(Color.BLACK)
+      binding.tvSleep.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvSleep.setTextColor(Color.BLACK)
+      binding.tvDrug.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDrug.setTextColor(Color.BLACK)
+   }
+
+   private fun setMenu3() {
+      binding.tvFood.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvFood.setTextColor(Color.BLACK)
+      binding.tvWater.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWater.setTextColor(Color.BLACK)
+      binding.tvExercise.setBackgroundResource(R.drawable.rec_25_exercise)
+      binding.tvExercise.setTextColor(Color.WHITE)
+      binding.tvBody.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvBody.setTextColor(Color.BLACK)
+      binding.tvSleep.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvSleep.setTextColor(Color.BLACK)
+      binding.tvDrug.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDrug.setTextColor(Color.BLACK)
+   }
+
+   private fun setMenu4() {
+      binding.tvFood.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvFood.setTextColor(Color.BLACK)
+      binding.tvWater.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWater.setTextColor(Color.BLACK)
+      binding.tvExercise.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvExercise.setTextColor(Color.BLACK)
+      binding.tvBody.setBackgroundResource(R.drawable.rec_25_body)
+      binding.tvBody.setTextColor(Color.WHITE)
+      binding.tvSleep.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvSleep.setTextColor(Color.BLACK)
+      binding.tvDrug.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDrug.setTextColor(Color.BLACK)
+   }
+
+   private fun setMenu5() {
+      binding.tvFood.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvFood.setTextColor(Color.BLACK)
+      binding.tvWater.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWater.setTextColor(Color.BLACK)
+      binding.tvExercise.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvExercise.setTextColor(Color.BLACK)
+      binding.tvBody.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvBody.setTextColor(Color.BLACK)
+      binding.tvSleep.setBackgroundResource(R.drawable.rec_25_sleep)
+      binding.tvSleep.setTextColor(Color.WHITE)
+      binding.tvDrug.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvDrug.setTextColor(Color.BLACK)
+   }
+
+   private fun setMenu6() {
+      binding.tvFood.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvFood.setTextColor(Color.BLACK)
+      binding.tvWater.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvWater.setTextColor(Color.BLACK)
+      binding.tvExercise.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvExercise.setTextColor(Color.BLACK)
+      binding.tvBody.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvBody.setTextColor(Color.BLACK)
+      binding.tvSleep.setBackgroundResource(R.drawable.rec_25_border_gray)
+      binding.tvSleep.setTextColor(Color.BLACK)
+      binding.tvDrug.setBackgroundResource(R.drawable.rec_25_drug)
+      binding.tvDrug.setTextColor(Color.WHITE)
+   }
+
+   override fun onDetach() {
+      super.onDetach()
+      callback.remove()
    }
 }

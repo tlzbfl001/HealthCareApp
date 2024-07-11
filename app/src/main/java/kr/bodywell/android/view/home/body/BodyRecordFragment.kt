@@ -16,8 +16,11 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.view.home.DetailFragment
 import java.util.Calendar
 
 class BodyRecordFragment : Fragment() {
@@ -26,13 +29,15 @@ class BodyRecordFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private var bundle = Bundle()
    private var level = 1
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), BodyFragment())
+            bundle.putString("type", "body")
+            replaceFragment2(requireActivity(), DetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -53,6 +58,8 @@ class BodyRecordFragment : Fragment() {
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
+
+      bundle.putString("type", "body")
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -102,16 +109,14 @@ class BodyRecordFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
+         replaceFragment2(requireActivity(), DetailFragment(), bundle)
       }
 
       binding.etBmi.addTextChangedListener(object : TextWatcher {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             val text = s.toString().replace(".","")
 
-            if(s.length == 1 && s[0].toString() == ".") {
-               binding.etBmi.setText("")
-            }
+            if(s.length == 1 && s[0].toString() == ".") binding.etBmi.setText("")
 
             if(text.length == 2) {
                val format = text[0].toString() + "." + text[1].toString()
@@ -138,9 +143,7 @@ class BodyRecordFragment : Fragment() {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             val text = s.toString().replace(".","")
 
-            if(s.length == 1 && s[0].toString() == ".") {
-               binding.etFat.setText("")
-            }
+            if(s.length == 1 && s[0].toString() == ".") binding.etFat.setText("")
 
             if(text.length == 2) {
                val format = text[0].toString() + "." + text[1].toString()
@@ -167,9 +170,7 @@ class BodyRecordFragment : Fragment() {
          override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             val text = s.toString().replace(".","")
 
-            if(s.length == 1 && s[0].toString() == ".") {
-               binding.etMuscle.setText("")
-            }
+            if(s.length == 1 && s[0].toString() == ".") binding.etMuscle.setText("")
 
             if(text.length == 2) {
                val format = text[0].toString() + "." + text[1].toString()
@@ -197,9 +198,7 @@ class BodyRecordFragment : Fragment() {
             if(s.toString() != "") {
                val text = s.toString().replace(".","")
 
-               if(s.length == 1 && s[0].toString() == ".") {
-                  binding.etHeight.setText("")
-               }
+               if(s.length == 1 && s[0].toString() == ".") binding.etHeight.setText("")
 
                if(text.length == 2) {
                   val format = text[0].toString() + "." + text[1].toString()
@@ -236,9 +235,7 @@ class BodyRecordFragment : Fragment() {
             if(s.toString() != "") {
                val text = s.toString().replace(".","")
 
-               if(s.length == 1 && s[0].toString() == ".") {
-                  binding.etWeight.setText("")
-               }
+               if(s.length == 1 && s[0].toString() == ".") binding.etWeight.setText("")
 
                if(text.length == 2) {
                   val format = text[0].toString() + "." + text[1].toString()
@@ -285,7 +282,7 @@ class BodyRecordFragment : Fragment() {
          val getUser = dataManager.getUser()
          val current = Calendar.getInstance()
          val currentYear = current.get(Calendar.YEAR)
-         val age = currentYear - getUser.birthday.substring(0 until 4).toInt()
+         val age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
 
          if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "신체 정보를 전부 입력해야합니다.", Toast.LENGTH_SHORT).show()
@@ -331,7 +328,7 @@ class BodyRecordFragment : Fragment() {
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
-            replaceFragment1(requireActivity(), BodyFragment())
+            replaceFragment2(requireActivity(), DetailFragment(), bundle)
          }
       }
 

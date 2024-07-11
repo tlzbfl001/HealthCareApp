@@ -15,7 +15,6 @@ data class Drug(
    var startDate: String = "",
    var endDate: String = "",
    var isSet: Int = 0,
-   var created: String = "",
    var isUpdated: Int = 0
 )
 

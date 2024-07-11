@@ -16,6 +16,8 @@ import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.view.home.DetailFragment
 
 class ExerciseListFragment : Fragment() {
    private var _binding: FragmentExerciseListBinding? = null
@@ -23,12 +25,14 @@ class ExerciseListFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private var bundle = Bundle()
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), ExerciseFragment())
+            bundle.putString("type", "exercise")
+            replaceFragment2(requireActivity(), DetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -54,7 +58,8 @@ class ExerciseListFragment : Fragment() {
       dataManager.open()
 
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
+         bundle.putString("type", "exercise")
+         replaceFragment2(requireActivity(), DetailFragment(), bundle)
       }
 
       binding.cvInput.setOnClickListener {

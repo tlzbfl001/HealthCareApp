@@ -45,14 +45,14 @@ class DrugAdapter2 (
       return ViewHolder(view)
    }
 
-   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.tvType.text = itemList[position].type
-      holder.tvName.text = itemList[position].name
-      holder.tvCount.text = itemList[position].amount.toString() + itemList[position].unit
+   override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+      holder.tvType.text = itemList[pos].type
+      holder.tvName.text = itemList[pos].name
+      holder.tvCount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
-      val getDrugTime = dataManager.getDrugTime(itemList[position].id)
+      val getDrugTime = dataManager.getDrugTime(itemList[pos].id)
 
-      holder.tvPeriod.text = "${itemList[position].count}일동안 ${getDrugTime.size}회 복용"
+      holder.tvPeriod.text = "${itemList[pos].count}일동안 ${getDrugTime.size}회 복용"
 
       if(getDrugTime.isNotEmpty()) {
          timeList.clear()
@@ -66,21 +66,21 @@ class DrugAdapter2 (
          holder.recyclerView.adapter = adapter
       }
 
-      holder.switchOnOff.isChecked = itemList[position].isSet == 1
+      holder.switchOnOff.isChecked = itemList[pos].isSet == 1
 
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
-            val message = itemList[position].name + " " + itemList[position].amount + itemList[position].unit
-            alarmReceiver.setAlarm(context, itemList[position].id, itemList[position].startDate, itemList[position].endDate, timeList, message)
-            dataManager.updateInt(TABLE_DRUG, "isSet", 1, "id", itemList[position].id)
+            val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
+            alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
+            dataManager.updateInt(TABLE_DRUG, "isSet", 1, "id", itemList[pos].id)
          }else {
-            alarmReceiver.cancelAlarm(context, itemList[position].id)
-            dataManager.updateInt(TABLE_DRUG, "isSet", 0, "id", itemList[position].id)
+            alarmReceiver.cancelAlarm(context, itemList[pos].id)
+            dataManager.updateInt(TABLE_DRUG, "isSet", 0, "id", itemList[pos].id)
          }
       }
 
       holder.cvEdit.setOnClickListener {
-         bundle.putString("id", itemList[position].id.toString())
+         bundle.putString("id", itemList[pos].id.toString())
          replaceFragment2(context, DrugAddFragment(), bundle)
       }
 
@@ -89,24 +89,28 @@ class DrugAdapter2 (
             .setTitle("복용약 삭제")
             .setMessage("해당 약과 관련된 모든 데이터가 삭제됩니다.\n정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
+               val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugTimeId", "drugId", itemList[pos].id)
                for(i in 0 until drugCheckUid.size) {
-                  if(drugCheckUid[i] != "") dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i], created = selectedDate.toString()))
+                  val drugTimeUid = dataManager.getDrugTimeUid(TABLE_DRUG_TIME, drugCheckUid[i].drugTimeId)
+                  if(drugTimeUid != "" && drugCheckUid[i].uid != "") {
+                     dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i].uid,
+                        drugUid = itemList[pos].uid, drugTimeUid = drugTimeUid, created = itemList[pos].startDate))
+                  }
                }
 
-               val drugTimeUid = dataManager.getDrugUid(TABLE_DRUG_TIME, "drugId", itemList[position].id)
+               val drugTimeUid = dataManager.getDrugUid(TABLE_DRUG_TIME, "id", "drugId", itemList[pos].id)
                for(i in 0 until drugTimeUid.size) {
-                  if(drugTimeUid[i] != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i], created = selectedDate.toString()))
+                  if(drugTimeUid[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i].uid, drugUid = itemList[pos].uid, created = itemList[pos].startDate))
                }
 
-               if(itemList[position].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[position].uid, created = selectedDate.toString()))
+               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[pos].uid, created = itemList[pos].startDate))
 
-               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[position].id)
-               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[position].id)
-               dataManager.deleteItem(TABLE_DRUG, "id", itemList[position].id)
+               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[pos].id)
+               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[pos].id)
+               dataManager.deleteItem(TABLE_DRUG, "id", itemList[pos].id)
 
-               alarmReceiver.cancelAlarm(context, itemList[position].id)
-               itemList.removeAt(position)
+               alarmReceiver.cancelAlarm(context, itemList[pos].id)
+               itemList.removeAt(pos)
 
                notifyDataSetChanged()
 

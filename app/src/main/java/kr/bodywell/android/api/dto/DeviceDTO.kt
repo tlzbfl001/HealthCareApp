@@ -3,9 +3,6 @@ package kr.bodywell.android.api.dto
 import com.google.gson.annotations.SerializedName
 
 data class DeviceDTO(
-	@SerializedName("itemId")
-	var itemId: String = "",
-
 	@SerializedName("label")
 	var label: String = "",
 

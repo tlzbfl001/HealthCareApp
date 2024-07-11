@@ -9,12 +9,12 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 android {
     namespace 'kr.bodywell.android'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "kr.bodywell.android"
         minSdk 29
-        targetSdk 33
+        targetSdk 34
         versionCode 6
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

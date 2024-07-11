@@ -6,9 +6,6 @@ data class ProfileDTO (
 	@SerializedName("name")
 	var name: String = "",
 
-	@SerializedName("picture")
-	var picture: String = "",
-
 	@SerializedName("birth")
 	var birth: String = "",
 

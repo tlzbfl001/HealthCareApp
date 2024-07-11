@@ -27,6 +27,7 @@ import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.view.home.DetailFragment
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -36,6 +37,7 @@ class FoodBreakfastFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private var bundle = Bundle()
    private var photoAdapter: PhotoViewAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
    private var imageData = ArrayList<Image>()
@@ -45,7 +47,8 @@ class FoodBreakfastFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), FoodFragment())
+            bundle.putString("type", "food")
+            replaceFragment2(requireActivity(), DetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -71,13 +74,14 @@ class FoodBreakfastFragment : Fragment() {
       dataManager.open()
 
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
+         bundle.putString("type", "food")
+         replaceFragment2(requireActivity(), DetailFragment(), bundle)
       }
 
       binding.cvInput.setOnClickListener {
-         val bundle = Bundle()
-         bundle.putString("type", type)
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+         val bundle2 = Bundle()
+         bundle2.putString("type", type)
+         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle2)
       }
 
       binding.tvLunch.setOnClickListener {

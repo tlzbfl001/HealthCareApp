@@ -17,10 +17,14 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
@@ -29,6 +33,8 @@ import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.MainViewModel
+import kr.bodywell.android.util.PermissionUtil.Companion.REQUEST_CODE
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
@@ -74,10 +80,40 @@ class DrugFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      dailyView()
+      binding.tvDate.text = dateFormat(selectedDate)
 
       binding.clBack.setOnClickListener {
          replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         binding.tvDate.text = dateFormat(selectedDate)
+      }
+
+      binding.tvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.tvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
       }
 
       val dialog = Dialog(requireActivity())
@@ -93,14 +129,14 @@ class DrugFragment : Fragment() {
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.created == "") {
                dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), created = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateIntByDate(TABLE_GOAL, "drug", et.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
+               dataManager.updateInt(TABLE_GOAL, TABLE_DRUG, et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(TABLE_GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             dailyView()
@@ -112,61 +148,28 @@ class DrugFragment : Fragment() {
          dialog.show()
       }
 
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-         dailyView()
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-         dailyView()
-      }
-
       binding.clRecord.setOnClickListener {
          if(requestPermission()) {
             replaceFragment1(requireActivity(), DrugRecordFragment())
          }
       }
 
-      binding.cvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.cvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.cvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.cvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.cvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.cvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
+      dailyView()
 
       return binding.root
    }
 
    private fun dailyView() {
       val itemList = ArrayList<DrugList>()
-      binding.tvDate.text = dateFormat(selectedDate)
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
+
       dailyGoal = dataManager.getGoal(selectedDate.toString())
       val check = dataManager.getDrugCheckCount(selectedDate.toString())
+
       binding.tvGoal.text = "${dailyGoal.drug}회"
       binding.pbDrug.max = dailyGoal.drug
       binding.pbDrug.progress = check
@@ -177,7 +180,7 @@ class DrugFragment : Fragment() {
          val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
          for(j in 0 until getDrugTime.size) {
             val getDrugCheck = dataManager.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
-            itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = selectedDate.toString(),
+            itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = getDrugDaily[i].startDate,
                name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheck.id)
             )
          }
@@ -209,9 +212,5 @@ class DrugFragment : Fragment() {
    override fun onDetach() {
       super.onDetach()
       callback.remove()
-   }
-
-   companion object {
-      private const val REQUEST_CODE = 1
    }
 }

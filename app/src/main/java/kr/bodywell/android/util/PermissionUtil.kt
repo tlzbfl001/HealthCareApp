@@ -24,9 +24,9 @@ import java.text.SimpleDateFormat
 
 class PermissionUtil {
     companion object {
-        private const val REQUEST_CODE = 1
-        const val CAMERA_REQUEST_CODE = 100
-        const val STORAGE_REQUEST_CODE = 101
+        const val REQUEST_CODE = 1
+        const val CAMERA_REQUEST_CODE = 2
+        const val STORAGE_REQUEST_CODE = 3
 
         private val COMMON = arrayOf(
             Manifest.permission.BODY_SENSORS,
@@ -65,19 +65,14 @@ class PermissionUtil {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 for(permission in CAMERA_PERMISSION_2) {
                     if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_2),
-                            REQUEST_CODE
-
-                        )
+                        ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
                         check = false
                     }
                 }
             }else {
                 for(permission in CAMERA_PERMISSION_1) {
                     if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_1),
-                            REQUEST_CODE
-                        )
+                        ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
                         check = false
                     }
                 }
@@ -121,29 +116,6 @@ class PermissionUtil {
             }
 
             return uri
-        }
-
-        fun getImageUriWithAuthority(context: Context, uri: Uri?): String? {
-            var inputStream: InputStream? = null
-            if(uri?.authority != null) {
-                try{
-                    inputStream = context.contentResolver.openInputStream(uri)
-                    val bmp = BitmapFactory.decodeStream(inputStream)
-                    val bytes = ByteArrayOutputStream()
-                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-                    val path = MediaStore.Images.Media.insertImage(context.contentResolver, bmp, "Title", null)
-                    return Uri.parse(path).toString()
-                }catch (e: FileNotFoundException) {
-                    Log.i(CustomUtil.TAG, "$e")
-                }finally {
-                    try{
-                        inputStream?.close()
-                    }catch(e: IOException) {
-                        Log.i(CustomUtil.TAG, "$e")
-                    }
-                }
-            }
-            return null
         }
     }
 }

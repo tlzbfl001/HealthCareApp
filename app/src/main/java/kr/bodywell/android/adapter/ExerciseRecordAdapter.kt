@@ -29,9 +29,7 @@ class ExerciseRecordAdapter (
    private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
 
-   init {
-      dataManager.open()
-   }
+   init { dataManager.open() }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -41,9 +39,7 @@ class ExerciseRecordAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.textView.text = itemList[position].name
 
-      holder.textView.setOnClickListener {
-         onItemClickListener!!.onItemClick(position)
-      }
+      holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
 
       if(itemList[position].basic == 0) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
@@ -55,9 +51,7 @@ class ExerciseRecordAdapter (
          val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
-         clX.setOnClickListener {
-            dialog.dismiss()
-         }
+         clX.setOnClickListener { dialog.dismiss() }
 
          clEdit.setOnClickListener {
             bundle.putString("id", itemList[position].id.toString())

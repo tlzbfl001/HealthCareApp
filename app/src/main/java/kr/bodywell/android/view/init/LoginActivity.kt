@@ -1,6 +1,5 @@
 package kr.bodywell.android.view.init
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -27,7 +26,6 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.BuildConfig
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Body
@@ -123,14 +121,14 @@ class LoginActivity : AppCompatActivity() {
 
                if(getUser.created == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
-//                     val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-//                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
-//                     startActivity(intent)
-
-                     CoroutineScope(Dispatchers.IO).launch {
-                        val response = RetrofitAPI.api.getAllUser()
-                        if(response.isSuccessful) {
-                           for(i in 0 until response.body()!!.size) if(response.body()!![i].email == it.result.email.toString()) check = true
+                     val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
+                     startActivity(intent)
+                     
+                     /*CoroutineScope(Dispatchers.IO).launch {
+                        val getAllUser = RetrofitAPI.api.getAllUser()
+                        if(getAllUser.isSuccessful) {
+                           for(i in 0 until getAllUser.body()!!.size) if(getAllUser.body()!![i].email == it.result.email.toString()) check = true
                         }
 
                         if(check) {
@@ -140,16 +138,16 @@ class LoginActivity : AppCompatActivity() {
                                  .setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
                                  .setPositiveButton("확인") { _, _ ->
                                     CoroutineScope(Dispatchers.IO).launch {
-                                       val data2 = LoginDTO(it.result.idToken!!)
+                                       val loginDTO = LoginDTO(it.result.idToken!!)
 
-                                       val response2 = RetrofitAPI.api.loginWithGoogle(data2)
-                                       if(response2.isSuccessful) {
+                                       val loginWithGoogle = RetrofitAPI.api.loginWithGoogle(loginDTO)
+                                       if(loginWithGoogle.isSuccessful) {
                                           user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
-                                          userUid = decodeToken(response2.body()!!.accessToken)
-                                          access = response2.body()!!.accessToken
-                                          refresh = response2.body()!!.refreshToken
+                                          userUid = decodeToken(loginWithGoogle.body()!!.accessToken)
+                                          access = loginWithGoogle.body()!!.accessToken
+                                          refresh = loginWithGoogle.body()!!.refreshToken
                                           registerUser()
-                                       }else Log.e(TAG, "googleLogin: $response2")
+                                       }else Log.e(TAG, "googleLogin: $loginWithGoogle")
                                     }
                                  }.setNegativeButton("취소", null).create().show()
                            }
@@ -158,7 +156,7 @@ class LoginActivity : AppCompatActivity() {
                            intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
                            startActivity(intent)
                         }
-                     }
+                     }*/
                   }else Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                }else { // 로그인
                   MyApp.prefs.setPrefs("userId", getUser.id)
@@ -260,20 +258,30 @@ class LoginActivity : AppCompatActivity() {
 
    private fun registerUser() {
       CoroutineScope(Dispatchers.IO).launch {
-         var deviceUid = ""
-
          val getDevices = RetrofitAPI.api.getAllDevice("Bearer $access")
-         if(getDevices.isSuccessful) deviceUid = getDevices.body()!![0].uid
+         val getProfile = RetrofitAPI.api.getProfile("Bearer $access")
 
-         if(deviceUid != "") {
+         val deviceUid = if(getDevices.isSuccessful) getDevices.body()!![0].uid else ""
+         val profileUid = if(getProfile.isSuccessful) getProfile.body()!!.uid else ""
+
+         if(deviceUid != "" && profileUid != "") {
             val getUser = dataManager.getUser(user.type, user.email)
             val getToken = dataManager.getToken()
 
+            val gender = if(getProfile.body()!!.gender == null) "Female" else getProfile.body()!!.gender
+            val birthday = if(getProfile.body()!!.birth == null) LocalDate.now().toString() else getProfile.body()!!.birth
+            val height = if(getProfile.body()!!.height == null) 0.0 else getProfile.body()!!.height!!.toDouble()
+            val weight = if(getProfile.body()!!.weight == null) 0.0 else getProfile.body()!!.weight!!.toDouble()
+
             // 사용자 정보 저장
             if(getUser.created == "") {
-               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, created = LocalDate.now().toString()))
+               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, profileUid = profileUid,
+                  deviceUid = deviceUid, name = getProfile.body()!!.name, gender = gender, birthday = birthday, height = height,
+                  weight = weight, created = getProfile.body()!!.createdAt.substring(0, 10), updated = getProfile.body()!!.updatedAt))
             }else {
-               dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, deviceUid = deviceUid, created = LocalDate.now().toString()))
+               dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, profileUid = profileUid,
+                  deviceUid = deviceUid, name = getProfile.body()!!.name, gender = gender, birthday = birthday, height = height,
+                  weight = weight, created = getProfile.body()!!.createdAt.substring(0, 10), updated = getProfile.body()!!.updatedAt))
             }
 
             val getUser2 = dataManager.getUser(user.type, user.email)
@@ -363,6 +371,16 @@ class LoginActivity : AppCompatActivity() {
                }
             }
 
+            val getAllWorkout = RetrofitAPI.api.getAllWorkout("Bearer $access")
+
+            if(getAllWorkout.isSuccessful) {
+               for(i in 0 until getAllWorkout.body()!!.size) {
+                  dataManager.insertDailyExercise(Exercise(uid = getAllWorkout.body()!![i].uid, name = getAllWorkout.body()!![i].name,
+                     intensity = getAllWorkout.body()!![i].intensity, workoutTime = getAllWorkout.body()!![i].time,
+                     kcal = getAllWorkout.body()!![i].calories, created = getAllWorkout.body()!![i].date))
+               }
+            }
+
             val getAllBody = RetrofitAPI.api.getAllBody("Bearer $access")
 
             if(getAllBody.isSuccessful) {
@@ -390,6 +408,16 @@ class LoginActivity : AppCompatActivity() {
                      endTime = getAllSleep.body()!![i].ends, total = diff.toMinutes().toInt(), created = regDate.toString()))
                }
             }
+
+            /*val getMedicine = RetrofitAPI.api.getAllMedicine("Bearer $access")
+
+            if(getMedicine.isSuccessful) {
+               for(i in 0 until getMedicine.body()!!.size) {
+                  dataManager.insertDrug(Drug(uid = getMedicine.body()!![i].uid, type = getMedicine.body()!![i].category,
+                     name = getMedicine.body()!![i].name, amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit,
+                     startDate = getMedicine.body()!![i].starts, endDate = getMedicine.body()!![i].ends))
+               }
+            }*/
 
             startActivity(Intent(this@LoginActivity, MainActivity::class.java))
          }else Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()

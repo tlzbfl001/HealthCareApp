@@ -15,5 +15,5 @@ dependencyResolutionManagement {
         maven {url "https://devrepo.kakao.com/nexus/content/groups/public/"}
     }
 }
-rootProject.name = "BodyWell"
+rootProject.name = "Bodywell"
 include ':app'

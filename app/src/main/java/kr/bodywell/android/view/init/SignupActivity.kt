@@ -29,6 +29,7 @@ import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.MyApp
 import org.json.JSONObject
@@ -66,12 +67,9 @@ class SignupActivity : AppCompatActivity() {
       dataManager.open()
 
       user = intent.getParcelableExtra("user")!!
-
       Log.d(TAG, "user: $user")
 
-      binding.ivBack.setOnClickListener {
-         startActivity(Intent(this, LoginActivity::class.java))
-      }
+      binding.ivBack.setOnClickListener { startActivity(Intent(this, LoginActivity::class.java)) }
 
       binding.cbAll.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
@@ -124,21 +122,13 @@ class SignupActivity : AppCompatActivity() {
          }
       }
 
-      binding.tvView1.setOnClickListener {
-         showTermsDialog("서비스 이용 약관 동의", 1)
-      }
+      binding.tvView1.setOnClickListener { showTermsDialog("서비스 이용 약관 동의", 1) }
 
-      binding.tvView2.setOnClickListener {
-         showTermsDialog("개인정보처리방침 동의", 2)
-      }
+      binding.tvView2.setOnClickListener { showTermsDialog("개인정보처리방침 동의", 2) }
 
-      binding.tvView3.setOnClickListener {
-         showTermsDialog("민감정보 수집 및 이용 동의", 3)
-      }
+      binding.tvView3.setOnClickListener { showTermsDialog("민감정보 수집 및 이용 동의", 3) }
 
-      binding.tvView4.setOnClickListener {
-         showTermsDialog("마케팅 수신 동의", 4)
-      }
+      binding.tvView4.setOnClickListener { showTermsDialog("마케팅 수신 동의", 4) }
 
       binding.cvContinue.setOnClickListener {
          if(isClickable) {
@@ -147,60 +137,44 @@ class SignupActivity : AppCompatActivity() {
             if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
                if(networkStatusCheck(this)) {
                   if(user.type != "" && user.email != "" && user.idToken != "" ) {
-//                  registerUser2()
-
-                     when(user.type) {
+                     registerUser2()
+                    /* when(user.type) {
                         "google" -> {
                            CoroutineScope(Dispatchers.IO).launch {
                               val data = LoginDTO(user.idToken)
 
-                              val response = RetrofitAPI.api.loginWithGoogle(data)
-                              if(response.isSuccessful) {
-                                 userUid = decodeToken(response.body()!!.accessToken)
-
-                                 val deleteUser = RetrofitAPI.api.deleteUser("Bearer ${response.body()!!.accessToken}", userUid)
-
-                                 if(deleteUser.isSuccessful) {
-                                    Log.d(TAG, "deleteUser1: $deleteUser")
-
-                                    val googleLogin = RetrofitAPI.api.loginWithGoogle(data)
-                                    if(googleLogin.isSuccessful) {
-                                       Log.d(TAG, "googleLogin: ${googleLogin.body()}")
-                                       access = googleLogin.body()!!.accessToken
-                                       refresh = googleLogin.body()!!.refreshToken
-                                       userUid = decodeToken(access)
-
-                                       registerUser1()
-                                    }else {
-                                       Log.e(TAG, "googleLogin1: $googleLogin")
-                                       runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
-                                    }
-                                 }else {
-                                    Log.e(TAG, "deleteUser2: $deleteUser")
-                                    runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
-                                 }
+                              val googleLogin = RetrofitAPI.api.loginWithGoogle(data)
+                              if(googleLogin.isSuccessful) {
+                                 Log.d(TAG, "googleLogin: ${googleLogin.body()}")
+                                 access = googleLogin.body()!!.accessToken
+                                 refresh = googleLogin.body()!!.refreshToken
+                                 userUid = decodeToken(access)
+                                 registerUser()
                               }else {
-                                 Log.e(TAG, "googleLogin3: $response")
+                                 Log.e(TAG, "googleLogin1: $googleLogin")
                                  runOnUiThread { Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show() }
                               }
                            }
                         }
-                     }
-                  }else Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                     }*/
+                  }else Toast.makeText(this, "회원가입 실패1", Toast.LENGTH_SHORT).show()
                }else Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
             }else Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
          }
       }
    }
 
-   private fun registerUser1() {
+   private fun registerUser() {
       var getUser = dataManager.getUser(user.type, user.email)
+      val updated = isoFormat2()
 
       // 사용자 정보 저장
       if(getUser.created == "") {
-         dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, created = LocalDate.now().toString()))
+         dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid,
+            created = LocalDate.now().toString(), updated = updated, isUpdated = 1))
       }else {
-         dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid, created = LocalDate.now().toString()))
+         dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, userUid = userUid,
+            created = LocalDate.now().toString(), updated = updated, isUpdated = 1))
       }
 
       getUser = dataManager.getUser(user.type, user.email)
@@ -208,10 +182,10 @@ class SignupActivity : AppCompatActivity() {
       CoroutineScope(Dispatchers.IO).launch {
          val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
          val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
-         val hardwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
+         val hardwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
+         val softwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
             "" }else packageManager.getPackageInfo(packageName, 0).versionName
-         val softwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
-         val data = DeviceDTO("BodyWell${getUser.id}", "BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
+         val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
 
          val createDevice = RetrofitAPI.api.createDevice("Bearer $access", data)
          val getProfile = RetrofitAPI.api.getProfile("Bearer $access")
@@ -269,18 +243,6 @@ class SignupActivity : AppCompatActivity() {
                }
 
                dialog.show()
-            }
-         }else {
-            val deleteUser = RetrofitAPI.api.deleteUser("Bearer $access", userUid)
-
-            if(deleteUser.isSuccessful) {
-               dataManager.deleteItem(TABLE_USER, "userId")
-               Log.d(TAG, "deleteUser: $deleteUser")
-            } else Log.e(TAG, "deleteUser: $deleteUser")
-
-            runOnUiThread{
-               Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-               isClickable = true
             }
          }
       }

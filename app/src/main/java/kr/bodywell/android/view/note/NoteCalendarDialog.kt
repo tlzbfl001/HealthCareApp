@@ -90,10 +90,32 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
-      override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-         var result = false
+      override fun onDown(p0: MotionEvent): Boolean {
+         return false
+      }
+      override fun onShowPress(p0: MotionEvent) {}
+      override fun onSingleTapUp(p0: MotionEvent): Boolean {
+         return false
+      }
+
+      override fun onScroll(
+         e1: MotionEvent?,
+         e2: MotionEvent,
+         distanceX: Float,
+         distanceY: Float
+      ): Boolean {
+         return false
+      }
+
+      override fun onLongPress(p0: MotionEvent) {}
+      override fun onFling(
+         e1: MotionEvent?,
+         e2: MotionEvent,
+         velocityX: Float,
+         velocityY: Float
+      ): Boolean {var result = false
          try {
-            val diffY = e2.y - e1.y
+            val diffY = e2.y - e1!!.y
             val diffX = e2.x - e1.x
             if (abs(diffX) > abs(diffY)) {
                if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
@@ -112,18 +134,6 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
          }
          return result
       }
-
-      override fun onDown(p0: MotionEvent): Boolean {
-         return false
-      }
-      override fun onShowPress(p0: MotionEvent) {}
-      override fun onSingleTapUp(p0: MotionEvent): Boolean {
-         return false
-      }
-      override fun onScroll(p0: MotionEvent, p1: MotionEvent, p2: Float, p3: Float): Boolean {
-         return false
-      }
-      override fun onLongPress(p0: MotionEvent) {}
    }
 
    class RecyclerItemClickListener(context: Context, private val listener: OnItemClickListener?) : RecyclerView.OnItemTouchListener {

@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
@@ -19,6 +20,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.Companion.monthArray
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.MainViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -94,10 +96,33 @@ class CalendarDialog(context: Context) : Dialog(context) {
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
-      override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+      override fun onDown(p0: MotionEvent): Boolean {
+         return false
+      }
+      override fun onShowPress(p0: MotionEvent) {}
+      override fun onSingleTapUp(p0: MotionEvent): Boolean {
+         return false
+      }
+
+      override fun onScroll(
+         e1: MotionEvent?,
+         e2: MotionEvent,
+         distanceX: Float,
+         distanceY: Float
+      ): Boolean {
+         return false
+      }
+
+      override fun onLongPress(p0: MotionEvent) {}
+      override fun onFling(
+         e1: MotionEvent?,
+         e2: MotionEvent,
+         velocityX: Float,
+         velocityY: Float
+      ): Boolean {
          var result = false
          try {
-            val diffY = e2.y - e1.y
+            val diffY = e2.y - e1!!.y
             val diffX = e2.x - e1.x
             if (abs(diffX) > abs(diffY)) {
                if (abs(diffX) > SWIPE_THRESHOLD && abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
@@ -117,18 +142,6 @@ class CalendarDialog(context: Context) : Dialog(context) {
          }
          return result
       }
-
-      override fun onDown(p0: MotionEvent): Boolean {
-         return false
-      }
-      override fun onShowPress(p0: MotionEvent) {}
-      override fun onSingleTapUp(p0: MotionEvent): Boolean {
-         return false
-      }
-      override fun onScroll(p0: MotionEvent, p1: MotionEvent, p2: Float, p3: Float): Boolean {
-         return false
-      }
-      override fun onLongPress(p0: MotionEvent) {}
    }
 
    class RecyclerItemClickListener(context: Context, private val listener: OnItemClickListener?) : RecyclerView.OnItemTouchListener {

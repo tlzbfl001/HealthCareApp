@@ -32,9 +32,7 @@ class SearchAdapter(
     private var itemList = ArrayList<Item>()
     private var itemClickListener : OnItemClickListener? = null
 
-    init {
-        dataManager.open()
-    }
+    init { dataManager.open() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -48,9 +46,7 @@ class SearchAdapter(
             itemClickListener?.onClick(it, holder.adapterPosition)
         }
 
-        if(itemList[position].int2 == 1) {
-            holder.cl.visibility = View.GONE
-        }
+        if(itemList[position].int2 == 1) holder.cl.visibility = View.GONE
 
         holder.cl.setOnClickListener {
             val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
@@ -60,9 +56,7 @@ class SearchAdapter(
             val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
             val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
-            clX.setOnClickListener {
-                dialog.dismiss()
-            }
+            clX.setOnClickListener { dialog.dismiss() }
 
             clEdit.setOnClickListener {
                 if(type != "") {

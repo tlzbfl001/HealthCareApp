@@ -5,9 +5,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
@@ -21,7 +21,7 @@ import java.util.regex.Pattern
 
 class CustomUtil {
    companion object {
-      const val TAG = "testTag"
+      const val TAG = "ttt"
       var drugTimeList = ArrayList<DrugTime>()
       val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -36,6 +36,22 @@ class CustomUtil {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             fragment?.arguments = bundle
             replace(R.id.mainFrame, fragment!!)
+            commit()
+         }
+      }
+
+      fun replaceDetailFragment1(activity: Activity, fragment: Fragment) {
+         (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            replace(R.id.detailFrame, fragment)
+            commit()
+         }
+      }
+
+      fun replaceDetailFragment2(activity: Activity, fragment: Fragment) {
+         (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            setCustomAnimations(R.anim.enter_right_to_left, R.anim.exit_right_to_left, R.anim.enter_left_to_right, R.anim.exit_left_to_right)
+            replace(R.id.detailFrame, fragment)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             commit()
          }
       }

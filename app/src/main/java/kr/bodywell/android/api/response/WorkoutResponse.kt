@@ -10,7 +10,7 @@ data class WorkoutResponse (
 	var name: String = "",
 
 	@SerializedName("calories")
-	var calories: String = "",
+	var calories: Int = 0,
 
 	@SerializedName("intensity")
 	var intensity: String = "",

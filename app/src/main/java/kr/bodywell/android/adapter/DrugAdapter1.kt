@@ -9,7 +9,9 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
@@ -34,7 +36,7 @@ class DrugAdapter1 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugFragment
+        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.detailFrame) as DrugFragment
 
         holder.tvTime.text = itemList[pos].time
         holder.tvName.text = itemList[pos].name
@@ -59,7 +61,7 @@ class DrugAdapter1 (
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheck = dataManager.getDrugCheck(itemList[pos].drugTimeId, itemList[pos].date)
+            val getDrugCheck = dataManager.getDrugCheck(itemList[pos].drugTimeId, selectedDate.toString())
 
             if(holder.tvCheck.isChecked) {
                 check += 1
@@ -71,11 +73,12 @@ class DrugAdapter1 (
                 if(check > 0) check -= 1
 
                 if(getDrugCheck.created != "") {
-                    if(getDrugCheck.uid != "") {
-                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, created = selectedDate.toString()))
+                    val getDrugUid = dataManager.getDrugTimeUid(TABLE_DRUG, itemList[pos].drugId)
+                    val getDrugTimeUid = dataManager.getDrugTimeUid(TABLE_DRUG_TIME, itemList[pos].drugTimeId)
+                    if(getDrugUid != "" && getDrugTimeUid != "" && getDrugCheck.uid != "") {
+                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, drugUid = getDrugUid, drugTimeUid = getDrugTimeUid, created = itemList[pos].date))
                     }
-
-                    dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, "regDate", itemList[pos].date)
+                    dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, "created", selectedDate.toString())
                 }
             }
 

@@ -9,20 +9,17 @@ data class ProfileResponse (
 	@SerializedName("name")
 	var name: String = "",
 
-	@SerializedName("picture")
-	var picture: String = "",
-
 	@SerializedName("birth")
-	var birth: String = "",
+	var birth: String? = "",
 
 	@SerializedName("gender")
-	var gender: String = "",
+	var gender: String? = "",
 
 	@SerializedName("height")
-	var height: Int = 0,
+	var height: Int? = 0,
 
 	@SerializedName("weight")
-	var weight: Int = 0,
+	var weight: Int? = 0,
 
 	@SerializedName("timezone")
 	var timezone: String = "",
@@ -36,7 +33,7 @@ data class ProfileResponse (
 
 data class SyncProfileResponse (
 	@SerializedName("data")
-	var data: ProfileResponse,
+	var data: ProfileResponse?,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""

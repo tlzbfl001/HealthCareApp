@@ -385,6 +385,7 @@ class ReportBodyFragment : Fragment() {
 
       chart.data = lineData
       chart.notifyDataSetChanged()
+      chart.animateY(5000)
       chart.invalidate()
 
       chart.description.isEnabled = false

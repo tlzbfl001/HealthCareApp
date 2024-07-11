@@ -312,6 +312,7 @@ class ReportFoodFragment : Fragment() {
          data.setData(barData)
 
          chart.data = data
+         chart.animateY(5000)
          chart.notifyDataSetChanged()
          chart.invalidate()
          chart.setVisibleXRangeMaximum(7f)

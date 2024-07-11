@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
@@ -30,9 +32,7 @@ class FoodRecordAdapter (
    private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
 
-   init {
-      dataManager.open()
-   }
+   init { dataManager.open() }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -42,9 +42,7 @@ class FoodRecordAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.textView.text = itemList[position].name
 
-      holder.textView.setOnClickListener {
-         onItemClickListener!!.onItemClick(position)
-      }
+      holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
 
       if(itemList[position].basic == 0) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
@@ -56,9 +54,7 @@ class FoodRecordAdapter (
          val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
-         clX.setOnClickListener {
-            dialog.dismiss()
-         }
+         clX.setOnClickListener { dialog.dismiss() }
 
          clEdit.setOnClickListener {
             bundle.putString("id", itemList[position].id.toString())
@@ -73,11 +69,11 @@ class FoodRecordAdapter (
                .setTitle("음식 삭제")
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
-
                   if(itemList[position].uid != "") {
                      dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid, created = selectedDate.toString()))
                   }
+
+                  dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
 
                   itemList.removeAt(position)
                   notifyDataSetChanged()

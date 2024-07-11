@@ -24,9 +24,7 @@ class FoodIntakeAdapter (
     private var onItemClickListener: OnItemClickListener? = null
     private var dataManager: DataManager = DataManager(context)
 
-    init {
-        dataManager.open()
-    }
+    init { dataManager.open() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_food_record, parent, false)
@@ -46,9 +44,7 @@ class FoodIntakeAdapter (
             replaceFragment2(context, FoodDailyEditFragment(), bundle)
         }
 
-        holder.clX.setOnClickListener {
-            onItemClickListener!!.onItemClick(position)
-        }
+        holder.clX.setOnClickListener { onItemClickListener!!.onItemClick(position) }
     }
 
     override fun getItemCount(): Int {
