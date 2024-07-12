@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -21,7 +20,6 @@ import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -173,7 +171,6 @@ class ReportExerciseFragment : Fragment() {
          dates.add(calendarDate.toString())
          settingChart1(binding.chart1, dates)
          settingChart2(binding.chart2, dates)
-
          rankView(dateType, "", "")
       }
    }
@@ -194,7 +191,6 @@ class ReportExerciseFragment : Fragment() {
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
-
          rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
       }
    }
@@ -257,7 +253,7 @@ class ReportExerciseFragment : Fragment() {
             lineList += total
             barEntries.add(BarEntry(count.toFloat(), total))
             xVal += format2.format(format1.parse(getData[i])!!)
-            count++
+            count += 1
          }
       }
 
@@ -265,9 +261,7 @@ class ReportExerciseFragment : Fragment() {
          binding.chart1.visibility = View.VISIBLE
          binding.tvEmpty1.visibility = View.GONE
 
-         for (index in lineList.indices) {
-            entries.add(Entry(index.toFloat(), lineList[index]))
-         }
+         for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
          lineDataSet.color = Color.parseColor("#D3B479")
@@ -292,11 +286,8 @@ class ReportExerciseFragment : Fragment() {
          data.setData(barData)
 
          chart.data = data
-         chart.invalidate()
-         chart.setVisibleXRangeMaximum(7f)
-         chart.isDragXEnabled = true
 
-         chartCommon(chart, xVal, 1)
+         chartCommon(chart, xVal)
       }
    }
 
@@ -336,9 +327,7 @@ class ReportExerciseFragment : Fragment() {
          binding.chart2.visibility = View.VISIBLE
          binding.tvEmpty2.visibility = View.GONE
 
-         for (index in lineList.indices) {
-            entries.add(Entry(index.toFloat(), lineList[index]))
-         }
+         for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
          lineDataSet.color = Color.parseColor("#FFC6D7")
@@ -362,22 +351,12 @@ class ReportExerciseFragment : Fragment() {
          data.setData(barData)
 
          chart.data = data
-         chart.invalidate()
-         chart.setVisibleXRangeMaximum(7f)
-         chart.isDragXEnabled = true
 
-         chartCommon(chart, xVal, 2)
+         chartCommon(chart, xVal)
       }
    }
 
-   private fun chartCommon(chart: CombinedChart, xVal: Array<String>, type: Int) {
-      chart.description.isEnabled = false
-      chart.legend.isEnabled = false
-      chart.setScaleEnabled(false)
-      chart.isClickable = false
-      chart.isHighlightPerDragEnabled = false
-      chart.isHighlightPerTapEnabled = false
-
+   private fun chartCommon(chart: CombinedChart, xVal: Array<String>) {
       val xAxis = chart.xAxis
       xAxis.axisLineColor = Color.BLACK
       xAxis.axisLineWidth = 0.8f
@@ -398,6 +377,17 @@ class ReportExerciseFragment : Fragment() {
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
+
+      chart.description.isEnabled = false
+      chart.legend.isEnabled = false
+      chart.setScaleEnabled(false)
+      chart.isClickable = false
+      chart.isHighlightPerDragEnabled = false
+      chart.isHighlightPerTapEnabled = false
+      chart.setVisibleXRangeMaximum(7f)
+      chart.isDragXEnabled = true
+      chart.animateY(1000)
+      chart.invalidate()
    }
 
    class XValueFormatter : IValueFormatter {
@@ -411,11 +401,7 @@ class ReportExerciseFragment : Fragment() {
          val result = if(value.toInt() < 60) {
             value.toInt().toString() + "분"
          }else {
-            if(remain == 0) {
-               "${value.toInt() / 60}시간"
-            }else {
-               "${value.toInt() / 60}시간 ${remain}분"
-            }
+            if(remain == 0) "${value.toInt() / 60}시간" else "${value.toInt() / 60}시간 ${remain}분"
          }
          return result
       }

@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +15,8 @@ import kr.bodywell.android.adapter.FoodRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodRecord1Binding
-import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 

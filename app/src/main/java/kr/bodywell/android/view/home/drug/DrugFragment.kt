@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,9 +18,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
@@ -32,8 +31,8 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.util.PermissionUtil.Companion.REQUEST_CODE
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
@@ -80,42 +79,6 @@ class DrugFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      binding.tvDate.text = dateFormat(selectedDate)
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -149,9 +112,41 @@ class DrugFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         if(requestPermission()) {
-            replaceFragment1(requireActivity(), DrugRecordFragment())
-         }
+         if(requestPermission()) replaceFragment1(requireActivity(), DrugRecordFragment())
+      }
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         dailyView()
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         dailyView()
+      }
+
+      binding.tvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.tvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
       }
 
       dailyView()
@@ -161,6 +156,7 @@ class DrugFragment : Fragment() {
 
    private fun dailyView() {
       val itemList = ArrayList<DrugList>()
+      binding.tvDate.text = dateFormat(selectedDate)
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
@@ -194,10 +190,10 @@ class DrugFragment : Fragment() {
 
    private fun requestPermission(): Boolean {
       var check = true
+
       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM, Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE)
+         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE)
             check = false
          }
       }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -206,6 +202,7 @@ class DrugFragment : Fragment() {
             check = false
          }
       }
+
       return check
    }
 

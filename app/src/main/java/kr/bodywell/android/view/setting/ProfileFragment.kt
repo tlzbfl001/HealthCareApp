@@ -81,8 +81,8 @@ class ProfileFragment : Fragment() {
 		if(getUser.name != "") binding.etName.setText(getUser.name)
 
 		when(getUser.gender) {
-			"Female" -> unit1()
-			else -> unit2()
+			"male" -> unit2()
+			else -> unit1()
 		}
 
 		if(getUser.image != "") binding.ivProfile.setImageURI(Uri.parse(getUser.image))
@@ -110,29 +110,29 @@ class ProfileFragment : Fragment() {
 			replaceFragment1(requireActivity(), SettingFragment())
 		}
 
-		binding.ivProfile.setOnClickListener {
-			if(cameraRequest(requireActivity())) {
-				dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-
-				val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-				val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-
-				clCamera.setOnClickListener {
-					val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-					startActivityForResult(intent, CAMERA_REQUEST_CODE)
-				}
-
-				clPhoto.setOnClickListener {
-					val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-					intent.type = "image/*"
-					startActivityForResult(intent, STORAGE_REQUEST_CODE)
-				}
-
-				dialog!!.setContentView(bottomSheetView)
-				dialog!!.show()
-			}
-		}
+//		binding.ivProfile.setOnClickListener {
+//			if(cameraRequest(requireActivity())) {
+//				dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+//				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
+//
+//				val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+//				val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
+//
+//				clCamera.setOnClickListener {
+//					val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//					startActivityForResult(intent, CAMERA_REQUEST_CODE)
+//				}
+//
+//				clPhoto.setOnClickListener {
+//					val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+//					intent.type = "image/*"
+//					startActivityForResult(intent, STORAGE_REQUEST_CODE)
+//				}
+//
+//				dialog!!.setContentView(bottomSheetView)
+//				dialog!!.show()
+//			}
+//		}
 
 		binding.tvWoman.setOnClickListener { unit1() }
 
@@ -245,8 +245,8 @@ class ProfileFragment : Fragment() {
 			val weight = if(binding.etWeight.text.trim().toString() == "") 0.0 else binding.etWeight.text.trim().toString().toDouble()
 			val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
 
-			if(binding.etName.text.trim().length < 2) {
-				Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+			if(binding.etName.text.trim().isEmpty()) {
+				Toast.makeText(context, "이름은 최소 1자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
 			}else if(!filterText(binding.etName.text.trim().toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {

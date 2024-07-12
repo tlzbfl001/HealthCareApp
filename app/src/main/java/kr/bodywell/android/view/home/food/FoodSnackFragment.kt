@@ -24,11 +24,8 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.view.home.DetailFragment
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -46,8 +43,7 @@ class FoodSnackFragment : Fragment() {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                bundle.putString("type", "food")
-                replaceFragment2(requireActivity(), DetailFragment(), bundle)
+                replaceFragment1(requireActivity(), FoodFragment())
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -73,8 +69,7 @@ class FoodSnackFragment : Fragment() {
         dataManager.open()
 
         binding.clBack.setOnClickListener {
-            bundle.putString("type", "food")
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment1(requireActivity(), FoodFragment())
         }
 
         binding.cvInput.setOnClickListener {
@@ -97,62 +92,62 @@ class FoodSnackFragment : Fragment() {
 
         val imageData = dataManager.getImage(type, selectedDate.toString())
 
-        if(imageData.size > 0) {
-            photoAdapter = PhotoViewAdapter(imageData)
-
-            binding.viewPager.adapter = photoAdapter
-            binding.viewPager.offscreenPageLimit = 5
-            binding.viewPager.clipToPadding = false
-            binding.viewPager.clipChildren = false
-            binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-
-            val transformer = CompositePageTransformer()
-            val defaultTranslationX = 0.50f
-            val defaultTranslationFactor = 1.17f
-            val scaleFactor = 0.14f
-            val defaultScale = 1f
-
-            transformer.addTransformer{ view: View, position: Float ->
-                view.apply {
-                    ViewCompat.setElevation(view, -abs(position))
-                    val scaleFactor1 = scaleFactor * position + defaultScale
-                    val scaleFactor2 = -scaleFactor * position + defaultScale
-                    when {
-                        position < -2 -> {
-                            translationX = width * position
-                        }
-                        position < 0f -> {
-                            scaleX = scaleFactor1
-                            scaleY = scaleFactor1
-                            translationX = -(width / defaultTranslationFactor) * position
-                        }
-                        position == 0f -> {
-                            translationX = defaultTranslationX
-                            scaleX = defaultScale
-                            scaleY = defaultScale
-                        }
-                        position > 0 && position <= 2 -> {
-                            scaleX = scaleFactor2
-                            scaleY = scaleFactor2
-                            translationX = -(width / defaultTranslationFactor) * position
-                        }
-                        position > 2 -> {
-                            translationX = 0f
-                        }
-                    }
-                }
-            }
-
-            binding.viewPager.setPageTransformer(transformer)
-
-            binding.cvLeft.setOnClickListener {
-                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
-            }
-
-            binding.cvRight.setOnClickListener {
-                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
-            }
-        }
+//        if(imageData.size > 0) {
+//            photoAdapter = PhotoViewAdapter(imageData)
+//
+//            binding.viewPager.adapter = photoAdapter
+//            binding.viewPager.offscreenPageLimit = 5
+//            binding.viewPager.clipToPadding = false
+//            binding.viewPager.clipChildren = false
+//            binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+//
+//            val transformer = CompositePageTransformer()
+//            val defaultTranslationX = 0.50f
+//            val defaultTranslationFactor = 1.17f
+//            val scaleFactor = 0.14f
+//            val defaultScale = 1f
+//
+//            transformer.addTransformer{ view: View, position: Float ->
+//                view.apply {
+//                    ViewCompat.setElevation(view, -abs(position))
+//                    val scaleFactor1 = scaleFactor * position + defaultScale
+//                    val scaleFactor2 = -scaleFactor * position + defaultScale
+//                    when {
+//                        position < -2 -> {
+//                            translationX = width * position
+//                        }
+//                        position < 0f -> {
+//                            scaleX = scaleFactor1
+//                            scaleY = scaleFactor1
+//                            translationX = -(width / defaultTranslationFactor) * position
+//                        }
+//                        position == 0f -> {
+//                            translationX = defaultTranslationX
+//                            scaleX = defaultScale
+//                            scaleY = defaultScale
+//                        }
+//                        position > 0 && position <= 2 -> {
+//                            scaleX = scaleFactor2
+//                            scaleY = scaleFactor2
+//                            translationX = -(width / defaultTranslationFactor) * position
+//                        }
+//                        position > 2 -> {
+//                            translationX = 0f
+//                        }
+//                    }
+//                }
+//            }
+//
+//            binding.viewPager.setPageTransformer(transformer)
+//
+//            binding.cvLeft.setOnClickListener {
+//                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
+//            }
+//
+//            binding.cvRight.setOnClickListener {
+//                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
+//            }
+//        }
 
         val dataList = dataManager.getDailyFood(type, selectedDate.toString())
 
@@ -169,7 +164,7 @@ class FoodSnackFragment : Fragment() {
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             dataManager.deleteItem(TABLE_DAILY_FOOD, "id", dataList[pos].id)
-                            dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
+                            /*dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                             if (imageData.size > 0) {
                                 imageData.stream().filter {
@@ -178,7 +173,7 @@ class FoodSnackFragment : Fragment() {
                                     imageData.remove(x)
                                 }
                                 photoAdapter!!.notifyDataSetChanged()
-                            }
+                            }*/
 
                             if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyFood", value = dataList[pos].uid, created = selectedDate.toString()))
 

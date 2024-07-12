@@ -14,8 +14,6 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugRecordBinding
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.view.home.DetailFragment
 
 class DrugRecordFragment : Fragment() {
    private var _binding: FragmentDrugRecordBinding? = null
@@ -30,8 +28,7 @@ class DrugRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            bundle.putString("type", "drug")
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment1(requireActivity(), DrugFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -57,8 +54,7 @@ class DrugRecordFragment : Fragment() {
       dataManager.open()
 
       binding.clBack.setOnClickListener {
-         bundle.putString("type", "drug")
-         replaceFragment2(requireActivity(), DetailFragment(), bundle)
+         replaceFragment1(requireActivity(), DrugFragment())
       }
 
       binding.tvAdd.setOnClickListener {

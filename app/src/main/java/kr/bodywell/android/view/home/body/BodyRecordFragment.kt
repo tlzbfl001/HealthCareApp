@@ -16,11 +16,9 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.view.home.DetailFragment
 import java.util.Calendar
 
 class BodyRecordFragment : Fragment() {
@@ -36,8 +34,7 @@ class BodyRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            bundle.putString("type", "body")
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment1(requireActivity(), BodyFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -109,7 +106,7 @@ class BodyRecordFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment2(requireActivity(), DetailFragment(), bundle)
+         replaceFragment1(requireActivity(), BodyFragment())
       }
 
       binding.etBmi.addTextChangedListener(object : TextWatcher {
@@ -328,7 +325,7 @@ class BodyRecordFragment : Fragment() {
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment2(requireActivity(), BodyFragment(), bundle)
          }
       }
 

@@ -1,20 +1,22 @@
 package kr.bodywell.android.view.home.water
 
+import android.animation.ValueAnimator
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
@@ -29,15 +31,14 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
 import kr.bodywell.android.view.home.food.FoodFragment
 import kr.bodywell.android.view.home.sleep.SleepFragment
+
 
 class WaterFragment : Fragment() {
    private var _binding: FragmentWaterBinding? = null
@@ -80,42 +81,6 @@ class WaterFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      binding.tvDate.text = dateFormat(selectedDate)
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
-
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_water_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -155,12 +120,47 @@ class WaterFragment : Fragment() {
          dialog.show()
       }
 
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         dailyView()
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         dailyView()
+      }
+
+      binding.tvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.tvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
+      }
+
       dailyView()
 
       return binding.root
    }
 
    private fun dailyView() {
+      binding.tvDate.text = dateFormat(selectedDate)
       dailyGoal = dataManager.getGoal(selectedDate.toString())
       getWater = dataManager.getWater(selectedDate.toString())
       volume = getWater.volume
@@ -185,7 +185,7 @@ class WaterFragment : Fragment() {
       val remain = dailyGoal.water - count
       if(remain > 0) binding.tvRemain.text = "${remain}잔/${remain * volume}ml" else binding.tvRemain.text = "0잔/0ml"
 
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
+      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 5)
       binding.rv.layoutManager = layoutManager
       adapter = WaterAdapter(count)
       binding.rv.adapter = adapter
@@ -249,6 +249,18 @@ class WaterFragment : Fragment() {
 
       adapter = WaterAdapter(count)
       binding.rv.adapter = adapter
+   }
+
+   private fun setValueAnimator(data: Int) {
+      val animator = ValueAnimator.ofInt(0, data)
+      animator.interpolator = AccelerateDecelerateInterpolator()
+      animator.startDelay = 0
+      animator.duration = 1000
+      animator.addUpdateListener { valueAnimator ->
+         val value = valueAnimator.animatedValue as Int
+         binding.pbWater.progress = value
+      }
+      animator.start()
    }
 
    override fun onDetach() {

@@ -83,29 +83,29 @@ class InputInfoFragment : Fragment() {
          true
       }
 
-      binding.ivProfile.setOnClickListener {
-         if(cameraRequest(requireActivity())) {
-            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-
-            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-
-            clCamera.setOnClickListener {
-               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-               startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }
-
-            clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-               intent.type = "image/*"
-               startActivityForResult(intent, STORAGE_REQUEST_CODE)
-            }
-
-            dialog!!.setContentView(bottomSheetView)
-            dialog!!.show()
-         }
-      }
+//      binding.ivProfile.setOnClickListener {
+//         if(cameraRequest(requireActivity())) {
+//            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+//            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
+//
+//            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+//            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
+//
+//            clCamera.setOnClickListener {
+//               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//               startActivityForResult(intent, CAMERA_REQUEST_CODE)
+//            }
+//
+//            clPhoto.setOnClickListener {
+//               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+//               intent.type = "image/*"
+//               startActivityForResult(intent, STORAGE_REQUEST_CODE)
+//            }
+//
+//            dialog!!.setContentView(bottomSheetView)
+//            dialog!!.show()
+//         }
+//      }
 
       binding.tvBirthday.setOnClickListener {
          val dialog = Dialog(requireActivity())

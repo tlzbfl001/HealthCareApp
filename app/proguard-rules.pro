@@ -24,6 +24,7 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 -dontwarn retrofit2.**
+-dontwarn com.github.mikephil.**
 
 -keepattributes Signature
 -keepattributes Exceptions
@@ -31,6 +32,10 @@
 -keepattributes RuntimeInvisibleAnnotations
 -keepattributes RuntimeVisibleParameterAnnotations
 -keepattributes RuntimeInvisibleParameterAnnotations
+
+-keep,allowobfuscation,allowshrinking interface retrofit2.Call
+-keep,allowobfuscation,allowshrinking class retrofit2.Response
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 
 -keep class kr.bodywell.android.api.dto.** { *; }
 -keep class kr.bodywell.android.api.response.** { *; }
@@ -40,9 +45,7 @@
 -keep class * implements com.google.gson.JsonDeserializer
 -keep class com.google.api.client.http.** { *; }
 -keep class org.joda.time.** { *; }
--keep,allowobfuscation,allowshrinking interface retrofit2.Call
--keep,allowobfuscation,allowshrinking class retrofit2.Response
--keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 -keep class com.google.googlesignin.** { *; }
 -keep class com.navercorp.nid.** { *; }
 -keep class com.kakao.sdk.**.model.* { <fields>; }
+-keep public class com.github.mikephil.** { public protected *; }

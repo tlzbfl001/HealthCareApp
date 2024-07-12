@@ -81,11 +81,7 @@ class NoteFragment : Fragment() {
       dataManager.open()
 
       // 날짜 초기화
-      if(arguments?.getString("data").toString() != "note") {
-         selectedDate = LocalDate.now()
-      }
-
-      setDailyView()
+      if(arguments?.getString("data").toString() != "note") selectedDate = LocalDate.now()
 
       binding.clExpand.setOnClickListener {
          val dialog = NoteCalendarDialog(requireActivity())
@@ -125,32 +121,34 @@ class NoteFragment : Fragment() {
       }))
 
       // 카메라 설정
-      binding.clCamera.setOnClickListener {
-         if(cameraRequest(requireActivity())) {
-            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-
-            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-
-            clCamera.setOnClickListener {
-               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-               startActivityForResult(intent, CAMERA_REQUEST_CODE)
-            }
-
-            clPhoto.setOnClickListener {
-               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-               intent.type = "image/*"
-               startActivityForResult(intent, STORAGE_REQUEST_CODE)
-            }
-
-            dialog!!.setContentView(bottomSheetView)
-            dialog!!.show()
-         }
-      }
+//      binding.clCamera.setOnClickListener {
+//         if(cameraRequest(requireActivity())) {
+//            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+//            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
+//
+//            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+//            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
+//
+//            clCamera.setOnClickListener {
+//               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//               startActivityForResult(intent, CAMERA_REQUEST_CODE)
+//            }
+//
+//            clPhoto.setOnClickListener {
+//               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+//               intent.type = "image/*"
+//               startActivityForResult(intent, STORAGE_REQUEST_CODE)
+//            }
+//
+//            dialog!!.setContentView(bottomSheetView)
+//            dialog!!.show()
+//         }
+//      }
 
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
+
+      setDailyView()
 
       return binding.root
    }
@@ -161,6 +159,7 @@ class NoteFragment : Fragment() {
       binding.tvYearText.text = selectedDate.month.toString()
 
       val getNote = dataManager.getNote(selectedDate.toString())
+
       if(getNote.created != "") {
          binding.tvTitle.text = getNote.title
          when(getNote.status) {
@@ -177,6 +176,7 @@ class NoteFragment : Fragment() {
 
       // 달력 설정
       days = weekArray(selectedDate)
+
       val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
 
@@ -187,13 +187,12 @@ class NoteFragment : Fragment() {
       // 소비 칼로리 계산
       var total = 0
       val getDailyExercise = dataManager.getDailyExercise("created", selectedDate.toString())
-      for(i in 0 until getDailyExercise.size) {
-         total += getDailyExercise[i].kcal
-      }
+
+      for(i in 0 until getDailyExercise.size) total += getDailyExercise[i].kcal
 
       binding.tvKcal2.text = "$total kcal"
 
-      setImageView()
+//      setImageView()
    }
 
    private fun setImageView() {

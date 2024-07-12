@@ -7,6 +7,8 @@
    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+   <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
    <uses-permission
       android:name="android.permission.POST_NOTIFICATIONS"
       android:minSdkVersion="33" />
@@ -52,9 +54,6 @@
       android:usesCleartextTraffic="true"
       tools:replace="android:allowBackup"
       tools:targetApi="33">
-      <activity
-         android:name=".view.home.DetailActivity"
-         android:exported="false" />
       <activity
          android:name=".view.init.SignupActivity"
          android:exported="false" />

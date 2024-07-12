@@ -1,7 +1,6 @@
 package kr.bodywell.android.view.home.exercise
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -10,10 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
@@ -23,11 +20,8 @@ import kr.bodywell.android.databinding.FragmentExerciseBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.MainViewModel
-import kr.bodywell.android.view.home.DetailFragment
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
@@ -62,42 +56,6 @@ class ExerciseFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager.open()
-
-      binding.tvDate.text = dateFormat(selectedDate)
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -142,6 +100,40 @@ class ExerciseFragment : Fragment() {
          replaceFragment1(requireActivity(), ExerciseListFragment())
       }
 
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         dailyView()
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         dailyView()
+      }
+
+      binding.tvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.tvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.tvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
+      }
+
       dailyView()
 
       return binding.root
@@ -149,6 +141,7 @@ class ExerciseFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
+      binding.tvDate.text = dateFormat(selectedDate)
       binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
       binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
       binding.tvConsume.text = "0 kcal"

@@ -15,8 +15,6 @@ import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.view.home.DetailFragment
 import nl.joery.timerangepicker.TimeRangePicker
 import java.time.Duration
 import java.time.LocalDateTime
@@ -38,8 +36,7 @@ class SleepRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            bundle.putString("type", "sleep")
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment1(requireActivity(), SleepFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -65,8 +62,7 @@ class SleepRecordFragment : Fragment() {
       dataManager.open()
 
       binding.clBack.setOnClickListener {
-         bundle.putString("type", "sleep")
-         replaceFragment2(requireActivity(), DetailFragment(), bundle)
+         replaceFragment1(requireActivity(), SleepFragment())
       }
 
       binding.time.setOnTimeChangeListener(object : TimeRangePicker.OnTimeChangeListener {

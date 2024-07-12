@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -216,6 +217,7 @@ class ReportBodyFragment : Fragment() {
 
       val weekArray = weekArray(calendarDate)
       val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
+
       for(i in 0 until getData.size) {
          if (getData[i].weight > 0) {
             itemList1.add(Body(weight = getData[i].weight, created = format2.format(format1.parse(getData[i].created)!!)))
@@ -348,15 +350,6 @@ class ReportBodyFragment : Fragment() {
       }
    }
 
-   private fun resetChart() {
-      binding.tvEmpty1.visibility = View.VISIBLE
-      binding.lineChart1.visibility = View.GONE
-      binding.tvEmpty2.visibility = View.VISIBLE
-      binding.lineChart2.visibility = View.GONE
-      binding.tvEmpty3.visibility = View.VISIBLE
-      binding.lineChart3.visibility = View.GONE
-   }
-
    private fun setupChart(chart: LineChart, entries: ArrayList<Entry>, xValue: ArrayList<String>) {
       chart.data = null
       chart.fitScreen()
@@ -365,6 +358,22 @@ class ReportBodyFragment : Fragment() {
 
       val legend = chart.legend
       legend.isEnabled = false
+
+      val xAxis = chart.xAxis
+      xAxis.setDrawLabels(true)
+      xAxis.isGranularityEnabled = true
+      xAxis.position = XAxis.XAxisPosition.BOTTOM
+      xAxis.textColor = Color.BLACK
+      xAxis.axisLineColor = Color.BLACK
+      xAxis.axisLineWidth = 1.1f
+      xAxis.valueFormatter = IndexAxisValueFormatter(xValue)
+      xAxis.granularity = 1f
+      xAxis.spaceMax = 0.7f
+      xAxis.spaceMin = 0.7f
+      xAxis.gridColor = Color.parseColor("#EAEAEA")
+
+      val yAxisLeft = chart.axisLeft
+      yAxisLeft.textSize = 7f
 
       val lineDataSet = LineDataSet(entries, "data")
       lineDataSet.lineWidth = 3.4f
@@ -384,36 +393,27 @@ class ReportBodyFragment : Fragment() {
       lineData.setValueFormatter(MyValueFormatter())
 
       chart.data = lineData
-      chart.notifyDataSetChanged()
-      chart.animateY(5000)
-      chart.invalidate()
-
       chart.description.isEnabled = false
       chart.axisRight.isEnabled = false
       chart.setScaleEnabled(false)
       chart.setPinchZoom(false)
       chart.setDrawGridBackground(false)
       chart.axisLeft.isEnabled = false
-      chart.moveViewToX(1f)
       chart.setVisibleXRangeMaximum(7f)
       chart.isDragXEnabled = true
       chart.setExtraOffsets(0f, 0f, 0f, 10f)
+      chart.animateY(1000, Easing.EasingOption.EaseInOutExpo)
+      chart.notifyDataSetChanged()
+      chart.invalidate()
+   }
 
-      val xAxis = chart.xAxis
-      xAxis.setDrawLabels(true)
-      xAxis.isGranularityEnabled = true
-      xAxis.position = XAxis.XAxisPosition.BOTTOM
-      xAxis.textColor = Color.BLACK
-      xAxis.axisLineColor = Color.BLACK
-      xAxis.axisLineWidth = 1.1f
-      xAxis.valueFormatter = IndexAxisValueFormatter(xValue)
-      xAxis.granularity = 1f
-      xAxis.spaceMax = 0.7f
-      xAxis.spaceMin = 0.7f
-      xAxis.gridColor = Color.parseColor("#EAEAEA")
-
-      val yAxisLeft = chart.axisLeft
-      yAxisLeft.textSize = 7f
+   private fun resetChart() {
+      binding.tvEmpty1.visibility = View.VISIBLE
+      binding.lineChart1.visibility = View.GONE
+      binding.tvEmpty2.visibility = View.VISIBLE
+      binding.lineChart2.visibility = View.GONE
+      binding.tvEmpty3.visibility = View.VISIBLE
+      binding.lineChart3.visibility = View.GONE
    }
 
    class MyValueFormatter : IValueFormatter {

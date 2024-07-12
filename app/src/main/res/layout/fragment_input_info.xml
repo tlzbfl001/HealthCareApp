@@ -79,7 +79,7 @@
       android:layout_marginRight="25dp"
       android:padding="10dp"
       android:background="@drawable/rec_10_border_gray"
-      android:hint="바디웰(2~15자 국문/영문/숫자)"
+      android:hint="15자 이내 국문/영문/숫자"
       android:textSize="16dp"
       android:textColor="@color/black"
       android:textColorHint="#ccc"

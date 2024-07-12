@@ -87,7 +87,7 @@ class DrugAdapter2 (
       holder.ivDelete.setOnClickListener {
          val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
             .setTitle("복용약 삭제")
-            .setMessage("해당 약과 관련된 모든 데이터가 삭제됩니다.\n정말 삭제하시겠습니까?")
+            .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugTimeId", "drugId", itemList[pos].id)
                for(i in 0 until drugCheckUid.size) {

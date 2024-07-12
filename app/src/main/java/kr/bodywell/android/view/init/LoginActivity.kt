@@ -157,12 +157,12 @@ class LoginActivity : AppCompatActivity() {
                            startActivity(intent)
                         }
                      }*/
-                  }else Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
+                  }else Toast.makeText(this@LoginActivity, "회원가입 실패1", Toast.LENGTH_SHORT).show()
                }else { // 로그인
                   MyApp.prefs.setPrefs("userId", getUser.id)
                   startActivity(Intent(this, MainActivity::class.java))
                }
-            }else Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+            }else Toast.makeText(this, "로그인 실패1", Toast.LENGTH_SHORT).show()
          }
       }
    }

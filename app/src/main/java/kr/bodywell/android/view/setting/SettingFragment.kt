@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,6 @@ import kr.bodywell.android.BuildConfig.NAVER_CLIENT_ID
 import kr.bodywell.android.BuildConfig.NAVER_CLIENT_SECRET
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
@@ -53,7 +51,6 @@ import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.MyApp
@@ -165,7 +162,7 @@ class SettingFragment : Fragment() {
          }else {
             val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
                .setTitle("회원 탈퇴")
-               .setMessage("해당 계정과 관련된 데이터도 함께 삭제됩니다. 정말 탈퇴하시겠습니까?")
+               .setMessage("정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
                      "google" -> {
@@ -246,7 +243,7 @@ class SettingFragment : Fragment() {
          var age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
          if(getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
 
-         val gender = if(getUser.gender == "Female") "여" else "남"
+         val gender = if(getUser.gender == "male") "남" else "여"
 
          binding.tvAge.text = "만${age}세 / $gender"
       }

@@ -98,8 +98,8 @@ class ExerciseInputFragment : Fragment() {
       binding.cvSave.setOnClickListener {
          val getExercise = dataManager.getExercise("name", binding.etName.text.toString().trim())
 
-         if(binding.etName.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "운동명을 입력해주세요.", Toast.LENGTH_SHORT).show()
+         if(binding.etName.text.toString().trim().isEmpty()) {
+            Toast.makeText(context, "운동이름은 최소 1자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
          }else if(getExercise.name != "") {
             Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
          }else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""

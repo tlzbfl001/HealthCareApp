@@ -25,11 +25,8 @@ import kr.bodywell.android.databinding.FragmentFoodLunchBinding
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.view.home.DetailFragment
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -49,8 +46,7 @@ class FoodLunchFragment : Fragment() {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                bundle.putString("type", "food")
-                replaceFragment2(requireActivity(), DetailFragment(), bundle)
+                replaceFragment1(requireActivity(), FoodFragment())
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -76,8 +72,7 @@ class FoodLunchFragment : Fragment() {
         dataManager.open()
 
         binding.clBack.setOnClickListener {
-            bundle.putString("type", "food")
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment1(requireActivity(), FoodFragment())
         }
 
         binding.cvInput.setOnClickListener {
@@ -98,7 +93,7 @@ class FoodLunchFragment : Fragment() {
             replaceFragment1(requireActivity(), FoodSnackFragment())
         }
 
-        photoView()
+//        photoView()
         listView()
 
         return binding.root
@@ -180,7 +175,7 @@ class FoodLunchFragment : Fragment() {
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             dataManager.deleteItem(TABLE_DAILY_FOOD, "id", dataList[pos].id)
-                            dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
+                            /*dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                             if (imageData.size > 0) {
                                 imageData.stream().filter {
@@ -189,7 +184,7 @@ class FoodLunchFragment : Fragment() {
                                     imageData.remove(x)
                                 }
                                 photoAdapter!!.notifyDataSetChanged()
-                            }
+                            }*/
 
                             if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyFood", value = dataList[pos].uid, created = selectedDate.toString()))
 

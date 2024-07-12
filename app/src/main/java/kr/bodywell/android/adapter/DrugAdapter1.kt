@@ -36,7 +36,7 @@ class DrugAdapter1 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.detailFrame) as DrugFragment
+        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugFragment
 
         holder.tvTime.text = itemList[pos].time
         holder.tvName.text = itemList[pos].name

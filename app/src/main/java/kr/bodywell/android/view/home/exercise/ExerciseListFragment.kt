@@ -3,7 +3,6 @@ package kr.bodywell.android.view.home.exercise
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +13,7 @@ import kr.bodywell.android.adapter.ExerciseListAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.view.home.DetailFragment
 
 class ExerciseListFragment : Fragment() {
    private var _binding: FragmentExerciseListBinding? = null
@@ -31,8 +27,7 @@ class ExerciseListFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            bundle.putString("type", "exercise")
-            replaceFragment2(requireActivity(), DetailFragment(), bundle)
+            replaceFragment1(requireActivity(), ExerciseFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -58,8 +53,7 @@ class ExerciseListFragment : Fragment() {
       dataManager.open()
 
       binding.clBack.setOnClickListener {
-         bundle.putString("type", "exercise")
-         replaceFragment2(requireActivity(), DetailFragment(), bundle)
+         replaceFragment1(requireActivity(), ExerciseFragment())
       }
 
       binding.cvInput.setOnClickListener {

@@ -11,7 +11,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -21,7 +20,6 @@ import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -83,8 +81,6 @@ class ReportDrugFragment : Fragment() {
       dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
-
-      dailyView()
 
       binding.clMenu1.setOnClickListener {
          replaceFragment1(requireActivity(), ReportBodyFragment())
@@ -153,11 +149,12 @@ class ReportDrugFragment : Fragment() {
          monthlyView()
       }
 
+      dailyView()
+
       return binding.root
    }
 
    private fun dailyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -165,6 +162,7 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
+      resetChart()
 
       val getDrugCheckCount = dataManager.getDrugCheckCount(calendarDate.toString())
       if(getDrugCheckCount > 0) {
@@ -176,7 +174,6 @@ class ReportDrugFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -184,6 +181,7 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 2
+      resetChart()
 
       val weekArray = weekArray(calendarDate)
       val getDates = dataManager.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
@@ -194,7 +192,6 @@ class ReportDrugFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -202,6 +199,7 @@ class ReportDrugFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 3
+      resetChart()
 
       val monthArray = monthArray2(calendarDate)
       val getDates = dataManager.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
@@ -209,13 +207,6 @@ class ReportDrugFragment : Fragment() {
          settingChart(binding.chart, getDates)
          rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       }
-   }
-
-   private fun resetChart() {
-      binding.recyclerView.visibility = View.GONE
-      binding.tvEmpty1.visibility = View.VISIBLE
-      binding.chart.visibility = View.GONE
-      binding.tvEmpty2.visibility = View.VISIBLE
    }
 
    private fun settingChart(chart: CombinedChart, getData: ArrayList<String>) {
@@ -242,8 +233,7 @@ class ReportDrugFragment : Fragment() {
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += pt
             barEntries.add(BarEntry(count.toFloat(), pt))
-
-            count++
+            count += 1
          }
       }
 
@@ -276,15 +266,6 @@ class ReportDrugFragment : Fragment() {
          data.setData(barData)
 
          chart.data = data
-         chart.invalidate()
-         chart.setVisibleXRangeMaximum(7f)
-         chart.isDragXEnabled = true
-         chart.description.isEnabled = false
-         chart.legend.isEnabled = false
-         chart.setScaleEnabled(false)
-         chart.isClickable = false
-         chart.isHighlightPerDragEnabled = false
-         chart.isHighlightPerTapEnabled = false
 
          val xAxis = chart.xAxis
          xAxis.axisLineColor = Color.BLACK
@@ -308,7 +289,25 @@ class ReportDrugFragment : Fragment() {
          leftAxis.enableGridDashedLine(10f, 15f, 0f)
          leftAxis.axisMinimum = 0f
          leftAxis.axisMaximum = 100f
+
+         chart.description.isEnabled = false
+         chart.legend.isEnabled = false
+         chart.setScaleEnabled(false)
+         chart.isClickable = false
+         chart.isHighlightPerDragEnabled = false
+         chart.isHighlightPerTapEnabled = false
+         chart.setVisibleXRangeMaximum(7f)
+         chart.isDragXEnabled = true
+         chart.animateY(1000)
+         chart.invalidate()
       }
+   }
+
+   private fun resetChart() {
+      binding.recyclerView.visibility = View.GONE
+      binding.tvEmpty1.visibility = View.VISIBLE
+      binding.chart.visibility = View.GONE
+      binding.tvEmpty2.visibility = View.VISIBLE
    }
 
    class XValueFormatter : IValueFormatter {

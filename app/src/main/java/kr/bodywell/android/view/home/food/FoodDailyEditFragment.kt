@@ -84,58 +84,48 @@ class FoodDailyEditFragment : Fragment() {
 
       val getImage = dataManager.getImage(dailyFoodId)
 
-      for(i in 0 until getImage.size) {
-         imageList.add(getImage[i])
-      }
+      for(i in 0 until getImage.size) imageList.add(getImage[i])
 
       binding.clBack.setOnClickListener {
          replaceFragment()
       }
 
-      binding.clPhoto.setOnClickListener {
-         dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-         val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-
-         val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-         val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-
-         clCamera.setOnClickListener {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(intent, CAMERA_REQUEST_CODE)
-         }
-
-         clPhoto.setOnClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.type = "image/*"
-            startActivityForResult(intent, STORAGE_REQUEST_CODE)
-         }
-
-         dialog!!.setContentView(bottomSheetView)
-         dialog!!.show()
-      }
+//      binding.clPhoto.setOnClickListener {
+//         dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+//         val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
+//
+//         val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+//         val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
+//
+//         clCamera.setOnClickListener {
+//            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//            startActivityForResult(intent, CAMERA_REQUEST_CODE)
+//         }
+//
+//         clPhoto.setOnClickListener {
+//            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+//            intent.type = "image/*"
+//            startActivityForResult(intent, STORAGE_REQUEST_CODE)
+//         }
+//
+//         dialog!!.setContentView(bottomSheetView)
+//         dialog!!.show()
+//      }
 
       binding.ivMinus.setOnClickListener {
-         if(count > 1) {
-            count--
-         }
-
-         dataTextView()
+         if(count > 1) count--
+         settingData()
       }
 
       binding.ivPlus.setOnClickListener {
-         if(count < 100) {
-            count++
-         }
-
-         dataTextView()
+         if(count < 100) count++
+         settingData()
       }
 
       binding.cvEdit.setOnClickListener {
          dataManager.deleteItem(TABLE_IMAGE, "dataId", dailyFoodId, "type", type)
 
-         for(i in 0 until imageList.size) {
-            dataManager.insertImage(imageList[i])
-         }
+         for(i in 0 until imageList.size) dataManager.insertImage(imageList[i])
 
          dataManager.updateDailyFood(Food(id = dailyFoodId, amount = getDailyFood.amount * count, kcal = getDailyFood.kcal * count,
             carbohydrate = getDailyFood.carbohydrate * count, protein = getDailyFood.protein * count, fat = getDailyFood.fat * count,
@@ -146,13 +136,13 @@ class FoodDailyEditFragment : Fragment() {
          replaceFragment()
       }
 
-      photoView()
-      dataTextView()
+//      photoView()
+      settingData()
 
       return binding.root
    }
 
-   private fun dataTextView() {
+   private fun settingData() {
       binding.tvCount.text = count.toString()
       binding.tvAmount.text = (getDailyFood.amount * count).toString()
       binding.tvKcal.text = (getDailyFood.kcal * count).toString()

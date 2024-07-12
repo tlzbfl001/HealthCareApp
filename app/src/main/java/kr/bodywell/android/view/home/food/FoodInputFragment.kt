@@ -18,8 +18,6 @@ import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceDetailFragment2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import java.time.LocalDateTime
@@ -336,8 +334,8 @@ class FoodInputFragment : Fragment() {
 
          val getFood = dataManager.getFood("name", name)
 
-         if(name.length < 2) {
-            Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+         if(name.trim().isEmpty()) {
+            Toast.makeText(context, "음식이름은 최소 1자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
          }else if(!filterText(name)) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else if(getFood.name != "") {

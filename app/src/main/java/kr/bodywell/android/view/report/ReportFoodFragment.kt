@@ -3,12 +3,12 @@ package kr.bodywell.android.view.report
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -34,7 +34,6 @@ import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
 import kr.bodywell.android.util.CalendarUtil.Companion.weekFormat
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.getNutrition
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
@@ -312,11 +311,6 @@ class ReportFoodFragment : Fragment() {
          data.setData(barData)
 
          chart.data = data
-         chart.animateY(5000)
-         chart.notifyDataSetChanged()
-         chart.invalidate()
-         chart.setVisibleXRangeMaximum(7f)
-         chart.isDragXEnabled = true
 
          chartCommon(chart, xVal)
       }
@@ -385,9 +379,6 @@ class ReportFoodFragment : Fragment() {
          data.setData(barData)
 
          chart.data = data
-         chart.invalidate()
-         chart.setVisibleXRangeMaximum(7f)
-         chart.isDragXEnabled = true
 
          chartCommon(chart, xVal)
       }
@@ -439,9 +430,6 @@ class ReportFoodFragment : Fragment() {
       data.setData(barData)
 
       chart.data = data
-      chart.invalidate()
-      chart.setVisibleXRangeMaximum(7f)
-      chart.isDragXEnabled = true
 
       chartCommon(chart, xVal)
    }
@@ -454,6 +442,11 @@ class ReportFoodFragment : Fragment() {
       chart.isHighlightPerDragEnabled = false
       chart.isHighlightPerTapEnabled = false
       chart.setExtraOffsets(12f, 15f, 15f, 10f)
+      chart.setVisibleXRangeMaximum(7f)
+      chart.animateY(1000)
+      chart.notifyDataSetChanged()
+      chart.invalidate()
+      chart.isDragXEnabled = true
 
       val xAxis = chart.xAxis
       xAxis.axisLineColor = Color.BLACK

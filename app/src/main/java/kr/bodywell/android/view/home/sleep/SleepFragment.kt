@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
-import androidx.fragment.app.activityViewModels
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
@@ -23,7 +22,6 @@ import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
@@ -70,46 +68,6 @@ class SleepFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      binding.tvDate.text = dateFormat(selectedDate)
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.cvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
-
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_sleep)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -140,8 +98,46 @@ class SleepFragment : Fragment() {
          dialog.show()
       }
 
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         dailyView()
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         dailyView()
+      }
+
       binding.clRecord.setOnClickListener {
          replaceFragment1(requireActivity(), SleepRecordFragment())
+      }
+
+      binding.tvFood.setOnClickListener {
+         replaceFragment1(requireActivity(), FoodFragment())
+      }
+
+      binding.tvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.cvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.tvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
       }
 
       dailyView()
@@ -151,6 +147,7 @@ class SleepFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
+      binding.tvDate.text = dateFormat(selectedDate)
       binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
       binding.pbSleep.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0h 0m"

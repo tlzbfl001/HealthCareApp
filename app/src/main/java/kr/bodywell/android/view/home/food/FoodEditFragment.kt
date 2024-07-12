@@ -319,8 +319,8 @@ class FoodEditFragment : Fragment() {
 		binding.cvEdit.setOnClickListener {
 			val getFoodByName = dataManager.getFood("name", binding.etName.text.toString().trim())
 
-			if(binding.etName.text.length < 2) {
-				Toast.makeText(context, "음식이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+			if(binding.etName.text.toString().trim().isEmpty()) {
+				Toast.makeText(context, "음식이름은 최소 1자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
 			}else if(!filterText(binding.etName.text.toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가능합니다.", Toast.LENGTH_SHORT).show()
 			}else if (getFoodByName.name != "" && getFoodByName.name != getFood.name) {

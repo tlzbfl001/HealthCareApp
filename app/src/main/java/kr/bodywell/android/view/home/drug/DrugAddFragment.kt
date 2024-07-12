@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.drugTimeList
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1

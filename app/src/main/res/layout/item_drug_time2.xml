@@ -28,7 +28,7 @@
         android:id="@+id/cvTimeArea"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         app:cardBackgroundColor="@color/white"

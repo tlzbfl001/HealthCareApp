@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
@@ -26,15 +24,10 @@ import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Image
-import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
@@ -89,42 +82,6 @@ class FoodFragment : Fragment() {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      binding.tvDate.text = dateFormat(selectedDate)
-
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         binding.tvDate.text = dateFormat(selectedDate)
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
-
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
       dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -160,6 +117,42 @@ class FoodFragment : Fragment() {
 
       binding.clGoal.setOnClickListener {
          dialog.show()
+      }
+
+      binding.clBack.setOnClickListener {
+         replaceFragment1(requireActivity(), MainFragment())
+      }
+
+      binding.clPrev.setOnClickListener {
+         selectedDate = selectedDate.minusDays(1)
+         dailyView()
+         listView()
+      }
+
+      binding.clNext.setOnClickListener {
+         selectedDate = selectedDate.plusDays(1)
+         dailyView()
+         listView()
+      }
+
+      binding.tvWater.setOnClickListener {
+         replaceFragment1(requireActivity(), WaterFragment())
+      }
+
+      binding.tvExercise.setOnClickListener {
+         replaceFragment1(requireActivity(), ExerciseFragment())
+      }
+
+      binding.tvBody.setOnClickListener {
+         replaceFragment1(requireActivity(), BodyFragment())
+      }
+
+      binding.tvSleep.setOnClickListener {
+         replaceFragment1(requireActivity(), SleepFragment())
+      }
+
+      binding.tvDrug.setOnClickListener {
+         replaceFragment1(requireActivity(), DrugFragment())
       }
 
       binding.clRecord.setOnClickListener {
@@ -226,16 +219,15 @@ class FoodFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
-      var sum = 0
+      binding.tvDate.text = dateFormat(selectedDate)
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
       binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
       dailyGoal = dataManager.getGoal(selectedDate.toString())
+      sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
       binding.tvGoal.text = "${dailyGoal.food} kcal"
       binding.tvIntake.text = "$sum kcal"
-
-      sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
 
       if(sum > 0) {
          binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
@@ -247,7 +239,7 @@ class FoodFragment : Fragment() {
       val remain = dailyGoal.food - sum
       if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
-      // 갤러리 초기화
+      /*// 갤러리 초기화
       val imageList = ArrayList<Image>()
       binding.viewPager.adapter = null
 
@@ -275,14 +267,14 @@ class FoodFragment : Fragment() {
             val current = binding.viewPager.currentItem
             binding.viewPager.setCurrentItem(current+1, true)
          }
-      }
+      }*/
    }
 
    private fun listView() {
-      val itemList1 = ArrayList<Food>()
-      val itemList2 = ArrayList<Food>()
-      val itemList3 = ArrayList<Food>()
-      val itemList4 = ArrayList<Food>()
+      itemList1.clear()
+      itemList2.clear()
+      itemList3.clear()
+      itemList4.clear()
       binding.clView1.visibility = View.GONE
       binding.ivExpand1.setImageResource(R.drawable.arrow_down)
       binding.clView2.visibility = View.GONE
