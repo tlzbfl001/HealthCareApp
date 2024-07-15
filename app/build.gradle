@@ -8,11 +8,11 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
-    namespace 'kr.bodywell.android'
+    namespace 'kr.bodywell.health'
     compileSdk 34
 
     defaultConfig {
-        applicationId "kr.bodywell.android"
+        applicationId "kr.bodywell.health"
         minSdk 29
         targetSdk 34
         versionCode 1

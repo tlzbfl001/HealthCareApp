@@ -37,8 +37,8 @@
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
 -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 
--keep class kr.bodywell.android.api.dto.** { *; }
--keep class kr.bodywell.android.api.response.** { *; }
+-keep class kr.bodywell.health.api.dto.** { *; }
+-keep class kr.bodywell.health.api.response.** { *; }
 -keep class * extends com.google.gson.TypeAdapter
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
