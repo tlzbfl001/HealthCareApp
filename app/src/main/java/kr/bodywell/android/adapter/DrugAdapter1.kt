@@ -1,7 +1,6 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +16,13 @@ import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.view.home.MainActivity
-import kr.bodywell.android.view.home.drug.DrugFragment
+import kr.bodywell.android.util.MainViewModel
 
 class DrugAdapter1 (
     private val context: Context,
     private val itemList: List<DrugList>,
-    private val drugGoal: Int
+    private val drugGoal: Int,
+    private val viewModel: MainViewModel
 ) : RecyclerView.Adapter<DrugAdapter1.ViewHolder>() {
     private var dataManager: DataManager = DataManager(context)
     private var check = 0
@@ -36,7 +35,7 @@ class DrugAdapter1 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-        val fragment = (context as MainActivity).supportFragmentManager.findFragmentById(R.id.mainFrame) as DrugFragment
+//        val fragment = manager.findFragmentById(R.id.mainFrame) as DrugFragment
 
         holder.tvTime.text = itemList[pos].time
         holder.tvName.text = itemList[pos].name
@@ -44,20 +43,23 @@ class DrugAdapter1 (
 
         check = itemList[pos].initCheck
 
-        if(check > 0) {
-            fragment.binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
-            fragment.binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
-            fragment.binding.tvDrugCount.text = "${check}회"
-            fragment.binding.pbDrug.progress = check
-        }else {
-            fragment.binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
-            fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
-        }
+        viewModel.setInt(check)
+
+//        if(check > 0) {
+//            viewModel.setCheck(check)
+//            fragment.binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
+//            fragment.binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
+//            fragment.binding.tvDrugCount.text = "${check}회"
+//            fragment.binding.pbDrug.progress = check
+//        }else {
+//            fragment.binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
+//            fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
+//        }
 
         if(itemList[pos].checked > 0) holder.tvCheck.isChecked = true
 
-        var result = drugGoal - check
-        if(result > 0) fragment.binding.tvRemain.text = "${result}회"
+//        var result = drugGoal - check
+//        if(result > 0) fragment.binding.tvRemain.text = "${result}회"
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
@@ -82,18 +84,20 @@ class DrugAdapter1 (
                 }
             }
 
-            result = drugGoal - check
-            if(result > 0) fragment.binding.tvRemain.text = "${result}회"
+            viewModel.setInt(check)
 
-            if(check > 0) {
-                fragment.binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
-                fragment.binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
-                fragment.binding.tvDrugCount.text = "${check}회"
-                fragment.binding.pbDrug.progress = check
-            }else {
-                fragment.binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
-                fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
-            }
+//            result = drugGoal - check
+//            if(result > 0) fragment.binding.tvRemain.text = "${result}회"
+//
+//            if(check > 0) {
+//                fragment.binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
+//                fragment.binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
+//                fragment.binding.tvDrugCount.text = "${check}회"
+//                fragment.binding.pbDrug.progress = check
+//            }else {
+//                fragment.binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
+//                fragment.binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
+//            }
         }
     }
 

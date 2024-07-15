@@ -11,6 +11,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
@@ -18,22 +20,19 @@ import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseBinding
 import kr.bodywell.android.model.Goal
-import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.view.home.MainFragment
-import kr.bodywell.android.view.home.body.BodyFragment
-import kr.bodywell.android.view.home.drug.DrugFragment
-import kr.bodywell.android.view.home.food.FoodFragment
-import kr.bodywell.android.view.home.sleep.SleepFragment
-import kr.bodywell.android.view.home.water.WaterFragment
+import kr.bodywell.android.util.MainViewModel
+import java.time.LocalDate
 
 class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var dataManager: DataManager
+   private val viewModel: MainViewModel by activityViewModels()
    private var adapter: ExerciseAdapter? = null
    private var dailyGoal = Goal()
    private var sum = 0
@@ -44,15 +43,7 @@ class ExerciseFragment : Fragment() {
    ): View {
       _binding = FragmentExerciseBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      selectedDate = LocalDate.now()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -100,39 +91,9 @@ class ExerciseFragment : Fragment() {
          replaceFragment1(requireActivity(), ExerciseListFragment())
       }
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
          dailyView()
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         dailyView()
-      }
-
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
+      })
 
       dailyView()
 
@@ -141,7 +102,6 @@ class ExerciseFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
-      binding.tvDate.text = dateFormat(selectedDate)
       binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
       binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
       binding.tvConsume.text = "0 kcal"

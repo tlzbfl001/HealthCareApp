@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter4
@@ -27,7 +29,9 @@ import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.drugTimeList
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.Companion.setDrugTimeList
+import kr.bodywell.android.util.MainViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -37,6 +41,7 @@ class DrugAddFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private val viewModel: MainViewModel by activityViewModels()
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
    private val itemList = ArrayList<Drug>()
@@ -49,7 +54,7 @@ class DrugAddFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), DrugRecordFragment())
+            replaceFragment3(requireActivity(), DrugRecordFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -116,7 +121,7 @@ class DrugAddFragment : Fragment() {
       }
 
       binding.clX.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugRecordFragment())
+         replaceFragment3(requireActivity(), DrugRecordFragment())
       }
 
       binding.etAmount.addTextChangedListener(object : TextWatcher {
@@ -220,9 +225,13 @@ class DrugAddFragment : Fragment() {
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
-            replaceFragment1(requireActivity(), DrugRecordFragment())
+            replaceFragment3(requireActivity(), DrugRecordFragment())
          }
       }
+
+      viewModel.intVM.observe(viewLifecycleOwner, Observer<Int> { item ->
+         binding.tvDesc.text = "${count}일동안 ${item}회 복용"
+      })
 
       settingTime()
       showTimeList()
@@ -272,7 +281,7 @@ class DrugAddFragment : Fragment() {
          binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
       }
 
-      adapter = DrugAdapter4(requireActivity(), itemList)
+      adapter = DrugAdapter4(requireActivity(), itemList, viewModel)
       binding.recyclerView.adapter = adapter
    }
 

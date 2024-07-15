@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -34,9 +33,11 @@ import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
 import kr.bodywell.android.util.CalendarUtil.Companion.weekFormat
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.getNutrition
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.view.home.MainFragment
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -85,15 +86,15 @@ class ReportFoodFragment : Fragment() {
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.clMenu1.setOnClickListener {
-         replaceFragment1(requireActivity(), ReportBodyFragment())
+         replaceFragment3(requireActivity(), ReportBodyFragment())
       }
 
       binding.clMenu3.setOnClickListener {
-         replaceFragment1(requireActivity(), ReportExerciseFragment())
+         replaceFragment3(requireActivity(), ReportExerciseFragment())
       }
 
       binding.clMenu4.setOnClickListener {
-         replaceFragment1(requireActivity(), ReportDrugFragment())
+         replaceFragment3(requireActivity(), ReportDrugFragment())
       }
 
       binding.clPrev.setOnClickListener {

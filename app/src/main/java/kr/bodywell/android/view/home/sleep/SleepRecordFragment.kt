@@ -15,6 +15,8 @@ import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.view.home.DetailFragment
 import nl.joery.timerangepicker.TimeRangePicker
 import java.time.Duration
 import java.time.LocalDateTime
@@ -26,7 +28,6 @@ class SleepRecordFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
-   private var bundle = Bundle()
    private var bedHour = 0
    private var bedMinute = 0
    private var sleepHour = 0
@@ -36,7 +37,7 @@ class SleepRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), SleepFragment())
+            replaceFragment3(requireActivity(), DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -62,7 +63,7 @@ class SleepRecordFragment : Fragment() {
       dataManager.open()
 
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
+         replaceFragment3(requireActivity(), DetailFragment())
       }
 
       binding.time.setOnTimeChangeListener(object : TimeRangePicker.OnTimeChangeListener {
@@ -90,12 +91,12 @@ class SleepRecordFragment : Fragment() {
             if(getSleep.created == "") {
                dataManager.insertSleep(Sleep(uid = "", startTime = "", endTime = "", total = 0, created = selectedDate.toString()))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment1(requireActivity(), SleepFragment())
             }else {
                dataManager.updateSleep(Sleep(startTime = "", endTime = "", total = 0, created = selectedDate.toString()))
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment1(requireActivity(), SleepFragment())
             }
+
+            replaceFragment3(requireActivity(), DetailFragment())
          }else {
             var date = selectedDate
             val bedTime = bedHour * 60 + bedMinute
@@ -121,12 +122,12 @@ class SleepRecordFragment : Fragment() {
             if(getSleep.created == "") {
                dataManager.insertSleep(Sleep(uid = "", startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), created = selectedDate.toString()))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment1(requireActivity(), SleepFragment())
             }else {
                dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), created = selectedDate.toString()))
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment1(requireActivity(), SleepFragment())
             }
+
+            replaceFragment3(requireActivity(), DetailFragment())
          }
       }
 

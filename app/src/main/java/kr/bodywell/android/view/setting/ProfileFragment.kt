@@ -30,6 +30,7 @@ import kr.bodywell.android.util.CustomUtil.Companion.filterText
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.cameraRequest
@@ -50,7 +51,7 @@ class ProfileFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment1(requireActivity(), SettingFragment())
+				replaceFragment3(requireActivity(), SettingFragment())
 			}
 		}
 
@@ -107,7 +108,7 @@ class ProfileFragment : Fragment() {
 		}
 
 		binding.clBack.setOnClickListener {
-			replaceFragment1(requireActivity(), SettingFragment())
+			replaceFragment3(requireActivity(), SettingFragment())
 		}
 
 //		binding.ivProfile.setOnClickListener {
@@ -256,7 +257,7 @@ class ProfileFragment : Fragment() {
 				if(image != "") dataManager.updateUserStr("image", image)
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-				replaceFragment1(requireActivity(), SettingFragment())
+				replaceFragment3(requireActivity(), SettingFragment())
 			}
 		}
 

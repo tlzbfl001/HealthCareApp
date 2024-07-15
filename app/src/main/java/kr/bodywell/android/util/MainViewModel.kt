@@ -3,9 +3,7 @@ package kr.bodywell.android.util
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -13,37 +11,19 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.Activity
 import kr.bodywell.android.api.dto.ActivityDTO
-import kr.bodywell.android.api.dto.BodyDTO
-import kr.bodywell.android.api.dto.BodyUpdateDTO
 import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.DietUpdateDTO
 import kr.bodywell.android.api.dto.Food
 import kr.bodywell.android.api.dto.FoodDTO
-import kr.bodywell.android.api.dto.GoalDTO
 import kr.bodywell.android.api.dto.LoginDTO
-import kr.bodywell.android.api.dto.MedicineDTO
-import kr.bodywell.android.api.dto.MedicineIntakeDTO
-import kr.bodywell.android.api.dto.MedicineTimeDTO
-import kr.bodywell.android.api.dto.MedicineUpdateDTO
-import kr.bodywell.android.api.dto.ProfileDTO
-import kr.bodywell.android.api.dto.SleepDTO
-import kr.bodywell.android.api.dto.SleepUpdateDTO
 import kr.bodywell.android.api.dto.SyncedAtDTO
-import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_SLEEP
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_UNUSED
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
@@ -67,6 +47,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private var isRunning = true
 
    var dateVM = MutableLiveData<LocalDate>()
+   var intVM = MutableLiveData<Int>()
 
    init {
       /*dataManager.open()
@@ -82,6 +63,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
    fun setDate() {
       dateVM.value = selectedDate
+   }
+
+   fun setInt(data: Int) {
+      intVM.value = data
    }
 
    private fun updateData() = viewModelScope.launch {

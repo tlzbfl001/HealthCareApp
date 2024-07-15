@@ -22,20 +22,12 @@ class MainActivity : AppCompatActivity() {
       _binding = ActivityMainBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      supportFragmentManager.beginTransaction().apply {
-         replace(R.id.mainFrame, MainFragment())
-         commit()
-      }
+      setFragment()
 
       // 하단메뉴
-      binding.navigation.setOnNavigationItemSelectedListener { item ->
-         when (item.itemId) {
-            R.id.menu1 -> {
-               supportFragmentManager.beginTransaction().apply {
-                  replace(R.id.mainFrame, MainFragment())
-                  commit()
-               }
-            }
+      binding.navigation.setOnNavigationItemSelectedListener {
+         when(it.itemId) {
+            R.id.menu1 -> setFragment()
             R.id.menu2 -> replaceFragment1(this, ReportBodyFragment())
             R.id.menu3 -> replaceFragment1(this, NoteFragment())
             R.id.menu4 -> replaceFragment1(this, SettingFragment())
@@ -44,5 +36,12 @@ class MainActivity : AppCompatActivity() {
       }
 
       viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application))[MainViewModel::class.java]
+   }
+
+   private fun setFragment() {
+      supportFragmentManager.beginTransaction().apply {
+         replace(R.id.mainFrame, MainFragment())
+         commit()
+      }
    }
 }

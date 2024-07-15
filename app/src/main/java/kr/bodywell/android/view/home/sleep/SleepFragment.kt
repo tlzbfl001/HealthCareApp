@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
@@ -20,34 +22,28 @@ import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.body.BodyFragment
+import kr.bodywell.android.view.home.body.BodyRecordFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
 import kr.bodywell.android.view.home.food.FoodFragment
 import kr.bodywell.android.view.home.water.WaterFragment
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
+   private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
    private var dailyGoal = Goal()
    private var getSleep = Sleep()
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -55,15 +51,7 @@ class SleepFragment : Fragment() {
    ): View {
       _binding = FragmentSleepBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      selectedDate = LocalDate.now()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -98,47 +86,13 @@ class SleepFragment : Fragment() {
          dialog.show()
       }
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         dailyView()
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         dailyView()
-      }
-
       binding.clRecord.setOnClickListener {
          replaceFragment1(requireActivity(), SleepRecordFragment())
       }
 
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.cvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+         dailyView()
+      })
 
       dailyView()
 
@@ -147,7 +101,6 @@ class SleepFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
-      binding.tvDate.text = dateFormat(selectedDate)
       binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
       binding.pbSleep.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0h 0m"
@@ -178,10 +131,5 @@ class SleepFragment : Fragment() {
 
       binding.tvGoal.text = "${dailyGoal.sleep / 60}h ${dailyGoal.sleep % 60}m"
       binding.tvSleep.text = "${getSleep.total / 60}h ${getSleep.total % 60}m"
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

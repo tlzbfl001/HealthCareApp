@@ -16,6 +16,7 @@ import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import java.time.LocalDateTime
 
 class ExerciseInputFragment : Fragment() {
@@ -113,7 +114,7 @@ class ExerciseInputFragment : Fragment() {
                workoutTime = binding.etTime.text.toString().toInt(), kcal = binding.etKcal.text.toString().toInt(), created = selectedDate.toString()))
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment1(requireActivity(), ExerciseListFragment())
+            replaceFragment3(requireActivity(), ExerciseListFragment())
          }
       }
 
@@ -122,8 +123,8 @@ class ExerciseInputFragment : Fragment() {
 
    private fun replaceFragment() {
       when(arguments?.getString("back")) {
-         "1" -> replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
-         else -> replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
+         "1" -> replaceFragment3(requireActivity(), ExerciseRecord1Fragment())
+         else -> replaceFragment3(requireActivity(), ExerciseRecord2Fragment())
       }
    }
 

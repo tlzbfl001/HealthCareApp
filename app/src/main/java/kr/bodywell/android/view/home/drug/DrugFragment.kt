@@ -2,23 +2,22 @@ package kr.bodywell.android.view.home.drug
 
 import android.Manifest
 import android.app.Dialog
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
@@ -29,36 +28,22 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
-import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
+import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.util.PermissionUtil.Companion.REQUEST_CODE
-import kr.bodywell.android.view.home.MainFragment
-import kr.bodywell.android.view.home.body.BodyFragment
-import kr.bodywell.android.view.home.exercise.ExerciseFragment
-import kr.bodywell.android.view.home.food.FoodFragment
-import kr.bodywell.android.view.home.sleep.SleepFragment
-import kr.bodywell.android.view.home.water.WaterFragment
+import kr.bodywell.android.view.home.sleep.SleepRecordFragment
+import java.time.LocalDate
 
 class DrugFragment : Fragment() {
    private var _binding: FragmentDrugBinding? = null
    val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
+   private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
    private var adapter: DrugAdapter1? = null
    private var dailyGoal = Goal()
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -66,15 +51,7 @@ class DrugFragment : Fragment() {
    ): View {
       _binding = FragmentDrugBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      selectedDate = LocalDate.now()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -112,42 +89,29 @@ class DrugFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         if(requestPermission()) replaceFragment1(requireActivity(), DrugRecordFragment())
+         if(requestPermission()) {
+            replaceFragment1(requireActivity(), DrugRecordFragment())
+         }
       }
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
          dailyView()
-      }
+      })
 
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         dailyView()
-      }
+      viewModel.intVM.observe(viewLifecycleOwner, Observer<Int> { item ->
+         if(item > 0) {
+            binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
+            binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
+            binding.tvDrugCount.text = "${item}회"
+            binding.pbDrug.progress = item
+         }else {
+            binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
+            binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
+         }
 
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
+         var result = dailyGoal.drug - item
+         if(result > 0) binding.tvRemain.text = "${result}회"
+      })
 
       dailyView()
 
@@ -156,7 +120,6 @@ class DrugFragment : Fragment() {
 
    private fun dailyView() {
       val itemList = ArrayList<DrugList>()
-      binding.tvDate.text = dateFormat(selectedDate)
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
@@ -182,7 +145,7 @@ class DrugFragment : Fragment() {
          }
       }
 
-      adapter = DrugAdapter1(requireActivity(), itemList, dailyGoal.drug)
+      adapter = DrugAdapter1(requireActivity(), itemList, dailyGoal.drug, viewModel)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()
@@ -204,10 +167,5 @@ class DrugFragment : Fragment() {
       }
 
       return check
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

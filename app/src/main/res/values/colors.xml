@@ -9,4 +9,7 @@
    <color name="white">#ffffff</color>
    <color name="black">#000000</color>
    <color name="transparent">#00FFFFFF</color>
+
+   <color name="green">#015121</color>
+   <color name="creem_sky">#96FBF2</color>
 </resources>

@@ -34,7 +34,9 @@ import kr.bodywell.android.util.CalendarUtil.Companion.monthArray2
 import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
 import kr.bodywell.android.util.CalendarUtil.Companion.weekFormat
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.view.home.MainFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -83,15 +85,15 @@ class ReportExerciseFragment : Fragment() {
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.clMenu1.setOnClickListener {
-         replaceFragment1(requireActivity(), ReportBodyFragment())
+         replaceFragment3(requireActivity(), ReportBodyFragment())
       }
 
       binding.clMenu2.setOnClickListener {
-         replaceFragment1(requireActivity(), ReportFoodFragment())
+         replaceFragment3(requireActivity(), ReportFoodFragment())
       }
 
       binding.clMenu4.setOnClickListener {
-         replaceFragment1(requireActivity(), ReportDrugFragment())
+         replaceFragment3(requireActivity(), ReportDrugFragment())
       }
 
       binding.clPrev.setOnClickListener {

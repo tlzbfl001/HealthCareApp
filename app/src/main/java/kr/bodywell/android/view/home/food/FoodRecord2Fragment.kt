@@ -16,9 +16,12 @@ import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodRecord2Binding
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
 
 class FoodRecord2Fragment : Fragment() {
    private var _binding: FragmentFoodRecord2Binding? = null
@@ -34,7 +37,7 @@ class FoodRecord2Fragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment()
+            replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -84,11 +87,11 @@ class FoodRecord2Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment()
+         replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
       }
 
       binding.tvBtn1.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+         replaceFragment4(requireActivity(), FoodRecord1Fragment(), bundle)
       }
 
       binding.tvBtn3.setOnClickListener {
@@ -150,15 +153,6 @@ class FoodRecord2Fragment : Fragment() {
       })
 
       return binding.root
-   }
-
-   private fun replaceFragment() {
-      when(type) {
-         "BREAKFAST" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-         "LUNCH" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-         "DINNER" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-         else -> replaceFragment1(requireActivity(), FoodSnackFragment())
-      }
    }
 
    override fun onDetach() {

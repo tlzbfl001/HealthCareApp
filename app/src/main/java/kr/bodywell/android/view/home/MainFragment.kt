@@ -15,6 +15,7 @@ import android.view.ViewGroup.LayoutParams
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.adapter.CalendarAdapter1
@@ -22,15 +23,11 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
+import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.view.home.body.BodyFragment
-import kr.bodywell.android.view.home.drug.DrugFragment
-import kr.bodywell.android.view.home.exercise.ExerciseFragment
-import kr.bodywell.android.view.home.food.FoodFragment
-import kr.bodywell.android.view.home.sleep.SleepFragment
-import kr.bodywell.android.view.home.water.WaterFragment
+import kr.bodywell.android.util.MainViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -42,8 +39,8 @@ class MainFragment : Fragment() {
    val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
+   private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
-   private var bundle = Bundle()
    private var adapter: CalendarAdapter1? = null
    private var pressedTime: Long = 0
    private var days = ArrayList<LocalDate?>()
@@ -92,39 +89,42 @@ class MainFragment : Fragment() {
       dataManager.open()
 
       selectedDate = LocalDate.now()
+      viewModel.setDate()
 
       val getUser = dataManager.getUser()
 
-      if(getUser.name != "") {
-         binding.tvName.text = getUser.name + " 님"
-      }
+      if(getUser.name != "") binding.tvName.text = getUser.name + " 님"
 
-      if(getUser.image != "") {
-         binding.ivUser.setImageURI(Uri.parse(getUser.image))
-      }
+      if(getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
 
       binding.clFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
+         dataType = 1
+         replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
+         dataType = 2
+         replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
+         dataType = 3
+         replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
+         dataType = 4
+         replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
+         dataType = 5
+         replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
+         dataType = 6
+         replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.ivCalendar.setOnClickListener {

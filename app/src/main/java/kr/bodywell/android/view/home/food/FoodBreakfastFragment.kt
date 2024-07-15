@@ -27,6 +27,7 @@ import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.view.home.DetailFragment
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -34,23 +35,11 @@ class FoodBreakfastFragment : Fragment() {
    private var _binding: FragmentFoodBreakfastBinding? = null
    val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
-   private var bundle = Bundle()
    private var photoAdapter: PhotoViewAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
    private var imageData = ArrayList<Image>()
    private var type = "BREAKFAST"
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), FoodFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -58,48 +47,16 @@ class FoodBreakfastFragment : Fragment() {
    ): View {
       _binding = FragmentFoodBreakfastBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
-
       dataManager = DataManager(activity)
       dataManager.open()
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.cvInput.setOnClickListener {
-         val bundle2 = Bundle()
-         bundle2.putString("type", type)
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle2)
-      }
-
-      binding.tvLunch.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodLunchFragment())
-      }
-
-      binding.tvDinner.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodDinnerFragment())
-      }
-
-      binding.tvSnack.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodSnackFragment())
-      }
-
-//      photoView()
+//      imageView()
       listView() // 섭취 식단
 
       return binding.root
    }
 
-   private fun photoView() {
+   private fun imageView() {
       imageData = dataManager.getImage(type, selectedDate.toString())
 
       if(imageData.size > 0) {
@@ -200,10 +157,5 @@ class FoodBreakfastFragment : Fragment() {
 
          binding.rv.adapter = intakeAdapter
       }
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

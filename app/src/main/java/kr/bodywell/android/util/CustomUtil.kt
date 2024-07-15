@@ -20,18 +20,36 @@ import java.util.regex.Pattern
 
 class CustomUtil {
    companion object {
-      const val TAG = "testTag"
+      const val TAG = "logTAG"
+      var dataType = 1
       var drugTimeList = ArrayList<DrugTime>()
       val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.enter_to_right)
             replace(R.id.mainFrame, fragment!!)
             commit()
          }
       }
 
       fun replaceFragment2(activity: Activity, fragment: Fragment?, bundle: Bundle?) {
+         (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            fragment?.arguments = bundle
+            setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.enter_to_right)
+            replace(R.id.mainFrame, fragment!!)
+            commit()
+         }
+      }
+
+      fun replaceFragment3(activity: Activity, fragment: Fragment?) {
+         (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
+            replace(R.id.mainFrame, fragment!!)
+            commit()
+         }
+      }
+
+      fun replaceFragment4(activity: Activity, fragment: Fragment?, bundle: Bundle?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
             fragment?.arguments = bundle
             replace(R.id.mainFrame, fragment!!)

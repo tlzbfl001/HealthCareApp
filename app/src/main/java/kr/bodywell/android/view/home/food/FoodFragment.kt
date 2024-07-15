@@ -1,46 +1,41 @@
 package kr.bodywell.android.view.home.food
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
-import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
-import kr.bodywell.android.model.Image
-import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
+import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.view.home.MainFragment
-import kr.bodywell.android.view.home.body.BodyFragment
-import kr.bodywell.android.view.home.drug.DrugFragment
-import kr.bodywell.android.view.home.exercise.ExerciseFragment
-import kr.bodywell.android.view.home.sleep.SleepFragment
-import kr.bodywell.android.view.home.water.WaterFragment
+import kr.bodywell.android.util.MainViewModel
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 class FoodFragment : Fragment() {
    private var _binding: FragmentFoodBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
+   private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
    private var dailyGoal = Goal()
    private val itemList1 = ArrayList<Food>()
@@ -53,31 +48,13 @@ class FoodFragment : Fragment() {
    private var isExpand4 = false
    private var sum = 0
 
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
-
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentFoodBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      selectedDate = LocalDate.now()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -119,44 +96,8 @@ class FoodFragment : Fragment() {
          dialog.show()
       }
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         dailyView()
-         listView()
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         dailyView()
-         listView()
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvBody.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
-
       binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodBreakfastFragment())
+         replaceFragment1(requireActivity(), FoodDetailFragment())
       }
 
       binding.clExpand1.setOnClickListener {
@@ -211,6 +152,11 @@ class FoodFragment : Fragment() {
          }
       }
 
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+         dailyView()
+         listView()
+      })
+
       dailyView()
       listView()
 
@@ -219,7 +165,6 @@ class FoodFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
-      binding.tvDate.text = dateFormat(selectedDate)
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
       binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0 kcal"
@@ -387,10 +332,5 @@ class FoodFragment : Fragment() {
       val adapter4 = FoodTextAdapter(itemList4)
       binding.rv4.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.rv4.adapter = adapter4
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

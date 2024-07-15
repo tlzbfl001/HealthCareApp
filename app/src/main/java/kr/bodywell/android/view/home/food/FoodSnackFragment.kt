@@ -26,6 +26,7 @@ import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.view.home.DetailFragment
 import java.util.stream.Collectors
 import kotlin.math.abs
 
@@ -33,21 +34,9 @@ class FoodSnackFragment : Fragment() {
     private var _binding: FragmentFoodSnackBinding? = null
     val binding get() = _binding!!
 
-    private lateinit var callback: OnBackPressedCallback
     private lateinit var dataManager: DataManager
-    private var bundle = Bundle()
     private var photoAdapter: PhotoViewAdapter? = null
     private var type = "SNACK"
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                replaceFragment1(requireActivity(), FoodFragment())
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,99 +44,78 @@ class FoodSnackFragment : Fragment() {
     ): View {
         _binding = FragmentFoodSnackBinding.inflate(layoutInflater)
 
-        requireActivity().window?.apply {
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            statusBarColor = Color.TRANSPARENT
-            navigationBarColor = Color.BLACK
-
-            val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-            val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-            binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-        }
-
         dataManager = DataManager(activity)
         dataManager.open()
 
-        binding.clBack.setOnClickListener {
-            replaceFragment1(requireActivity(), FoodFragment())
-        }
 
-        binding.cvInput.setOnClickListener {
-            val bundle2 = Bundle()
-            bundle2.putString("type", type)
-            replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle2)
-        }
+//      imageView()
+        listView() // 섭취 식단
 
-        binding.tvBreakfast.setOnClickListener {
-            replaceFragment1(requireActivity(), FoodBreakfastFragment())
-        }
+        return binding.root
+    }
 
-        binding.tvLunch.setOnClickListener {
-            replaceFragment1(requireActivity(), FoodLunchFragment())
-        }
-
-        binding.tvDinner.setOnClickListener {
-            replaceFragment1(requireActivity(), FoodDinnerFragment())
-        }
-
+    private fun imageView() {
         val imageData = dataManager.getImage(type, selectedDate.toString())
 
-//        if(imageData.size > 0) {
-//            photoAdapter = PhotoViewAdapter(imageData)
-//
-//            binding.viewPager.adapter = photoAdapter
-//            binding.viewPager.offscreenPageLimit = 5
-//            binding.viewPager.clipToPadding = false
-//            binding.viewPager.clipChildren = false
-//            binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-//
-//            val transformer = CompositePageTransformer()
-//            val defaultTranslationX = 0.50f
-//            val defaultTranslationFactor = 1.17f
-//            val scaleFactor = 0.14f
-//            val defaultScale = 1f
-//
-//            transformer.addTransformer{ view: View, position: Float ->
-//                view.apply {
-//                    ViewCompat.setElevation(view, -abs(position))
-//                    val scaleFactor1 = scaleFactor * position + defaultScale
-//                    val scaleFactor2 = -scaleFactor * position + defaultScale
-//                    when {
-//                        position < -2 -> {
-//                            translationX = width * position
-//                        }
-//                        position < 0f -> {
-//                            scaleX = scaleFactor1
-//                            scaleY = scaleFactor1
-//                            translationX = -(width / defaultTranslationFactor) * position
-//                        }
-//                        position == 0f -> {
-//                            translationX = defaultTranslationX
-//                            scaleX = defaultScale
-//                            scaleY = defaultScale
-//                        }
-//                        position > 0 && position <= 2 -> {
-//                            scaleX = scaleFactor2
-//                            scaleY = scaleFactor2
-//                            translationX = -(width / defaultTranslationFactor) * position
-//                        }
-//                        position > 2 -> {
-//                            translationX = 0f
-//                        }
-//                    }
-//                }
-//            }
-//
-//            binding.viewPager.setPageTransformer(transformer)
-//
-//            binding.cvLeft.setOnClickListener {
-//                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
-//            }
-//
-//            binding.cvRight.setOnClickListener {
-//                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
-//            }
-//        }
+        if(imageData.size > 0) {
+            photoAdapter = PhotoViewAdapter(imageData)
+
+            binding.viewPager.adapter = photoAdapter
+            binding.viewPager.offscreenPageLimit = 5
+            binding.viewPager.clipToPadding = false
+            binding.viewPager.clipChildren = false
+            binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+            val transformer = CompositePageTransformer()
+            val defaultTranslationX = 0.50f
+            val defaultTranslationFactor = 1.17f
+            val scaleFactor = 0.14f
+            val defaultScale = 1f
+
+            transformer.addTransformer{ view: View, position: Float ->
+                view.apply {
+                    ViewCompat.setElevation(view, -abs(position))
+                    val scaleFactor1 = scaleFactor * position + defaultScale
+                    val scaleFactor2 = -scaleFactor * position + defaultScale
+                    when {
+                        position < -2 -> {
+                            translationX = width * position
+                        }
+                        position < 0f -> {
+                            scaleX = scaleFactor1
+                            scaleY = scaleFactor1
+                            translationX = -(width / defaultTranslationFactor) * position
+                        }
+                        position == 0f -> {
+                            translationX = defaultTranslationX
+                            scaleX = defaultScale
+                            scaleY = defaultScale
+                        }
+                        position > 0 && position <= 2 -> {
+                            scaleX = scaleFactor2
+                            scaleY = scaleFactor2
+                            translationX = -(width / defaultTranslationFactor) * position
+                        }
+                        position > 2 -> {
+                            translationX = 0f
+                        }
+                    }
+                }
+            }
+
+            binding.viewPager.setPageTransformer(transformer)
+
+            binding.cvLeft.setOnClickListener {
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
+            }
+
+            binding.cvRight.setOnClickListener {
+                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
+            }
+        }
+    }
+
+    private fun listView() {
 
         val dataList = dataManager.getDailyFood(type, selectedDate.toString())
 
@@ -190,12 +158,5 @@ class FoodSnackFragment : Fragment() {
 
             binding.rv.adapter = intakeAdapter
         }
-
-        return binding.root
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        callback.remove()
     }
 }

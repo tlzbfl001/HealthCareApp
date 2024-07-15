@@ -20,6 +20,7 @@ import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 
 class ExerciseRecord1Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord1Binding? = null
@@ -35,7 +36,7 @@ class ExerciseRecord1Fragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), ExerciseListFragment())
+            replaceFragment3(requireActivity(), ExerciseListFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -83,15 +84,15 @@ class ExerciseRecord1Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseListFragment())
+         replaceFragment3(requireActivity(), ExerciseListFragment())
       }
 
       binding.tvBtn2.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseRecord2Fragment())
+         replaceFragment3(requireActivity(), ExerciseRecord2Fragment())
       }
 
       binding.tvBtn3.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseInputFragment())
+         replaceFragment3(requireActivity(), ExerciseInputFragment())
       }
 
       listView()

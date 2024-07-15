@@ -3,18 +3,12 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kr.bodywell.android.adapter.SectionPageAdapter
-import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.databinding.ActivityInitBinding
-import kr.bodywell.android.util.CustomUtil
 import kotlin.system.exitProcess
 
 class InitActivity : AppCompatActivity() {
@@ -23,7 +17,7 @@ class InitActivity : AppCompatActivity() {
 
    private var pressedTime: Long = 0
 
-   private var adapter: SectionPageAdapter = SectionPageAdapter(supportFragmentManager)
+   private var adapter: PagerAdapter = PagerAdapter(supportFragmentManager)
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -36,10 +30,10 @@ class InitActivity : AppCompatActivity() {
          navigationBarColor = Color.BLACK
       }
 
-      adapter.addFragment(SlideFragment1(), "1")
-      adapter.addFragment(SlideFragment2(), "2")
-      adapter.addFragment(SlideFragment3(), "3")
-      adapter.addFragment(SlideFragment4(), "4")
+      adapter.add(SlideFragment1(), "1")
+      adapter.add(SlideFragment2(), "2")
+      adapter.add(SlideFragment3(), "3")
+      adapter.add(SlideFragment4(), "4")
 
       binding.viewpager.adapter = adapter
       binding.dotsIndicator.setViewPager(binding.viewpager)

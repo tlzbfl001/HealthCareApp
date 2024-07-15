@@ -17,6 +17,8 @@ import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
 import java.time.LocalDateTime
 
 class FoodAddFragment : Fragment() {
@@ -101,13 +103,7 @@ class FoodAddFragment : Fragment() {
 			dataManager.updateStr(TABLE_FOOD, "useDate", LocalDateTime.now().toString(), "id", id)
 
 			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-
-			when(type) {
-				"BREAKFAST" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-				"LUNCH" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-				"DINNER" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-				else -> replaceFragment1(requireActivity(), FoodSnackFragment())
-			}
+			replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
 		}
 
 		return binding.root
@@ -115,8 +111,8 @@ class FoodAddFragment : Fragment() {
 
 	private fun replaceFragment() {
 		when(arguments?.getString("back")) {
-			"1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-			else -> replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
+			"1" -> replaceFragment4(requireActivity(), FoodRecord1Fragment(), bundle)
+			else -> replaceFragment4(requireActivity(), FoodRecord2Fragment(), bundle)
 		}
 	}
 

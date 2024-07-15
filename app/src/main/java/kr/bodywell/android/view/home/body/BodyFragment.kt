@@ -15,6 +15,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
@@ -25,34 +27,28 @@ import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.MainViewModel
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
+import kr.bodywell.android.view.home.exercise.ExerciseListFragment
 import kr.bodywell.android.view.home.food.FoodFragment
 import kr.bodywell.android.view.home.sleep.SleepFragment
 import kr.bodywell.android.view.home.water.WaterFragment
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 class BodyFragment : Fragment() {
    private var _binding: FragmentBodyBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var callback: OnBackPressedCallback
+   private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
    private var dailyGoal: Goal? = null
    private var getBody: Body? = null
    private var isExpand = false
-
-   override fun onAttach(context: Context) {
-      super.onAttach(context)
-      callback = object : OnBackPressedCallback(true) {
-         override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
-         }
-      }
-      requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-   }
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -60,15 +56,7 @@ class BodyFragment : Fragment() {
    ): View {
       _binding = FragmentBodyBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      selectedDate = LocalDate.now()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -110,42 +98,6 @@ class BodyFragment : Fragment() {
          replaceFragment1(requireActivity(), BodyRecordFragment())
       }
 
-      binding.clBack.setOnClickListener {
-         replaceFragment1(requireActivity(), MainFragment())
-      }
-
-      binding.clPrev.setOnClickListener {
-         selectedDate = selectedDate.minusDays(1)
-         dailyGoal()
-         dailyList()
-      }
-
-      binding.clNext.setOnClickListener {
-         selectedDate = selectedDate.plusDays(1)
-         dailyGoal()
-         dailyList()
-      }
-
-      binding.tvFood.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodFragment())
-      }
-
-      binding.tvWater.setOnClickListener {
-         replaceFragment1(requireActivity(), WaterFragment())
-      }
-
-      binding.tvExercise.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseFragment())
-      }
-
-      binding.tvSleep.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepFragment())
-      }
-
-      binding.tvDrug.setOnClickListener {
-         replaceFragment1(requireActivity(), DrugFragment())
-      }
-
       binding.clBmi.setOnClickListener {
          if (isExpand) {
             binding.clBmiExpend.visibility = View.GONE
@@ -182,6 +134,11 @@ class BodyFragment : Fragment() {
          isExpand = !isExpand
       }
 
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+         dailyGoal()
+         dailyList()
+      })
+
       dailyGoal()
       dailyList()
 
@@ -189,7 +146,6 @@ class BodyFragment : Fragment() {
    }
 
    private fun dailyGoal() {
-      binding.tvDate.text = CalendarUtil.dateFormat(selectedDate)
       binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
       binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
       binding.tvWeight.text = "0 kg"
@@ -382,10 +338,5 @@ class BodyFragment : Fragment() {
             binding.tvMuscleStatus.text = "높음"
          }
       }
-   }
-
-   override fun onDetach() {
-      super.onDetach()
-      callback.remove()
    }
 }

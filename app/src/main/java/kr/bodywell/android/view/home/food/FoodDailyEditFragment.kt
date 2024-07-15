@@ -26,6 +26,8 @@ import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
@@ -48,7 +50,7 @@ class FoodDailyEditFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment()
+            replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -87,7 +89,7 @@ class FoodDailyEditFragment : Fragment() {
       for(i in 0 until getImage.size) imageList.add(getImage[i])
 
       binding.clBack.setOnClickListener {
-         replaceFragment()
+         replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
       }
 
 //      binding.clPhoto.setOnClickListener {
@@ -132,8 +134,7 @@ class FoodDailyEditFragment : Fragment() {
             salt = getDailyFood.salt * count, sugar = getDailyFood.sugar * count, count = count))
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-
-         replaceFragment()
+         replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
       }
 
 //      photoView()
@@ -215,15 +216,6 @@ class FoodDailyEditFragment : Fragment() {
                dialog!!.dismiss()
             }
          }
-      }
-   }
-
-   private fun replaceFragment() {
-      when(type) {
-         "BREAKFAST" -> replaceFragment1(requireActivity(), FoodBreakfastFragment())
-         "LUNCH" -> replaceFragment1(requireActivity(), FoodLunchFragment())
-         "DINNER" -> replaceFragment1(requireActivity(), FoodDinnerFragment())
-         else -> replaceFragment1(requireActivity(), FoodSnackFragment())
       }
    }
 }
