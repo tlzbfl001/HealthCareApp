@@ -72,8 +72,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="13dp"
-          android:layout_marginBottom="13dp">
+          android:layout_marginTop="11dp"
+          android:layout_marginBottom="11dp">
          <ImageView
              android:id="@+id/ivWoman"
              android:layout_width="34dp"
@@ -112,8 +112,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="13dp"
-          android:layout_marginBottom="13dp">
+          android:layout_marginTop="11dp"
+          android:layout_marginBottom="11dp">
          <ImageView
              android:id="@+id/ivMan"
              android:layout_width="34dp"
@@ -237,7 +237,7 @@
        app:layout_constraintBottom_toTopOf="@id/cvContinue"/>
    <androidx.cardview.widget.CardView
        android:id="@+id/cvContinue"
-       android:layout_width="230dp"
+      android:layout_width="210dp"
        android:layout_height="wrap_content"
        android:layout_marginTop="15dp"
        android:layout_marginBottom="30dp"

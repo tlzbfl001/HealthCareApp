@@ -211,7 +211,7 @@
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.cardview.widget.CardView
        android:id="@+id/cvSave"
-       android:layout_width="230dp"
+      android:layout_width="200dp"
        android:layout_height="wrap_content"
        android:layout_gravity="center"
        android:layout_marginBottom="30dp"

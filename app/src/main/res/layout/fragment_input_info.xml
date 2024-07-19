@@ -119,7 +119,7 @@
       app:layout_constraintEnd_toEndOf="parent"/>
    <androidx.cardview.widget.CardView
        android:id="@+id/cvContinue"
-       android:layout_width="230dp"
+      android:layout_width="210dp"
        android:layout_height="wrap_content"
        android:layout_marginTop="15dp"
        android:layout_marginBottom="30dp"
