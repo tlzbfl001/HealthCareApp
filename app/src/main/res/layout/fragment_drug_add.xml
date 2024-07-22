@@ -512,7 +512,7 @@
                   app:layout_constraintBottom_toTopOf="@id/cvSave"/>
                <androidx.cardview.widget.CardView
                   android:id="@+id/cvSave"
-                  android:layout_width="210dp"
+                  android:layout_width="250dp"
                   android:layout_height="wrap_content"
                   app:cardBackgroundColor="#9F98FF"
                   app:cardCornerRadius="30dp"

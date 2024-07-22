@@ -38,7 +38,7 @@
          app:layout_constraintTop_toTopOf="parent" />
       <androidx.cardview.widget.CardView
          android:id="@+id/cvStart"
-         android:layout_width="210dp"
+         android:layout_width="250dp"
          android:layout_height="wrap_content"
          android:layout_marginLeft="30dp"
          android:layout_marginRight="30dp"
@@ -62,7 +62,7 @@
                android:paddingLeft="45dp"
                android:text="시작"
                android:textColor="@color/white"
-               android:textSize="16.5dp"
+               android:textSize="17dp"
                app:layout_constraintBottom_toBottomOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent"

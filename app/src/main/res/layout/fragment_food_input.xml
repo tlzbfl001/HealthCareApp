@@ -491,7 +491,7 @@
          </androidx.cardview.widget.CardView>
          <androidx.cardview.widget.CardView
              android:id="@+id/cvSave"
-            android:layout_width="210dp"
+            android:layout_width="250dp"
              android:layout_height="wrap_content"
              android:layout_marginTop="30dp"
              android:layout_marginBottom="30dp"

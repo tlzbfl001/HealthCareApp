@@ -1,8 +1,0 @@
-package kr.bodywell.test.api.dto
-
-import com.google.gson.annotations.SerializedName
-
-data class LoginDTO (
-	@SerializedName("idToken")
-	var idToken: String = ""
-)

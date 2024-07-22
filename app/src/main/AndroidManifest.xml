@@ -109,13 +109,13 @@
          </intent-filter>
       </activity>
 
-      <service android:name=".util.BluetoothService" />
+      <service android:name=".service.BluetoothService" />
 
       <receiver
-         android:name=".util.AlarmReceiver"
+         android:name=".service.AlarmReceiver"
          android:exported="false" />
       <receiver
-         android:name=".util.RestartAlarmReceiver"
+         android:name=".service.RestartAlarmReceiver"
          android:enabled="true"
          android:exported="false">
          <intent-filter>
