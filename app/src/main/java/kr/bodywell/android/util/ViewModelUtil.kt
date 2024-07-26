@@ -17,6 +17,7 @@ import kr.bodywell.android.api.dto.SyncDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
@@ -252,35 +253,40 @@ object ViewModelUtil {
 			}
 		}*/
 
+		val getSynced = dataManager.getSynced(WATER) // 수분섭취 동기화 시간 가져오기
 		for(i in 0 until getWaterUid.size) {
-			val data = WaterDTO(getWaterUid[i].volume, getWaterUid[i].count, getWaterUid[i].createdAt)
-			val response = RetrofitAPI.api.createWater("Bearer ${getToken.access}", data)
+			val response1 = RetrofitAPI.api.syncWater("Bearer ${getToken.access}", SyncDTO(getSynced.water)) // 데이터 동기화
+			if(response1.isSuccessful) {
+				Log.d(TAG, "syncWater: ${response1.body()}")
 
-			if(response.isSuccessful) {
-				Log.d(TAG, "createWater: ${response.body()}")
-				dataManager.updateStr(WATER, "uid", response.body()!!.uid, "id", getWaterUid[i].id)
-				dataManager.updateStr(SYNC_TIME, WATER, dateTimeToIso(LocalDateTime.now()), "userId", MyApp.prefs.getId())
+				for(j in 0 until response1.body()?.data!!.size) {
+					val getWaterId = dataManager.getWaterId(CREATED_AT, response1.body()?.data!![i].date) // 같은 날짜 존재 확인
+
+					if(getWaterId > 0) { // 날짜 존재하면 서버 데이터 업데이트
+						updateWater(dataManager, getWaterUid[i])
+					}else { // 아니면 서버에 데이터 저장
+						val data = WaterDTO(getWaterUid[i].volume, getWaterUid[i].count, getWaterUid[i].createdAt)
+						val response2 = RetrofitAPI.api.createWater("Bearer ${getToken.access}", data)
+
+						if(response2.isSuccessful) {
+							Log.d(TAG, "createWater: ${response2.body()}")
+							dataManager.updateStr(WATER, "uid", response2.body()!!.uid, "id", getWaterUid[i].id)
+							dataManager.updateStr(SYNC_TIME, WATER, dateTimeToIso(LocalDateTime.now()), "userId", MyApp.prefs.getId())
+						}else {
+							Log.d(TAG, "createWater: $response2")
+							requestStatus = false
+							return
+						}
+					}
+				}
 			}else {
-				Log.d(TAG, "createWater: $response")
-				requestStatus = false
-				return
+				Log.e(TAG, "syncWater: $response1")
 			}
 		}
 
 		for(i in 0 until getWaterUpdated.size) {
 			if(getWaterUpdated[i].uid != "") {
-				val data = WaterDTO(getWaterUpdated[i].volume, getWaterUpdated[i].count, getWaterUpdated[i].createdAt)
-				val response = RetrofitAPI.api.updateWater("Bearer ${getToken.access}", getWaterUpdated[i].uid!!, data)
-
-				if(response.isSuccessful) {
-					Log.d(TAG, "updateWater: ${response.body()}")
-					dataManager.updateInt(WATER, IS_UPDATED, 0, "id", getWaterUpdated[i].id)
-					dataManager.updateStr(SYNC_TIME, WATER, dateTimeToIso(LocalDateTime.now()), "userId", MyApp.prefs.getId())
-				}else {
-					Log.d(TAG, "updateWater: $response")
-					requestStatus = false
-					return
-				}
+				updateWater(dataManager, getWaterUpdated[i])
 			}
 		}
 
@@ -528,8 +534,27 @@ object ViewModelUtil {
 		}
 	}
 
+	private suspend fun updateWater(dataManager: DataManager, getWater: Water) {
+		for(i in 0 until getWater.size) {
+			if(getWater[i].uid != "") {
+				val data = WaterDTO(getWater[i].volume, getWater[i].count, getWater[i].createdAt)
+				val response = RetrofitAPI.api.updateWater("Bearer ${getToken.access}", getWater[i].uid!!, data)
+
+				if(response.isSuccessful) {
+					Log.d(TAG, "updateWater: ${response.body()}")
+					dataManager.updateInt(WATER, IS_UPDATED, 0, "id", getWater[i].id)
+					dataManager.updateStr(SYNC_TIME, WATER, dateTimeToIso(LocalDateTime.now()), "userId", MyApp.prefs.getId())
+				}else {
+					Log.d(TAG, "updateWater: $response")
+					requestStatus = false
+					return
+				}
+			}
+		}
+	}
+
 	suspend fun createSync(dataManager: DataManager):Boolean {
-		val getSynced = dataManager.getSynced()
+		val getSynced = dataManager.getSynced(WATER)
 
 		if(getSynced.water != "") {
 			val response = RetrofitAPI.api.syncWater("Bearer ${getToken.access}", SyncDTO(getSynced.water))
@@ -537,14 +562,14 @@ object ViewModelUtil {
 				Log.d(TAG, "syncWater: ${response.body()}")
 
 				for(i in 0 until response.body()?.data!!.size) {
-					val waterId = dataManager.getWaterId(response.body()?.data!![i].uid)
-					if(waterId > 0) {
-						if(response.body()?.data!![i].deletedAt != "") dataManager.deleteItem(WATER, "id", waterId)
+					val getWaterId = dataManager.getWaterId(response.body()?.data!![i].uid)
+					if(getWaterId > 0) {
+						if(response.body()?.data!![i].deletedAt != "") dataManager.deleteItem(WATER, "id", getWaterId)
 						if(response.body()?.data!![i].createdAt == response.body()?.data!![i].updatedAt) {
 							dataManager.insertWater(Water(uid = response.body()?.data!![i].uid, count = response.body()?.data!![i].count,
 								volume = response.body()?.data!![i].mL, createdAt = response.body()?.data!![i].date))
 						}else {
-							dataManager.updateInt(WATER, "count", response.body()?.data!![i].count, "id", waterId)
+							dataManager.updateInt(WATER, "count", response.body()?.data!![i].count, "id", getWaterId)
 						}
 					}
 				}

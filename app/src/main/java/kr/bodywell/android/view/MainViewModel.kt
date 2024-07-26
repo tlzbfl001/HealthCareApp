@@ -53,7 +53,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    }
 
    private fun updateData() = viewModelScope.launch {
-      while(requestStatus) {
+      while(isActive) {
          if(networkStatusCheck(context)) {
             if(!syncedStatus) {
                refreshToken(dataManager)

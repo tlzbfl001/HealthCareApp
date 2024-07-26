@@ -450,10 +450,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getWaterId(data: String) : Int {
+   fun getWaterId(column: String, data: String) : Int {
       val db = dbHelper!!.readableDatabase
       var value = 0
-      val sql = "select id from $WATER where $USER_ID = ${MyApp.prefs.getId()} and uid = '$data'"
+      val sql = "select id from $WATER where $USER_ID = ${MyApp.prefs.getId()} and $column = '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          value = cursor.getInt(0)
@@ -1275,10 +1275,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getSynced() : SyncTime {
+   fun getSynced(type: String) : SyncTime {
       val db = dbHelper!!.readableDatabase
       var values = SyncTime()
-      val sql = "select water from $SYNC_TIME where $USER_ID = ${MyApp.prefs.getId()}"
+      val sql = "select $type from $SYNC_TIME where $USER_ID = ${MyApp.prefs.getId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.water = cursor.getString(0)
