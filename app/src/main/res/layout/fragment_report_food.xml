@@ -176,8 +176,8 @@
             app:layout_constraintTop_toBottomOf="@id/clMenuBar">
             <TextView
                android:id="@+id/tvDaily"
-               android:layout_width="60dp"
-               android:layout_height="32dp"
+               android:layout_width="62dp"
+               android:layout_height="34dp"
                android:gravity="center"
                android:background="@drawable/rec_5_purple"
                android:layout_marginRight="16dp"
@@ -189,8 +189,8 @@
                app:layout_constraintBottom_toBottomOf="parent" />
             <TextView
                android:id="@+id/tvWeekly"
-               android:layout_width="60dp"
-               android:layout_height="32dp"
+               android:layout_width="62dp"
+               android:layout_height="34dp"
                android:gravity="center"
                android:background="@drawable/rec_5_border_gray"
                android:text="주간"
@@ -201,8 +201,8 @@
                app:layout_constraintEnd_toEndOf="parent"/>
             <TextView
                android:id="@+id/tvMonthly"
-               android:layout_width="60dp"
-               android:layout_height="32dp"
+               android:layout_width="62dp"
+               android:layout_height="34dp"
                android:gravity="center"
                android:background="@drawable/rec_5_border_gray"
                android:layout_marginLeft="16dp"
@@ -232,7 +232,7 @@
                android:layout_marginTop="12dp"
                android:layout_marginLeft="25dp"
                android:text="섭취 칼로리(kcal)"
-               android:textSize="15dp"
+               android:textSize="15.3dp"
                android:textColor="@color/black"
                android:textStyle="bold"
                app:layout_constraintTop_toTopOf="parent"
@@ -365,7 +365,7 @@
                android:layout_marginTop="12dp"
                android:layout_marginLeft="25dp"
                android:text="영양 성분(g)"
-               android:textSize="15dp"
+               android:textSize="15.3dp"
                android:textColor="@color/black"
                android:textStyle="bold"
                app:layout_constraintTop_toTopOf="parent"
@@ -491,7 +491,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginLeft="25dp"
             android:text="물섭취(ml)"
-            android:textSize="15dp"
+            android:textSize="15.3dp"
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/cv2"

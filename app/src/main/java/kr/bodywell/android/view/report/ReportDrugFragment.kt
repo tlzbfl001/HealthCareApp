@@ -25,7 +25,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ReportAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportDrugBinding
 import kr.bodywell.android.model.Item
@@ -185,7 +185,7 @@ class ReportDrugFragment : Fragment() {
       resetChart()
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager.getDates(TABLE_DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager.getDates(DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart(binding.chart, getDates)
          rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
@@ -203,7 +203,7 @@ class ReportDrugFragment : Fragment() {
       resetChart()
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager.getDates(TABLE_DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager.getDates(DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart(binding.chart, getDates)
          rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())

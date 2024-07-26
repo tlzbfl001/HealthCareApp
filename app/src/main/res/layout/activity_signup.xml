@@ -76,7 +76,7 @@
       android:paddingLeft="25dp"
       android:paddingRight="25dp"
       android:text="개인정보 수집 및 이용, 민감정보 수집 및 이용약관과 같은 필수 사항에 모두 동의합니다."
-      android:textSize="12dp"
+      android:textSize="12.5dp"
       android:textColor="#99000000"
       app:layout_constraintTop_toBottomOf="@id/cbAll"
       app:layout_constraintStart_toStartOf="parent"
@@ -98,25 +98,27 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toBottomOf="@id/view">
+
       <CheckBox
          android:id="@+id/cb1"
          android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:button="@drawable/checkbox_custom"
+         android:layout_height="30dp"
          android:layout_marginTop="16dp"
+         android:button="@drawable/checkbox_custom"
          android:paddingLeft="8dp"
          android:text="서비스 이용 약관 동의"
          android:textColor="#666666"
-         android:textSize="14dp"
-         app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
+         android:textSize="14.7dp"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent" />
+
       <TextView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_marginLeft="2dp"
          android:text="(필수)"
          android:textColor="#9F98FF"
-         android:textSize="12dp"
+         android:textSize="12.5dp"
          app:layout_constraintStart_toEndOf="@id/cb1"
          app:layout_constraintTop_toTopOf="@id/cb1"
          app:layout_constraintBottom_toBottomOf="@id/cb1"/>
@@ -128,7 +130,7 @@
          android:paddingLeft="40dp"
          android:paddingBottom="5dp"
          android:text="보기"
-         android:textSize="14dp"
+         android:textSize="15dp"
          android:textColor="#9F98FF"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toTopOf="@id/cb1"
@@ -159,7 +161,7 @@
          android:paddingLeft="8dp"
          android:text="개인정보처리방침 동의"
          android:textColor="#666666"
-         android:textSize="14dp"
+         android:textSize="14.7dp"
          app:layout_constraintTop_toBottomOf="@id/view1"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -168,7 +170,7 @@
          android:layout_marginLeft="2dp"
          android:text="(필수)"
          android:textColor="#9F98FF"
-         android:textSize="12dp"
+         android:textSize="12.5dp"
          app:layout_constraintStart_toEndOf="@id/cb2"
          app:layout_constraintTop_toTopOf="@id/cb2"
          app:layout_constraintBottom_toBottomOf="@id/cb2"/>
@@ -180,7 +182,7 @@
          android:paddingLeft="40dp"
          android:paddingBottom="5dp"
          android:text="보기"
-         android:textSize="14dp"
+         android:textSize="15dp"
          android:textColor="#9F98FF"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toTopOf="@id/cb2"
@@ -526,7 +528,7 @@
          android:paddingLeft="8dp"
          android:text="민감정보 수집 및 이용 동의"
          android:textColor="#666666"
-         android:textSize="14dp"
+         android:textSize="14.7dp"
          app:layout_constraintTop_toBottomOf="@id/view2"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -535,7 +537,7 @@
          android:layout_marginLeft="2dp"
          android:text="(필수)"
          android:textColor="#9F98FF"
-         android:textSize="12dp"
+         android:textSize="12.5dp"
          app:layout_constraintStart_toEndOf="@id/cb3"
          app:layout_constraintTop_toTopOf="@id/cb3"/>
       <TextView
@@ -546,7 +548,7 @@
          android:paddingLeft="40dp"
          android:paddingBottom="5dp"
          android:text="보기"
-         android:textSize="14dp"
+         android:textSize="15dp"
          android:textColor="#9F98FF"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toTopOf="@id/cb3"
@@ -1041,7 +1043,7 @@
          android:paddingLeft="8dp"
          android:text="마케팅 수신 동의"
          android:textColor="#666666"
-         android:textSize="14dp"
+         android:textSize="14.7dp"
          app:layout_constraintTop_toBottomOf="@id/view3"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -1050,7 +1052,7 @@
          android:layout_marginLeft="2dp"
          android:text="(선택)"
          android:textColor="#9F98FF"
-         android:textSize="12dp"
+         android:textSize="13dp"
          app:layout_constraintStart_toEndOf="@id/cb4"
          app:layout_constraintTop_toTopOf="@id/cb4"
          android:lastBaselineToBottomHeight="6dp"/>
@@ -1062,7 +1064,7 @@
          android:paddingLeft="40dp"
          android:paddingBottom="5dp"
          android:text="보기"
-         android:textSize="14dp"
+         android:textSize="15dp"
          android:textColor="#9F98FF"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toTopOf="@id/cb4"

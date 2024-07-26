@@ -20,6 +20,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private var pendingIntent: PendingIntent? = null
     private val channelId = "channel1"
     private val channelName: CharSequence = "AlarmChannel"
+    private val today = LocalDate.now()
 
     override fun onReceive(context: Context, intent: Intent) {
         val notificationId = intent.getStringExtra("notificationId")
@@ -28,8 +29,11 @@ class AlarmReceiver : BroadcastReceiver() {
         val timeList: ArrayList<DrugTime> = intent.getParcelableArrayListExtra("timeList")!!
         val message = intent.getStringExtra("message")
 
-        showAlarmNotification(context, notificationId!!.toInt(), message)
-        setAlarm(context, notificationId.toInt(), startDate!!, endDate!!, timeList, message!!)
+        if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) {
+            showAlarmNotification(context, notificationId!!.toInt(), message)
+        }
+
+        setAlarm(context, notificationId!!.toInt(), startDate!!, endDate!!, timeList, message!!)
     }
 
     private fun showAlarmNotification(context: Context, notificationId: Int, message: String?) {
@@ -65,7 +69,6 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
-        val today = LocalDate.now()
         val cal = Calendar.getInstance()
 
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { //설정된 알람주기동안 실행

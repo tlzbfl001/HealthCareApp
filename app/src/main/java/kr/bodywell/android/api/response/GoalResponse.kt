@@ -25,5 +25,8 @@ data class GoalResponse (
 	var sleep: Int = 0,
 
 	@SerializedName("medicineIntake")
-	var medicineIntake: Int = 0
+	var medicineIntake: Int = 0,
+
+	@SerializedName("date")
+	var date: String = ""
 )

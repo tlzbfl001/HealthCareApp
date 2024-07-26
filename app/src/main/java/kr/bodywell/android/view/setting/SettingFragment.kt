@@ -1,17 +1,20 @@
 package kr.bodywell.android.view.setting
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -25,37 +28,34 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kr.bodywell.android.BuildConfig.GOOGLE_WEB_CLIENT_ID
-import kr.bodywell.android.BuildConfig.NAVER_CLIENT_ID
-import kr.bodywell.android.BuildConfig.NAVER_CLIENT_SECRET
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_IMAGE
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_NOTE
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_SLEEP
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_TOKEN
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_UNUSED
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_USER
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
+import kr.bodywell.android.database.DBHelper.Companion.BODY
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.DRUG
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.FOOD
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
+import kr.bodywell.android.database.DBHelper.Companion.IMAGE
+import kr.bodywell.android.database.DBHelper.Companion.NOTE
+import kr.bodywell.android.database.DBHelper.Companion.SLEEP
+import kr.bodywell.android.database.DBHelper.Companion.TOKEN
+import kr.bodywell.android.database.DBHelper.Companion.UNUSED
+import kr.bodywell.android.database.DBHelper.Companion.USER
+import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.PermissionUtil.Companion.checkBtPermissions
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.InitActivity
 import kr.bodywell.android.view.init.LoginActivity
@@ -68,6 +68,7 @@ class SettingFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var getUser = User()
    private var getToken = Token()
    private var state = ""
@@ -98,6 +99,12 @@ class SettingFragment : Fragment() {
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
       }
 
+      pLauncher = registerForActivityResult(
+         ActivityResultContracts.RequestMultiplePermissions()
+      ){
+
+      }
+
       dataManager = DataManager(activity)
       dataManager.open()
 
@@ -118,7 +125,20 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvConnect.setOnClickListener {
-         replaceFragment1(requireActivity(), ConnectFragment())
+         if(!checkBtPermissions(requireActivity())) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+               pLauncher.launch(arrayOf(
+                  Manifest.permission.ACCESS_FINE_LOCATION,
+                  Manifest.permission.BLUETOOTH_CONNECT
+               ))
+            }else {
+               pLauncher.launch(arrayOf(
+                  Manifest.permission.ACCESS_FINE_LOCATION
+               ))
+            }
+         }else {
+            replaceFragment1(requireActivity(), ConnectFragment())
+         }
       }
 
       binding.tvLogout.setOnClickListener {
@@ -132,7 +152,7 @@ class SettingFragment : Fragment() {
                   when(getUser.type) {
                      "google" -> {
                         val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
-                           .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+                           .requestIdToken(resources.getString(R.string.googleWebClientId))
                            .requestEmail()
                            .build()
 
@@ -143,7 +163,7 @@ class SettingFragment : Fragment() {
                         }
                      }
                      "naver" -> {
-                        NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(R.string.app_name))
+                        NaverIdLoginSDK.initialize(requireActivity(), resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
                         NaverIdLoginSDK.logout()
                         logoutProcess()
                      }
@@ -173,7 +193,7 @@ class SettingFragment : Fragment() {
                      "google" -> {
                         val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
                         val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
-                           .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+                           .requestIdToken(resources.getString(R.string.googleWebClientId))
                            .requestEmail()
                            .build()
 
@@ -188,7 +208,7 @@ class SettingFragment : Fragment() {
                         }
                      }
                      "naver" -> {
-                        NaverIdLoginSDK.initialize(requireActivity(), NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(R.string.app_name))
+                        NaverIdLoginSDK.initialize(requireActivity(), resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
 
                         if(NaverIdLoginSDK.getAccessToken() == null) {
                            Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
@@ -290,22 +310,22 @@ class SettingFragment : Fragment() {
    }
 
    private fun deleteData() {
-      dataManager.deleteItem(TABLE_USER, "id")
-      dataManager.deleteItem(TABLE_TOKEN, USER_ID)
-      dataManager.deleteItem(TABLE_FOOD, USER_ID)
-      dataManager.deleteItem(TABLE_DAILY_FOOD, USER_ID)
-      dataManager.deleteItem(TABLE_WATER, USER_ID)
-      dataManager.deleteItem(TABLE_EXERCISE, USER_ID)
-      dataManager.deleteItem(TABLE_DAILY_EXERCISE, USER_ID)
-      dataManager.deleteItem(TABLE_BODY, USER_ID)
-      dataManager.deleteItem(TABLE_DRUG, USER_ID)
-      dataManager.deleteItem(TABLE_DRUG_TIME, USER_ID)
-      dataManager.deleteItem(TABLE_DRUG_CHECK, USER_ID)
-      dataManager.deleteItem(TABLE_NOTE, USER_ID)
-      dataManager.deleteItem(TABLE_SLEEP, USER_ID)
-      dataManager.deleteItem(TABLE_GOAL, USER_ID)
-      dataManager.deleteItem(TABLE_IMAGE, USER_ID)
-      dataManager.deleteItem(TABLE_UNUSED, USER_ID)
+      dataManager.deleteItem(USER, "id")
+      dataManager.deleteItem(TOKEN, USER_ID)
+      dataManager.deleteItem(FOOD, USER_ID)
+      dataManager.deleteItem(DAILY_FOOD, USER_ID)
+      dataManager.deleteItem(WATER, USER_ID)
+      dataManager.deleteItem(EXERCISE, USER_ID)
+      dataManager.deleteItem(DAILY_EXERCISE, USER_ID)
+      dataManager.deleteItem(BODY, USER_ID)
+      dataManager.deleteItem(DRUG, USER_ID)
+      dataManager.deleteItem(DRUG_TIME, USER_ID)
+      dataManager.deleteItem(DRUG_CHECK, USER_ID)
+      dataManager.deleteItem(NOTE, USER_ID)
+      dataManager.deleteItem(SLEEP, USER_ID)
+      dataManager.deleteItem(GOAL, USER_ID)
+      dataManager.deleteItem(IMAGE, USER_ID)
+      dataManager.deleteItem(UNUSED, USER_ID)
 
       val alarmReceiver = AlarmReceiver()
       val getDrugId = dataManager.getDrugId()

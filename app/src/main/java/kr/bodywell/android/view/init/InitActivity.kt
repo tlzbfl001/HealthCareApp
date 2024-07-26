@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.databinding.ActivityInitBinding
-import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.service.MyApp
 import kotlin.system.exitProcess
 
 class InitActivity : AppCompatActivity() {

@@ -4,9 +4,9 @@
    android:layout_height="wrap_content"
    android:id="@android:id/text1"
    android:gravity="center"
-   android:paddingStart="18dp"
-   android:paddingEnd="18dp"
-   android:paddingTop="5.6dp"
-   android:paddingBottom="5.6dp"
+   android:paddingStart="21dp"
+   android:paddingEnd="21dp"
+   android:paddingTop="6.2dp"
+   android:paddingBottom="6.2dp"
    android:textColor="@color/tab_text_selector"
-   android:textSize="16.5sp"/>
+   android:textSize="16.8sp"/>

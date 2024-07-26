@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter2
 import kr.bodywell.android.adapter.PhotoSlideAdapter
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteBinding
 import kr.bodywell.android.model.Image
@@ -182,7 +183,7 @@ class NoteFragment : Fragment() {
 
       // 소비 칼로리 계산
       var total = 0
-      val getDailyExercise = dataManager.getDailyExercise("created", selectedDate.toString())
+      val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
 
       for(i in 0 until getDailyExercise.size) total += getDailyExercise[i].kcal
 

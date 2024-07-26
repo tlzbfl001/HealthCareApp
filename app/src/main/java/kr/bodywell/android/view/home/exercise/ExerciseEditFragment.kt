@@ -10,13 +10,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
+import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseEditBinding
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import java.time.LocalDateTime
 
 class ExerciseEditFragment : Fragment() {
 	private var _binding: FragmentExerciseEditBinding? = null
@@ -93,12 +95,12 @@ class ExerciseEditFragment : Fragment() {
 				|| binding.etKcal.text.toString().toInt() < 1) {
 				Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				val updated = isoFormat2()
+				val updated = LocalDateTime.now().format(isoFormatter)
 
 				dataManager.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = binding.etTime.text.toString().trim().toInt(),
 					kcal = binding.etKcal.text.toString().trim().toInt(), updatedAt = updated))
 
-				if(binding.etName.text.toString().trim() != getExercise.name.trim()) dataManager.updateInt(TABLE_EXERCISE, "isUpdated", 1, "id", id)
+				if(binding.etName.text.toString().trim() != getExercise.name.trim()) dataManager.updateInt(EXERCISE, IS_UPDATED, 1, "id", id)
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 				replaceFragment()

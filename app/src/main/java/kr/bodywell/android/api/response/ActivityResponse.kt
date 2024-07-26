@@ -18,8 +18,8 @@ data class ActivityResponse (
 	@SerializedName("updatedAt")
 	var updatedAt: String = "",
 
-	@SerializedName("activityUsages")
-	var activityUsages: ArrayList<ActivityUsages>
+	@SerializedName("usages")
+	var usages: ArrayList<ActivityUsages>
 )
 
 data class ActivityUsages (

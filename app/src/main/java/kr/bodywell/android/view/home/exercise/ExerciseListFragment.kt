@@ -10,6 +10,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.adapter.ExerciseListAdapter
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
@@ -61,7 +62,7 @@ class ExerciseListFragment : Fragment() {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
-      val getDailyExercise = dataManager.getDailyExercise("created", selectedDate.toString())
+      val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
 
       val adapter = ExerciseListAdapter(requireActivity(), getDailyExercise)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

@@ -8,9 +8,10 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
+import kr.bodywell.android.database.DBHelper.Companion.DRUG
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
@@ -21,7 +22,6 @@ import kr.bodywell.android.view.MainViewModel
 class DrugAdapter1 (
     private val context: Context,
     private val itemList: List<DrugList>,
-    private val drugGoal: Int,
     private val viewModel: MainViewModel
 ) : RecyclerView.Adapter<DrugAdapter1.ViewHolder>() {
     private var dataManager: DataManager = DataManager(context)
@@ -59,12 +59,12 @@ class DrugAdapter1 (
                 if(check > 0) check -= 1
 
                 if(getDrugCheck.createdAt != "") {
-                    val getDrugUid = dataManager.getUid(TABLE_DRUG, itemList[pos].drugId)
-                    val getDrugTimeUid = dataManager.getUid(TABLE_DRUG_TIME, itemList[pos].drugTimeId)
+                    val getDrugUid = dataManager.getUid(DRUG, itemList[pos].drugId)
+                    val getDrugTimeUid = dataManager.getUid(DRUG_TIME, itemList[pos].drugTimeId)
                     if(getDrugUid != "" && getDrugTimeUid != "" && getDrugCheck.uid != "") {
                         dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, drugUid = getDrugUid, drugTimeUid = getDrugTimeUid, createdAt = itemList[pos].date))
                     }
-                    dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, "created", selectedDate.toString())
+                    dataManager.deleteItem(DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, CREATED_AT, selectedDate.toString())
                 }
             }
 

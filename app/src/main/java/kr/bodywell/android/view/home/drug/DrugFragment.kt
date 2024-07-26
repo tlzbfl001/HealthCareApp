@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.DRUG
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
 import kr.bodywell.android.model.Goal
@@ -71,8 +71,8 @@ class DrugFragment : Fragment() {
                dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateInt(TABLE_GOAL, TABLE_DRUG, et.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
+               dataManager.updateInt(GOAL, DRUG, et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             dailyView()
@@ -142,7 +142,7 @@ class DrugFragment : Fragment() {
          }
       }
 
-      adapter = DrugAdapter1(requireActivity(), itemList, dailyGoal.drug, viewModel)
+      adapter = DrugAdapter1(requireActivity(), itemList, viewModel)
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()

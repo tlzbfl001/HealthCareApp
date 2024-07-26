@@ -1,13 +1,8 @@
 package kr.bodywell.android.view.init
 
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -18,23 +13,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.api.dto.DeviceDTO
-import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
-import kr.bodywell.android.model.Exercise
-import kr.bodywell.android.model.Food
-import kr.bodywell.android.model.Goal
-import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
-import kr.bodywell.android.util.MyApp
-import org.json.JSONObject
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
+import kr.bodywell.android.util.RegisterUtil.registerTest
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
@@ -44,9 +28,6 @@ class SignupActivity : AppCompatActivity() {
    private var user = User()
    private var isAll = true
    private var isClickable = true
-   private var access = ""
-   private var refresh = ""
-   private var userUid = ""
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -67,7 +48,6 @@ class SignupActivity : AppCompatActivity() {
       dataManager.open()
 
       user = intent.getParcelableExtra("user")!!
-      Log.d(TAG, "user: $user")
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -147,25 +127,12 @@ class SignupActivity : AppCompatActivity() {
             if(networkStatusCheck(this)) {
                if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
                   if(user.type != "" && user.email != "" && user.idToken != "" ) {
-//                     registerUser2()
+//                     registerTest(this@SignupActivity, dataManager, user)
                      when(user.type) {
                         "google" -> {
                            CoroutineScope(Dispatchers.IO).launch {
-                              val data = LoginDTO(user.idToken)
-                              val googleLogin = RetrofitAPI.api.loginWithGoogle(data)
-
-                              if(googleLogin.isSuccessful) {
-                                 Log.d(TAG, "googleLogin: ${googleLogin.body()}")
-                                 access = googleLogin.body()!!.accessToken
-                                 refresh = googleLogin.body()!!.refreshToken
-                                 userUid = decodeToken(access)
-                                 registerUser()
-                              }else {
-                                 Log.e(TAG, "googleLogin: $googleLogin")
-                                 runOnUiThread {
-                                    Toast.makeText(this@SignupActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                                 }
-                              }
+                              googleSignupRequest(this@SignupActivity, dataManager, user)
+                              isClickable = true
                            }
                         }
                      }
@@ -174,137 +141,6 @@ class SignupActivity : AppCompatActivity() {
             }else Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }
       }
-   }
-
-   private fun registerUser() {
-      var getUser = dataManager.getUser(user.type, user.email)
-      val updated = isoFormat2()
-
-      // 사용자 정보 저장
-      if(getUser.createdAt == "") {
-         dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString(), updatedAt = updated, isUpdated = 1))
-      }else {
-         dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString(), updatedAt = updated, isUpdated = 1))
-      }
-
-      getUser = dataManager.getUser(user.type, user.email)
-
-      CoroutineScope(Dispatchers.IO).launch {
-         val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
-         val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
-         val hardwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
-         val softwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
-            "" }else packageManager.getPackageInfo(packageName, 0).versionName
-         val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
-//         val createDevice = RetrofitAPI.api.createDevice("Bearer $access", data)
-         val getDevice = RetrofitAPI.api.getDevice("Bearer $access")
-         val getProfile = RetrofitAPI.api.getProfile("Bearer $access")
-         val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
-         val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer $access")
-         val getGoal = RetrofitAPI.api.getGoal("Bearer $access")
-
-         Log.d(TAG, "getDevice: ${getDevice.isSuccessful}/${getDevice.body()}")
-         Log.d(TAG, "getProfile: ${getProfile.isSuccessful}/${getProfile.body()}")
-         Log.d(TAG, "getAllFood: ${getAllFood.isSuccessful}/${getAllFood.body()}")
-         Log.d(TAG, "getAllActivity: ${getAllActivity.isSuccessful}/${getAllActivity.body()}")
-         Log.d(TAG, "getGoal: ${getGoal.isSuccessful}/${getGoal.body()}")
-
-         if(getDevice.isSuccessful && getProfile.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful && getGoal.isSuccessful) {
-            MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 Id 저장
-            dataManager.updateUserStr("deviceUid", getDevice.body()!![0].uid) // deviceUid 저장
-            dataManager.updateUserStr("profileUid", getProfile.body()!!.uid) // profileUid 저장
-            dataManager.insertGoal(Goal(uid = getGoal.body()!!.uid, createdAt = LocalDate.now().toString()))
-
-            val getToken = dataManager.getToken()
-
-            // 토큰 정보 저장
-            if(getToken.accessCreated == "") {
-               dataManager.insertToken(Token(access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
-            }else {
-               dataManager.updateToken(Token(access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
-            }
-
-            // 서버 데이터 저장
-            for(i in 0 until getAllFood.body()!!.size) {
-               dataManager.insertFood(Food(basic = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
-                  unit = getAllFood.body()!![i].volumeUnit, amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calories,
-                  carbohydrate = getAllFood.body()!![i].carbohydrate, protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
-                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
-                  createdAt = LocalDate.now().toString())
-               )
-            }
-
-            for(i in 0 until getAllActivity.body()!!.size) {
-               dataManager.insertExercise(Exercise(basic = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = "HIGH",
-                  useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
-                  createdAt = LocalDate.now().toString()))
-            }
-
-            runOnUiThread{
-               val dialog = Dialog(this@SignupActivity)
-               dialog.setContentView(R.layout.dialog_signup)
-               dialog.setCancelable(false)
-               dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-               val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
-
-               btnConfirm.setOnClickListener {
-                  val intent = Intent(this@SignupActivity, InputActivity::class.java)
-                  intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                  startActivity(intent)
-                  isClickable = true
-                  dialog.dismiss()
-               }
-
-               dialog.show()
-            }
-         }
-      }
-   }
-
-   private fun registerUser2() {
-      val getUser = dataManager.getUser(user.type, user.email)
-      val getToken = dataManager.getToken()
-
-      // 사용자 정보 저장
-      if(getUser.createdAt == "") {
-         dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString()))
-      }else {
-         dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString()))
-      }
-
-      val getUser2 = dataManager.getUser(user.type, user.email)
-
-      MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
-
-      // 토큰 정보 저장
-      if(getToken.accessCreated == "") {
-         dataManager.insertToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(),
-            refreshCreated = LocalDateTime.now().toString()))
-      }else {
-         dataManager.updateToken(Token(userId = getUser2.id, access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(),
-            refreshCreated = LocalDateTime.now().toString()))
-      }
-
-      val dialog = Dialog(this@SignupActivity)
-      dialog.setContentView(R.layout.dialog_signup)
-      dialog.setCancelable(false)
-      dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
-
-      btnConfirm.setOnClickListener {
-         val intent = Intent(this@SignupActivity, InputActivity::class.java)
-         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-         startActivity(intent)
-         dialog.dismiss()
-      }
-
-      dialog.show()
-   }
-
-   private fun decodeToken(token: String): String {
-      val decodeData = String(Base64.decode(token.split(".")[1], Base64.URL_SAFE), charset("UTF-8"))
-      val obj = JSONObject(decodeData)
-      return obj.get("sub").toString()
    }
 
    private fun showTermsDialog(title: String, id: Int) {

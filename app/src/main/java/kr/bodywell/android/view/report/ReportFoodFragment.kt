@@ -23,7 +23,7 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
 import kr.bodywell.android.model.Water
@@ -166,7 +166,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager.getDates(TABLE_DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
+      val getDates = dataManager.getDates(DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -198,7 +198,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 1
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager.getDates(TABLE_DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager.getDates(DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
@@ -226,7 +226,7 @@ class ReportFoodFragment : Fragment() {
       dateType = 2
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager.getDates(TABLE_DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager.getDates(DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
          settingChart2(binding.chart2, getDates)
@@ -398,7 +398,7 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
 
       for(i in 0 until getData.size){
-         xVal += format2.format(format1.parse(getData[i].selectedAt)!!)
+         xVal += format2.format(format1.parse(getData[i].createdAt)!!)
          lineList += (getData[i].count * getData[i].volume).toFloat()
          barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].volume).toFloat()))
       }

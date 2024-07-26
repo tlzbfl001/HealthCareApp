@@ -16,7 +16,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_IMAGE
+import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDailyEditBinding
 import kr.bodywell.android.model.Food
@@ -120,7 +120,7 @@ class FoodDailyEditFragment : Fragment() {
       }
 
       binding.cvEdit.setOnClickListener {
-         dataManager.deleteItem(TABLE_IMAGE, "dataId", dailyFoodId, "type", type)
+         dataManager.deleteItem(IMAGE, "dataId", dailyFoodId, "type", type)
 
          for(i in 0 until imageList.size) dataManager.insertImage(imageList[i])
 

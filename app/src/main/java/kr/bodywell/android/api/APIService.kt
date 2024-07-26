@@ -109,7 +109,7 @@ interface APIService {
 	suspend fun deleteFood(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Response<Void>
+	): Response<FoodResponse>
 
 	@GET("user/diets")
 	suspend fun getAllDiet(
@@ -139,7 +139,7 @@ interface APIService {
 	suspend fun deleteDiets(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Response<Void>
+	): Response<DietResponse>
 
 	@GET("user/waters")
 	suspend fun getAllWater(
@@ -152,6 +152,12 @@ interface APIService {
 		@Body dto: WaterDTO
 	): Response<WaterResponse>
 
+	@POST("user/waters/sync")
+	suspend fun syncWater(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncWaterResponse>
+
 	@PATCH("user/waters/{uid}")
 	suspend fun updateWater(
 		@Header("Authorization") token: String,
@@ -159,11 +165,11 @@ interface APIService {
 		@Body dto: WaterDTO
 	): Response<WaterResponse>
 
-	@PATCH("user/waters/sync")
-	suspend fun syncWater(
+	@DELETE("user/waters/{uid}")
+	suspend fun deleteWater(
 		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncWaterResponse>
+		@Path("uid") uid: String
+	): Response<WaterResponse>
 
 	@GET("user/activities")
 	suspend fun getAllActivity(
@@ -217,7 +223,7 @@ interface APIService {
 	suspend fun deleteWorkout(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Response<Void>
+	): Response<WorkoutResponse>
 
 	@GET("user/bodies")
 	suspend fun getAllBody(
@@ -277,7 +283,7 @@ interface APIService {
 	suspend fun deleteMedicine(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Response<Void>
+	): Response<MedicineResponse>
 
 	@GET("user/medicines/{uid}/times")
 	suspend fun getMedicineTime(
@@ -297,7 +303,7 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
 		@Path("timeUid") timeUid: String
-	): Response<Void>
+	): Response<MedicineTimeResponse>
 
 	@GET("user/medicines/{uid}/times/{timeUid}/intakes")
 	suspend fun getMedicineIntake(
@@ -320,7 +326,7 @@ interface APIService {
 		@Path("uid") uid: String,
 		@Path("timeUid") timeUid: String,
 		@Path("intakeUid") intakeUid: String
-	): Response<Void>
+	): Response<MedicineIntakeResponse>
 
 	@GET("user/goal")
 	suspend fun getGoal(

@@ -5,18 +5,19 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.util.Base64
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.view.home.MainActivity
-import org.json.JSONObject
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
@@ -80,19 +81,16 @@ class CustomUtil {
          }
       }
 
-      fun isoFormat1(date: String): String {
+      fun dateToIso(date: String): String {
          return LocalDate.parse(date).atStartOfDay().format(isoFormatter)
       }
 
-      // accessToken -> userUid
-      fun decodeToken(token: String): String {
-         val decodeData = String(Base64.decode(token.split(".")[1], Base64.URL_SAFE), charset("UTF-8"))
-         val obj = JSONObject(decodeData)
-         return obj.get("sub").toString()
+      fun dateTimeToIso(date: LocalDateTime): String {
+         return date.atZone(ZoneId.of("Asia/Seoul")).toInstant().toString()
       }
 
-      fun isoFormat2(): String {
-         return LocalDateTime.now().format(isoFormatter)
+      fun isoToDateTime(date: String): LocalDateTime {
+         return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date)).atZone(ZoneId.of("Asia/Seoul")))
       }
 
       fun filterText(text: String): Boolean {
@@ -182,7 +180,7 @@ class CustomUtil {
          dataManager.open()
 
          var sum = 0
-         val getExercise = dataManager.getDailyExercise("created", date)
+         val getExercise = dataManager.getDailyExercise(CREATED_AT, date)
 
          if(getExercise.size > 0) {
             for(i in 0 until getExercise.size) {

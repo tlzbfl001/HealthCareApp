@@ -16,7 +16,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
+import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseBinding
 import kr.bodywell.android.model.Goal
@@ -62,8 +65,8 @@ class ExerciseFragment : Fragment() {
                dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateInt(TABLE_GOAL, "exercise", et.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
+               dataManager.updateInt(GOAL, EXERCISE, et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             binding.pbExercise.max = et.text.toString().toInt()
@@ -125,7 +128,7 @@ class ExerciseFragment : Fragment() {
          binding.tvRemain.text = "0 kcal"
       }
 
-      val getExercise = dataManager.getDailyExercise("created", selectedDate.toString())
+      val getExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
 
       adapter = ExerciseAdapter(getExercise)
       binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

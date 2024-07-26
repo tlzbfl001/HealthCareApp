@@ -15,7 +15,7 @@ import kr.bodywell.android.databinding.FragmentExerciseInputBinding
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import java.time.LocalDateTime
 
@@ -105,7 +105,7 @@ class ExerciseInputFragment : Fragment() {
          }else if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == "" || binding.etKcal.text.toString().toInt() < 1) {
             Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
          }else {
-            val created = isoFormat2()
+            val created = LocalDateTime.now().format(isoFormatter)
 
             dataManager.insertExercise(Exercise(name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = binding.etTime.text.toString().toInt(),
                kcal = binding.etKcal.text.toString().toInt(), useCount = 1, useDate = LocalDateTime.now().toString(), createdAt = created))

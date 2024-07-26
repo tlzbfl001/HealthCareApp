@@ -3,8 +3,6 @@
    xmlns:tools="http://schemas.android.com/tools">
 
    <uses-permission android:name="android.permission.INTERNET" />
-   <uses-permission android:name="android.permission.BODY_SENSORS" />
-   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
@@ -14,15 +12,8 @@
    <uses-permission
       android:name="android.permission.POST_NOTIFICATIONS"
       android:minSdkVersion="33" />
-   <uses-permission
-      android:name="android.permission.BLUETOOTH"
-      android:maxSdkVersion="30" />
-   <uses-permission
-      android:name="android.permission.BLUETOOTH_ADMIN"
-      android:maxSdkVersion="30" />
    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-   <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
    <uses-permission android:name="android.permission.CAMERA" />
 
@@ -43,7 +34,7 @@
    </queries>
 
    <application
-      android:name=".util.MyApp"
+      android:name=".service.MyApp"
       android:allowBackup="false"
       android:dataExtractionRules="@xml/data_extraction_rules"
       android:fullBackupContent="false"
@@ -105,7 +96,7 @@
 
             <data
                android:host="oauth"
-               android:scheme="@string/kakao_oauth_host" />
+               android:scheme="@string/kakaoOauthHost" />
          </intent-filter>
       </activity>
 

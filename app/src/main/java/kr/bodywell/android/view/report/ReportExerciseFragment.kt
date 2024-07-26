@@ -25,7 +25,8 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ReportAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportExerciseBinding
 import kr.bodywell.android.model.Item
@@ -166,7 +167,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val dates = ArrayList<String>()
-      val getExercise = dataManager.getDailyExercise("created", calendarDate.toString())
+      val getExercise = dataManager.getDailyExercise(CREATED_AT, calendarDate.toString())
 
       if(getExercise.size > 0) {
          dates.add(calendarDate.toString())
@@ -187,7 +188,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager.getDates(TABLE_DAILY_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
+      val getDates = dataManager.getDates(DAILY_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -207,7 +208,7 @@ class ReportExerciseFragment : Fragment() {
       dateType = 3
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager.getDates(TABLE_DAILY_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+      val getDates = dataManager.getDates(DAILY_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
 
       if(getDates.size > 0) {
          settingChart1(binding.chart1, getDates)
@@ -243,7 +244,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
 
-         val getDailyExercise = dataManager.getDailyExercise("created", getData[i])
+         val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, getData[i])
          for(j in 0 until getDailyExercise.size) {
             if(getDailyExercise[j].workoutTime > 0) {
                total += getDailyExercise[j].workoutTime.toFloat()
@@ -309,7 +310,7 @@ class ReportExerciseFragment : Fragment() {
       for(i in 0 until getData.size){
          var total = 0f
 
-         val getDailyExercise = dataManager.getDailyExercise("created", getData[i])
+         val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, getData[i])
          for(j in 0 until getDailyExercise.size) {
             if(getDailyExercise[j].kcal > 0) {
                total += getDailyExercise[j].kcal.toFloat()

@@ -3,10 +3,8 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -23,35 +21,15 @@ import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kr.bodywell.android.BuildConfig.GOOGLE_WEB_CLIENT_ID
-import kr.bodywell.android.BuildConfig.NAVER_CLIENT_ID
-import kr.bodywell.android.BuildConfig.NAVER_CLIENT_SECRET
 import kr.bodywell.android.R
-import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.api.dto.LoginDTO
-import kr.bodywell.android.database.DBHelper
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
-import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.Drug
-import kr.bodywell.android.model.DrugCheck
-import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.model.Exercise
-import kr.bodywell.android.model.Food
-import kr.bodywell.android.model.Image
-import kr.bodywell.android.model.Sleep
-import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
-import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
 import kr.bodywell.android.view.home.MainActivity
-import java.time.Duration
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
@@ -117,7 +95,7 @@ class LoginActivity : AppCompatActivity() {
 
    private fun googleLogin() {
       gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-         .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+         .requestIdToken(resources.getString(R.string.googleWebClientId))
          .requestEmail()
          .build()
       gsc = GoogleSignIn.getClient(this, gso!!)
@@ -132,37 +110,14 @@ class LoginActivity : AppCompatActivity() {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
             if(it.isSuccessful) {
                val getUser = dataManager.getUser("google", it.result.email.toString())
-               Log.d(TAG, "idToken: ${it.result.idToken}")
-
                if(getUser.createdAt == "") { // 초기 가입
+//                  val intent = Intent(this, SignupActivity::class.java)
+//                  intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
+//                  startActivity(intent)
+
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      CoroutineScope(Dispatchers.IO).launch {
-                        val getUserEmail = RetrofitAPI.api.getUserEmail(it.result.email!!)
-                        if(getUserEmail.isSuccessful) {
-                           if(getUserEmail.body()!!.exists) {
-                              runOnUiThread {
-                                 AlertDialog.Builder(this@LoginActivity, R.style.AlertDialogStyle)
-                                    .setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
-                                    .setPositiveButton("확인") { _, _ ->
-                                       CoroutineScope(Dispatchers.IO).launch {
-                                          val loginDTO = LoginDTO(it.result.idToken!!)
-                                          val login = RetrofitAPI.api.loginWithGoogle(loginDTO)
-
-                                          if(login.isSuccessful) {
-                                             val user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
-                                             registerUser(user, login.body()!!.accessToken, login.body()!!.refreshToken)
-                                          }else {
-                                             Log.e(TAG, "googleLogin: $login")
-                                          }
-                                       }
-                                    }.setNegativeButton("취소", null).create().show()
-                              }
-                           }else {
-                              val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-                              intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
-                              startActivity(intent)
-                           }
-                        }
+                        googleLoginRequest(this@LoginActivity, dataManager, it)
                      }
                   }else {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
@@ -221,7 +176,7 @@ class LoginActivity : AppCompatActivity() {
       }
 
       // SDK 객체 초기화
-      NaverIdLoginSDK.initialize(this, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, getString(R.string.app_name))
+      NaverIdLoginSDK.initialize(this, resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
       NaverIdLoginSDK.authenticate(this, oAuthLoginCallback)
    }
 
@@ -264,189 +219,6 @@ class LoginActivity : AppCompatActivity() {
                startActivity(Intent(this, MainActivity::class.java))
             }
          }
-      }
-   }
-
-   private fun registerUser(user: User, access: String, refresh: String) {
-      CoroutineScope(Dispatchers.IO).launch {
-         val getProfile = RetrofitAPI.api.getProfile("Bearer $access")
-
-         if(getProfile.isSuccessful) {
-            var getUser = dataManager.getUser(user.type, user.email)
-            val getToken = dataManager.getToken()
-
-            val gender = if(getProfile.body()!!.gender == null) "Female" else getProfile.body()!!.gender
-            val birthday = if(getProfile.body()!!.birth == null) LocalDate.now().toString() else getProfile.body()!!.birth
-            val height = if(getProfile.body()!!.height == null) 0.0 else getProfile.body()!!.height!!.toDouble()
-            val weight = if(getProfile.body()!!.weight == null) 0.0 else getProfile.body()!!.weight!!.toDouble()
-
-            // 사용자 정보 저장
-            if(getUser.createdAt == "") {
-               dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, name = getProfile.body()!!.name, gender = gender,
-                  birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10), updatedAt = getProfile.body()!!.updatedAt))
-            }else {
-               dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, name = getProfile.body()!!.name, gender = gender,
-                  birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10), updatedAt = getProfile.body()!!.updatedAt))
-            }
-
-            getUser = dataManager.getUser(user.type, user.email)
-
-            MyApp.prefs.setPrefs("userId", getUser.id)
-
-            // 토큰 정보 저장
-            if(getToken.accessCreated == "") {
-               dataManager.insertToken(Token(userId = getUser.id, access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
-            }else {
-               dataManager.updateToken(Token(userId = getUser.id, access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
-            }
-
-            // 서버 데이터 저장
-            val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
-
-            if(getAllFood.isSuccessful) {
-               for(i in 0 until getAllFood.body()!!.size) {
-                  var useCount = 0
-                  var useDate = ""
-
-                  if(getAllFood.body()!![i].usages[0].uid != "") {
-                     val getDiet = RetrofitAPI.api.getDiet("Bearer $access", getAllFood.body()!![i].usages[0].uid)
-                     useCount = getAllFood.body()!![i].usages[0].usageCount
-                     useDate = getDiet.body()!!.date
-                  }
-
-                  if(getAllFood.body()!![i].registerType == "ADMIN") {
-                     dataManager.insertFood(Food(userId = getUser.id, basic = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
-                        unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calories,
-                        protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
-                  }else {
-                     dataManager.insertFood(Food(userId = getUser.id, basic = 0, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
-                        unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calories,
-                        protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
-                  }
-               }
-            }
-
-            val getAllDiet = RetrofitAPI.api.getAllDiet("Bearer $access")
-
-            if(getAllDiet.isSuccessful) {
-               for(i in 0 until getAllDiet.body()!!.size) {
-                  dataManager.insertDailyFood(Food(userId = getUser.id, uid = getAllDiet.body()!![i].uid, type = getAllDiet.body()!![i].mealTime,
-                     name = getAllDiet.body()!![i].foodName, unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume,
-                     kcal = getAllDiet.body()!![i].calories, carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein,
-                     fat = getAllDiet.body()!![i].fat, count = getAllDiet.body()!![i].quantity, createdAt = getAllDiet.body()!![i].date))
-
-                  val getFood = dataManager.getFood("name", getAllDiet.body()!![i].foodName)
-                  if(getAllDiet.body()!![i].photos.size > 0 && getFood.id > 0) {
-                     for(j in 0 until getAllDiet.body()!![i].photos.size) {
-                        dataManager.insertImage(Image(userId = getUser.id, type = getAllDiet.body()!![i].mealTime, dataId = getFood.id,
-                           imageUri = getAllDiet.body()!![i].photos[j], createdAt = getAllDiet.body()!![i].date))
-                     }
-                  }
-               }
-            }
-
-            val getAllWater = RetrofitAPI.api.getAllWater("Bearer $access")
-
-            if(getAllWater.isSuccessful) {
-               for(i in 0 until getAllWater.body()!!.size) {
-                  dataManager.insertWater(Water(userId = getUser.id, uid = getAllWater.body()!![i].uid, count = getAllWater.body()!![i].count,
-                     volume = getAllWater.body()!![i].mL, createdAt = getAllWater.body()!![i].date))
-               }
-            }
-
-            val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer $access")
-
-            if(getAllActivity.isSuccessful) {
-               for(i in 0 until getAllActivity.body()!!.size) {
-                  var useCount = 0
-                  var useDate = ""
-
-                  if(getAllActivity.body()!![i].activityUsages[0].uid != "") {
-                     val getWorkout = RetrofitAPI.api.getWorkout("Bearer $access", getAllActivity.body()!![i].activityUsages[0].uid)
-                     useCount = getAllActivity.body()!![i].activityUsages[0].usageCount
-                     useDate = getWorkout.body()!!.date
-                  }
-
-                  if(getAllActivity.body()!![i].registerType == "ADMIN") {
-                     dataManager.insertExercise(Exercise(userId = getUser.id, basic = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name,
-                        useCount = useCount, useDate = useDate))
-                  }else {
-                     dataManager.insertExercise(Exercise(userId = getUser.id, basic = 0, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name,
-                        useCount = useCount, useDate = useDate))
-                  }
-               }
-            }
-
-            val getAllWorkout = RetrofitAPI.api.getAllWorkout("Bearer $access")
-
-            if(getAllWorkout.isSuccessful) {
-               for(i in 0 until getAllWorkout.body()!!.size) {
-                  dataManager.insertDailyExercise(Exercise(uid = getAllWorkout.body()!![i].uid, name = getAllWorkout.body()!![i].name,
-                     intensity = getAllWorkout.body()!![i].intensity, workoutTime = getAllWorkout.body()!![i].time,
-                     kcal = getAllWorkout.body()!![i].calories, createdAt = getAllWorkout.body()!![i].date))
-               }
-            }
-
-            val getAllBody = RetrofitAPI.api.getAllBody("Bearer $access")
-
-            if(getAllBody.isSuccessful) {
-               for(i in 0 until getAllBody.body()!!.size) {
-                  dataManager.insertBody(Body(userId = getUser.id, uid = getAllBody.body()!![i].uid, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
-                     intensity = getAllBody.body()!![i].workoutIntensity, fat = getAllBody.body()!![i].bodyFatPercentage, muscle = getAllBody.body()!![i].skeletalMuscleMass,
-                     bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, createdAt = getAllBody.body()!![i].createdAt))
-               }
-            }
-
-            val getAllSleep = RetrofitAPI.api.getAllSleep("Bearer $access")
-
-            if(getAllSleep.isSuccessful) {
-               for(i in 0 until getAllSleep.body()!!.size) {
-                  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                  val bedTime = LocalDateTime.parse(getAllSleep.body()!![i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
-                  val wakeTime = LocalDateTime.parse(getAllSleep.body()!![i].ends, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'"))
-                  val regDate = LocalDateTime.parse(getAllSleep.body()!![i].starts, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.000'Z'")).format(formatter)
-
-                  val startDT = LocalDateTime.of(bedTime.year, bedTime.monthValue, bedTime.dayOfMonth, bedTime.hour, bedTime.minute)
-                  val endDT = LocalDateTime.of(wakeTime.year, wakeTime.monthValue, wakeTime.dayOfMonth, wakeTime.hour, wakeTime.minute)
-                  val diff = Duration.between(startDT, endDT)
-
-                  dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].uid, startTime = getAllSleep.body()!![i].starts,
-                     endTime = getAllSleep.body()!![i].ends, total = diff.toMinutes().toInt(), createdAt = regDate.toString()))
-               }
-            }
-
-            val getMedicine = RetrofitAPI.api.getMedicine("Bearer $access")
-
-            if(getMedicine.isSuccessful) {
-               for(i in 0 until getMedicine.body()!!.size) {
-                  val drug = Drug(uid = getMedicine.body()!![i].uid, type = getMedicine.body()!![i].category,
-                     name = getMedicine.body()!![i].name, amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit,
-                     startDate = getMedicine.body()!![i].starts.substring(0, 10), endDate = getMedicine.body()!![i].ends.substring(0, 10))
-
-                  dataManager.insertDrug(drug)
-
-                  val response1 = RetrofitAPI.api.getMedicineTime("Bearer $access", drug.uid)
-                  if(response1.isSuccessful) {
-                     val drugId = dataManager.getDrugId(DBHelper.TABLE_DRUG, "startDate", drug.startDate)
-                     for(j in 0 until response1.body()!!.size) {
-                        val drugTime = DrugTime(uid = response1.body()!![j].uid, drugId = drugId, time = response1.body()!![j].time)
-                        dataManager.insertDrugTime(drugTime)
-
-                        val response2 = RetrofitAPI.api.getMedicineIntake("Bearer $access", drug.uid, drugTime.uid)
-                        if(response2.isSuccessful) {
-                           val drugTimeId = dataManager.getDrugId(TABLE_DRUG_TIME, "uid", drugTime.uid)
-                           for(k in 0 until response2.body()!!.size) {
-                              dataManager.insertDrugCheck(DrugCheck(uid = response2.body()!![k].uid, drugId = drugTimeId, drugTimeId = 2,
-                                 createdAt = response2.body()!![k].intakeAt.substring(0, 10)))
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-         }else Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
       }
    }
 

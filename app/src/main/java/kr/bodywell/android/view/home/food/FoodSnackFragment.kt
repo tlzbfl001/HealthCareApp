@@ -15,7 +15,7 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
 import kr.bodywell.android.adapter.PhotoViewAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
 import kr.bodywell.android.model.Unused
@@ -123,7 +123,7 @@ class FoodSnackFragment : Fragment() {
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager.deleteItem(TABLE_DAILY_FOOD, "id", dataList[pos].id)
+                            dataManager.deleteItem(DAILY_FOOD, "id", dataList[pos].id)
                             /*dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
 
                             if (imageData.size > 0) {
@@ -135,7 +135,7 @@ class FoodSnackFragment : Fragment() {
                                 photoAdapter!!.notifyDataSetChanged()
                             }*/
 
-                            if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyFood", value = dataList[pos].uid, createdAt = selectedDate.toString()))
+                            if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_FOOD, value = dataList[pos].uid, createdAt = selectedDate.toString()))
 
                             dataList.removeAt(pos)
                             intakeAdapter.notifyDataSetChanged()

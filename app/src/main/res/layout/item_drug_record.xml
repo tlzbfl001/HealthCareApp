@@ -48,10 +48,10 @@
             <TextView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_marginTop="2dp"
-               android:layout_marginBottom="2dp"
-               android:layout_marginLeft="10dp"
-               android:layout_marginRight="10dp"
+               android:layout_marginTop="3dp"
+               android:layout_marginBottom="3dp"
+               android:layout_marginLeft="11dp"
+               android:layout_marginRight="11dp"
                android:text="수정"
                android:textSize="12dp"
                android:textColor="@color/white"/>

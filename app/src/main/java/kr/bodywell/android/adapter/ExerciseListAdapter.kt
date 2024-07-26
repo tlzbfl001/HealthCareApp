@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DAILY_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Unused
@@ -49,7 +49,7 @@ class ExerciseListAdapter (
             .setPositiveButton("확인") { _, _ ->
                if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyExercise", value = itemList[pos].uid, createdAt = itemList[pos].createdAt))
 
-               dataManager.deleteItem(TABLE_DAILY_EXERCISE, "id", itemList[pos].id)
+               dataManager.deleteItem(DAILY_EXERCISE, "id", itemList[pos].id)
 
                itemList.removeAt(pos)
                notifyDataSetChanged()

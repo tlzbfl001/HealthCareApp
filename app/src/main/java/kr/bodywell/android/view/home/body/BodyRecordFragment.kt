@@ -295,7 +295,7 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            val bmr = if(getUser.gender == "MALE") {
+            val bmr = if(getUser.gender == "Male") {
                val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*age)+5)*step
                String.format("%.1f", num)
             }else {

@@ -24,23 +24,13 @@ class PermissionUtil {
         const val CAMERA_REQUEST_CODE = 2
         const val STORAGE_REQUEST_CODE = 3
 
-        private val COMMON = arrayOf(
-            Manifest.permission.BODY_SENSORS,
-            Manifest.permission.ACTIVITY_RECOGNITION
-        )
-
         val BT_PERMISSION_1 = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
 
         @RequiresApi(Build.VERSION_CODES.S)
         val BT_PERMISSION_2 = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.BLUETOOTH_CONNECT
         )
 
@@ -55,6 +45,19 @@ class PermissionUtil {
             Manifest.permission.CAMERA,
             Manifest.permission.READ_MEDIA_IMAGES
         )
+
+
+        fun checkBtPermissions(context: Activity): Boolean {
+            return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                   && ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+            }else {
+                ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            }
+        }
 
         fun cameraRequest(context: Activity): Boolean {
             var check = true

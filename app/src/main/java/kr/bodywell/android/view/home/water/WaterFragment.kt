@@ -19,8 +19,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.WaterAdapter
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_WATER
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
+import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentWaterBinding
 import kr.bodywell.android.model.Goal
@@ -29,7 +29,6 @@ import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class WaterFragment : Fragment() {
    private var _binding: FragmentWaterBinding? = null
@@ -73,14 +72,14 @@ class WaterFragment : Fragment() {
                dataManager.insertGoal(Goal(waterVolume = etVolume.text.toString().toInt(), water = etGoal.text.toString().toInt(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateInt(TABLE_GOAL, "waterVolume", etVolume.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, TABLE_WATER, etGoal.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
+               dataManager.updateInt(GOAL, "waterVolume", etVolume.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(GOAL, WATER, etGoal.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             if(getWater.createdAt == "") {
                dataManager.insertWater(Water(volume = volume, createdAt = selectedDate.toString()))
-            }else dataManager.updateInt(TABLE_WATER, "volume", volume, selectedDate.toString())
+            }else dataManager.updateInt(WATER, "volume", volume, selectedDate.toString())
 
             dailyView()
             dialog.dismiss()
@@ -92,37 +91,39 @@ class WaterFragment : Fragment() {
       }
 
       binding.ivMinus.setOnClickListener {
+         getWater = dataManager.getWater(selectedDate.toString())
+
          if(count > 0) {
             count -= 1
             binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.progress = count
+
+            getWater = dataManager.getWater(selectedDate.toString())
+
+            if(getWater.createdAt == "") {
+               dataManager.insertWater(Water(count = count, createdAt = selectedDate.toString()))
+            }else {
+               dataManager.updateInt(WATER, "count", count, "id", getWater.id)
+            }
+
+            if(getWater.uid != "") dataManager.updateInt(WATER, IS_UPDATED, 1, selectedDate.toString())
          }
 
-         if(count == 0) {
+         if(count == 0 && getWater.createdAt != "") {
             binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
             binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
-            if(getWater.uid != "") {
-               dataManager.insertUnused(Unused(type = TABLE_WATER, value = getWater.uid!!, createdAt = selectedDate.toString()))
-            }
-            dataManager.deleteItem(TABLE_WATER, CREATED_AT, selectedDate.toString())
+
+            if(getWater.uid != "") dataManager.insertUnused(Unused(type = WATER, value = getWater.uid!!, createdAt = selectedDate.toString()))
+
+            dataManager.deleteItem(WATER, CREATED_AT, selectedDate.toString())
          }
-
-         getWater = dataManager.getWater(selectedDate.toString())
-
-         if(getWater.createdAt == "") {
-            dataManager.insertWater(Water(count = count, createdAt = selectedDate.toString(), updatedAt = LocalDateTime.now().toString()))
-         }else {
-            dataManager.updateWater(Water(id = getWater.id, count = count, updatedAt = LocalDateTime.now().toString()))
-         }
-
-         if(getWater.uid != "") dataManager.updateInt(TABLE_WATER, IS_UPDATED, 1, selectedDate.toString())
 
          resetData()
       }
 
       binding.ivPlus.setOnClickListener {
-         if(count < 100) {
+         if(count < 10) {
             count += 1
 
             binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
@@ -133,12 +134,12 @@ class WaterFragment : Fragment() {
             getWater = dataManager.getWater(selectedDate.toString())
 
             if(getWater.createdAt == "") {
-               dataManager.insertWater(Water(count = count, createdAt = selectedDate.toString(), updatedAt = LocalDateTime.now().toString()))
+               dataManager.insertWater(Water(count = count, createdAt = selectedDate.toString()))
             }else {
-               dataManager.updateWater(Water(id = getWater.id, count = count, updatedAt = LocalDateTime.now().toString()))
+               dataManager.updateInt(WATER, "count", count, "id", getWater.id)
             }
 
-            if(getWater.uid != "") dataManager.updateInt(TABLE_WATER, IS_UPDATED, 1, selectedDate.toString())
+            if(getWater.uid != "") dataManager.updateInt(WATER, IS_UPDATED, 1, selectedDate.toString())
 
             resetData()
          }

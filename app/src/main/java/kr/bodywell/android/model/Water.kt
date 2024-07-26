@@ -7,6 +7,5 @@ data class Water(
     var count: Int = 0,
     var volume: Int = 200,
     var createdAt: String = "",
-    var updatedAt: String = "",
     var isUpdated: Int = 0
 )

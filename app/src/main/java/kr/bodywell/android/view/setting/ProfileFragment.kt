@@ -26,12 +26,13 @@ import kr.bodywell.android.databinding.FragmentProfileBinding
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.Companion.filterText
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormat2
+import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ProfileFragment : Fragment() {
 	private var _binding: FragmentProfileBinding? = null
@@ -247,7 +248,7 @@ class ProfileFragment : Fragment() {
 			}else if(!filterText(binding.etName.text.trim().toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				val date = isoFormat2()
+				val date = LocalDateTime.now().format(isoFormatter)
 				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, updatedAt=date, isUpdated=1))
 
 				if(image != "") dataManager.updateUserStr("image", image)

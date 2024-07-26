@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseAddBinding
 import kr.bodywell.android.model.Exercise
@@ -86,8 +86,8 @@ class ExerciseAddFragment : Fragment() {
                 createdAt = selectedDate.toString()))
 
             val getExercise = dataManager.getExercise("name", exercise.name)
-            dataManager.updateInt(TABLE_EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
-            dataManager.updateStr(TABLE_EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
+            dataManager.updateInt(EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
+            dataManager.updateStr(EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
 
             Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment3(requireActivity(), ExerciseListFragment())

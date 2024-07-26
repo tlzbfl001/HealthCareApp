@@ -17,8 +17,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_BODY
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.BODY
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
@@ -68,8 +68,8 @@ class BodyFragment : Fragment() {
                dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateDouble(TABLE_GOAL, TABLE_BODY, et.text.toString().toDouble(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, IS_UPDATED, 1, "id", dailyGoal!!.id)
+               dataManager.updateDouble(GOAL, BODY, et.text.toString().toDouble(), selectedDate.toString())
+               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal!!.id)
             }
 
             dailyGoal()

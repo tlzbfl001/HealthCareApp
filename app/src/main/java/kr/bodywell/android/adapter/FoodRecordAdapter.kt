@@ -12,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
@@ -71,7 +71,7 @@ class FoodRecordAdapter (
                      dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid, createdAt = selectedDate.toString()))
                   }
 
-                  dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].id)
+                  dataManager.deleteItem(FOOD, "id", itemList[position].id)
 
                   itemList.removeAt(position)
                   notifyDataSetChanged()

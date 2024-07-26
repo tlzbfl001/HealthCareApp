@@ -12,8 +12,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Unused
@@ -79,11 +79,11 @@ class SearchAdapter(
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            val result = dataManager.deleteItem(TABLE_FOOD, "id", itemList[position].int1)
+                            val result = dataManager.deleteItem(FOOD, "id", itemList[position].int1)
 
                             if(result > 0) {
                                 if(itemList[position].string1 != "") {
-                                    dataManager.insertUnused(Unused(type = "food", value = itemList[position].string1, createdAt = selectedDate.toString()))
+                                    dataManager.insertUnused(Unused(type = FOOD, value = itemList[position].string1, createdAt = selectedDate.toString()))
                                 }
 
                                 itemList.removeAt(position)
@@ -98,10 +98,10 @@ class SearchAdapter(
                         .setTitle("운동 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            val result = dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].int1)
+                            val result = dataManager.deleteItem(EXERCISE, "id", itemList[position].int1)
 
                             if(result > 0) {
-                                if(itemList[position].string1 != "") dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].string1, createdAt = selectedDate.toString()))
+                                if(itemList[position].string1 != "") dataManager.insertUnused(Unused(type = EXERCISE, value = itemList[position].string1, createdAt = selectedDate.toString()))
 
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()

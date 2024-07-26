@@ -13,17 +13,18 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
+import kr.bodywell.android.database.DBHelper.Companion.SLEEP
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
+import kr.bodywell.android.util.CustomUtil.Companion.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
@@ -60,8 +61,8 @@ class SleepFragment : Fragment() {
             dataManager.insertGoal(Goal(sleep = total, createdAt = selectedDate.toString()))
             dailyGoal = dataManager.getGoal(selectedDate.toString())
          }else {
-            dataManager.updateInt(TABLE_GOAL, "sleep", total, selectedDate.toString())
-            dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
+            dataManager.updateInt(GOAL, SLEEP, total, selectedDate.toString())
+            dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
          }
 
          dailyView()
@@ -97,8 +98,8 @@ class SleepFragment : Fragment() {
       getSleep = dataManager.getSleep(selectedDate.toString())
 
       if(getSleep.startTime != "" && getSleep.endTime != "") {
-         val bedTime = LocalDateTime.parse(getSleep.startTime, isoFormatter)
-         val wakeTime = LocalDateTime.parse(getSleep.endTime, isoFormatter)
+         val bedTime = isoToDateTime(getSleep.startTime)
+         val wakeTime = isoToDateTime(getSleep.endTime)
 
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))

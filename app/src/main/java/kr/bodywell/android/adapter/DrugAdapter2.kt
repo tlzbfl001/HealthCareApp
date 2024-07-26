@@ -14,9 +14,9 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.DRUG
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugTime
@@ -71,10 +71,10 @@ class DrugAdapter2 (
          if(isChecked) {
             val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
             alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
-            dataManager.updateInt(TABLE_DRUG, "isSet", 1, "id", itemList[pos].id)
+            dataManager.updateInt(DRUG, "isSet", 1, "id", itemList[pos].id)
          }else {
             alarmReceiver.cancelAlarm(context, itemList[pos].id)
-            dataManager.updateInt(TABLE_DRUG, "isSet", 0, "id", itemList[pos].id)
+            dataManager.updateInt(DRUG, "isSet", 0, "id", itemList[pos].id)
          }
       }
 
@@ -88,25 +88,25 @@ class DrugAdapter2 (
             .setTitle("복용약 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               val drugCheckUid = dataManager.getDrugUid(TABLE_DRUG_CHECK, "drugTimeId", "drugId", itemList[pos].id)
+               val drugCheckUid = dataManager.getDrugUid(DRUG_CHECK, "drugTimeId", "drugId", itemList[pos].id)
                for(i in 0 until drugCheckUid.size) {
-                  val drugTimeUid = dataManager.getUid(TABLE_DRUG_TIME, drugCheckUid[i].drugTimeId)
+                  val drugTimeUid = dataManager.getUid(DRUG_TIME, drugCheckUid[i].drugTimeId)
                   if(drugTimeUid != "" && drugCheckUid[i].uid != "") {
                      dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i].uid,
                         drugUid = itemList[pos].uid, drugTimeUid = drugTimeUid, createdAt = itemList[pos].startDate))
                   }
                }
 
-               val drugTimeUid = dataManager.getDrugUid(TABLE_DRUG_TIME, "id", "drugId", itemList[pos].id)
+               val drugTimeUid = dataManager.getDrugUid(DRUG_TIME, "id", "drugId", itemList[pos].id)
                for(i in 0 until drugTimeUid.size) {
                   if(drugTimeUid[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i].uid, drugUid = itemList[pos].uid, createdAt = itemList[pos].startDate))
                }
 
                if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[pos].uid, createdAt = itemList[pos].startDate))
 
-               dataManager.deleteItem(TABLE_DRUG_CHECK, "drugId", itemList[pos].id)
-               dataManager.deleteItem(TABLE_DRUG_TIME, "drugId", itemList[pos].id)
-               dataManager.deleteItem(TABLE_DRUG, "id", itemList[pos].id)
+               dataManager.deleteItem(DRUG_CHECK, "drugId", itemList[pos].id)
+               dataManager.deleteItem(DRUG_TIME, "drugId", itemList[pos].id)
+               dataManager.deleteItem(DRUG, "id", itemList[pos].id)
 
                alarmReceiver.cancelAlarm(context, itemList[pos].id)
                itemList.removeAt(pos)

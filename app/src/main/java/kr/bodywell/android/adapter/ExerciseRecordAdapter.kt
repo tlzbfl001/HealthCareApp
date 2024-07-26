@@ -12,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_EXERCISE
+import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Unused
@@ -65,10 +65,10 @@ class ExerciseRecordAdapter (
                .setTitle("운동 삭제")
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  dataManager.deleteItem(TABLE_EXERCISE, "id", itemList[position].id)
+                  dataManager.deleteItem(EXERCISE, "id", itemList[position].id)
 
                   if(itemList[position].uid != "") {
-                     dataManager.insertUnused(Unused(type = "exercise", value = itemList[position].uid, createdAt = selectedDate.toString()))
+                     dataManager.insertUnused(Unused(type = EXERCISE, value = itemList[position].uid, createdAt = selectedDate.toString()))
                   }
 
                   itemList.removeAt(position)

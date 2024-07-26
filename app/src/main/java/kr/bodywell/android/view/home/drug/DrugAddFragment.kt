@@ -17,9 +17,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter4
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.DRUG
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
+import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugAddBinding
 import kr.bodywell.android.model.Drug
@@ -203,8 +203,8 @@ class DrugAddFragment : Fragment() {
 
                   if(delList[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = delList[i].uid, createdAt = getDrug.startDate))
 
-                  dataManager.deleteItem(TABLE_DRUG_TIME, "id", delList[i].id)
-                  dataManager.deleteItem(TABLE_DRUG_CHECK, "drugTimeId", delList[i].id)
+                  dataManager.deleteItem(DRUG_TIME, "id", delList[i].id)
+                  dataManager.deleteItem(DRUG_CHECK, "drugTimeId", delList[i].id)
                }
 
                for(i in 0 until addList.size) dataManager.insertDrugTime(DrugTime(uid = "", drugId = id, time = addList[i]))
@@ -217,7 +217,7 @@ class DrugAddFragment : Fragment() {
                val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
                dataManager.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count, startDate = selectedDate.toString(), endDate = endDate))
 
-               val drugId = dataManager.getDrugId(TABLE_DRUG, "startDate", selectedDate.toString())
+               val drugId = dataManager.getDrugId(DRUG, "startDate", selectedDate.toString())
                for(i in 0 until drugTimeList.size) dataManager.insertDrugTime(DrugTime(drugId = drugId, time = drugTimeList[i].time))
 
                alarmReceiver!!.setAlarm(requireActivity(), drugId, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")

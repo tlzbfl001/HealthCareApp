@@ -16,7 +16,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
-import kr.bodywell.android.database.DBHelper.Companion.TABLE_GOAL
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
+import kr.bodywell.android.database.DBHelper.Companion.FOOD
+import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Food
@@ -69,8 +71,8 @@ class FoodFragment : Fragment() {
                dataManager.insertGoal(Goal(food = et.text.toString().toInt(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateInt(TABLE_GOAL, "food", et.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(TABLE_GOAL, "isUpdated", 1, "id", dailyGoal.id)
+               dataManager.updateInt(GOAL, FOOD, et.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             binding.pbFood.max = et.text.toString().toInt()
@@ -97,54 +99,62 @@ class FoodFragment : Fragment() {
 
       binding.clExpand1.setOnClickListener {
          if(itemList1.size > 0) {
-            if (isExpand1) {
+            if(isExpand1) {
                binding.clView1.visibility = View.GONE
                binding.ivExpand1.setImageResource(R.drawable.arrow_down)
-            } else {
+            }else {
                binding.clView1.visibility = View.VISIBLE
                binding.ivExpand1.setImageResource(R.drawable.arrow_up)
             }
             isExpand1 = !isExpand1
-         }else Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       binding.clExpand2.setOnClickListener {
          if(itemList2.size > 0) {
-            if (isExpand2) {
+            if(isExpand2) {
                binding.clView2.visibility = View.GONE
                binding.ivExpand2.setImageResource(R.drawable.arrow_down)
-            } else {
+            }else {
                binding.clView2.visibility = View.VISIBLE
                binding.ivExpand2.setImageResource(R.drawable.arrow_up)
             }
             isExpand2 = !isExpand2
-         }else Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       binding.clExpand3.setOnClickListener {
          if(itemList3.size > 0) {
-            if (isExpand3) {
+            if(isExpand3) {
                binding.clView3.visibility = View.GONE
                binding.ivExpand3.setImageResource(R.drawable.arrow_down)
-            } else {
+            }else {
                binding.clView3.visibility = View.VISIBLE
                binding.ivExpand3.setImageResource(R.drawable.arrow_up)
             }
             isExpand3 = !isExpand3
-         }else Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       binding.clExpand4.setOnClickListener {
          if(itemList4.size > 0) {
-            if (isExpand4) {
+            if(isExpand4) {
                binding.clView4.visibility = View.GONE
                binding.ivExpand4.setImageResource(R.drawable.arrow_down)
-            } else {
+            }else {
                binding.clView4.visibility = View.VISIBLE
                binding.ivExpand4.setImageResource(R.drawable.arrow_up)
             }
             isExpand4 = !isExpand4
-         }else Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }else {
+            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
