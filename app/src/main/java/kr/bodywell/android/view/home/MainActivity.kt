@@ -44,4 +44,9 @@ class MainActivity : AppCompatActivity() {
          commit()
       }
    }
+
+   override fun onDestroy() {
+      super.onDestroy()
+      viewModel.closeConnection()
+   }
 }

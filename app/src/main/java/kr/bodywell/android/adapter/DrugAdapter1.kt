@@ -16,7 +16,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.view.MainViewModel
 
 class DrugAdapter1 (

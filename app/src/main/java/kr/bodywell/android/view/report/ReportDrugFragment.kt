@@ -29,11 +29,11 @@ import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportDrugBinding
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
-import kr.bodywell.android.util.CalendarUtil.Companion.monthArray2
-import kr.bodywell.android.util.CalendarUtil.Companion.monthFormat
-import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
-import kr.bodywell.android.util.CalendarUtil.Companion.weekFormat
+import kr.bodywell.android.util.CalendarUtil.dateFormat
+import kr.bodywell.android.util.CalendarUtil.monthArray2
+import kr.bodywell.android.util.CalendarUtil.monthFormat
+import kr.bodywell.android.util.CalendarUtil.weekArray
+import kr.bodywell.android.util.CalendarUtil.weekFormat
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.view.home.MainFragment

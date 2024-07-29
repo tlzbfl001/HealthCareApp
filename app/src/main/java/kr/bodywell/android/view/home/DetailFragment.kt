@@ -15,8 +15,8 @@ import com.google.android.material.tabs.TabLayout.Tab
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.databinding.FragmentDetailBinding
-import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.dateFormat
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.view.MainViewModel

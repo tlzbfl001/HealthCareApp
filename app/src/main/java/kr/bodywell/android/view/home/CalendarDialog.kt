@@ -17,8 +17,8 @@ import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Image
-import kr.bodywell.android.util.CalendarUtil.Companion.monthArray
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.monthArray
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs

@@ -95,10 +95,8 @@ class ExerciseEditFragment : Fragment() {
 				|| binding.etKcal.text.toString().toInt() < 1) {
 				Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				val updated = LocalDateTime.now().format(isoFormatter)
-
-				dataManager.updateExercise(Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity, workoutTime = binding.etTime.text.toString().trim().toInt(),
-					kcal = binding.etKcal.text.toString().trim().toInt(), updatedAt = updated))
+				dataManager.updateExercise(EXERCISE, Exercise(id = id, name = binding.etName.text.toString().trim(), intensity = intensity,
+					workoutTime = binding.etTime.text.toString().trim().toInt(), kcal = binding.etKcal.text.toString().trim().toInt()))
 
 				if(binding.etName.text.toString().trim() != getExercise.name.trim()) dataManager.updateInt(EXERCISE, IS_UPDATED, 1, "id", id)
 

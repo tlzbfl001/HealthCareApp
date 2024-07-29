@@ -21,8 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
+import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil.Companion.dataType
 import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
@@ -328,17 +328,17 @@ class MainFragment : Fragment() {
 
       val sleep = if(getDailyGoal.sleep % 60 == 0) "${getDailyGoal.sleep / 60}h" else "${getDailyGoal.sleep / 60}h${getDailyGoal.sleep % 60}m"
 
-      if(getSleep.total > 0) {
-         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
-         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
-         if(getDailyGoal.sleep > 0) {
-            binding.pbSleep.max = getDailyGoal.sleep
-            binding.pbSleep.progress = getSleep.total
-         }else if(getDailyGoal.sleep == 0) {
-            binding.pbSleep.max = getSleep.total
-            binding.pbSleep.progress = getSleep.total
-         }
-      }
+//      if(getSleep.total > 0) {
+//         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
+//         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
+//         if(getDailyGoal.sleep > 0) {
+//            binding.pbSleep.max = getDailyGoal.sleep
+//            binding.pbSleep.progress = getSleep.total
+//         }else if(getDailyGoal.sleep == 0) {
+//            binding.pbSleep.max = getSleep.total
+//            binding.pbSleep.progress = getSleep.total
+//         }
+//      }
 
       if(getDrugCheckCount > 0) {
          binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
@@ -356,7 +356,7 @@ class MainFragment : Fragment() {
       binding.tvWater.text = "${getWater.count}/${getDailyGoal.water}잔"
       binding.tvExercise.text = "$exerciseSum/${getDailyGoal.exercise} kcal"
       binding.tvBody.text = "$weight/$weightGoal kg"
-      binding.tvSleep.text = "${getSleep.total / 60}h${getSleep.total % 60}m/$sleep"
+//      binding.tvSleep.text = "${getSleep.total / 60}h${getSleep.total % 60}m/$sleep"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyGoal.drug}회"
    }
 

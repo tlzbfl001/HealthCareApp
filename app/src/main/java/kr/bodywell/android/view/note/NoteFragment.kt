@@ -26,8 +26,8 @@ import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteBinding
 import kr.bodywell.android.model.Image
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
-import kr.bodywell.android.util.CalendarUtil.Companion.weekArray
+import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE

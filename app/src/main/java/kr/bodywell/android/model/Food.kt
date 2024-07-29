@@ -4,7 +4,7 @@ data class Food(
     var id: Int = 0,
     var userId: Int = 0,
     var uid: String = "",
-    var basic: Int = 0,
+    var admin: Int = 0,
     var type: String = "",
     var name: String = "",
     var unit: String = "",

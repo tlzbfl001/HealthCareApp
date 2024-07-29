@@ -8,7 +8,7 @@ data class Exercise (
    var id: Int = 0,
    var userId: Int = 0,
    var uid: String = "",
-   var basic: Int = 0,
+   var admin: Int = 0,
    var name: String = "",
    var intensity: String = "HIGH",
    var workoutTime: Int = 0,
@@ -16,6 +16,5 @@ data class Exercise (
    var useCount: Int = 0,
    var useDate: String = "",
    var createdAt: String = "",
-   var updatedAt: String = "",
    var isUpdated: Int = 0
 ) : Parcelable

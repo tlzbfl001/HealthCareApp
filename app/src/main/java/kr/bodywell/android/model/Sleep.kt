@@ -6,7 +6,6 @@ data class Sleep(
     var uid: String = "",
     var startTime: String = "",
     var endTime: String = "",
-    var total: Int = 0,
     var createdAt: String = "",
     var isUpdated: Int = 0
 )

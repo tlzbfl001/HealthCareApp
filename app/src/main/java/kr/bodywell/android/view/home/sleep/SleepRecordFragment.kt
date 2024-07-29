@@ -12,7 +12,7 @@ import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.view.home.DetailFragment
@@ -114,15 +114,12 @@ class SleepRecordFragment : Fragment() {
 
             val bedFormat = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(isoFormatter)
             val wakeFormat = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(isoFormatter)
-            val startDT = LocalDateTime.of(selectedDate.year, selectedDate.monthValue, selectedDate.dayOfMonth, bedHour, bedMinute)
-            val endDT = LocalDateTime.of(date.year, date.monthValue, date.dayOfMonth, wakeTime / 60, wakeTime % 60)
-            val diff = Duration.between(startDT, endDT)
 
             if(getSleep.createdAt == "") {
-               dataManager.insertSleep(Sleep(uid = "", startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), createdAt = selectedDate.toString()))
+               dataManager.insertSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, createdAt = selectedDate.toString()))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }else {
-               dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, total = diff.toMinutes().toInt(), createdAt = selectedDate.toString()))
+               dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, createdAt = selectedDate.toString(), isUpdated = 1))
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
 

@@ -13,8 +13,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteWriteBinding
 import kr.bodywell.android.model.Note
-import kr.bodywell.android.util.CalendarUtil.Companion.dateFormat
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.dateFormat
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 

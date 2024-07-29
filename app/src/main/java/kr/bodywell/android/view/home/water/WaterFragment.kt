@@ -26,7 +26,7 @@ import kr.bodywell.android.databinding.FragmentWaterBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 
@@ -123,7 +123,7 @@ class WaterFragment : Fragment() {
       }
 
       binding.ivPlus.setOnClickListener {
-         if(count < 10) {
+         if(count < 100) {
             count += 1
 
             binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))

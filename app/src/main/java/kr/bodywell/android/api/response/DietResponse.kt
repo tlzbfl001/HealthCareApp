@@ -53,4 +53,7 @@ data class DietResponse(
 
 	@SerializedName("updatedAt")
 	var updatedAt: String = "",
+
+	@SerializedName("deletedAt")
+	var deletedAt: String = ""
 )

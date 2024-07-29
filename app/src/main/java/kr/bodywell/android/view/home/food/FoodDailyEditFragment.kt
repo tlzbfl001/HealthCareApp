@@ -16,12 +16,13 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
+import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDailyEditBinding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
 import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
@@ -124,9 +125,8 @@ class FoodDailyEditFragment : Fragment() {
 
          for(i in 0 until imageList.size) dataManager.insertImage(imageList[i])
 
-         dataManager.updateDailyFood(Food(id = dailyFoodId, amount = getDailyFood.amount * count, kcal = getDailyFood.kcal * count,
-            carbohydrate = getDailyFood.carbohydrate * count, protein = getDailyFood.protein * count, fat = getDailyFood.fat * count,
-            salt = getDailyFood.salt * count, sugar = getDailyFood.sugar * count, count = count))
+         dataManager.updateInt(DAILY_FOOD, "count", count, "id", dailyFoodId)
+         dataManager.updateInt(DAILY_FOOD, "isUpdated", 1, "id", dailyFoodId)
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)

@@ -100,8 +100,6 @@
          </intent-filter>
       </activity>
 
-      <service android:name=".service.BluetoothService" />
-
       <receiver
          android:name=".service.AlarmReceiver"
          android:exported="false" />

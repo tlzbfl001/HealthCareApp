@@ -35,7 +35,6 @@ import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Note
 import kr.bodywell.android.model.Sleep
-import kr.bodywell.android.model.SyncTime
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.User
@@ -251,7 +250,7 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Food()
          values.id=cursor.getInt(0)
-         values.basic=cursor.getInt(2)
+         values.admin=cursor.getInt(2)
          values.uid=cursor.getString(3)
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
@@ -450,18 +449,6 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getWaterId(column: String, data: String) : Int {
-      val db = dbHelper!!.readableDatabase
-      var value = 0
-      val sql = "select id from $WATER where $USER_ID = ${MyApp.prefs.getId()} and $column = '$data'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         value = cursor.getInt(0)
-      }
-      cursor.close()
-      return value
-   }
-
    fun getWaterUpdated() : ArrayList<Water> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Water>()
@@ -555,8 +542,6 @@ class DataManager(private var context: Context?) {
          values.kcal = cursor.getInt(7)
          values.useCount = cursor.getInt(8)
          values.useDate = cursor.getString(9)
-         values.createdAt = cursor.getString(10)
-         values.updatedAt = cursor.getString(11)
          list.add(values)
       }
       cursor.close()
@@ -648,7 +633,7 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.basic = cursor.getInt(1)
+         values.admin = cursor.getInt(1)
          values.uid = cursor.getString(2)
          values.name = cursor.getString(3)
          list.add(values)
@@ -751,8 +736,7 @@ class DataManager(private var context: Context?) {
          values.uid = cursor.getString(2)
          values.startTime = cursor.getString(3)
          values.endTime = cursor.getString(4)
-         values.total = cursor.getInt(5)
-         values.createdAt = cursor.getString(6)
+         values.createdAt = cursor.getString(5)
       }
       cursor.close()
       return values
@@ -1275,16 +1259,28 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getSynced(type: String) : SyncTime {
+   fun getSynced() : String {
       val db = dbHelper!!.readableDatabase
-      var values = SyncTime()
-      val sql = "select $type from $SYNC_TIME where $USER_ID = ${MyApp.prefs.getId()}"
+      var value = ""
+      val sql = "select syncedAt from $SYNC_TIME where $USER_ID = ${MyApp.prefs.getId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         values.water = cursor.getString(0)
+         value = cursor.getString(0)
       }
       cursor.close()
-      return values
+      return value
+   }
+
+   fun getDataId(table: String, column: String, data: String) : Int {
+      val db = dbHelper!!.readableDatabase
+      var value = 0
+      val sql = "select id from $table where $USER_ID = ${MyApp.prefs.getId()} and $column = '$data'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         value = cursor.getInt(0)
+      }
+      cursor.close()
+      return value
    }
 
    fun insertUser(data: User) {
@@ -1324,7 +1320,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getId())
-      values.put("basic", data.basic)
+      values.put("admin", data.admin)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("unit", data.unit)
@@ -1375,7 +1371,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getId())
-      values.put("basic", data.basic)
+      values.put("admin", data.admin)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("intensity", data.intensity)
@@ -1423,7 +1419,6 @@ class DataManager(private var context: Context?) {
       values.put("uid", data.uid)
       values.put("startTime", data.startTime)
       values.put("endTime", data.endTime)
-      values.put("total", data.total)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(SLEEP, null, values)
    }
@@ -1515,11 +1510,11 @@ class DataManager(private var context: Context?) {
       db!!.insert(UNUSED, null, values)
    }
 
-   fun insertSync(data: SyncTime) {
+   fun insertSync(data: String) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getId())
-      values.put("water", data.water)
+      values.put("syncedAt", data)
       db!!.insert(SYNC_TIME, null, values)
    }
 
@@ -1621,15 +1616,15 @@ class DataManager(private var context: Context?) {
    fun updateDailyFood(data: Food){
       val db = dbHelper!!.writableDatabase
       val sql = "update $DAILY_FOOD set amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, protein=${data.protein}, " +
-         "fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, count=${data.count}, $IS_UPDATED=1 where id=${data.id}"
+         "fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, count=${data.count}, $IS_UPDATED=${data.isUpdated} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
 
-   fun updateExercise(data: Exercise){
+   fun updateExercise(table: String, data: Exercise){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $EXERCISE set name='${data.name}', intensity='${data.intensity}', workoutTime=${data.workoutTime}, kcal=${data.kcal}, isUpdated=${data.isUpdated}," +
-         "updated='${data.updatedAt}' where id=${data.id}"
+      val sql = "update $table set name='${data.name}', intensity='${data.intensity}', workoutTime=${data.workoutTime}, kcal=${data.kcal}, isUpdated=${data.isUpdated}, " +
+         "where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
@@ -1637,7 +1632,7 @@ class DataManager(private var context: Context?) {
    fun updateBody(data: Body){
       val db = dbHelper!!.writableDatabase
       val sql = "update $BODY set height=${data.height}, weight=${data.weight}, intensity=${data.intensity}, fat=${data.fat}, muscle=${data.muscle}, " +
-         "bmi=${data.bmi}, bmr=${data.bmr}, $IS_UPDATED=1 where $USER_ID = ${MyApp.prefs.getId()} and id=${data.id}"
+         "bmi=${data.bmi}, bmr=${data.bmr}, $IS_UPDATED=${data.isUpdated} where $USER_ID = ${MyApp.prefs.getId()} and id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
@@ -1652,8 +1647,16 @@ class DataManager(private var context: Context?) {
 
    fun updateSleep(data: Sleep){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $SLEEP set startTime='${data.startTime}', endTime='${data.endTime}', total=${data.total}, $IS_UPDATED=1 " +
+      val sql = "update $SLEEP set startTime='${data.startTime}', endTime='${data.endTime}', $IS_UPDATED=${data.isUpdated} " +
          "where $USER_ID=${MyApp.prefs.getId()} and $CREATED_AT='${data.createdAt}'"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateGoal(data: Goal){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $GOAL set uid='${data.uid}', food=${data.food}, waterVolume=${data.waterVolume}, water=${data.water}, exercise=${data.exercise}, body=${data.body}, " +
+         "sleep=${data.sleep}, drug=${data.drug} where $USER_ID = ${MyApp.prefs.getId()} and id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
@@ -1665,7 +1668,7 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun deleteItem(table: String, column: String): Int {
+   fun deleteTable(table: String, column: String): Int {
       val db = dbHelper!!.writableDatabase
       val result = db.delete(table, "$column=${MyApp.prefs.getId()}", null)
       db.close()

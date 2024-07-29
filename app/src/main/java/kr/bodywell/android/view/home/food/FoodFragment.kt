@@ -23,7 +23,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.MainViewModel

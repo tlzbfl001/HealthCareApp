@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 1
+      const val DATABASE_VERSION = 2
       const val USER = "user"
       const val TOKEN = "token"
       const val FOOD = "food"
@@ -39,7 +39,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
       db.execSQL(token)
 
-      val food = "create table $FOOD(id integer primary key autoincrement, $USER_ID integer, basic integer, uid text, name text, unit text, amount integer, kcal integer, " +
+      val food = "create table $FOOD(id integer primary key autoincrement, $USER_ID integer, admin integer, uid text, name text, unit text, amount integer, kcal integer, " +
          "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, $IS_UPDATED integer);"
       db.execSQL(food)
 
@@ -47,12 +47,11 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(dailyFood)
 
-      val water = "create table $WATER(id integer primary key autoincrement, $USER_ID integer, uid text, count integer, volume integer, " +
-         "$CREATED_AT text, $IS_UPDATED integer);"
+      val water = "create table $WATER(id integer primary key autoincrement, $USER_ID integer, uid text, count integer, volume integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(water)
 
-      val exercise = "create table $EXERCISE(id integer primary key autoincrement, $USER_ID integer, basic integer, uid text, name text, intensity text, " +
-         "workoutTime integer, kcal integer, useCount integer, useDate text, $CREATED_AT text, $UPDATED_AT text, $IS_UPDATED integer);"
+      val exercise = "create table $EXERCISE(id integer primary key autoincrement, $USER_ID integer, admin integer, uid text, name text, intensity text, " +
+         "workoutTime integer, kcal integer, useCount integer, useDate text, $IS_UPDATED integer);"
       db.execSQL(exercise)
 
       val dailyExercise = "create table $DAILY_EXERCISE(id integer primary key autoincrement, $USER_ID integer, uid text, name text, intensity text, " +
@@ -63,8 +62,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "muscle real, bmi real, bmr real, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(body)
 
-      val sleep = "create table $SLEEP(id integer primary key autoincrement, $USER_ID integer, uid text, startTime text, endTime text, total integer, " +
-         "$CREATED_AT text, $IS_UPDATED integer);"
+      val sleep = "create table $SLEEP(id integer primary key autoincrement, $USER_ID integer, uid text, startTime text, endTime text, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(sleep)
 
       val drug = "create table $DRUG(id integer primary key autoincrement, $USER_ID integer, uid text, type text, name text, amount integer, unit text, " +
@@ -90,7 +88,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val unused = "create TABLE $UNUSED(id integer primary key autoincrement, $USER_ID integer, type text, value text, drugUid text, drugTimeUid text, $CREATED_AT text);"
       db.execSQL(unused)
 
-      val syncTime = "create TABLE $SYNC_TIME(id integer primary key autoincrement, $USER_ID integer, water text);"
+      val syncTime = "create TABLE $SYNC_TIME(id integer primary key autoincrement, $USER_ID integer, syncedAt text);"
       db.execSQL(syncTime)
    }
 

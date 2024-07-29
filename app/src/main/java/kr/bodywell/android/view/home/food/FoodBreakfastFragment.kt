@@ -20,7 +20,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodBreakfastBinding
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kotlin.math.abs
 
 class FoodBreakfastFragment : Fragment() {

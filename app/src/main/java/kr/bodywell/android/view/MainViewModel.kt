@@ -18,7 +18,7 @@ import kr.bodywell.android.util.BluetoothUtil
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTING
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_NO_CONNECTED
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.ViewModelUtil.createApiRequest
@@ -26,8 +26,7 @@ import kr.bodywell.android.util.ViewModelUtil.createSync
 import kr.bodywell.android.util.ViewModelUtil.getToken
 import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.refreshToken
-import kr.bodywell.android.util.ViewModelUtil.requestStatus
-import kr.bodywell.android.util.ViewModelUtil.syncedStatus
+import kr.bodywell.android.util.ViewModelUtil.syncCheck
 import java.io.IOException
 import java.time.LocalDate
 import java.util.UUID
@@ -53,19 +52,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    }
 
    private fun updateData() = viewModelScope.launch {
-      while(isActive) {
-         if(networkStatusCheck(context)) {
-            if(!syncedStatus) {
-               refreshToken(dataManager)
-               syncedStatus = createSync(dataManager)
-            }else {
-               refreshToken(dataManager)
-               createApiRequest(dataManager)
-            }
-         }
-
-         delay(10000)
-      }
+//      while(isActive) {
+//         if(networkStatusCheck(context)) {
+//            refreshToken(dataManager)
+//
+//            if(!syncCheck) {
+//               syncCheck = createSync(dataManager)
+//            }else {
+//               createApiRequest(dataManager)
+//            }
+//         }
+//
+//         delay(15000)
+//      }
    }
 
    fun connect(adapter: BluetoothAdapter) {
@@ -108,18 +107,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    }
 
    fun sendMessage(message: String) {
-      try {
-         mSocket?.outputStream?.write(message.toByteArray())
-      }catch(e: IOException) {
-         e.printStackTrace()
+      if(mSocket!!.isConnected) {
+         try {
+            mSocket?.outputStream?.write(message.toByteArray())
+         }catch(e: IOException) {
+            e.printStackTrace()
+         }
       }
    }
 
    fun closeConnection() {
-      try {
-         mSocket?.close()
-      }catch (e: IOException) {
-         e.printStackTrace()
+      if(mSocket!!.isConnected) {
+         try {
+            mSocket?.close()
+         }catch (e: IOException) {
+            e.printStackTrace()
+         }
       }
    }
 

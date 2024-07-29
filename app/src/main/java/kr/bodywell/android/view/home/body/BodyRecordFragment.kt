@@ -15,7 +15,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
@@ -322,7 +322,7 @@ class BodyRecordFragment : Fragment() {
                dataManager.insertBody(Body(height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, createdAt = selectedDate.toString()))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }else {
-               dataManager.updateBody(Body(id = getBody.id, height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr))
+               dataManager.updateBody(Body(id = getBody.id, height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, isUpdated = 1))
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }
 

@@ -24,9 +24,9 @@ import java.util.regex.Pattern
 class CustomUtil {
    companion object {
       const val TAG = "logTAG"
+      val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
       var dataType = 1
       var drugTimeList = ArrayList<DrugTime>()
-      val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
       fun replaceFragment1(activity: Activity, fragment: Fragment?) {
          (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
@@ -90,7 +90,7 @@ class CustomUtil {
       }
 
       fun isoToDateTime(date: String): LocalDateTime {
-         return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date)).atZone(ZoneId.of("Asia/Seoul")))
+         return LocalDateTime.parse(date, isoFormatter)
       }
 
       fun filterText(text: String): Boolean {

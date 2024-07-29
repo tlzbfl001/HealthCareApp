@@ -11,7 +11,6 @@ import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
-import kr.bodywell.android.api.dto.MedicineUpdateDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
@@ -30,7 +29,15 @@ import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
 import kr.bodywell.android.api.response.ProfileResponse
 import kr.bodywell.android.api.response.SleepResponse
+import kr.bodywell.android.api.response.SyncActivityResponse
+import kr.bodywell.android.api.response.SyncBodyResponse
+import kr.bodywell.android.api.response.SyncDietsResponse
+import kr.bodywell.android.api.response.SyncFoodResponse
+import kr.bodywell.android.api.response.SyncGoalResponse
+import kr.bodywell.android.api.response.SyncMedicineResponse
+import kr.bodywell.android.api.response.SyncSleepResponse
 import kr.bodywell.android.api.response.SyncWaterResponse
+import kr.bodywell.android.api.response.SyncWorkoutResponse
 import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
@@ -98,6 +105,12 @@ interface APIService {
 		@Body dto: FoodDTO
 	): Response<FoodResponse>
 
+	@POST("user/foods/sync")
+	suspend fun syncFood(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncFoodResponse>
+
 	@PATCH("user/foods/{uid}")
 	suspend fun updateFood(
 		@Header("Authorization") token: String,
@@ -127,6 +140,12 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Body dto: DietDTO
 	): Response<DietResponse>
+
+	@POST("user/diets/sync")
+	suspend fun syncDiets(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncDietsResponse>
 
 	@PATCH("user/diets/{uid}")
 	suspend fun updateDiets(
@@ -182,6 +201,12 @@ interface APIService {
 		@Body dto: ActivityDTO
 	): Response<ActivityResponse>
 
+	@POST("user/activities/sync")
+	suspend fun syncActivity(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncActivityResponse>
+
 	@PATCH("user/activities/{uid}")
 	suspend fun updateActivity(
 		@Header("Authorization") token: String,
@@ -212,6 +237,12 @@ interface APIService {
 		@Body dto: WorkoutDTO
 	): Response<WorkoutResponse>
 
+	@POST("user/workouts/sync")
+	suspend fun syncWorkout(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncWorkoutResponse>
+
 	@PATCH("user/workouts/{uid}")
 	suspend fun updateWorkout(
 		@Header("Authorization") token: String,
@@ -236,6 +267,12 @@ interface APIService {
 		@Body dto: BodyDTO
 	): Response<BodyResponse>
 
+	@POST("user/bodies/sync")
+	suspend fun syncBody(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncBodyResponse>
+
 	@PATCH("user/bodies/{uid}")
 	suspend fun updateBody(
 		@Header("Authorization") token: String,
@@ -253,6 +290,12 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Body dto: SleepDTO
 	): Response<SleepResponse>
+
+	@POST("user/sleeps/sync")
+	suspend fun syncSleep(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncSleepResponse>
 
 	@PATCH("user/sleeps/{uid}")
 	suspend fun updateSleep(
@@ -272,11 +315,17 @@ interface APIService {
 		@Body dto: MedicineDTO
 	): Response<MedicineResponse>
 
+	@POST("user/medicines/sync")
+	suspend fun syncMedicine(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncMedicineResponse>
+
 	@PATCH("user/medicines/{uid}")
 	suspend fun updateMedicine(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Body dto: MedicineUpdateDTO
+		@Body dto: MedicineDTO
 	): Response<MedicineResponse>
 
 	@DELETE("user/medicines/{uid}")
@@ -338,6 +387,12 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Body dto: GoalDTO
 	): Response<GoalResponse>
+
+	@POST("user/goal/sync")
+	suspend fun syncGoal(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncGoalResponse>
 
 	@PATCH("user/goal")
 	suspend fun updateGoal(

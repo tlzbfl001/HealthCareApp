@@ -130,7 +130,7 @@ class ExerciseRecord2Fragment : Fragment() {
             }else {
                for(i in 0 until itemList.size) {
                   if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = itemList[i].id, int2 = itemList[i].basic, string1 = itemList[i].uid, string2 = itemList[i].name))
+                     searchList.add(Item(int1 = itemList[i].id, int2 = itemList[i].admin, string1 = itemList[i].uid, string2 = itemList[i].name))
                   }
                   adapter.setItems(searchList)
                }

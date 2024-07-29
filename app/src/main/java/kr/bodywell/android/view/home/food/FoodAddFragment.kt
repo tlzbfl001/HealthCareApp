@@ -13,7 +13,7 @@ import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodAddBinding
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
 import java.time.LocalDateTime
@@ -93,7 +93,7 @@ class FoodAddFragment : Fragment() {
 					createdAt = selectedDate.toString()))
 			}else {
 				dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
-					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1))
+					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1, isUpdated = 1))
 			}
 
 			dataManager.updateInt(FOOD, "useCount", getFood.useCount + 1, "id", id)

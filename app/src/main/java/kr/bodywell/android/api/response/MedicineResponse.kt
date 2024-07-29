@@ -22,7 +22,16 @@ data class MedicineResponse (
 	var starts: String = "",
 
 	@SerializedName("ends")
-	var ends: String = ""
+	var ends: String = "",
+
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = "",
+
+	@SerializedName("deletedAt")
+	var deletedAt: String = ""
 )
 
 data class MedicineTimeResponse (

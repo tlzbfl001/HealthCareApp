@@ -16,7 +16,7 @@ import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
@@ -42,7 +42,7 @@ class FoodRecordAdapter (
 
       holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
 
-      if(itemList[position].basic == 0) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+      if(itemList[position].admin == 0) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)

@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,10 +21,12 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
-import kr.bodywell.android.util.CalendarUtil.Companion.selectedDate
+import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
+import java.time.Duration
 import java.time.LocalDate
 
 class SleepFragment : Fragment() {
@@ -78,7 +81,7 @@ class SleepFragment : Fragment() {
          replaceFragment1(requireActivity(), SleepRecordFragment())
       }
 
-      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
          dailyView()
       })
 
@@ -89,6 +92,7 @@ class SleepFragment : Fragment() {
 
    private fun dailyView() {
       // 목표 초기화
+      var total = 0
       binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
       binding.pbSleep.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0h 0m"
@@ -101,14 +105,17 @@ class SleepFragment : Fragment() {
          val bedTime = isoToDateTime(getSleep.startTime)
          val wakeTime = isoToDateTime(getSleep.endTime)
 
+         val diff = Duration.between(bedTime, wakeTime)
+         total =diff.toMinutes().toInt()
+
          binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
          binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
          binding.pbSleep.max = dailyGoal.sleep
-         binding.pbSleep.progress = getSleep.total
+         binding.pbSleep.progress = total
          binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"
          binding.tvWakeTime.text = "${wakeTime.hour}h ${wakeTime.minute}m"
 
-         val remain = (dailyGoal.sleep - getSleep.total)
+         val remain = (dailyGoal.sleep - total)
          if(remain > 0) {
             binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
          }
@@ -118,6 +125,6 @@ class SleepFragment : Fragment() {
       }
 
       binding.tvGoal.text = "${dailyGoal.sleep / 60}h ${dailyGoal.sleep % 60}m"
-      binding.tvSleep.text = "${getSleep.total / 60}h ${getSleep.total % 60}m"
+      binding.tvSleep.text = "${total / 60}h ${total % 60}m"
    }
 }
