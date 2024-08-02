@@ -225,6 +225,14 @@ class DrugAddFragment : Fragment() {
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
 
+            if(viewModel.socketStatus()) {
+               var str =""
+               for(i in 0 until drugTimeList.size) {
+                  str += "${drugTimeList[i].time}/"
+               }
+               viewModel.sendMessage(str)
+            }
+
             replaceFragment3(requireActivity(), DrugRecordFragment())
          }
       }

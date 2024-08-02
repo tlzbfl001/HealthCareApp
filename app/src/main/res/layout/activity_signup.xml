@@ -45,7 +45,7 @@
       android:textStyle="bold"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tv1"/>
-   <CheckBox
+   <androidx.appcompat.widget.AppCompatCheckBox
       android:id="@+id/cbAll"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -58,21 +58,10 @@
       android:textSize="16dp"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tv2"/>
-   <!--<TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginLeft="8dp"
-      android:text="모두 동의합니다."
-      android:textColor="@color/black"
-      android:textSize="17dp"
-      app:layout_constraintStart_toEndOf="@id/cbAll"
-      app:layout_constraintTop_toTopOf="@id/cbAll"
-      app:layout_constraintBottom_toBottomOf="@id/cbAll"/>-->
    <TextView
       android:id="@+id/tv3"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="6dp"
       android:paddingLeft="25dp"
       android:paddingRight="25dp"
       android:text="개인정보 수집 및 이용, 민감정보 수집 및 이용약관과 같은 필수 사항에 모두 동의합니다."
@@ -85,7 +74,7 @@
       android:id="@+id/view"
       android:layout_width="match_parent"
       android:layout_height="1dp"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="12dp"
       android:background="#B4B4B5"
       app:layout_constraintTop_toBottomOf="@id/tv3"
       app:layout_constraintStart_toStartOf="parent"
@@ -98,20 +87,18 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toBottomOf="@id/view">
-
-      <CheckBox
+      <androidx.appcompat.widget.AppCompatCheckBox
          android:id="@+id/cb1"
          android:layout_width="wrap_content"
-         android:layout_height="30dp"
-         android:layout_marginTop="16dp"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp"
          android:button="@drawable/checkbox_custom"
          android:paddingLeft="8dp"
          android:text="서비스 이용 약관 동의"
          android:textColor="#666666"
-         android:textSize="14.7dp"
+         android:textSize="15dp"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintTop_toTopOf="parent" />
-
       <TextView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -152,16 +139,15 @@
             android:textSize="12dp"
             android:textColor="@color/black"/>
       </androidx.core.widget.NestedScrollView>
-      <CheckBox
+      <androidx.appcompat.widget.AppCompatCheckBox
          android:id="@+id/cb2"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:button="@drawable/checkbox_custom"
-         android:layout_marginTop="16dp"
          android:paddingLeft="8dp"
          android:text="개인정보처리방침 동의"
          android:textColor="#666666"
-         android:textSize="14.7dp"
+         android:textSize="15dp"
          app:layout_constraintTop_toBottomOf="@id/view1"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -519,16 +505,15 @@
                android:textColor="@color/black"/>
          </LinearLayout>
       </androidx.core.widget.NestedScrollView>
-      <CheckBox
+      <androidx.appcompat.widget.AppCompatCheckBox
          android:id="@+id/cb3"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:button="@drawable/checkbox_custom"
-         android:layout_marginTop="16dp"
          android:paddingLeft="8dp"
          android:text="민감정보 수집 및 이용 동의"
          android:textColor="#666666"
-         android:textSize="14.7dp"
+         android:textSize="15dp"
          app:layout_constraintTop_toBottomOf="@id/view2"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -539,7 +524,8 @@
          android:textColor="#9F98FF"
          android:textSize="12.5dp"
          app:layout_constraintStart_toEndOf="@id/cb3"
-         app:layout_constraintTop_toTopOf="@id/cb3"/>
+         app:layout_constraintTop_toTopOf="@id/cb3"
+         app:layout_constraintBottom_toBottomOf="@id/cb3"/>
       <TextView
          android:id="@+id/tvView3"
          android:layout_width="wrap_content"
@@ -1034,16 +1020,15 @@
                android:textColor="@color/black"/>
          </LinearLayout>
       </androidx.core.widget.NestedScrollView>
-      <CheckBox
+      <androidx.appcompat.widget.AppCompatCheckBox
          android:id="@+id/cb4"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:button="@drawable/checkbox_custom"
-         android:layout_marginTop="16dp"
          android:paddingLeft="8dp"
          android:text="마케팅 수신 동의"
          android:textColor="#666666"
-         android:textSize="14.7dp"
+         android:textSize="15dp"
          app:layout_constraintTop_toBottomOf="@id/view3"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -1055,7 +1040,7 @@
          android:textSize="13dp"
          app:layout_constraintStart_toEndOf="@id/cb4"
          app:layout_constraintTop_toTopOf="@id/cb4"
-         android:lastBaselineToBottomHeight="6dp"/>
+         app:layout_constraintBottom_toBottomOf="@id/cb4"/>
       <TextView
          android:id="@+id/tvView4"
          android:layout_width="wrap_content"
@@ -1091,7 +1076,7 @@
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.cardview.widget.CardView
       android:id="@+id/cvContinue"
-      android:layout_width="250dp"
+      android:layout_width="220dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="15dp"
       android:layout_marginBottom="30dp"
@@ -1103,8 +1088,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:paddingTop="8dp"
-         android:paddingBottom="8dp"
+         android:paddingTop="10dp"
+         android:paddingBottom="10dp"
          android:paddingRight="20dp">
          <TextView
             android:id="@+id/textView2"
@@ -1121,8 +1106,8 @@
             app:layout_constraintEnd_toStartOf="@id/ivRight" />
          <ImageView
             android:id="@+id/ivRight"
-            android:layout_width="25dp"
-            android:layout_height="10dp"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/arrow_right_direction"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -30,13 +30,11 @@ import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Sleep
-import kr.bodywell.android.model.SyncTime
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.service.MyApp
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
 import kr.bodywell.android.util.CustomUtil.Companion.isoToDateTime
 import kr.bodywell.android.view.home.MainActivity
@@ -44,7 +42,6 @@ import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
 import kr.bodywell.android.view.init.SignupActivity
 import org.json.JSONObject
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -103,10 +100,7 @@ object RegisterUtil {
 
 			getUser = dataManager.getUser(user.type, user.email)
 
-			MyApp.prefs.setPrefs("userId", getUser.id)
-
-			val isoTime = dateTimeToIso(LocalDateTime.now())
-			dataManager.insertSync(isoTime)
+			MyApp.prefs.setUserId("userId", getUser.id)
 
 			// 토큰 정보 저장
 			if(getToken.accessCreated == "") {
@@ -116,7 +110,7 @@ object RegisterUtil {
 			}
 
 			// 서버 데이터 저장
-			val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
+			val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access", "")
 			if(getAllFood.isSuccessful) {
 				Log.d(TAG, "getAllFood: ${getAllFood.body()}")
 
@@ -124,9 +118,9 @@ object RegisterUtil {
 					var useCount = 0
 					var useDate = ""
 
-					if(getAllFood.body()!![i].usages.size > 0) {
-						useCount = getAllFood.body()!![i].usages[0].usageCount
-						useDate = isoToDateTime(getAllFood.body()!![i].usages[0].updatedAt).toString()
+					if(getAllFood.body()!![i].usages!!.size > 0) {
+						useCount = getAllFood.body()!![i].usages!![0].usageCount
+						useDate = isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 					}
 
 					if(getAllFood.body()!![i].registerType == "Admin") {
@@ -185,9 +179,9 @@ object RegisterUtil {
 					var useCount = 0
 					var useDate = ""
 
-					if(getAllActivity.body()!![i].usages.size > 0) {
-						useCount = getAllActivity.body()!![i].usages[0].usageCount
-						useDate = isoToDateTime(getAllActivity.body()!![i].usages[0].updatedAt).toString()
+					if(getAllActivity.body()!![i].usages!!.size > 0) {
+						useCount = getAllActivity.body()!![i].usages!![0].usageCount
+						useDate = isoToDateTime(getAllActivity.body()!![i].usages!![0].updatedAt).toString()
 					}
 
 					if(getAllActivity.body()!![i].registerType == "Admin") {
@@ -222,7 +216,7 @@ object RegisterUtil {
 				for(i in 0 until getAllBody.body()!!.size) {
 					dataManager.insertBody(Body(userId = getUser.id, uid = getAllBody.body()!![i].uid, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
 						intensity = getAllBody.body()!![i].workoutIntensity, fat = getAllBody.body()!![i].bodyFatPercentage, muscle = getAllBody.body()!![i].skeletalMuscleMass,
-						bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, createdAt = getAllBody.body()!![i].createdAt))
+						bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, createdAt = getAllBody.body()!![i].createdAt!!.substring(0, 10)))
 				}
 			}else {
 				Log.e(TAG, "getAllBody: $getAllBody")
@@ -267,7 +261,7 @@ object RegisterUtil {
 								val drugTimeId = dataManager.getDrugId(DBHelper.DRUG_TIME, "uid", drugTime.uid)
 								for(k in 0 until response2.body()!!.size) {
 									dataManager.insertDrugCheck(DrugCheck(uid = response2.body()!![k].uid, drugId = drugTimeId, drugTimeId = 2,
-										createdAt = response2.body()!![k].intakeAt.substring(0, 10)))
+										checkedAt = response2.body()!![k].intakeAt.substring(0, 10)))
 								}
 							}else {
 								Log.e(TAG, "getMedicineIntake: $response2")
@@ -288,6 +282,9 @@ object RegisterUtil {
 			}else {
 				Log.e(TAG, "getGoal: $getGoal")
 			}
+
+			val getSync = dataManager.getSynced()
+			if(getSync == "") dataManager.insertSync(LocalDateTime.now().toString()) else dataManager.updateSync(LocalDateTime.now().toString())
 
 			ctx.startActivity(Intent(ctx, MainActivity::class.java))
 		}else {
@@ -333,7 +330,7 @@ object RegisterUtil {
 			val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
 			val createDevice = RetrofitAPI.api.createDevice("Bearer ${token.access}", data)
 //         val getDevice = RetrofitAPI.api.getDevice("Bearer $access")
-			val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}")
+			val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}", "")
 			val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer ${token.access}")
 			val getGoal = RetrofitAPI.api.getGoal("Bearer ${token.access}")
 
@@ -343,16 +340,10 @@ object RegisterUtil {
 			Log.d(TAG, "getGoal: ${getGoal.isSuccessful}/${getGoal.body()}")
 
 			if(createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful && getGoal.isSuccessful) {
-				MyApp.prefs.setPrefs("userId", getUser.id) // 사용자 Id 저장
-
-				dataManager.insertGoal(Goal(uid = getGoal.body()!!.uid, createdAt = LocalDate.now().toString()))
-
-				val isoTime = dateTimeToIso(LocalDateTime.now())
-				dataManager.insertSync(isoTime)
-
-				val getToken = dataManager.getToken()
+				MyApp.prefs.setUserId("userId", getUser.id) // 사용자 Id 저장
 
 				// 토큰 정보 저장
+				val getToken = dataManager.getToken()
 				if(getToken.accessCreated == "") {
 					dataManager.insertToken(Token(access = token.access, refresh = token.refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
 				}else {
@@ -374,6 +365,11 @@ object RegisterUtil {
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString()))
 				}
+
+				dataManager.insertGoal(Goal(uid = getGoal.body()!!.uid, createdAt = LocalDate.now().toString()))
+
+				val getSync = dataManager.getSynced()
+				if(getSync == "") dataManager.insertSync(LocalDateTime.now().toString()) else dataManager.updateSync(LocalDateTime.now().toString())
 
 				ctx.runOnUiThread{
 					val dialog = Dialog(ctx)
@@ -407,7 +403,7 @@ object RegisterUtil {
 
 		val getUser2 = dataManager.getUser(user.type, user.email)
 
-		MyApp.prefs.setPrefs("userId", getUser2.id) // 사용자 Id 저장
+		MyApp.prefs.setUserId("userId", getUser2.id) // 사용자 Id 저장
 
 		val dialog = Dialog(ctx)
 		dialog.setContentView(R.layout.dialog_signup)

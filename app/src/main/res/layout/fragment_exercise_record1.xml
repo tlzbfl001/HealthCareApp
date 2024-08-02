@@ -154,7 +154,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="입력된 음식이 없습니다."
+            android:text="입력된 운동이 없습니다."
             android:textSize="16dp"
             android:textColor="#cccccc"/>
       </LinearLayout>

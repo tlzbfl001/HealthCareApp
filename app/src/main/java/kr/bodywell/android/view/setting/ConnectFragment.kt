@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -21,14 +19,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.adapter.BTItemAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
+import kr.bodywell.android.service.MyApp
 import kr.bodywell.android.util.BluetoothUtil
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
@@ -43,9 +40,6 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
    private val viewModel: MainViewModel by activityViewModels()
-
-   private var pref: SharedPreferences? = null
-   private var bAdapter: BluetoothAdapter?=null
    private lateinit var btLauncher: ActivityResultLauncher<Intent>
    private lateinit var itemAdapter: BTItemAdapter
    private lateinit var discoveryItemAdapter: BTItemAdapter
@@ -80,8 +74,6 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       dataManager = DataManager(activity)
       dataManager.open()
 
-      pref = requireActivity().getSharedPreferences(BluetoothUtil.PREFERENCES, Context.MODE_PRIVATE)
-
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
@@ -96,13 +88,13 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
          Log.d(TAG, "msgVM: $it")
       })
 
-      settingBluetooth()
+      setUpBluetooth()
 
       return binding.root
    }
 
    @SuppressLint("MissingPermission")
-   private fun settingBluetooth() {
+   private fun setUpBluetooth() {
       val f1 = IntentFilter(BluetoothDevice.ACTION_FOUND)
       val f2 = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
       val f3 = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
@@ -112,8 +104,8 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
       binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity())
       binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity())
-      itemAdapter = BTItemAdapter(requireActivity(),this,  false)
-      discoveryItemAdapter= BTItemAdapter(requireActivity(), this, true)
+      itemAdapter = BTItemAdapter(this,  false)
+      discoveryItemAdapter= BTItemAdapter(this, true)
       binding.recyclerView1.adapter=itemAdapter
       binding.recyclerView2.adapter=discoveryItemAdapter
 
@@ -127,12 +119,9 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
       btLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
 
-      val bManager = requireActivity().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-      bAdapter = bManager.adapter
-
       try {
-         if(bAdapter?.isEnabled == true) {
-            bAdapter?.startDiscovery()
+         if(viewModel.bAdapter?.isEnabled == true) {
+            viewModel.bAdapter?.startDiscovery()
             binding.progressBar2.visibility=View.VISIBLE
          }
       }catch (e: SecurityException) {
@@ -144,12 +133,12 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       try{
          val list = ArrayList<Bluetooth>()
 
-         if(bAdapter?.bondedDevices != null) {
-            val deviceList=bAdapter?.bondedDevices as Set<BluetoothDevice>
+         if(viewModel.bAdapter?.bondedDevices != null) {
+            val deviceList=viewModel.bAdapter?.bondedDevices as Set<BluetoothDevice>
 
             // pref 에 저장된 주소가 리스트값과 같은경우 리스트에 데이터 저장
             deviceList.forEach {
-               list.add(Bluetooth(it, pref?.getString(BluetoothUtil.MAC,"")==it.address))
+               list.add(Bluetooth(it, MyApp.prefs.getMacId()==it.address))
             }
 
             binding.tvStatus1.visibility = if(list.isEmpty()) View.VISIBLE else View.GONE
@@ -193,9 +182,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    }
 
    override fun onClick(device: Bluetooth) {
-      val editor=pref?.edit()
-      editor?.putString(BluetoothUtil.MAC, device.device.address)
-      editor?.apply()
-      viewModel.connect(bAdapter!!)
+      MyApp.prefs.setMacId(BluetoothUtil.MAC, device.device.address)
+      viewModel.btConnect()
    }
 }

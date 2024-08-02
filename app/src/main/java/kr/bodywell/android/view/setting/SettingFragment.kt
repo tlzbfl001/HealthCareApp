@@ -71,7 +71,6 @@ class SettingFragment : Fragment() {
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var getUser = User()
    private var getToken = Token()
-   private var state = ""
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -298,12 +297,19 @@ class SettingFragment : Fragment() {
 
    private fun resignProcess() {
       CoroutineScope(Dispatchers.IO).launch {
-         val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
-         if(response.isSuccessful) {
-            deleteData()
-         }else {
-            requireActivity().runOnUiThread {
-               Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+         val getUserEmail = RetrofitAPI.api.getUserEmail(getUser.email)
+         if(getUserEmail.isSuccessful) {
+            if(getUserEmail.body()!!.exists) {
+               val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
+               if(response.isSuccessful) {
+                  deleteData()
+               }else {
+                  requireActivity().runOnUiThread {
+                     Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                  }
+               }
+            }else {
+               deleteData()
             }
          }
       }

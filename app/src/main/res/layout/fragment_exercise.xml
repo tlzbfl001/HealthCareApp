@@ -38,7 +38,7 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black"
-               android:textSize="15.4dp"
+               android:textSize="15.8dp"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
          </androidx.constraintlayout.widget.ConstraintLayout>
@@ -54,6 +54,7 @@
                android:id="@+id/pbExercise"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
+               app:progress_text_size="0dp"
                app:progress_background_color="#FBF4E8"
                app:progress_end_color="#FFB846"
                app:progress_start_color="#FFB846"
@@ -204,9 +205,9 @@
                   android:id="@+id/tv5"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="운동 기록"
+                  android:text="운동기록"
                   android:textColor="@color/black"
-                  android:textSize="15.4dp"
+                  android:textSize="15.8dp"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintTop_toTopOf="parent" />

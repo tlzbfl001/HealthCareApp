@@ -6,7 +6,7 @@ data class WorkoutDTO(
 	@SerializedName("name")
 	var name: String = "",
 
-	@SerializedName("calories")
+	@SerializedName("calorie")
 	var calories: Int = 0,
 
 	@SerializedName("intensity")
@@ -16,18 +16,7 @@ data class WorkoutDTO(
 	var time: Int = 0,
 
 	@SerializedName("date")
-	var date: String = "",
-
-	@SerializedName("isDaily")
-	var isDaily: Boolean = true,
-
-	@SerializedName("activity")
-	var activity: Activity
-)
-
-data class Activity(
-	@SerializedName("uid")
-	var uid: String = ""
+	var date: String = ""
 )
 
 data class WorkoutUpdateDTO(

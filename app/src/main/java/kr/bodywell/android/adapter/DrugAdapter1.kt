@@ -1,6 +1,7 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,13 @@ import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.Companion.TAG
+import kr.bodywell.android.util.CustomUtil.Companion.dateTimeFormatter
+import kr.bodywell.android.util.CustomUtil.Companion.dateTimeToIso
+import kr.bodywell.android.util.ViewModelUtil
 import kr.bodywell.android.view.MainViewModel
+import java.time.LocalDateTime
 
 class DrugAdapter1 (
     private val context: Context,
@@ -38,33 +45,30 @@ class DrugAdapter1 (
         holder.tvTime.text = itemList[pos].time
         holder.tvName.text = itemList[pos].name
         holder.tvAmount.text = itemList[pos].amount.toString() + itemList[pos].unit
-
         check = itemList[pos].initCheck
-
         viewModel.setInt(check)
-
         if(itemList[pos].checked > 0) holder.tvCheck.isChecked = true
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
             val getDrugCheck = dataManager.getDrugCheck(itemList[pos].drugTimeId, selectedDate.toString())
-
             if(holder.tvCheck.isChecked) {
                 check += 1
-
-                if(getDrugCheck.createdAt == "") {
-                    dataManager.insertDrugCheck(DrugCheck(uid = "", drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, createdAt = selectedDate.toString()))
+                if(getDrugCheck.intakeAt == "") {
+                    val dateFormat = selectedDate.toString() + " " + itemList[pos].time
+                    val isoFormat = dateTimeToIso(LocalDateTime.parse(dateFormat, dateTimeFormatter))
+                    dataManager.insertDrugCheck(DrugCheck(drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, time = itemList[pos].time,
+                        intakeAt = isoFormat, checkedAt = LocalDateTime.now().toString()))
                 }
             }else {
                 if(check > 0) check -= 1
-
-                if(getDrugCheck.createdAt != "") {
-                    val getDrugUid = dataManager.getUid(DRUG, itemList[pos].drugId)
-                    val getDrugTimeUid = dataManager.getUid(DRUG_TIME, itemList[pos].drugTimeId)
-                    if(getDrugUid != "" && getDrugTimeUid != "" && getDrugCheck.uid != "") {
-                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, drugUid = getDrugUid, drugTimeUid = getDrugTimeUid, createdAt = itemList[pos].date))
+                if(getDrugCheck.id > 0) {
+                    val getDrug = dataManager.getData(DRUG, itemList[pos].drugId)
+                    val getDrugTime = dataManager.getData(DRUG_TIME, itemList[pos].drugTimeId)
+                    if(getDrug.uid != "" && getDrugTime.uid != "" && getDrugCheck.uid != "") {
+                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, drugUid = getDrug.uid, drugTimeUid = getDrugTime.uid, createdAt = itemList[pos].date))
                     }
-                    dataManager.deleteItem(DRUG_CHECK, "drugTimeId", itemList[pos].drugTimeId, CREATED_AT, selectedDate.toString())
+                    dataManager.deleteItem(DRUG_CHECK, "id", getDrugCheck.id)
                 }
             }
 

@@ -25,13 +25,13 @@ data class MedicineResponse (
 	var ends: String = "",
 
 	@SerializedName("createdAt")
-	var createdAt: String = "",
+	var createdAt: String?,
 
 	@SerializedName("updatedAt")
-	var updatedAt: String = "",
+	var updatedAt: String?,
 
 	@SerializedName("deletedAt")
-	var deletedAt: String = ""
+	var deletedAt: String?,
 )
 
 data class MedicineTimeResponse (
@@ -46,6 +46,27 @@ data class MedicineIntakeResponse (
 	@SerializedName("uid")
 	var uid: String = "",
 
+	@SerializedName("category")
+	var category: String = "",
+
+	@SerializedName("name")
+	var name: String = "",
+
+	@SerializedName("amount")
+	var amount: Int = 0,
+
+	@SerializedName("unit")
+	var unit: String = "",
+
 	@SerializedName("intakedAt")
-	var intakeAt: String = ""
+	var intakeAt: String = "",
+
+	@SerializedName("createdAt")
+	var createdAt: String?,
+
+	@SerializedName("updatedAt")
+	var updatedAt: String?,
+
+	@SerializedName("deletedAt")
+	var deletedAt: String?,
 )

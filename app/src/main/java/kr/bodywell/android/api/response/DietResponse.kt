@@ -49,11 +49,11 @@ data class DietResponse(
 	var date: String = "",
 
 	@SerializedName("createdAt")
-	var createdAt: String = "",
+	var createdAt: String?,
 
 	@SerializedName("updatedAt")
-	var updatedAt: String = "",
+	var updatedAt: String?,
 
 	@SerializedName("deletedAt")
-	var deletedAt: String = ""
+	var deletedAt: String?
 )

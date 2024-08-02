@@ -123,7 +123,7 @@ class LoginActivity : AppCompatActivity() {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }
                }else { // 로그인
-                  MyApp.prefs.setPrefs("userId", getUser.id)
+                  MyApp.prefs.setUserId("userId", getUser.id)
                   startActivity(Intent(this, MainActivity::class.java))
                }
             }else {
@@ -151,7 +151,7 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(intent)
                      }
                   }else {
-                     MyApp.prefs.setPrefs("userId", getUser.id)
+                     MyApp.prefs.setUserId("userId", getUser.id)
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
                }
@@ -215,7 +215,7 @@ class LoginActivity : AppCompatActivity() {
                   startActivity(intent)
                }
             }else { // 로그인
-               MyApp.prefs.setPrefs("userId", getUser.id)
+               MyApp.prefs.setUserId("userId", getUser.id)
                startActivity(Intent(this, MainActivity::class.java))
             }
          }

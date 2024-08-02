@@ -30,7 +30,7 @@
          app:dotsColor="#D9D9D9"
          app:selectedDotColor="#9F98FF"
          app:dotsCornerRadius="8dp"
-         app:dotsSize="10dp"
+         app:dotsSize="12dp"
          app:dotsSpacing="4dp"
          app:dotsWidthFactor="5"
          app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,7 @@
          app:layout_constraintTop_toTopOf="parent" />
       <androidx.cardview.widget.CardView
          android:id="@+id/cvStart"
-         android:layout_width="250dp"
+         android:layout_width="220dp"
          android:layout_height="wrap_content"
          android:layout_marginLeft="30dp"
          android:layout_marginRight="30dp"
@@ -51,8 +51,8 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:paddingRight="20dp">
             <TextView
                android:id="@+id/tvStart"

@@ -159,7 +159,7 @@ class ReportBodyFragment : Fragment() {
 
       val getBody = dataManager.getBody(calendarDate.toString())
 
-      if (getBody.weight > 0) {
+      if (getBody.weight != null && getBody.weight!! > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.lineChart1.visibility = View.VISIBLE
 
@@ -167,13 +167,13 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          val date = format2.format(format1.parse(getBody.createdAt)!!)
-         entries.add(Entry(0f, getBody.weight.toFloat()))
+         entries.add(Entry(0f, getBody.weight!!.toFloat()))
          xValue.add(date)
 
          setupChart(binding.lineChart1, entries, xValue)
       }
 
-      if (getBody.bmi > 0) {
+      if (getBody.bmi != null && getBody.bmi!! > 0) {
          binding.tvEmpty2.visibility = View.GONE
          binding.lineChart2.visibility = View.VISIBLE
 
@@ -181,13 +181,13 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          val date = format2.format(format1.parse(getBody.createdAt)!!)
-         entries.add(Entry(0f, getBody.bmi.toFloat()))
+         entries.add(Entry(0f, getBody.bmi!!.toFloat()))
          xValue.add(date)
 
          setupChart(binding.lineChart2, entries, xValue)
       }
 
-      if (getBody.fat > 0) {
+      if (getBody.fat != null && getBody.fat!! > 0) {
          binding.tvEmpty3.visibility = View.GONE
          binding.lineChart3.visibility = View.VISIBLE
 
@@ -195,7 +195,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          val date = format2.format(format1.parse(getBody.createdAt)!!)
-         entries.add(Entry(0f, getBody.fat.toFloat()))
+         entries.add(Entry(0f, getBody.fat!!.toFloat()))
          xValue.add(date)
 
          setupChart(binding.lineChart3, entries, xValue)
@@ -220,13 +220,13 @@ class ReportBodyFragment : Fragment() {
       val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
 
       for(i in 0 until getData.size) {
-         if (getData[i].weight > 0) {
+         if(getData[i].weight != null && getData[i].weight!! > 0) {
             itemList1.add(Body(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
-         if (getData[i].bmi > 0) {
+         if(getData[i].bmi != null && getData[i].bmi!! > 0) {
             itemList2.add(Body(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
-         if (getData[i].fat > 0) {
+         if(getData[i].fat != null && getData[i].fat!! > 0) {
             itemList3.add(Body(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
       }
@@ -239,7 +239,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList1.size) {
-            entries.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
+            val weight = if(itemList1[i].weight != null) 0.0 else itemList1[i].weight!!.toFloat()
+            entries.add(Entry(i.toFloat(), weight.toFloat()))
             xValue.add(itemList1[i].createdAt)
          }
 
@@ -254,7 +255,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList2.size) {
-            entries.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
+            val bmi = if(itemList2[i].bmi != null) 0.0 else itemList2[i].bmi!!.toFloat()
+            entries.add(Entry(i.toFloat(), bmi.toFloat()))
             xValue.add(itemList2[i].createdAt)
          }
 
@@ -269,7 +271,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList3.size) {
-            entries.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
+            val fat = if(itemList3[i].fat != null) 0.0 else itemList3[i].fat!!.toFloat()
+            entries.add(Entry(i.toFloat(), fat.toFloat()))
             xValue.add(itemList3[i].createdAt)
          }
 
@@ -294,13 +297,13 @@ class ReportBodyFragment : Fragment() {
       val monthArray = monthArray2(calendarDate)
       val getData = dataManager.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
-         if (getData[i].weight > 0) {
+         if (getData[i].weight != null && getData[i].weight!! > 0) {
             itemList1.add(Body(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
-         if (getData[i].bmi > 0) {
+         if (getData[i].bmi != null && getData[i].bmi!! > 0) {
             itemList2.add(Body(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
-         if (getData[i].fat > 0) {
+         if (getData[i].fat != null && getData[i].fat!! > 0) {
             itemList3.add(Body(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
       }
@@ -313,7 +316,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList1.size) {
-            entries.add(Entry(i.toFloat(), itemList1[i].weight.toFloat()))
+            val weight = if(itemList1[i].weight != null) 0.0 else itemList1[i].weight!!.toFloat()
+            entries.add(Entry(i.toFloat(), weight.toFloat()))
             xValue.add(itemList1[i].createdAt)
          }
 
@@ -328,7 +332,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList2.size) {
-            entries.add(Entry(i.toFloat(), itemList2[i].bmi.toFloat()))
+            val bmi = if(itemList2[i].bmi != null) 0.0 else itemList2[i].bmi!!.toFloat()
+            entries.add(Entry(i.toFloat(), bmi.toFloat()))
             xValue.add(itemList2[i].createdAt)
          }
 
@@ -343,7 +348,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList3.size) {
-            entries.add(Entry(i.toFloat(), itemList3[i].fat.toFloat()))
+            val fat = if(itemList3[i].fat != null) 0.0 else itemList3[i].fat!!.toFloat()
+            entries.add(Entry(i.toFloat(), fat.toFloat()))
             xValue.add(itemList3[i].createdAt)
          }
 

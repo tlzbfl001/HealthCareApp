@@ -482,7 +482,7 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.cardview.widget.CardView
             android:id="@+id/cvEdit"
-            android:layout_width="210dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
@@ -494,8 +494,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="match_parent"
-               android:paddingTop="8dp"
-               android:paddingBottom="8dp">
+               android:paddingTop="10dp"
+               android:paddingBottom="10dp">
                <TextView
                   android:id="@+id/textView2"
                   android:layout_width="wrap_content"

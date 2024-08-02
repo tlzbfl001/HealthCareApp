@@ -35,7 +35,9 @@ data class DrugCheck(
    var drugId: Int = 0,
    var drugTimeId: Int = 0,
    var uid: String = "",
-   var createdAt: String = ""
+   var time: String = "",
+   var intakeAt: String = "",
+   var checkedAt: String = ""
 )
 
 data class DrugList(

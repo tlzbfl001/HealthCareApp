@@ -23,7 +23,7 @@ class StartActivity : AppCompatActivity() {
       val dataManager = DataManager(this)
       dataManager.open()
 
-      if(MyApp.prefs.getId() < 1 || dataManager.getUserCount() == 0 || (MyApp.prefs.getId() > 0 && dataManager.getUser().createdAt == "")) {
+      if(MyApp.prefs.getUserId() < 1 || dataManager.getUserCount() == 0 || (MyApp.prefs.getUserId() > 0 && dataManager.getUser().createdAt == "")) {
          startActivity(Intent(this, InitActivity::class.java))
       }else startActivity(Intent(this, MainActivity::class.java))
    }

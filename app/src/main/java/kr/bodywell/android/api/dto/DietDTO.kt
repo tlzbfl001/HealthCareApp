@@ -12,7 +12,7 @@ data class DietDTO(
 	@SerializedName("foodName")
 	var foodName: String = "",
 
-	@SerializedName("calories")
+	@SerializedName("calorie")
 	var calories: Int = 0,
 
 	@SerializedName("carbohydrate")

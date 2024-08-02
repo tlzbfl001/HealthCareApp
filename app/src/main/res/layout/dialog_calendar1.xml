@@ -10,7 +10,8 @@
       android:layout_marginTop="25dp"
       android:layout_marginLeft="25dp"
       android:layout_marginRight="25dp"
-      android:background="@drawable/rec_15"
+      android:background="@drawable/rec_25_gray"
+      android:backgroundTint="@color/white_grey"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
@@ -19,7 +20,7 @@
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
          android:background="@drawable/rec_15_top"
-         android:backgroundTint="#A28FF0"
+         android:backgroundTint="@color/main_cal_btn"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent">

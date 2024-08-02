@@ -1,22 +1,18 @@
 package kr.bodywell.android.adapter
 
-import android.app.Activity
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ItemBtListBinding
 import kr.bodywell.android.model.Bluetooth
-import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTING
 
 class BTItemAdapter(
-   private val context: Activity,
    private val listener: Listener,
    private val adapterType: Boolean
 ) : ListAdapter<Bluetooth, BTItemAdapter.MyHolder>(Comparator()) {

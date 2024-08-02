@@ -1,5 +1,7 @@
 package kr.bodywell.android.adapter
 
+import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import kr.bodywell.android.util.CalendarUtil.selectedDate
 import java.time.LocalDate
 
 class CalendarAdapter1 (
+   private val context: Context,
    private val days: ArrayList<LocalDate?>,
    private val type: Int = 0
 ) : RecyclerView.Adapter<CalendarAdapter1.ViewHolder>() {
@@ -33,9 +36,16 @@ class CalendarAdapter1 (
          }
 
          if (!days.contains(null) && date.month != days[6]!!.month) {
-            when(type) {
-               1 -> holder.tvDate.setTextColor(Color.WHITE)
-               else -> holder.tvDate.setTextColor(Color.LTGRAY)
+            if(context.resources.configuration.uiMode.and(Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+               when(type) {
+                  1 -> holder.tvDate.setTextColor(Color.GRAY)
+                  else -> holder.tvDate.setTextColor(Color.WHITE)
+               }
+            }else {
+               when(type) {
+                  1 -> holder.tvDate.setTextColor(Color.WHITE)
+                  else -> holder.tvDate.setTextColor(Color.LTGRAY)
+               }
             }
          }
       }

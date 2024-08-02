@@ -22,12 +22,12 @@ class MainActivity : AppCompatActivity() {
       _binding = ActivityMainBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      setFragment()
+      replaceFragment()
 
       // 하단메뉴
       binding.navigation.setOnNavigationItemSelectedListener {
          when(it.itemId) {
-            R.id.menu1 -> setFragment()
+            R.id.menu1 -> replaceFragment()
             R.id.menu2 -> replaceFragment1(this, ReportBodyFragment())
             R.id.menu3 -> replaceFragment1(this, NoteFragment())
             R.id.menu4 -> replaceFragment1(this, SettingFragment())
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
       viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application))[MainViewModel::class.java]
    }
 
-   private fun setFragment() {
+   private fun replaceFragment() {
       supportFragmentManager.beginTransaction().apply {
          replace(R.id.mainFrame, MainFragment())
          commit()
@@ -47,6 +47,6 @@ class MainActivity : AppCompatActivity() {
 
    override fun onDestroy() {
       super.onDestroy()
-      viewModel.closeConnection()
+      if(viewModel.socketStatus()) viewModel.closeBtConnection()
    }
 }

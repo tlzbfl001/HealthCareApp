@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-   <style name="Theme.BodyWell" parent="Theme.AppCompat.Light.NoActionBar">
+   <style name="Theme.BodyWell" parent="Theme.MaterialComponents.DayNight.NoActionBar">
       <item name="android:windowSplashScreenBackground">@color/white</item>
       <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
    </style>

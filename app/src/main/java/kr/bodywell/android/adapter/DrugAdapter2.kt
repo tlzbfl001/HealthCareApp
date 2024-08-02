@@ -90,16 +90,11 @@ class DrugAdapter2 (
             .setPositiveButton("확인") { _, _ ->
                val drugCheckUid = dataManager.getDrugUid(DRUG_CHECK, "drugTimeId", "drugId", itemList[pos].id)
                for(i in 0 until drugCheckUid.size) {
-                  val drugTimeUid = dataManager.getUid(DRUG_TIME, drugCheckUid[i].drugTimeId)
-                  if(drugTimeUid != "" && drugCheckUid[i].uid != "") {
+                  val drugTime = dataManager.getData(DRUG_TIME, drugCheckUid[i].drugTimeId)
+                  if(drugTime.uid != "" && drugCheckUid[i].uid != "") {
                      dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i].uid,
-                        drugUid = itemList[pos].uid, drugTimeUid = drugTimeUid, createdAt = itemList[pos].startDate))
+                        drugUid = itemList[pos].uid, drugTimeUid = drugTime.uid, createdAt = itemList[pos].startDate))
                   }
-               }
-
-               val drugTimeUid = dataManager.getDrugUid(DRUG_TIME, "id", "drugId", itemList[pos].id)
-               for(i in 0 until drugTimeUid.size) {
-                  if(drugTimeUid[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", value = drugTimeUid[i].uid, drugUid = itemList[pos].uid, createdAt = itemList[pos].startDate))
                }
 
                if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[pos].uid, createdAt = itemList[pos].startDate))

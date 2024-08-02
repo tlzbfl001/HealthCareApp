@@ -7,35 +7,35 @@ data class BodyResponse(
 	var uid: String = "",
 
 	@SerializedName("height")
-	var height: Double = 0.0,
+	var height: Double? = null,
 
 	@SerializedName("weight")
-	var weight: Double = 0.0,
+	var weight: Double? = null,
 
 	@SerializedName("bodyFatPercentage")
-	var bodyFatPercentage: Double = 0.0,
+	var bodyFatPercentage: Double? = null,
 
 	@SerializedName("skeletalMuscleMass")
-	var skeletalMuscleMass: Double = 0.0,
+	var skeletalMuscleMass: Double? = null,
 
 	@SerializedName("bodyMassIndex")
-	var bodyMassIndex: Double = 0.0,
+	var bodyMassIndex: Double? = null,
 
 	@SerializedName("basalMetabolicRate")
-	var basalMetabolicRate: Double = 0.0,
+	var basalMetabolicRate: Double? = null,
 
 	@SerializedName("workoutIntensity")
-	var workoutIntensity: Int = 0,
+	var workoutIntensity: Int = 1,
 
 	@SerializedName("time")
 	var time: String = "",
 
 	@SerializedName("createdAt")
-	var createdAt: String = "",
+	var createdAt: String?,
 
 	@SerializedName("updatedAt")
-	var updatedAt: String = "",
+	var updatedAt: String?,
 
 	@SerializedName("deletedAt")
-	var deletedAt: String = ""
+	var deletedAt: String?
 )

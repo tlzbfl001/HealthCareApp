@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-   <color name="purple_200">#FFBB86FC</color>
-   <color name="purple_500">#FF6200EE</color>
-   <color name="purple_700">#FF3700B3</color>
-   <color name="teal_200">#FF03DAC5</color>
-   <color name="teal_700">#FF018786</color>
-
    <color name="white">#ffffff</color>
    <color name="black">#000000</color>
    <color name="transparent">#00FFFFFF</color>
-
-   <color name="green">#015121</color>
-   <color name="creem_sky">#96FBF2</color>
+   <color name="background">#ffffff</color>
+   <color name="white_trans5">#ffffff</color>
+   <color name="black_white">#000000</color>
+   <color name="grey_white">#ffffff</color>
+   <color name="white_grey">#ffffff</color>
+   <color name="main_top">#cfccfe</color>
+   <color name="main_cal_btn">#A38FF1</color>
+   <color name="progress_food_base">#26DF9EAD</color>
+   <color name="progress_water_base">#2685DBFF</color>
+   <color name="progress_exercise_base">#26F3A21E</color>
+   <color name="progress_body_base">#2681C335</color>
+   <color name="progress_sleep_base">#1C36656B</color>
+   <color name="progress_drug_base">#14E961FF</color>
+   <color name="progress_food">#BFE24F5C</color>
+   <color name="progress_water">#CC4AC0F2</color>
+   <color name="progress_exercise">#CCF6BD4B</color>
+   <color name="progress_body">#B8E189</color>
+   <color name="progress_sleep">#667D99</color>
+   <color name="progress_drug">#9E63FC</color>
+   <color name="white_transparent">#ffffff</color>
+   <color name="report_background">#F2F8F5</color>
 </resources>

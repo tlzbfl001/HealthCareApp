@@ -24,6 +24,7 @@ import java.util.regex.Pattern
 class CustomUtil {
    companion object {
       const val TAG = "logTAG"
+      val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
       val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
       var dataType = 1
       var drugTimeList = ArrayList<DrugTime>()
@@ -90,7 +91,8 @@ class CustomUtil {
       }
 
       fun isoToDateTime(date: String): LocalDateTime {
-         return LocalDateTime.parse(date, isoFormatter)
+//         return LocalDateTime.parse(date, isoFormatter)
+         return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date)).atZone(ZoneId.of("Asia/Seoul")))
       }
 
       fun filterText(text: String): Boolean {

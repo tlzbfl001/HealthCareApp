@@ -40,16 +40,16 @@ data class FoodResponse (
 	var registerType: String = "",
 
 	@SerializedName("createdAt")
-	var createdAt: String = "",
+	var createdAt: String?,
 
 	@SerializedName("updatedAt")
-	var updatedAt: String = "",
+	var updatedAt: String?,
 
 	@SerializedName("deletedAt")
-	var deletedAt: String = "",
+	var deletedAt: String?,
 
 	@SerializedName("usages")
-	var usages: ArrayList<Usages>
+	var usages: ArrayList<Usages>?
 )
 
 data class Usages (

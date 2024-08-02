@@ -491,7 +491,7 @@
          </androidx.cardview.widget.CardView>
          <androidx.cardview.widget.CardView
              android:id="@+id/cvSave"
-            android:layout_width="250dp"
+            android:layout_width="220dp"
              android:layout_height="wrap_content"
              android:layout_marginTop="30dp"
              android:layout_marginBottom="30dp"
@@ -504,8 +504,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-               android:paddingTop="8dp"
-               android:paddingBottom="8dp">
+               android:paddingTop="10dp"
+               android:paddingBottom="10dp">
                <TextView
                    android:id="@+id/tvStart"
                    android:layout_width="0dp"

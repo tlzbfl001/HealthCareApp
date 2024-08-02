@@ -40,7 +40,7 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black"
-               android:textSize="15.4dp"
+               android:textSize="15.8dp"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent"/>
          </androidx.constraintlayout.widget.ConstraintLayout>
@@ -56,6 +56,7 @@
                android:id="@+id/pbDrug"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
+               app:progress_text_size="0dp"
                app:progress_background_color="#F9F4EF"
                app:progress_end_color="#9E63FC"
                app:progress_start_color="#9E63FC"
@@ -208,7 +209,7 @@
                   android:layout_height="wrap_content"
                   android:text="약복용 기록"
                   android:textColor="@color/black"
-                  android:textSize="15.4dp"
+                  android:textSize="15.8dp"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintTop_toTopOf="parent"

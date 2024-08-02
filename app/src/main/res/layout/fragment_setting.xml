@@ -38,7 +38,7 @@
             android:paddingRight="10dp"
             android:text="프로필 설정"
             android:textColor="@color/white"
-            android:textSize="14.5dp" />
+            android:textSize="15dp" />
       </androidx.cardview.widget.CardView>
       <ImageView
          android:id="@+id/ivLogo"
@@ -73,7 +73,7 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clBox"
          android:layout_width="0dp"
-         android:layout_height="85dp"
+         android:layout_height="83dp"
          android:layout_marginLeft="17dp"
          android:layout_marginRight="20dp"
          app:layout_constraintTop_toTopOf="@id/view"
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="바디웰"
-            android:textSize="15dp"
+            android:textSize="15.2dp"
             android:textColor="@color/black"
             android:maxLines="1"
             android:ellipsize="end"
@@ -97,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0세 / 여"
-            android:textSize="15dp"
+            android:textSize="15.2dp"
             android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@id/tvHeight"
             app:layout_constraintTop_toBottomOf="@id/tvName"
@@ -107,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0cm / 0kg"
-            android:textSize="15dp"
+            android:textSize="15.2dp"
             android:textColor="@color/black"
             android:maxLines="1"
             android:ellipsize="end"
@@ -162,7 +162,7 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="15dp">
+            android:padding="16dp">
             <ImageView
                android:id="@+id/ivUser2"
                android:layout_width="14dp"
@@ -172,16 +172,19 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"/>
             <TextView
-               android:layout_width="wrap_content"
+               android:id="@+id/tvBasic"
+               android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="기본 설정"
-               android:textSize="16dp"
+               android:textSize="16.8dp"
                android:textColor="@color/black"
                app:layout_constraintStart_toEndOf="@id/ivUser2"
                app:layout_constraintTop_toTopOf="@id/ivUser2"
+               app:layout_constraintEnd_toStartOf="@id/iv1"
                app:layout_constraintBottom_toBottomOf="@id/ivUser2"/>
             <ImageView
+               android:id="@+id/iv1"
                android:layout_width="12dp"
                android:layout_height="12dp"
                android:src="@drawable/arrow_right"
@@ -205,7 +208,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="알림 설정"
-               android:textSize="16dp"
+               android:textSize="16.8dp"
                android:textColor="@color/black"
                app:layout_constraintStart_toEndOf="@id/ivLouder"
                app:layout_constraintTop_toTopOf="@id/ivLouder"
@@ -259,7 +262,7 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="14dp">
+            android:padding="15dp">
             <ImageView
                android:id="@+id/ivBluetooth"
                android:layout_width="14dp"
@@ -274,7 +277,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="기기 연결"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivBluetooth"
                app:layout_constraintBottom_toBottomOf="@id/ivBluetooth"
@@ -329,7 +332,7 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="15dp">
+            android:padding="16dp">
             <ImageView
                android:id="@+id/ivArticle"
                android:layout_width="14dp"
@@ -342,7 +345,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="공지사항"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivArticle"
                app:layout_constraintStart_toEndOf="@id/ivArticle"
@@ -359,7 +362,7 @@
                android:id="@+id/ivQuestion"
                android:layout_width="14dp"
                android:layout_height="14dp"
-               android:layout_marginTop="15dp"
+               android:layout_marginTop="17dp"
                android:src="@drawable/question"
                app:layout_constraintTop_toBottomOf="@+id/ivArticle"
                app:layout_constraintStart_toStartOf="parent"/>
@@ -368,7 +371,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="문의하기"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivQuestion"
                app:layout_constraintStart_toEndOf="@id/ivQuestion"
@@ -385,7 +388,7 @@
                android:id="@+id/ivFaq"
                android:layout_width="14dp"
                android:layout_height="14dp"
-               android:layout_marginTop="15dp"
+               android:layout_marginTop="17dp"
                android:src="@drawable/faq"
                app:layout_constraintTop_toBottomOf="@+id/ivQuestion"
                app:layout_constraintStart_toStartOf="parent"/>
@@ -394,7 +397,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="자주 묻는 질문(FAQ)"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivFaq"
                app:layout_constraintStart_toEndOf="@id/ivFaq"
@@ -411,7 +414,7 @@
                android:id="@+id/ivInfo"
                android:layout_width="14dp"
                android:layout_height="14dp"
-               android:layout_marginTop="15dp"
+               android:layout_marginTop="17dp"
                android:src="@drawable/info"
                app:layout_constraintTop_toBottomOf="@+id/ivFaq"
                app:layout_constraintStart_toStartOf="parent"/>
@@ -421,7 +424,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="버정정보"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivInfo"
                app:layout_constraintEnd_toStartOf="@id/iv7"
@@ -440,7 +443,7 @@
                android:id="@+id/ivLogout"
                android:layout_width="14dp"
                android:layout_height="14dp"
-               android:layout_marginTop="15dp"
+               android:layout_marginTop="17dp"
                android:src="@drawable/logout"
                app:layout_constraintTop_toBottomOf="@+id/ivInfo"
                app:layout_constraintStart_toStartOf="parent"/>
@@ -450,7 +453,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="로그아웃"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivLogout"
                app:layout_constraintStart_toEndOf="@id/ivLogout"
@@ -469,7 +472,7 @@
                android:id="@+id/ivDelete"
                android:layout_width="14dp"
                android:layout_height="14dp"
-               android:layout_marginTop="15dp"
+               android:layout_marginTop="17dp"
                android:src="@drawable/delete"
                app:layout_constraintTop_toBottomOf="@+id/ivLogout"
                app:layout_constraintStart_toStartOf="parent"
@@ -480,7 +483,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
                android:text="회원탈퇴"
-               android:textSize="16dp"
+               android:textSize="17dp"
                android:textColor="@color/black"
                app:layout_constraintTop_toTopOf="@id/ivDelete"
                app:layout_constraintStart_toEndOf="@id/ivDelete"

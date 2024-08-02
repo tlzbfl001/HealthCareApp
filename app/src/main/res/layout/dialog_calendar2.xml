@@ -12,6 +12,7 @@
       android:layout_marginLeft="25dp"
       android:layout_marginRight="25dp"
       android:background="@drawable/rec_15"
+      android:backgroundTint="@color/white_grey"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">

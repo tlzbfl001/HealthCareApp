@@ -121,7 +121,7 @@ class BodyFragment : Fragment() {
          isExpand = !isExpand
       }
 
-      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
          dailyGoal()
          dailyList()
       })
@@ -153,7 +153,8 @@ class BodyFragment : Fragment() {
 
       getBody = dataManager.getBody(selectedDate.toString())
 
-      if (getBody!!.weight > 0) {
+      var remain = 0.0
+      if(getBody?.weight != null && getBody!!.weight!! > 0) {
          binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
          binding.pbBody.setProgressEndColor(Color.parseColor("#AED77D"))
          binding.pbBody.progress = getBody!!.weight.toString().toDouble().roundToInt()
@@ -163,9 +164,10 @@ class BodyFragment : Fragment() {
             "0" -> binding.tvWeight.text = "${split[0]} kg"
             else -> binding.tvWeight.text = "${String.format("%.1f", getBody!!.weight)} kg"
          }
+
+         remain = dailyGoal!!.body - getBody!!.weight!!.toString().toDouble()
       }
 
-      val remain = dailyGoal!!.body - getBody!!.weight.toString().toDouble()
       if (remain > 0) {
          val split = remain.toString().split(".")
          when (split[1]) {
@@ -177,14 +179,17 @@ class BodyFragment : Fragment() {
    }
 
    private fun dailyList() {
-      binding.tvBmi.text = getBody!!.bmi.toString()
-      binding.tvFat.text = "${getBody!!.fat} %"
-      binding.tvMuscle.text = "${getBody!!.muscle} kg"
-      binding.tvBmr.text = "${getBody!!.bmr} kcal"
+      if(getBody?.bmi != null) binding.tvBmi.text = getBody!!.bmi.toString() else binding.tvBmi.text = "0"
+      if(getBody?.fat != null) binding.tvFat.text = "${getBody!!.fat} %" else binding.tvFat.text = "0 %"
+      if(getBody?.muscle != null) binding.tvMuscle.text = "${getBody!!.muscle} kg" else binding.tvMuscle.text = "0 kg"
+      if(getBody?.bmr != null) binding.tvBmr.text = "${getBody!!.bmr} kcal" else binding.tvBmr.text = "0 kcal"
 
       // 체질량지수 범위
-      val format1 = String.format("%.1f", getBody!!.bmi)
-      val bmi = format1.replace(".", "").toInt()
+      var bmi = 0
+      if(getBody!!.bmi != null) {
+         val format1 = String.format("%.1f", getBody!!.bmi)
+         bmi = format1.replace(".", "").toInt()
+      }
       when {
          bmi < 186 -> {
             binding.bmiIndicator1.progress = bmi
@@ -249,8 +254,11 @@ class BodyFragment : Fragment() {
       }
 
       // 체지방율 범위
-      val format2 = String.format("%.1f", getBody!!.fat)
-      val fat = format2.replace(".", "").toInt()
+      var fat = 0
+      if(getBody!!.bmi != null) {
+         val format2 = String.format("%.1f", getBody!!.fat)
+         fat = format2.replace(".", "").toInt()
+      }
       when {
          fat < 141 -> {
             binding.fatIndicator1.progress = fat
@@ -300,8 +308,11 @@ class BodyFragment : Fragment() {
       }
 
       // 골격근량 범위
-      val format3 = String.format("%.1f", getBody!!.muscle)
-      val muscle = format3.replace(".", "").toInt()
+      var muscle = 0
+      if(getBody!!.bmi != null) {
+         val format3 = String.format("%.1f", getBody!!.muscle)
+         muscle = format3.replace(".", "").toInt()
+      }
       when {
          muscle < 267 -> {
             binding.muscleIndicator1.progress = muscle

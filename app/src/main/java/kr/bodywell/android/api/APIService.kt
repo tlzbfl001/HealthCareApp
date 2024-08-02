@@ -6,6 +6,7 @@ import kr.bodywell.android.api.dto.DeviceDTO
 import kr.bodywell.android.api.dto.DietDTO
 import kr.bodywell.android.api.dto.DietUpdateDTO
 import kr.bodywell.android.api.dto.FoodDTO
+import kr.bodywell.android.api.dto.FoodUpdateDTO
 import kr.bodywell.android.api.dto.GoalDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
@@ -34,6 +35,7 @@ import kr.bodywell.android.api.response.SyncBodyResponse
 import kr.bodywell.android.api.response.SyncDietsResponse
 import kr.bodywell.android.api.response.SyncFoodResponse
 import kr.bodywell.android.api.response.SyncGoalResponse
+import kr.bodywell.android.api.response.SyncMedicineIntakeResponse
 import kr.bodywell.android.api.response.SyncMedicineResponse
 import kr.bodywell.android.api.response.SyncSleepResponse
 import kr.bodywell.android.api.response.SyncWaterResponse
@@ -50,6 +52,7 @@ import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface APIService {
 	@POST("auth/google/login")
@@ -96,7 +99,8 @@ interface APIService {
 
 	@GET("user/foods")
 	suspend fun getAllFood(
-		@Header("Authorization") token: String
+		@Header("Authorization") token: String,
+		@Query("search") search: String
 	): Response<List<FoodResponse>>
 
 	@POST("user/foods")
@@ -115,7 +119,7 @@ interface APIService {
 	suspend fun updateFood(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Body dto: FoodDTO
+		@Body dto: FoodUpdateDTO
 	): Response<FoodResponse>
 
 	@DELETE("user/foods/{uid}")
@@ -218,7 +222,7 @@ interface APIService {
 	suspend fun deleteActivity(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
-	): Response<Void>
+	): Response<ActivityResponse>
 
 	@GET("user/workouts")
 	suspend fun getAllWorkout(
@@ -367,7 +371,15 @@ interface APIService {
 		@Path("uid") uid: String,
 		@Path("timeUid") timeUid: String,
 		@Body dto: MedicineIntakeDTO
-	): Response<MedicineIntakeResponse>
+	): Response<MedicineResponse>
+
+	@POST("user/medicines/{uid}/times/{timeUid}/intakes/sync")
+	suspend fun syncMedicineIntake(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Path("timeUid") timeUid: String,
+		@Body dto: SyncDTO
+	): Response<SyncMedicineIntakeResponse>
 
 	@DELETE("user/medicines/{uid}/times/{timeUid}/intakes/{intakeUid}")
 	suspend fun deleteMedicineIntake(
@@ -375,7 +387,7 @@ interface APIService {
 		@Path("uid") uid: String,
 		@Path("timeUid") timeUid: String,
 		@Path("intakeUid") intakeUid: String
-	): Response<MedicineIntakeResponse>
+	): Response<MedicineResponse>
 
 	@GET("user/goal")
 	suspend fun getGoal(
