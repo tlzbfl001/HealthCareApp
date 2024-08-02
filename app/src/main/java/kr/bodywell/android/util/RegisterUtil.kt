@@ -92,10 +92,10 @@ object RegisterUtil {
 			// 사용자 정보 저장
 			if(getUser.createdAt == "") {
 				dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, name = getProfile.body()!!.name, gender = gender, birthday = birthday,
-					height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10), updatedAt = getProfile.body()!!.updatedAt))
+					height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
 			}else {
 				dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, name = getProfile.body()!!.name, gender = gender, birthday = birthday,
-					height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10), updatedAt = getProfile.body()!!.updatedAt))
+					height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
 			}
 
 			getUser = dataManager.getUser(user.type, user.email)
@@ -314,9 +314,9 @@ object RegisterUtil {
 
 		// 사용자 정보 저장
 		if(getUser.createdAt == "") {
-			dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString(), updatedAt = updated, isUpdated = 1))
+			dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString(), isUpdated = 1))
 		}else {
-			dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString(), updatedAt = updated, isUpdated = 1))
+			dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString(), isUpdated = 1))
 		}
 
 		getUser = dataManager.getUser(user.type, user.email)

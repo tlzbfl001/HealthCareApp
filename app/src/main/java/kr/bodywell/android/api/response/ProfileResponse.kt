@@ -30,11 +30,3 @@ data class ProfileResponse (
 	@SerializedName("updatedAt")
 	var updatedAt: String = ""
 )
-
-data class SyncProfileResponse (
-	@SerializedName("data")
-	var data: ProfileResponse?,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
-)

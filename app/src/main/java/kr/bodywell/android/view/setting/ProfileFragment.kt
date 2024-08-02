@@ -248,8 +248,7 @@ class ProfileFragment : Fragment() {
 			}else if(!filterText(binding.etName.text.trim().toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				val date = LocalDateTime.now().format(isoFormatter)
-				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, updatedAt=date, isUpdated=1))
+				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, isUpdated=1))
 
 				if(image != "") dataManager.updateUserStr("image", image)
 

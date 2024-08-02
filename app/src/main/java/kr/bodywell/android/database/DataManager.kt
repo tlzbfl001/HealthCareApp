@@ -22,7 +22,6 @@ import kr.bodywell.android.database.DBHelper.Companion.TOKEN
 import kr.bodywell.android.database.DBHelper.Companion.UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DBHelper.Companion.WATER
-import kr.bodywell.android.database.DBHelper.Companion.UPDATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Goal
@@ -100,7 +99,6 @@ class DataManager(private var context: Context?) {
          values.waterGoal = cursor.getInt(12)
          values.waterUnit = cursor.getInt(13)
          values.createdAt = cursor.getString(14)
-         values.updatedAt = cursor.getString(15)
       }
       cursor.close()
       return values
@@ -109,7 +107,7 @@ class DataManager(private var context: Context?) {
    fun getUserUpdated() : User {
       val db = dbHelper!!.readableDatabase
       val values = User()
-      val sql = "select id, name, gender, birthday, image, height, weight, $CREATED_AT, $UPDATED_AT from $USER where id = ${MyApp.prefs.getUserId()} and $IS_UPDATED = 1"
+      val sql = "select id, name, gender, birthday, image, height, weight, $CREATED_AT from $USER where id = ${MyApp.prefs.getUserId()} and $IS_UPDATED = 1"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id=cursor.getInt(0)
@@ -120,7 +118,6 @@ class DataManager(private var context: Context?) {
          values.height = cursor.getDouble(5)
          values.weight = cursor.getDouble(6)
          values.createdAt = cursor.getString(7)
-         values.updatedAt = cursor.getString(8)
       }
       cursor.close()
       return values
@@ -1312,7 +1309,6 @@ class DataManager(private var context: Context?) {
       values.put("waterGoal", data.waterGoal)
       values.put("waterUnit", data.waterUnit)
       values.put(CREATED_AT, data.createdAt)
-      values.put(UPDATED_AT, data.updatedAt)
       values.put(IS_UPDATED, data.isUpdated)
       db!!.insert(USER, null, values)
    }
@@ -1589,7 +1585,7 @@ class DataManager(private var context: Context?) {
 
    fun updateUser(data: User){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $USER set idToken='${data.idToken}', $CREATED_AT='${data.createdAt}', $UPDATED_AT='${data.updatedAt}' where type='${data.type}' and email='${data.email}'"
+      val sql = "update $USER set idToken='${data.idToken}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
       db.execSQL(sql)
       db.close()
    }
@@ -1597,7 +1593,7 @@ class DataManager(private var context: Context?) {
    fun updateUser2(data: User){
       val db = dbHelper!!.writableDatabase
       val sql = "update $USER set idToken='${data.idToken}', name='${data.name}', gender='${data.gender}', birthday='${data.birthday}', image='${data.image}', " +
-         "height='${data.height}', weight='${data.weight}', $CREATED_AT='${data.createdAt}', $UPDATED_AT='${data.updatedAt}' where type='${data.type}' and email='${data.email}'"
+         "height='${data.height}', weight='${data.weight}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
       db.execSQL(sql)
       db.close()
    }
@@ -1605,7 +1601,7 @@ class DataManager(private var context: Context?) {
    fun updateProfile(data: User){
       val db = dbHelper!!.writableDatabase
       val sql = "update $USER set name='${data.name}', gender='${data.gender}', birthday='${data.birthday}', height=${data.height}, weight=${data.weight}, " +
-         "$UPDATED_AT='${data.updatedAt}', $IS_UPDATED=${data.isUpdated} where id=${MyApp.prefs.getUserId()}"
+         "$IS_UPDATED=${data.isUpdated} where id=${MyApp.prefs.getUserId()}"
       db.execSQL(sql)
       db.close()
    }

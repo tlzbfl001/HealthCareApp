@@ -27,13 +27,12 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val SYNC_TIME = "syncTime"
       const val USER_ID = "userId"
       const val CREATED_AT = "createdAt"
-      const val UPDATED_AT = "updatedAt"
       const val IS_UPDATED = "isUpdated"
    }
 
    override fun onCreate(db: SQLiteDatabase) {
       val user = "create table $USER(id integer primary key autoincrement, type text, email text, idToken text, name text, gender text, birthday text, image text, " +
-         "height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, $CREATED_AT text, $UPDATED_AT text, $IS_UPDATED integer);"
+         "height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(user)
 
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"

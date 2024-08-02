@@ -37,6 +37,7 @@ import kr.bodywell.android.api.response.SyncFoodResponse
 import kr.bodywell.android.api.response.SyncGoalResponse
 import kr.bodywell.android.api.response.SyncMedicineIntakeResponse
 import kr.bodywell.android.api.response.SyncMedicineResponse
+import kr.bodywell.android.api.response.SyncProfileResponse
 import kr.bodywell.android.api.response.SyncSleepResponse
 import kr.bodywell.android.api.response.SyncWaterResponse
 import kr.bodywell.android.api.response.SyncWorkoutResponse
@@ -85,6 +86,12 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Body dto: ProfileDTO
 	): Response<ProfileResponse>
+
+	@POST("user/profile/sync")
+	suspend fun syncProfile(
+		@Header("Authorization") token: String,
+		@Body dto: SyncDTO
+	): Response<SyncProfileResponse>
 
 	@GET("user/devices")
 	suspend fun getDevice(

@@ -2,6 +2,14 @@ package kr.bodywell.android.api.response
 
 import com.google.gson.annotations.SerializedName
 
+data class SyncProfileResponse(
+	@SerializedName("data")
+	var data: ProfileResponse,
+
+	@SerializedName("syncedAt")
+	var syncedAt: String = ""
+)
+
 data class SyncFoodResponse(
 	@SerializedName("data")
 	var data: List<FoodResponse>,

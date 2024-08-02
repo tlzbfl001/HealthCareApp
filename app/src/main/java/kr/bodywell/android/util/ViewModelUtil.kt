@@ -21,6 +21,7 @@ import kr.bodywell.android.api.dto.SyncDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.BODY
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
@@ -570,6 +571,15 @@ object ViewModelUtil {
 	suspend fun createSync(dataManager: DataManager):Boolean {
 		syncedAt = dateTimeToIso(LocalDateTime.parse(dataManager.getSynced()))
 		Log.d(TAG, "syncedAt: $syncedAt / ${isoToDateTime(syncedAt)}")
+
+		val syncProfile = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		if(syncProfile.isSuccessful) {
+			Log.d(TAG, "syncProfile: ${syncProfile.body()}")
+			dataManager.updateProfile(User(name=syncProfile.body()?.data!!.name, gender=syncProfile.body()?.data!!.gender, birthday=syncProfile.body()?.data!!.birth,
+				height=syncProfile.body()?.data!!.height, weight=syncProfile.body()?.data!!.weight))
+		}else {
+			Log.e(TAG, "syncProfile: $syncProfile")
+		}
 
 		val syncFood = RetrofitAPI.api.syncFood("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncFood.isSuccessful) {

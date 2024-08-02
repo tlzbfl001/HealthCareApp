@@ -21,6 +21,5 @@ data class User(
     var waterUnit: Int = 0,
     var measureHeight: Int = 0,
     var createdAt: String = "",
-    var updatedAt: String = "",
     var isUpdated: Int = 0
 ) : Parcelable
