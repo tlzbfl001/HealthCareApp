@@ -1,10 +1,8 @@
-package kr.bodywell.android.service
+package kr.bodywell.android.util
 
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk
-import kr.bodywell.android.BuildConfig
 import kr.bodywell.android.R
-import kr.bodywell.android.util.PreferenceUtil
 
 class MyApp : Application() {
    companion object {

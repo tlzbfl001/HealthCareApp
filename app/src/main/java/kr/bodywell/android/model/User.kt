@@ -9,6 +9,7 @@ data class User(
     var type: String = "",
     var email: String = "",
     var idToken: String = "",
+    var accessToken: String = "",
     var name: String? = "",
     var gender: String? = "",
     var birthday: String? = "",

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -25,7 +26,7 @@ import kr.bodywell.android.adapter.BTItemAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
-import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.BluetoothUtil
 import kr.bodywell.android.util.CustomUtil.Companion.TAG
 import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
@@ -43,6 +44,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    private lateinit var btLauncher: ActivityResultLauncher<Intent>
    private lateinit var itemAdapter: BTItemAdapter
    private lateinit var discoveryItemAdapter: BTItemAdapter
+   private var bAdapter: BluetoothAdapter? = null
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -119,9 +121,11 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
       btLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
 
+      setBluetoothAdapter()
+
       try {
-         if(viewModel.bAdapter?.isEnabled == true) {
-            viewModel.bAdapter?.startDiscovery()
+         if(bAdapter?.isEnabled == true) {
+            bAdapter?.startDiscovery()
             binding.progressBar2.visibility=View.VISIBLE
          }
       }catch (e: SecurityException) {
@@ -129,12 +133,17 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       }
    }
 
+   private fun setBluetoothAdapter() {
+      val bManager = requireActivity().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+      bAdapter = bManager.adapter
+   }
+
    private fun getPairedDevices() {
       try{
          val list = ArrayList<Bluetooth>()
 
-         if(viewModel.bAdapter?.bondedDevices != null) {
-            val deviceList=viewModel.bAdapter?.bondedDevices as Set<BluetoothDevice>
+         if(bAdapter?.bondedDevices != null) {
+            val deviceList=bAdapter?.bondedDevices as Set<BluetoothDevice>
 
             // pref 에 저장된 주소가 리스트값과 같은경우 리스트에 데이터 저장
             deviceList.forEach {
@@ -183,6 +192,6 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
    override fun onClick(device: Bluetooth) {
       MyApp.prefs.setMacId(BluetoothUtil.MAC, device.device.address)
-      viewModel.btConnect()
+      if(bAdapter != null) viewModel.startBtConnect(bAdapter!!)
    }
 }

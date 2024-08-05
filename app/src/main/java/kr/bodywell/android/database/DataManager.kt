@@ -38,7 +38,7 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.MyApp
 
 class DataManager(private var context: Context?) {
    private var dbHelper: DBHelper? = null
@@ -88,17 +88,18 @@ class DataManager(private var context: Context?) {
          values.type=cursor.getString(1)
          values.email = cursor.getString(2)
          values.idToken = cursor.getString(3)
-         values.name = cursor.getString(4)
-         values.gender = cursor.getString(5)
-         values.birthday = cursor.getString(6)
-         values.image = cursor.getString(7)
-         values.height = cursor.getDouble(8)
-         values.weight = cursor.getDouble(9)
-         values.weightGoal = cursor.getDouble(10)
-         values.kcalGoal = cursor.getInt(11)
-         values.waterGoal = cursor.getInt(12)
-         values.waterUnit = cursor.getInt(13)
-         values.createdAt = cursor.getString(14)
+         values.accessToken = cursor.getString(4)
+         values.name = cursor.getString(5)
+         values.gender = cursor.getString(6)
+         values.birthday = cursor.getString(7)
+         values.image = cursor.getString(8)
+         values.height = cursor.getDouble(9)
+         values.weight = cursor.getDouble(10)
+         values.weightGoal = cursor.getDouble(11)
+         values.kcalGoal = cursor.getInt(12)
+         values.waterGoal = cursor.getInt(13)
+         values.waterUnit = cursor.getInt(14)
+         values.createdAt = cursor.getString(15)
       }
       cursor.close()
       return values
@@ -1264,7 +1265,7 @@ class DataManager(private var context: Context?) {
    fun getUnused() : ArrayList<Unused> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Unused> = ArrayList()
-      val sql = "select * from $UNUSED where $USER_ID = ${MyApp.prefs.getUserId()} limit 3"
+      val sql = "select * from $UNUSED where $USER_ID = ${MyApp.prefs.getUserId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = Unused()
@@ -1298,6 +1299,7 @@ class DataManager(private var context: Context?) {
       values.put("type", data.type)
       values.put("email", data.email)
       values.put("idToken", data.idToken)
+      values.put("accessToken", data.accessToken)
       values.put("name", data.name)
       values.put("gender", data.gender)
       values.put("birthday", data.birthday)
@@ -1585,15 +1587,15 @@ class DataManager(private var context: Context?) {
 
    fun updateUser(data: User){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $USER set idToken='${data.idToken}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
+      val sql = "update $USER set idToken='${data.idToken}', accessToken='${data.accessToken}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
       db.execSQL(sql)
       db.close()
    }
 
    fun updateUser2(data: User){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $USER set idToken='${data.idToken}', name='${data.name}', gender='${data.gender}', birthday='${data.birthday}', image='${data.image}', " +
-         "height='${data.height}', weight='${data.weight}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
+      val sql = "update $USER set idToken='${data.idToken}', accessToken='${data.accessToken}', name='${data.name}', gender='${data.gender}', birthday='${data.birthday}', " +
+         "image='${data.image}', height='${data.height}', weight='${data.weight}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
       db.execSQL(sql)
       db.close()
    }

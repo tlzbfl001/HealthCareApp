@@ -25,6 +25,7 @@ class BTItemAdapter(
 
       init {
          itemView.setOnClickListener{
+            b.tvStatus.visibility = View.VISIBLE
             if(adapterType) {
                try {
                   listItem?.device?.createBond()
@@ -74,13 +75,8 @@ class BTItemAdapter(
       oldTextView?.text = ""
       oldTextView = textView
       oldTextView?.visibility = View.VISIBLE
-
-      if(newData != "") {
-         oldTextView?.text = newData
-         oldTextView?.setTextColor(Color.parseColor("#035DAC"))
-      }else {
-         oldTextView?.text = "연결중..."
-      }
+      oldTextView?.setTextColor(Color.parseColor("#035DAC"))
+      oldTextView?.text = newData
    }
 
    fun setData(data: String){

@@ -7,7 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.view.home.MainActivity
 
 class StartActivity : AppCompatActivity() {

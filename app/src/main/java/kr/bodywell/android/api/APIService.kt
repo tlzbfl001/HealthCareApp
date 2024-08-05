@@ -8,10 +8,12 @@ import kr.bodywell.android.api.dto.DietUpdateDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.FoodUpdateDTO
 import kr.bodywell.android.api.dto.GoalDTO
+import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
+import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
@@ -61,6 +63,16 @@ interface APIService {
 		@Body dto: LoginDTO
 	): Response<TokenResponse>
 
+	@POST("auth/naver/login")
+	suspend fun loginWithNaver(
+		@Body dto: NaverLoginDTO
+	): Response<TokenResponse>
+
+	@POST("auth/kakao/login")
+	suspend fun loginWithKakao(
+		@Body dto: KakaoLoginDTO
+	): Response<TokenResponse>
+
 	@POST("auth/refresh-token")
 	suspend fun refreshToken(
 		@Header("Authorization") token: String
@@ -106,8 +118,7 @@ interface APIService {
 
 	@GET("user/foods")
 	suspend fun getAllFood(
-		@Header("Authorization") token: String,
-		@Query("search") search: String
+		@Header("Authorization") token: String
 	): Response<List<FoodResponse>>
 
 	@POST("user/foods")

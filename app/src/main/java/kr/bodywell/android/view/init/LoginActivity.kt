@@ -3,6 +3,7 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,9 +26,12 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
-import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
+import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
+import kr.bodywell.android.util.RegisterUtil.naverLoginRequest
 import kr.bodywell.android.view.home.MainActivity
 import java.time.LocalDate
 
@@ -111,13 +115,14 @@ class LoginActivity : AppCompatActivity() {
             if(it.isSuccessful) {
                val getUser = dataManager.getUser("google", it.result.email.toString())
                if(getUser.createdAt == "") { // 초기 가입
-//                  val intent = Intent(this, SignupActivity::class.java)
-//                  intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
-//                  startActivity(intent)
-
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
+                     val user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
+                     /*val intent = Intent(this, SignupActivity::class.java)
+                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
+                     startActivity(intent)*/
+
                      CoroutineScope(Dispatchers.IO).launch {
-                        googleLoginRequest(this@LoginActivity, dataManager, it)
+                        googleLoginRequest(this@LoginActivity, dataManager, user)
                      }
                   }else {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
@@ -140,17 +145,20 @@ class LoginActivity : AppCompatActivity() {
                override fun onSuccess(result: NidProfileResponse) {
                   val getUser = dataManager.getUser("naver", result.profile?.email.toString())
 
-                  if(getUser.createdAt == "") {
-                     if(NaverIdLoginSDK.getAccessToken() == "" || NaverIdLoginSDK.getAccessToken() == null || result.profile?.email == "" || result.profile?.email == null) {
-                        Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                     }else {
-                        val user = User(type = "naver", idToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!, createdAt = LocalDate.now().toString())
+                  if(getUser.createdAt == "") { // 회원 가입
+                     if(NaverIdLoginSDK.getAccessToken() != "" && NaverIdLoginSDK.getAccessToken() != null && result.profile?.email != "" && result.profile?.email != null) {
+                        val user = User(type = "naver", accessToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!)
+//                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+//                        intent.putExtra("user", user)
+//                        startActivity(intent)
 
-                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-                        intent.putExtra("user", user)
-                        startActivity(intent)
+                        CoroutineScope(Dispatchers.IO).launch {
+                           naverLoginRequest(this@LoginActivity, dataManager, user)
+                        }
+                     }else {
+                        Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                      }
-                  }else {
+                  }else { // 로그인
                      MyApp.prefs.setUserId("userId", getUser.id)
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
@@ -200,24 +208,28 @@ class LoginActivity : AppCompatActivity() {
 
    private fun createKakaoUser(token: OAuthToken) {
       UserApiClient.instance.me { user, error ->
-         if(error != null) {
-            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
-         }else {
+         if(error == null) {
             val getUser = dataManager.getUser("kakao", user?.kakaoAccount!!.email.toString())
 
             if(getUser.createdAt == "") { // 회원 가입
-               if(token.idToken == "" || token.idToken == null || user.kakaoAccount?.email == "" || user.kakaoAccount?.email == null) {
-                  Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
+               if(token.idToken != "" && token.idToken != null && user.kakaoAccount?.email != "" && user.kakaoAccount?.email != null) {
+                  val data = User(type = "kakao", idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!)
+//                  val intent = Intent(this, SignupActivity::class.java)
+//                  intent.putExtra("user", data)
+//                  startActivity(intent)
+
+                  CoroutineScope(Dispatchers.IO).launch {
+                     kakaoLoginRequest(this@LoginActivity, dataManager, data)
+                  }
                }else {
-                  val data = User(type = "kakao", idToken = token.idToken!!, email = user.kakaoAccount?.email!!, createdAt = LocalDate.now().toString())
-                  val intent = Intent(this, SignupActivity::class.java)
-                  intent.putExtra("user", data)
-                  startActivity(intent)
+                  Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
                }
             }else { // 로그인
                MyApp.prefs.setUserId("userId", getUser.id)
                startActivity(Intent(this, MainActivity::class.java))
             }
+         }else {
+            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
          }
       }
    }

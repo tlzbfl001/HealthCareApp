@@ -12,7 +12,7 @@ data class SyncProfileResponse(
 
 data class SyncFoodResponse(
 	@SerializedName("data")
-	var data: List<FoodResponse>,
+	var data: MutableList<FoodResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -20,7 +20,7 @@ data class SyncFoodResponse(
 
 data class SyncDietsResponse(
 	@SerializedName("data")
-	var data: List<DietResponse>,
+	var data: MutableList<DietResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -28,7 +28,7 @@ data class SyncDietsResponse(
 
 data class SyncWaterResponse(
 	@SerializedName("data")
-	var data: List<WaterResponse>,
+	var data: MutableList<WaterResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -36,7 +36,7 @@ data class SyncWaterResponse(
 
 data class SyncActivityResponse(
 	@SerializedName("data")
-	var data: List<ActivityResponse>,
+	var data: MutableList<ActivityResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -44,7 +44,7 @@ data class SyncActivityResponse(
 
 data class SyncWorkoutResponse(
 	@SerializedName("data")
-	var data: List<WorkoutResponse>,
+	var data: MutableList<WorkoutResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -52,7 +52,7 @@ data class SyncWorkoutResponse(
 
 data class SyncBodyResponse(
 	@SerializedName("data")
-	var data: List<BodyResponse>,
+	var data: MutableList<BodyResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -60,7 +60,7 @@ data class SyncBodyResponse(
 
 data class SyncSleepResponse(
 	@SerializedName("data")
-	var data: List<SleepResponse>,
+	var data: MutableList<SleepResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""
@@ -68,7 +68,7 @@ data class SyncSleepResponse(
 
 data class SyncMedicineResponse(
 	@SerializedName("data")
-	var data: List<MedicineResponse>,
+	var data: MutableList<MedicineResponse>,
 
 	@SerializedName("syncedAt")
 	var syncedAt: String = ""

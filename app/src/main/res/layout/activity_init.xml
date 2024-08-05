@@ -30,7 +30,7 @@
          app:dotsColor="#D9D9D9"
          app:selectedDotColor="#9F98FF"
          app:dotsCornerRadius="8dp"
-         app:dotsSize="12dp"
+         app:dotsSize="11dp"
          app:dotsSpacing="4dp"
          app:dotsWidthFactor="5"
          app:layout_constraintEnd_toEndOf="parent"
@@ -51,8 +51,8 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="9dp"
+            android:paddingBottom="9dp"
             android:paddingRight="20dp">
             <TextView
                android:id="@+id/tvStart"

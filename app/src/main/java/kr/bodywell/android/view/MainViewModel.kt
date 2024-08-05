@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -14,9 +12,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTING
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_NO_CONNECTED
@@ -28,7 +25,6 @@ import kr.bodywell.android.util.ViewModelUtil.createSync
 import kr.bodywell.android.util.ViewModelUtil.getToken
 import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.refreshToken
-import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import kr.bodywell.android.util.ViewModelUtil.syncCheck
 import java.io.IOException
 import java.time.LocalDate
@@ -40,7 +36,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private var dataManager: DataManager = DataManager(context)
    private val uuid="00001101-0000-1000-8000-00805F9B34FB"
    private var mSocket: BluetoothSocket? = null
-   var bAdapter: BluetoothAdapter?=null
    var dateVM = MutableLiveData<LocalDate>()
    var intVM = MutableLiveData<Int>()
    var msgVM = MutableLiveData<String>()
@@ -49,14 +44,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
-      setBluetoothAdapter()
-      btConnect()
       updateData()
       Log.d(TAG, "access: ${getToken.access}")
    }
 
    private fun updateData() = viewModelScope.launch {
-      while(requestStatus) {
+      while(isActive) {
          if(networkStatusCheck(context)) {
             refreshToken(dataManager)
             if(!syncCheck) {
@@ -65,27 +58,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                createApiRequest(dataManager)
             }
          }
-         delay(10000)
       }
    }
 
-   private fun setBluetoothAdapter() {
-      val bManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-      bAdapter = bManager.adapter
-   }
-
-   fun btConnect() {
+   fun startBtConnect(bAdapter: BluetoothAdapter) {
       val mac = MyApp.prefs.getMacId()
-      if(bAdapter!!.isEnabled && mac.isNotEmpty() && mac != "") {
-         Log.d(TAG, "블루투스가 연결되었습니다.")
-         val device = bAdapter!!.getRemoteDevice(mac)
-         startBtConnect(device)
+      if(bAdapter.isEnabled && mac.isNotEmpty() && mac != "") {
+         val device = bAdapter.getRemoteDevice(mac)
+         btConnect(device)
       }else {
          Log.d(TAG, "블루투스가 연결되지 않았습니다.")
       }
    }
 
-   private fun startBtConnect(device: BluetoothDevice) {
+   private fun btConnect(device: BluetoothDevice) {
       try{
          mSocket=device.createRfcommSocketToServiceRecord(UUID.fromString(uuid))
          msgVM.value = BLUETOOTH_CONNECTING

@@ -54,7 +54,7 @@ import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.service.MyApp
+import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.PermissionUtil.Companion.checkBtPermissions
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.InitActivity
