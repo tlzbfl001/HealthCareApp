@@ -16,9 +16,9 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.view.home.DetailFragment
 import java.util.Calendar
 

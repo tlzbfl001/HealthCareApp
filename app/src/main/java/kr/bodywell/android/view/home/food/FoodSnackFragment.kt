@@ -18,6 +18,7 @@ import kr.bodywell.android.adapter.PhotoViewAdapter
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kotlin.math.abs
@@ -28,7 +29,7 @@ class FoodSnackFragment : Fragment() {
 
     private lateinit var dataManager: DataManager
     private var photoAdapter: PhotoViewAdapter? = null
-    private var type = "SNACK"
+    private var type = Constant.SNACK.name
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +39,6 @@ class FoodSnackFragment : Fragment() {
 
         dataManager = DataManager(activity)
         dataManager.open()
-
 
 //      imageView()
         listView() // 섭취 식단

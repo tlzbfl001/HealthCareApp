@@ -17,9 +17,9 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseRecord1Binding
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 
 class ExerciseRecord1Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord1Binding? = null

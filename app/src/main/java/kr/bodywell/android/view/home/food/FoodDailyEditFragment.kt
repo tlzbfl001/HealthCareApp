@@ -18,15 +18,17 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.IMAGE
+import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDailyEditBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
-import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
+import kr.bodywell.android.util.CustomUtil.replaceFragment4
+import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.saveFile
 
 class FoodDailyEditFragment : Fragment() {
    private var _binding: FragmentFoodDailyEditBinding? = null
@@ -38,7 +40,7 @@ class FoodDailyEditFragment : Fragment() {
    private var getDailyFood = Food()
    private var imageList = ArrayList<Image>()
    private var dialog: Dialog? = null
-   private var type = "BREAKFAST"
+   private var type = Constant.BREAKFAST.name
    private var dailyFoodId = 0
    private var count = 1
 
@@ -126,7 +128,7 @@ class FoodDailyEditFragment : Fragment() {
          for(i in 0 until imageList.size) dataManager.insertImage(imageList[i])
 
          dataManager.updateInt(DAILY_FOOD, "count", count, "id", dailyFoodId)
-         dataManager.updateInt(DAILY_FOOD, "isUpdated", 1, "id", dailyFoodId)
+         dataManager.updateInt(DAILY_FOOD, IS_UPDATED, 1, "id", dailyFoodId)
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
          replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)

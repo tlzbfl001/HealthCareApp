@@ -14,8 +14,8 @@ import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.view.home.DetailFragment
 
 class ExerciseListFragment : Fragment() {

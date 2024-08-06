@@ -13,8 +13,9 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseDailyEditBinding
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
 
 class ExerciseDailyEditFragment : Fragment() {
 	private var _binding: FragmentExerciseDailyEditBinding? = null
@@ -22,7 +23,7 @@ class ExerciseDailyEditFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
-	private var intensity = "HIGH"
+	private var intensity = Constant.HIGH
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -62,9 +63,9 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.etKcal.setText(exercise.kcal.toString())
 
 		when(exercise.intensity) {
-			"HIGH" -> unit1()
-			"MODERATE" -> unit2()
-			"LOW" -> unit3()
+			Constant.HIGH.name -> unit1()
+			Constant.MODERATE.name -> unit2()
+			Constant.LOW.name -> unit3()
 		}
 
 		binding.mainLayout.setOnTouchListener { _, _ ->
@@ -93,7 +94,7 @@ class ExerciseDailyEditFragment : Fragment() {
 				|| binding.etKcal.text.toString().toInt() < 1) {
 				Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				dataManager.updateStr(DAILY_EXERCISE, "intensity", intensity, "id", id)
+				dataManager.updateStr(DAILY_EXERCISE, "intensity", intensity.name, "id", id)
 				dataManager.updateInt(DAILY_EXERCISE, "workoutTime", binding.etTime.text.toString().trim().toInt(), "id", id)
 				dataManager.updateInt(DAILY_EXERCISE, "kcal", binding.etKcal.text.toString().trim().toInt(), "id", id)
 				dataManager.updateInt(DAILY_EXERCISE, "isUpdated", 1, "id", id)
@@ -113,7 +114,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = "HIGH"
+		intensity = Constant.HIGH
 	}
 
 	private fun unit2() {
@@ -123,7 +124,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.WHITE)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = "MODERATE"
+		intensity = Constant.MODERATE
 	}
 
 	private fun unit3() {
@@ -133,7 +134,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
 		binding.tvIntensity3.setTextColor(Color.WHITE)
-		intensity = "LOW"
+		intensity = Constant.LOW
 	}
 
 	override fun onDetach() {

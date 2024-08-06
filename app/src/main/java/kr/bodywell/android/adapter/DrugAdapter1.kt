@@ -1,7 +1,6 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,6 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
@@ -18,11 +16,8 @@ import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.dateTimeFormatter
-import kr.bodywell.android.util.CustomUtil.Companion.dateTimeToIso
-import kr.bodywell.android.util.ViewModelUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeFormatter
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDateTime
 
@@ -66,7 +61,7 @@ class DrugAdapter1 (
                     val getDrug = dataManager.getData(DRUG, itemList[pos].drugId)
                     val getDrugTime = dataManager.getData(DRUG_TIME, itemList[pos].drugTimeId)
                     if(getDrug.uid != "" && getDrugTime.uid != "" && getDrugCheck.uid != "") {
-                        dataManager.insertUnused(Unused(type = "drugCheck", value = getDrugCheck.uid, drugUid = getDrug.uid, drugTimeUid = getDrugTime.uid, createdAt = itemList[pos].date))
+                        dataManager.insertUnused(Unused(type = DRUG_CHECK, value = getDrugCheck.uid, drugUid = getDrug.uid, drugTimeUid = getDrugTime.uid, createdAt = itemList[pos].date))
                     }
                     dataManager.deleteItem(DRUG_CHECK, "id", getDrugCheck.id)
                 }

@@ -22,7 +22,7 @@ import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
 class DrugAdapter2 (
@@ -92,12 +92,12 @@ class DrugAdapter2 (
                for(i in 0 until drugCheckUid.size) {
                   val drugTime = dataManager.getData(DRUG_TIME, drugCheckUid[i].drugTimeId)
                   if(drugTime.uid != "" && drugCheckUid[i].uid != "") {
-                     dataManager.insertUnused(Unused(type = "drugCheck", value = drugCheckUid[i].uid,
+                     dataManager.insertUnused(Unused(type = DRUG_CHECK, value = drugCheckUid[i].uid,
                         drugUid = itemList[pos].uid, drugTimeUid = drugTime.uid, createdAt = itemList[pos].startDate))
                   }
                }
 
-               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "drug", value = itemList[pos].uid, createdAt = itemList[pos].startDate))
+               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = DRUG, value = itemList[pos].uid, createdAt = itemList[pos].startDate))
 
                dataManager.deleteItem(DRUG_CHECK, "drugId", itemList[pos].id)
                dataManager.deleteItem(DRUG_TIME, "drugId", itemList[pos].id)

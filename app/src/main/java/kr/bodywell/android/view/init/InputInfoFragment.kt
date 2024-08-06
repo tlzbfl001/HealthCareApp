@@ -20,11 +20,11 @@ import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputInfoBinding
-import kr.bodywell.android.util.CustomUtil.Companion.filterText
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
+import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.saveFile
 import java.time.LocalDate
 import kotlin.system.exitProcess
 

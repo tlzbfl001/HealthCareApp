@@ -34,7 +34,9 @@ import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.SLEEP
+import kr.bodywell.android.database.DBHelper.Companion.SYNC_TIME
 import kr.bodywell.android.database.DBHelper.Companion.UNUSED
+import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
@@ -48,10 +50,10 @@ import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.dateTimeToIso
-import kr.bodywell.android.util.CustomUtil.Companion.dateToIso
-import kr.bodywell.android.util.CustomUtil.Companion.isoToDateTime
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateToIso
+import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -291,8 +293,7 @@ object ViewModelUtil {
 		// 같은 데이터 유무에 따라 create, update 해야되는데 서버완성이 안되서 type으로 체크만함
 		for(i in 0 until data.size) {
 			if(type == 1) {
-				val dto = FoodDTO("null", data[i].name, data[i].kcal, data[i].carbohydrate, data[i].protein, data[i].fat,
-					data[i].count, "개", data[i].amount, data[i].unit)
+				val dto = FoodDTO(data[i].name, data[i].kcal, data[i].carbohydrate, data[i].protein, data[i].fat, data[i].count, "개", data[i].amount, data[i].unit)
 
 				val createFood = RetrofitAPI.api.createFood("Bearer ${getToken.access}", dto)
 				if(createFood.isSuccessful) {
@@ -332,7 +333,7 @@ object ViewModelUtil {
 					for(k in 0 until getImage.size) photos.add("https://example.com/picture.jpg")
 
 					val dateToIso = dateToIso(data[i].createdAt)
-					val dto = DietDTO(data[i].type, "null", data[i].name, data[i].kcal, data[i].carbohydrate, data[i].protein, data[i].fat,
+					val dto = DietDTO(data[i].type, data[i].name, data[i].kcal, data[i].carbohydrate, data[i].protein, data[i].fat,
 						data[i].count,"개", data[i].amount, data[i].unit, photos, dateToIso, FoodData(getFood.uid))
 
 					val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", dto)
@@ -579,13 +580,14 @@ object ViewModelUtil {
 		if(syncFood.isSuccessful) {
 			Log.d(TAG, "syncFood: ${syncFood.body()}")
 			for(i in 0 until syncFood.body()?.data!!.size) {
-				val getData = dataManager.getData(FOOD, "name", syncFood.body()?.data!![i].foodName)
+				val getData = dataManager.getData(FOOD, "name", syncFood.body()?.data!![i].name)
+
 				if(getData.id > 0) {
 					if(syncFood.body()?.data!![i].deletedAt != "" && syncFood.body()?.data!![i].deletedAt != null) {
 						dataManager.deleteItem(FOOD, "id", getData.id)
 					}else {
-						dataManager.updateFood(Food(name = syncFood.body()?.data!![i].foodName, unit = syncFood.body()?.data!![i].volumeUnit,
-							amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calories, carbohydrate = syncFood.body()?.data!![i].carbohydrate,
+						dataManager.updateFood(Food(name = syncFood.body()?.data!![i].name, unit = syncFood.body()?.data!![i].volumeUnit,
+							amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calorie, carbohydrate = syncFood.body()?.data!![i].carbohydrate,
 							protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat))
 						dataManager.updateStr(FOOD, "uid", syncFood.body()?.data!![i].uid, "id", getData.id)
 					}
@@ -596,10 +598,9 @@ object ViewModelUtil {
 						useCount = syncFood.body()?.data!![i].usages!![0].usageCount
 						useDate = isoToDateTime(syncFood.body()?.data!![i].usages!![0].updatedAt).toString()
 					}
-					dataManager.insertFood(Food(uid = syncFood.body()?.data!![i].uid, name = syncFood.body()?.data!![i].foodName,
-						unit = syncFood.body()?.data!![i].volumeUnit, amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calories,
-						carbohydrate = syncFood.body()?.data!![i].carbohydrate, protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat,
-						useCount = useCount, useDate = useDate))
+					dataManager.insertFood(Food(uid = syncFood.body()?.data!![i].uid, name = syncFood.body()?.data!![i].name, unit = syncFood.body()?.data!![i].volumeUnit,
+						amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calorie, carbohydrate = syncFood.body()?.data!![i].carbohydrate,
+						protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat, useCount = useCount, useDate = useDate))
 				}
 			}
 		}else {
@@ -615,14 +616,14 @@ object ViewModelUtil {
 					if(syncDiets.body()?.data!![i].deletedAt != "" && syncDiets.body()?.data!![i].deletedAt != null) {
 						dataManager.deleteItem(DAILY_FOOD, "id", getData.id)
 					}else {
-						dataManager.updateDailyFood(Food(amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calories,
+						dataManager.updateDailyFood(Food(amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
 							carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
 							count = syncDiets.body()?.data!![i].quantity))
 						dataManager.updateStr(DAILY_FOOD, "uid", syncDiets.body()?.data!![i].uid, "id", getData.id)
 					}
 				}else if(syncDiets.body()?.data!![i].createdAt == syncDiets.body()?.data!![i].updatedAt) {
-					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].uid, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].foodName,
-						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calories,
+					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].uid, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].name,
+						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
 						carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
 						count = syncDiets.body()?.data!![i].quantity, createdAt = syncDiets.body()?.data!![i].date))
 				}
@@ -689,13 +690,13 @@ object ViewModelUtil {
 						dataManager.deleteItem(DAILY_EXERCISE, "id", getData.id)
 					}else {
 						dataManager.updateExercise(DAILY_EXERCISE, Exercise(id = getData.id, uid = syncWorkout.body()?.data!![i].uid, name = syncWorkout.body()?.data!![i].name,
-							intensity = syncWorkout.body()?.data!![i].intensity, workoutTime = syncWorkout.body()?.data!![i].time, kcal = syncWorkout.body()?.data!![i].calories,
+							intensity = syncWorkout.body()?.data!![i].intensity, workoutTime = syncWorkout.body()?.data!![i].time, kcal = syncWorkout.body()?.data!![i].calorie,
 							createdAt = syncWorkout.body()?.data!![i].date.substring(0, 10)))
 					}
 				}else if(syncWorkout.body()?.data!![i].createdAt == syncWorkout.body()?.data!![i].updatedAt) {
 					dataManager.insertDailyExercise(Exercise(uid = syncWorkout.body()?.data!![i].uid, name = syncWorkout.body()?.data!![i].name,
 						intensity = syncWorkout.body()?.data!![i].intensity, workoutTime = syncWorkout.body()?.data!![i].time,
-						kcal = syncWorkout.body()?.data!![i].calories, createdAt = syncWorkout.body()?.data!![i].date.substring(0, 10)))
+						kcal = syncWorkout.body()?.data!![i].calorie, createdAt = syncWorkout.body()?.data!![i].date.substring(0, 10)))
 				}
 			}
 		}else {
@@ -877,7 +878,7 @@ object ViewModelUtil {
 			Log.e(TAG, "syncGoal: $syncGoal")
 		}
 
-//		dataManager.updateStr(SYNC_TIME, "syncedAt", LocalDateTime.now().toString(), USER_ID, MyApp.prefs.getUserId())
+		dataManager.updateStr(SYNC_TIME, "syncedAt", LocalDateTime.now().toString(), USER_ID, MyApp.prefs.getUserId())
 
 		return true
 	}

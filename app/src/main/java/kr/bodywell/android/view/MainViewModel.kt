@@ -18,13 +18,14 @@ import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTING
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_NO_CONNECTED
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.ViewModelUtil.createApiRequest
 import kr.bodywell.android.util.ViewModelUtil.createSync
 import kr.bodywell.android.util.ViewModelUtil.getToken
 import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.refreshToken
+import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import kr.bodywell.android.util.ViewModelUtil.syncCheck
 import java.io.IOException
 import java.time.LocalDate
@@ -49,7 +50,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    }
 
    private fun updateData() = viewModelScope.launch {
-      while(isActive) {
+      while(requestStatus) {
          if(networkStatusCheck(context)) {
             refreshToken(dataManager)
             if(!syncCheck) {
@@ -61,17 +62,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       }
    }
 
-   fun startBtConnect(bAdapter: BluetoothAdapter) {
+   fun btConnect(bAdapter: BluetoothAdapter) {
       val mac = MyApp.prefs.getMacId()
       if(bAdapter.isEnabled && mac.isNotEmpty() && mac != "") {
          val device = bAdapter.getRemoteDevice(mac)
-         btConnect(device)
+         startConnect(device)
       }else {
          Log.d(TAG, "블루투스가 연결되지 않았습니다.")
       }
    }
 
-   private fun btConnect(device: BluetoothDevice) {
+   private fun startConnect(device: BluetoothDevice) {
       try{
          mSocket=device.createRfcommSocketToServiceRecord(UUID.fromString(uuid))
          msgVM.value = BLUETOOTH_CONNECTING

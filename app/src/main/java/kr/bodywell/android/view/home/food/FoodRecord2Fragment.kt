@@ -15,10 +15,11 @@ import kr.bodywell.android.adapter.FoodRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodRecord2Binding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment4
 
 class FoodRecord2Fragment : Fragment() {
    private var _binding: FragmentFoodRecord2Binding? = null
@@ -28,7 +29,7 @@ class FoodRecord2Fragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private val searchList = ArrayList<Item>()
-   private var type = "BREAKFAST"
+   private var type = Constant.BREAKFAST.name
 
    override fun onAttach(context: Context) {
       super.onAttach(context)

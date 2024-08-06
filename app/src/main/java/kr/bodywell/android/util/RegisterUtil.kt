@@ -23,6 +23,7 @@ import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Drug
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugTime
@@ -34,8 +35,8 @@ import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.isoToDateTime
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
@@ -182,7 +183,7 @@ object RegisterUtil {
 		if(getProfile.isSuccessful) {
 			var getUser = dataManager.getUser(user.type, user.email)
 			val getToken = dataManager.getToken()
-			val gender = if(getProfile.body()!!.gender == null) "Female" else getProfile.body()!!.gender
+			val gender = if(getProfile.body()!!.gender == null) Constant.Female.name else getProfile.body()!!.gender
 			val birthday = if(getProfile.body()!!.birth == null) LocalDate.now().toString() else getProfile.body()!!.birth
 			val height = if(getProfile.body()!!.height == null) 0.0 else getProfile.body()!!.height!!.toDouble()
 			val weight = if(getProfile.body()!!.weight == null) 0.0 else getProfile.body()!!.weight!!.toDouble()
@@ -197,7 +198,7 @@ object RegisterUtil {
 			}
 
 			getUser = dataManager.getUser(user.type, user.email)
-			MyApp.prefs.setUserId("userId", getUser.id)
+			MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id)
 
 			// 토큰 정보 저장
 			if(getToken.accessCreated == "") {
@@ -220,9 +221,9 @@ object RegisterUtil {
 						useDate = isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 					}
 
-					val type = if(getAllFood.body()!![i].registerType == "Admin") 1 else 0
-					dataManager.insertFood(Food(admin = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName,
-						unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calories,
+					val type = if(getAllFood.body()!![i].registerType == Constant.Admin.name) 1 else 0
+					dataManager.insertFood(Food(admin = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name,
+						unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calorie,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
 				}
 			}else {
@@ -234,12 +235,12 @@ object RegisterUtil {
 				Log.d(TAG, "getAllDiet: ${getAllDiet.body()}")
 
 				for(i in 0 until getAllDiet.body()!!.size) {
-					dataManager.insertDailyFood(Food(uid = getAllDiet.body()!![i].uid, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].foodName,
-						unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, kcal = getAllDiet.body()!![i].calories,
+					dataManager.insertDailyFood(Food(uid = getAllDiet.body()!![i].uid, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].name,
+						unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, kcal = getAllDiet.body()!![i].calorie,
 						carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein, fat = getAllDiet.body()!![i].fat,
 						count = getAllDiet.body()!![i].quantity, createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
 
-					val getFood = dataManager.getFood("name", getAllDiet.body()!![i].foodName)
+					val getFood = dataManager.getFood("name", getAllDiet.body()!![i].name)
 					if(getAllDiet.body()!![i].photos.size > 0 && getFood.id > 0) {
 						for(j in 0 until getAllDiet.body()!![i].photos.size) {
 							dataManager.insertImage(Image(type = getAllDiet.body()!![i].mealTime, dataId = getFood.id, imageUri = getAllDiet.body()!![i].photos[j],
@@ -276,7 +277,7 @@ object RegisterUtil {
 						useDate = isoToDateTime(getAllActivity.body()!![i].usages!![0].updatedAt).toString()
 					}
 
-					val type = if(getAllActivity.body()!![i].registerType == "Admin") 1 else 0
+					val type = if(getAllActivity.body()!![i].registerType == Constant.Admin.name) 1 else 0
 					dataManager.insertExercise(Exercise(admin = type, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate))
 				}
 			}else {
@@ -289,7 +290,7 @@ object RegisterUtil {
 
 				for(i in 0 until getAllWorkout.body()!!.size) {
 					dataManager.insertDailyExercise(Exercise(uid = getAllWorkout.body()!![i].uid, name = getAllWorkout.body()!![i].name, intensity = getAllWorkout.body()!![i].intensity,
-						workoutTime = getAllWorkout.body()!![i].time, kcal = getAllWorkout.body()!![i].calories, createdAt = getAllWorkout.body()!![i].date.substring(0, 10)))
+						workoutTime = getAllWorkout.body()!![i].time, kcal = getAllWorkout.body()!![i].calorie, createdAt = getAllWorkout.body()!![i].date.substring(0, 10)))
 				}
 			}else {
 				Log.e(TAG, "getAllWorkout: $getAllWorkout")
@@ -408,7 +409,7 @@ object RegisterUtil {
 			Log.d(TAG, "getGoal: ${getGoal.isSuccessful}/${getGoal.body()}")
 
 			if(createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful && getGoal.isSuccessful) {
-				MyApp.prefs.setUserId("userId", getUser.id) // 사용자 Id 저장
+				MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id) // 사용자 Id 저장
 
 				// 토큰 정보 저장
 				val getToken = dataManager.getToken()
@@ -420,15 +421,15 @@ object RegisterUtil {
 
 				// 서버 데이터 저장
 				for(i in 0 until getAllFood.body()!!.size) {
-					dataManager.insertFood(Food(admin = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].foodName, unit = getAllFood.body()!![i].volumeUnit,
-						amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calories, carbohydrate = getAllFood.body()!![i].carbohydrate,
+					dataManager.insertFood(Food(admin = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
+						amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString())
 					)
 				}
 
 				for(i in 0 until getAllActivity.body()!!.size) {
-					dataManager.insertExercise(Exercise(admin = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = "HIGH",
+					dataManager.insertExercise(Exercise(admin = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString()))
 				}
@@ -470,7 +471,7 @@ object RegisterUtil {
 
 		val getUser2 = dataManager.getUser(user.type, user.email)
 
-		MyApp.prefs.setUserId("userId", getUser2.id) // 사용자 Id 저장
+		MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser2.id) // 사용자 Id 저장
 
 		val dialog = Dialog(ctx)
 		dialog.setContentView(R.layout.dialog_signup)

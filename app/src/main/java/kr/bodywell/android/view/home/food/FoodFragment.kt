@@ -21,11 +21,12 @@ import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import kotlin.math.roundToInt
@@ -234,10 +235,10 @@ class FoodFragment : Fragment() {
       binding.clView4.visibility = View.GONE
       binding.ivExpand4.setImageResource(R.drawable.arrow_down)
 
-      val getDailyFood1 = dataManager.getDailyFood("BREAKFAST", selectedDate.toString())
-      val getDailyFood2 = dataManager.getDailyFood("LUNCH", selectedDate.toString())
-      val getDailyFood3 = dataManager.getDailyFood("DINNER", selectedDate.toString())
-      val getDailyFood4 = dataManager.getDailyFood("SNACK", selectedDate.toString())
+      val getDailyFood1 = dataManager.getDailyFood(Constant.BREAKFAST.name, selectedDate.toString())
+      val getDailyFood2 = dataManager.getDailyFood(Constant.LUNCH.name, selectedDate.toString())
+      val getDailyFood3 = dataManager.getDailyFood(Constant.DINNER.name, selectedDate.toString())
+      val getDailyFood4 = dataManager.getDailyFood(Constant.SNACK.name, selectedDate.toString())
 
       var kcal1 = 0
       var carbohydrate1 = 0.0

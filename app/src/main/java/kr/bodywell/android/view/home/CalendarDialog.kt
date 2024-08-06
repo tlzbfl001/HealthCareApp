@@ -35,7 +35,6 @@ class CalendarDialog(context: Context) : Dialog(context) {
    private var rv: RecyclerView? = null
    private var viewPager: ViewPager? = null
 
-   @SuppressLint("ClickableViewAccessibility")
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.dialog_calendar1)

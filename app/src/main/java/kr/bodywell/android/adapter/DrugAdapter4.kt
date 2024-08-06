@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Drug
-import kr.bodywell.android.util.CustomUtil.Companion.drugTimeList
+import kr.bodywell.android.util.CustomUtil.drugTimeList
 import kr.bodywell.android.view.MainViewModel
 
 class DrugAdapter4 (

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodDailyEditFragment
 
 class FoodIntakeAdapter (

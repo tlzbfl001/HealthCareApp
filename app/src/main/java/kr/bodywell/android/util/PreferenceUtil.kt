@@ -2,6 +2,7 @@ package kr.bodywell.android.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import kr.bodywell.android.model.Constant
 
 class PreferenceUtil(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
@@ -11,7 +12,7 @@ class PreferenceUtil(context: Context) {
     }
 
     fun getUserId(): Int {
-        return prefs.getInt("userId", 0)
+        return prefs.getInt(Constant.USER_PREFS.name, 0)
     }
 
     fun setMacId(key: String, str: String) {
@@ -19,7 +20,7 @@ class PreferenceUtil(context: Context) {
     }
 
     fun getMacId(): String {
-        return prefs.getString(BluetoothUtil.MAC, "")!!
+        return prefs.getString(Constant.BT_PREFS.name, "")!!
     }
 
     fun removePrefs() {

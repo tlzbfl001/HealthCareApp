@@ -6,14 +6,11 @@ data class FoodResponse (
 	@SerializedName("uid")
 	var uid: String = "",
 
-	@SerializedName("brandName")
-	var brandName: String = "",
+	@SerializedName("name")
+	var name: String = "",
 
-	@SerializedName("foodName")
-	var foodName: String = "",
-
-	@SerializedName("calories")
-	var calories: Int = 0,
+	@SerializedName("calorie")
+	var calorie: Int = 0,
 
 	@SerializedName("carbohydrate")
 	var carbohydrate: Double = 0.0,

@@ -13,7 +13,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
+import kr.bodywell.android.util.CustomUtil.TAG
 import java.time.*
 
 class HealthConnectActivity : AppCompatActivity() {

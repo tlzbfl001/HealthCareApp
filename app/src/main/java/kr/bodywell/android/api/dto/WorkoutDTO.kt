@@ -7,7 +7,7 @@ data class WorkoutDTO(
 	var name: String = "",
 
 	@SerializedName("calorie")
-	var calories: Int = 0,
+	var calorie: Int = 0,
 
 	@SerializedName("intensity")
 	var intensity: String = "",
@@ -20,8 +20,8 @@ data class WorkoutDTO(
 )
 
 data class WorkoutUpdateDTO(
-	@SerializedName("calories")
-	var calories: Int = 0,
+	@SerializedName("calorie")
+	var calorie: Int = 0,
 
 	@SerializedName("intensity")
 	var intensity: String = "",

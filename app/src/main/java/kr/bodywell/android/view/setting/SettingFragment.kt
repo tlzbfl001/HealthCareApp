@@ -1,6 +1,5 @@
 package kr.bodywell.android.view.setting
 
-import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -11,6 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -49,13 +49,16 @@ import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.PermissionUtil.Companion.checkBtPermissions
+import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_2
+import kr.bodywell.android.util.PermissionUtil.checkBtPermissions
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.InitActivity
 import kr.bodywell.android.view.init.LoginActivity
@@ -88,15 +91,7 @@ class SettingFragment : Fragment() {
    ): View {
       _binding = FragmentSettingBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
@@ -126,14 +121,9 @@ class SettingFragment : Fragment() {
       binding.tvConnect.setOnClickListener {
          if(!checkBtPermissions(requireActivity())) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-               pLauncher.launch(arrayOf(
-                  Manifest.permission.ACCESS_FINE_LOCATION,
-                  Manifest.permission.BLUETOOTH_CONNECT
-               ))
+               pLauncher.launch(BT_PERMISSION_2)
             }else {
-               pLauncher.launch(arrayOf(
-                  Manifest.permission.ACCESS_FINE_LOCATION
-               ))
+               pLauncher.launch(BT_PERMISSION_1)
             }
          }else {
             replaceFragment1(requireActivity(), ConnectFragment())
@@ -267,7 +257,7 @@ class SettingFragment : Fragment() {
          var age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
          if(getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
 
-         val gender = if(getUser.gender == "Male") "남" else "여"
+         val gender = if(getUser.gender == Constant.Male.name) "남" else "여"
 
          binding.tvAge.text = "만${age}세 / $gender"
       }
@@ -347,6 +337,20 @@ class SettingFragment : Fragment() {
       finishAffinity(requireActivity())
       startActivity(Intent(requireActivity(), InitActivity::class.java))
       exitProcess(0)
+   }
+
+   private fun setStatusBar() {
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
+      }
    }
 
    override fun onDetach() {

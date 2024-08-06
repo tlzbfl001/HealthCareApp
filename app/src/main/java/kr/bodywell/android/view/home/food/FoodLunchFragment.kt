@@ -18,6 +18,7 @@ import kr.bodywell.android.adapter.PhotoViewAdapter
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodLunchBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
@@ -30,7 +31,7 @@ class FoodLunchFragment : Fragment() {
     private var photoAdapter: PhotoViewAdapter? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
     private var imageData = ArrayList<Image>()
-    private var type = "LUNCH"
+    private var type = Constant.LUNCH.name
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

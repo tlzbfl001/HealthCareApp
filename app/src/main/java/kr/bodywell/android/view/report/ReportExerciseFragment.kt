@@ -2,10 +2,12 @@ package kr.bodywell.android.view.report
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,8 +37,8 @@ import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.view.home.MainFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -69,15 +71,7 @@ class ReportExerciseFragment : Fragment() {
    ): View {
       _binding = FragmentReportExerciseBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -444,6 +438,20 @@ class ReportExerciseFragment : Fragment() {
 
          adapter = ReportAdapter(itemList)
          binding.recyclerView.adapter = adapter
+      }
+   }
+
+   private fun setStatusBar() {
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
    }
 

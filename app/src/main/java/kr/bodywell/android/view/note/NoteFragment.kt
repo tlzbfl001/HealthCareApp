@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.Gravity
@@ -16,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,11 +30,11 @@ import kr.bodywell.android.databinding.FragmentNoteBinding
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
-import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
-import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
+import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.saveFile
 import kr.bodywell.android.view.home.MainFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -64,15 +66,7 @@ class NoteFragment : Fragment() {
    ): View {
       _binding = FragmentNoteBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -301,6 +295,20 @@ class NoteFragment : Fragment() {
                dialog!!.dismiss()
             }
          }
+      }
+   }
+
+   private fun setStatusBar() {
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
    }
 

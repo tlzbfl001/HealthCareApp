@@ -2,11 +2,13 @@ package kr.bodywell.android.view.home
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
@@ -17,8 +19,8 @@ import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.databinding.FragmentDetailBinding
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.dataType
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.layoutType
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
@@ -50,15 +52,7 @@ class DetailFragment : Fragment() {
    ): View {
       _binding = FragmentDetailBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -118,7 +112,7 @@ class DetailFragment : Fragment() {
 
       })
 
-      when(dataType) {
+      when(layoutType) {
          1 -> {
             button1()
             binding.viewPager.currentItem = 0
@@ -146,8 +140,22 @@ class DetailFragment : Fragment() {
       }
    }
 
+   private fun setStatusBar() {
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
+   }
+
    private fun button1() {
-      dataType = 1
+      layoutType = 1
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -157,7 +165,7 @@ class DetailFragment : Fragment() {
    }
 
    private fun button2() {
-      dataType = 2
+      layoutType = 2
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_water)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -167,7 +175,7 @@ class DetailFragment : Fragment() {
    }
 
    private fun button3() {
-      dataType = 3
+      layoutType = 3
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_exercise)
@@ -177,7 +185,7 @@ class DetailFragment : Fragment() {
    }
 
    private fun button4() {
-      dataType = 4
+      layoutType = 4
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -187,7 +195,7 @@ class DetailFragment : Fragment() {
    }
 
    private fun button5() {
-      dataType = 5
+      layoutType = 5
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -197,7 +205,7 @@ class DetailFragment : Fragment() {
    }
 
    private fun button6() {
-      dataType = 6
+      layoutType = 6
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)

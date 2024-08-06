@@ -14,11 +14,12 @@ import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.filterText
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment4
+import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import java.time.LocalDateTime
 
 class FoodInputFragment : Fragment() {
@@ -27,7 +28,7 @@ class FoodInputFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private var bundle = Bundle()
-   private var type = "BREAKFAST"
+   private var type = Constant.BREAKFAST.name
    private var unit = "mg"
 
    override fun onAttach(context: Context) {

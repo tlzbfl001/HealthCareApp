@@ -500,11 +500,8 @@ class DataManager(private var context: Context?) {
          values.id = cursor.getInt(0)
          values.uid=cursor.getString(3)
          values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.useCount = cursor.getInt(8)
-         values.useDate = cursor.getString(9)
+         values.useCount = cursor.getInt(5)
+         values.useDate = cursor.getString(6)
       }
       cursor.close()
       return values
@@ -519,11 +516,8 @@ class DataManager(private var context: Context?) {
          values.id = cursor.getInt(0)
          values.uid=cursor.getString(3)
          values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.useCount = cursor.getInt(8)
-         values.useDate = cursor.getString(9)
+         values.useCount = cursor.getInt(5)
+         values.useDate = cursor.getString(6)
       }
       cursor.close()
       return values
@@ -539,11 +533,8 @@ class DataManager(private var context: Context?) {
          values.id = cursor.getInt(0)
          values.uid=cursor.getString(3)
          values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.useCount = cursor.getInt(8)
-         values.useDate = cursor.getString(9)
+         values.useCount = cursor.getInt(5)
+         values.useDate = cursor.getString(6)
          list.add(values)
       }
       cursor.close()
@@ -560,11 +551,8 @@ class DataManager(private var context: Context?) {
          values.id = cursor.getInt(0)
          values.uid=cursor.getString(3)
          values.name = cursor.getString(4)
-         values.intensity =cursor.getString(5)
-         values.workoutTime = cursor.getInt(6)
-         values.kcal = cursor.getInt(7)
-         values.useCount = cursor.getInt(8)
-         values.useDate = cursor.getString(9)
+         values.useCount = cursor.getInt(5)
+         values.useDate = cursor.getString(6)
          list.add(values)
       }
       cursor.close()
@@ -1384,9 +1372,6 @@ class DataManager(private var context: Context?) {
       values.put("admin", data.admin)
       values.put("uid", data.uid)
       values.put("name", data.name)
-      values.put("intensity", data.intensity)
-      values.put("workoutTime", data.workoutTime)
-      values.put("kcal", data.kcal)
       values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
       db.insert(EXERCISE, null, values)
@@ -1625,7 +1610,7 @@ class DataManager(private var context: Context?) {
 
    fun updateFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $FOOD set name='${data.name}', unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
+      val sql = "update $FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
          "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, $IS_UPDATED=1 where id=${data.id}"
       db.execSQL(sql)
       db.close()

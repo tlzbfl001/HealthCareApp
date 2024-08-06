@@ -10,11 +10,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,11 +28,11 @@ import kr.bodywell.android.adapter.BTItemAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.BluetoothUtil
-import kr.bodywell.android.util.CustomUtil.Companion.TAG
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
 import kr.bodywell.android.view.MainViewModel
 import java.io.IOException
 
@@ -63,15 +65,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    ): View {
       _binding = FragmentConnectBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -104,6 +98,8 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       requireActivity().registerReceiver(bReceiver, f2)
       requireActivity().registerReceiver(bReceiver, f3)
 
+      setBluetoothAdapter()
+
       binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity())
       binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity())
       itemAdapter = BTItemAdapter(this,  false)
@@ -120,8 +116,6 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       }
 
       btLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-
-      setBluetoothAdapter()
 
       try {
          if(bAdapter?.isEnabled == true) {
@@ -141,57 +135,70 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    private fun getPairedDevices() {
       try{
          val list = ArrayList<Bluetooth>()
+         val deviceList=bAdapter?.bondedDevices as Set<BluetoothDevice>
 
-         if(bAdapter?.bondedDevices != null) {
-            val deviceList=bAdapter?.bondedDevices as Set<BluetoothDevice>
-
-            // pref 에 저장된 주소가 리스트값과 같은경우 리스트에 데이터 저장
-            deviceList.forEach {
-               list.add(Bluetooth(it, MyApp.prefs.getMacId()==it.address))
-            }
-
-            binding.tvStatus1.visibility = if(list.isEmpty()) View.VISIBLE else View.GONE
-            itemAdapter.submitList(list)
+         deviceList.forEach {
+            list.add(Bluetooth(it, MyApp.prefs.getMacId()==it.address))
          }
+
+         binding.tvStatus1.visibility = if(list.isEmpty()) View.VISIBLE else View.GONE
+         itemAdapter.submitList(list)
       }catch(e: SecurityException) {
          e.printStackTrace()
       }
    }
 
    private val bReceiver = object : BroadcastReceiver() {
-      @SuppressLint("MissingPermission")
       override fun onReceive(p0: Context?, intent: Intent?) {
-         if(intent?.action == BluetoothDevice.ACTION_FOUND) {
-            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+         when(intent?.action) {
+            BluetoothDevice.ACTION_FOUND -> {
+               val device = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+               }else {
+                  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+               }
 
-            val list = mutableSetOf<Bluetooth>()
-            list.addAll(discoveryItemAdapter.currentList)
+               val list = mutableSetOf<Bluetooth>()
+               list.addAll(discoveryItemAdapter.currentList)
 
-            try {
-               list.add(Bluetooth(device!!, false))
-            }catch(e: IOException) {
-               e.printStackTrace()
+               try {
+                  list.add(Bluetooth(device!!, false))
+               }catch(e: IOException) {
+                  e.printStackTrace()
+               }
+
+               discoveryItemAdapter.submitList(list.toList())
+
+               binding.progressBar2.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
+
+               try{
+                  Log.d(TAG, "Device: ${device?.name}")
+               }catch(e:SecurityException) {
+                  e.printStackTrace()
+               }
             }
-
-            discoveryItemAdapter.submitList(list.toList())
-
-            binding.progressBar2.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
-
-            try{
-               Log.d(TAG, "Device: ${device?.name}")
-            }catch(e:SecurityException) {
-               e.printStackTrace()
-            }
-         }else if(intent?.action == BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
-            getPairedDevices()
-         }else if(intent?.action == BluetoothAdapter.ACTION_DISCOVERY_FINISHED) {
-            binding.progressBar2.visibility=View.GONE
+            BluetoothDevice.ACTION_BOND_STATE_CHANGED -> getPairedDevices()
+            BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> binding.progressBar2.visibility = View.GONE
          }
       }
    }
 
+   private fun setStatusBar() {
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
+   }
+
    override fun onClick(device: Bluetooth) {
-      MyApp.prefs.setMacId(BluetoothUtil.MAC, device.device.address)
-      if(bAdapter != null) viewModel.startBtConnect(bAdapter!!)
+      MyApp.prefs.setMacId(Constant.BT_PREFS.name, device.device.address)
+      if(bAdapter != null) viewModel.btConnect(bAdapter!!)
    }
 }

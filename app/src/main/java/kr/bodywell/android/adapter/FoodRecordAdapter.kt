@@ -17,7 +17,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class FoodRecordAdapter (
@@ -68,7 +68,7 @@ class FoodRecordAdapter (
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   if(itemList[position].uid != "") {
-                     dataManager.insertUnused(Unused(type = "food", value = itemList[position].uid, createdAt = selectedDate.toString()))
+                     dataManager.insertUnused(Unused(type = FOOD, value = itemList[position].uid, createdAt = selectedDate.toString()))
                   }
 
                   dataManager.deleteItem(FOOD, "id", itemList[position].id)

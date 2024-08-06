@@ -6,11 +6,8 @@ data class DietDTO(
 	@SerializedName("mealTime")
 	var mealTime: String = "",
 
-	@SerializedName("brandName")
-	var brandName: String = "",
-
-	@SerializedName("foodName")
-	var foodName: String = "",
+	@SerializedName("name")
+	var name: String = "",
 
 	@SerializedName("calorie")
 	var calories: Int = 0,

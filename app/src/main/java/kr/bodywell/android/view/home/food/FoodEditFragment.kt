@@ -15,9 +15,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodEditBinding
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil.Companion.filterText
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 
 class FoodEditFragment : Fragment() {
 	private var _binding: FragmentFoodEditBinding? = null
@@ -62,7 +61,7 @@ class FoodEditFragment : Fragment() {
 
 		val getFood = dataManager.getFood("id", id)
 
-		binding.etName.setText(getFood.name)
+		binding.tvName.text = getFood.name
 		binding.etAmount.setText(getFood.amount.toString())
 		binding.etKcal.setText(getFood.kcal.toString())
 		binding.etCar.setText(getFood.carbohydrate.toString())
@@ -317,23 +316,13 @@ class FoodEditFragment : Fragment() {
 		})
 
 		binding.cvEdit.setOnClickListener {
-			val getFoodByName = dataManager.getFood("name", binding.etName.text.toString().trim())
+			dataManager.updateFood(Food(id = id, unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
+				kcal = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
+				protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
+				salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1))
 
-			if(binding.etName.text.toString().trim().isEmpty()) {
-				Toast.makeText(context, "음식이름은 최소 1자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
-			}else if(!filterText(binding.etName.text.toString())) {
-				Toast.makeText(context, "특수문자는 입력 불가능합니다.", Toast.LENGTH_SHORT).show()
-			}else if (getFoodByName.name != "" && getFoodByName.name != getFood.name) {
-				Toast.makeText(context, "같은 이름의 데이터가 이미 존재합니다.", Toast.LENGTH_SHORT).show()
-			}else {
-				dataManager.updateFood(Food(id = id, name = binding.etName.text.toString().trim(), unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
-					kcal = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
-					protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
-					salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1))
-
-				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-				replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-			}
+			Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+			replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
 		}
 
 		return binding.root

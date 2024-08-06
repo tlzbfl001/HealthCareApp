@@ -11,7 +11,8 @@ import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputGoalBinding
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.view.home.MainActivity
 
 class InputGoalFragment : Fragment() {
@@ -47,7 +48,7 @@ class InputGoalFragment : Fragment() {
 
       val getUser = dataManager.getUser()
 
-      if(getUser.gender == "Male") {
+      if(getUser.gender == Constant.Male.name) {
          weightGoal = 65.0
          kcalGoal = 2200
          binding.etWeightGoal.hint = weightGoal.toString()

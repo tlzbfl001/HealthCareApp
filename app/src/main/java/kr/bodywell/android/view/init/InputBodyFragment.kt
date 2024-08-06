@@ -14,7 +14,8 @@ import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputBodyBinding
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
 
 class InputBodyFragment : Fragment() {
    private var _binding: FragmentInputBodyBinding? = null
@@ -24,7 +25,7 @@ class InputBodyFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var height = 163
    private var weight = 58
-   private var gender = "Female"
+   private var gender = Constant.Female.name
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -70,7 +71,7 @@ class InputBodyFragment : Fragment() {
       binding.cvWoman.setOnClickListener {
          height = 163
          weight = 58
-         gender = "Female"
+         gender = Constant.Female.name
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvMan.setTextColor(Color.BLACK)
@@ -84,7 +85,7 @@ class InputBodyFragment : Fragment() {
       binding.cvMan.setOnClickListener {
          height = 173
          weight = 68
-         gender = "Male"
+         gender = Constant.Male.name
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#9F98FF"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvMan.setTextColor(Color.WHITE)

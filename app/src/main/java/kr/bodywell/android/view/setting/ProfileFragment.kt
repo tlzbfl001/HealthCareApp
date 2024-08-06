@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.Toast
@@ -23,16 +25,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.Companion.filterText
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.isoFormatter
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
-import kr.bodywell.android.util.PermissionUtil.Companion.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.STORAGE_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.Companion.saveFile
+import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.saveFile
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class ProfileFragment : Fragment() {
 	private var _binding: FragmentProfileBinding? = null
@@ -41,7 +42,7 @@ class ProfileFragment : Fragment() {
 	private lateinit var callback: OnBackPressedCallback
 	private lateinit var dataManager: DataManager
 	private var dialog: BottomSheetDialog? = null
-	private var gender = "Female"
+	private var gender = Constant.Female.name
 	private var image = ""
 
 	override fun onAttach(context: Context) {
@@ -61,15 +62,7 @@ class ProfileFragment : Fragment() {
 	): View {
 		_binding = FragmentProfileBinding.inflate(layoutInflater)
 
-		requireActivity().window?.apply {
-			decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-			statusBarColor = Color.TRANSPARENT
-			navigationBarColor = Color.BLACK
-
-			val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-			val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-			binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-		}
+		setStatusBar()
 
 		dataManager = DataManager(activity)
 		dataManager.open()
@@ -79,7 +72,7 @@ class ProfileFragment : Fragment() {
 		if(getUser.name != "") binding.etName.setText(getUser.name)
 
 		when(getUser.gender) {
-			"Male" -> unit2()
+			Constant.Male.name -> unit2()
 			else -> unit1()
 		}
 
@@ -295,7 +288,7 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setTextColor(Color.WHITE)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMan.setTextColor(Color.BLACK)
-		gender = "Female"
+		gender = Constant.Female.name
 	}
 
 	private fun unit2() {
@@ -303,7 +296,21 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setTextColor(Color.BLACK)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
 		binding.tvMan.setTextColor(Color.WHITE)
-		gender = "Male"
+		gender = Constant.Male.name
+	}
+
+	private fun setStatusBar() {
+		requireActivity().window?.apply {
+			decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+			statusBarColor = Color.TRANSPARENT
+			navigationBarColor = Color.BLACK
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+			}
+			val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+			val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+			binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+		}
 	}
 
 	override fun onDetach() {

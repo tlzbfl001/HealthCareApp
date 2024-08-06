@@ -15,7 +15,7 @@ import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
 
 class ExerciseListAdapter (
@@ -47,7 +47,7 @@ class ExerciseListAdapter (
             .setTitle("운동 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = "dailyExercise", value = itemList[pos].uid, createdAt = itemList[pos].createdAt))
+               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_EXERCISE, value = itemList[pos].uid, createdAt = itemList[pos].createdAt))
 
                dataManager.deleteItem(DAILY_EXERCISE, "id", itemList[pos].id)
 

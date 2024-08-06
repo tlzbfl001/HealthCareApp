@@ -1,11 +1,17 @@
 package kr.bodywell.android.view.home
 
+import android.app.Activity
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsetsController
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ActivityMainBinding
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.note.NoteFragment
 import kr.bodywell.android.view.report.ReportBodyFragment

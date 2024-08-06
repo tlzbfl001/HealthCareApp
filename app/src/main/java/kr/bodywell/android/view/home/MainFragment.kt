@@ -1,5 +1,6 @@
 package kr.bodywell.android.view.home
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,8 +14,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,11 +29,11 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
-import kr.bodywell.android.util.CustomUtil.Companion.dataType
-import kr.bodywell.android.util.CustomUtil.Companion.getExerciseCalories
-import kr.bodywell.android.util.CustomUtil.Companion.getFoodCalories
-import kr.bodywell.android.util.CustomUtil.Companion.isoToDateTime
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.layoutType
+import kr.bodywell.android.util.CustomUtil.getExerciseCalories
+import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.isoToDateTime
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.Duration
 import java.time.LocalDate
@@ -37,7 +41,6 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
-
 
 class MainFragment : Fragment() {
    private var _binding: FragmentMainBinding? = null
@@ -70,25 +73,17 @@ class MainFragment : Fragment() {
             }
          }
       }
-
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
    }
 
+   @RequiresApi(Build.VERSION_CODES.R)
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentMainBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -103,32 +98,32 @@ class MainFragment : Fragment() {
       if(getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
 
       binding.clFood.setOnClickListener {
-         dataType = 1
+         layoutType = 1
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clWater.setOnClickListener {
-         dataType = 2
+         layoutType = 2
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clExercise.setOnClickListener {
-         dataType = 3
+         layoutType = 3
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clBody.setOnClickListener {
-         dataType = 4
+         layoutType = 4
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clSleep.setOnClickListener {
-         dataType = 5
+         layoutType = 5
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
       binding.clDrug.setOnClickListener {
-         dataType = 6
+         layoutType = 6
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
@@ -374,6 +369,20 @@ class MainFragment : Fragment() {
       binding.tvBody.text = "$weight/$weightGoal kg"
       binding.tvSleep.text = "${total / 60}h${total % 60}m/$sleep"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyGoal.drug}회"
+   }
+
+   private fun setStatusBar() {
+      requireActivity().window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
+      }
    }
 
    override fun onDetach() {

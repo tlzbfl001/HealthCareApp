@@ -2,8 +2,10 @@ package kr.bodywell.android.view.init
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowInsetsController
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,11 +18,10 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.Companion.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoSignupRequest
 import kr.bodywell.android.util.RegisterUtil.naverSignupRequest
-import kr.bodywell.android.util.RegisterUtil.registerTest
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
@@ -36,15 +37,7 @@ class SignupActivity : AppCompatActivity() {
       _binding = ActivitySignupBinding.inflate(layoutInflater)
       setContentView(binding.root)
 
-      window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar()
 
       dataManager = DataManager(this)
       dataManager.open()
@@ -179,5 +172,19 @@ class SignupActivity : AppCompatActivity() {
 
       dialog.setContentView(bottomSheetView)
       dialog.show()
+   }
+
+   private fun setStatusBar() {
+      window?.apply {
+         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+         statusBarColor = Color.TRANSPARENT
+         navigationBarColor = Color.BLACK
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+         }
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
    }
 }

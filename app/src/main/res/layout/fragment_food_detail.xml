@@ -29,7 +29,7 @@
       android:id="@+id/tvTitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="22dp"
+      android:layout_marginTop="20dp"
       android:text="나의 하루 식단 기록"
       android:textSize="18dp"
       android:textColor="@color/black"

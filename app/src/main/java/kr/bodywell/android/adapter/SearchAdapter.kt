@@ -18,7 +18,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 import kr.bodywell.android.view.home.food.FoodEditFragment
 

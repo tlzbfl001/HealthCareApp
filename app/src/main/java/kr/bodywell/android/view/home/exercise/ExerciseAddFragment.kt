@@ -9,13 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseAddBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.Companion.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import java.time.LocalDateTime
 
 class ExerciseAddFragment : Fragment() {
@@ -25,6 +27,7 @@ class ExerciseAddFragment : Fragment() {
     private lateinit var callback: OnBackPressedCallback
     private lateinit var dataManager: DataManager
     private var exercise = Exercise()
+    private var intensity = Constant.HIGH
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -60,14 +63,6 @@ class ExerciseAddFragment : Fragment() {
         exercise = dataManager.getExercise(id)
 
         binding.tvName.text = exercise.name
-        binding.tvTime.text = exercise.workoutTime.toString()
-        binding.tvKcal.text = exercise.kcal.toString()
-
-        when(exercise.intensity) {
-            "HIGH" -> binding.tvIntensity.text = "상"
-            "MODERATE" -> binding.tvIntensity.text = "중"
-            "LOW" -> binding.tvIntensity.text = "하"
-        }
 
         binding.mainLayout.setOnTouchListener { _, _ ->
             hideKeyboard(requireActivity())
@@ -78,19 +73,50 @@ class ExerciseAddFragment : Fragment() {
             replaceFragment()
         }
 
+        binding.tvIntensity1.setOnClickListener {
+            binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_yellow)
+            binding.tvIntensity1.setTextColor(Color.WHITE)
+            binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
+            binding.tvIntensity2.setTextColor(Color.BLACK)
+            binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
+            binding.tvIntensity3.setTextColor(Color.BLACK)
+            intensity = Constant.HIGH
+        }
+
+        binding.tvIntensity2.setOnClickListener {
+            binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
+            binding.tvIntensity1.setTextColor(Color.BLACK)
+            binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_yellow)
+            binding.tvIntensity2.setTextColor(Color.WHITE)
+            binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
+            binding.tvIntensity3.setTextColor(Color.BLACK)
+            intensity = Constant.MODERATE
+        }
+
+        binding.tvIntensity3.setOnClickListener {
+            binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
+            binding.tvIntensity1.setTextColor(Color.BLACK)
+            binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
+            binding.tvIntensity2.setTextColor(Color.BLACK)
+            binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
+            binding.tvIntensity3.setTextColor(Color.WHITE)
+            intensity = Constant.LOW
+        }
+
         binding.cvSave.setOnClickListener {
-            val workoutTime = if(binding.tvTime.text.toString().trim() == "") 0 else binding.tvTime.text.toString().toInt()
-            val calories = if(binding.tvKcal.text.toString().trim() == "") 0 else binding.tvKcal.text.toString().toInt()
+            if(binding.etTime.text.toString().toInt() == 0 || binding.etKcal.text.toString().toInt() == 0) {
+                Toast.makeText(requireActivity(), "시간, 칼로리를 1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }else {
+                dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = intensity.name, workoutTime = binding.etTime.text.toString().toInt(),
+                    kcal = binding.etKcal.text.toString().toInt(), createdAt = selectedDate.toString()))
 
-            dataManager.insertDailyExercise(Exercise(name = exercise.name, intensity = exercise.intensity, workoutTime = workoutTime, kcal = calories,
-                createdAt = selectedDate.toString()))
+                val getExercise = dataManager.getExercise("name", exercise.name)
+                dataManager.updateInt(EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
+                dataManager.updateStr(EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
 
-            val getExercise = dataManager.getExercise("name", exercise.name)
-            dataManager.updateInt(EXERCISE, "useCount", getExercise.useCount + 1, "id", getExercise.id)
-            dataManager.updateStr(EXERCISE, "useDate", LocalDateTime.now().toString(), "id", getExercise.id)
-
-            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment3(requireActivity(), ExerciseListFragment())
+                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+                replaceFragment3(requireActivity(), ExerciseListFragment())
+            }
         }
 
         return binding.root

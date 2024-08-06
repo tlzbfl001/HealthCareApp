@@ -14,8 +14,9 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDetailBinding
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment2
-import kr.bodywell.android.util.CustomUtil.Companion.replaceFragment3
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.view.home.DetailFragment
 
 class FoodDetailFragment : Fragment() {
@@ -25,7 +26,7 @@ class FoodDetailFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
    private val bundle = Bundle()
-   private var type = "BREAKFAST"
+   private var type = Constant.BREAKFAST.name
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -88,15 +89,15 @@ class FoodDetailFragment : Fragment() {
       }
 
       when(type) {
-         "BREAKFAST" -> {
+         Constant.BREAKFAST.name -> {
             button1()
             binding.viewPager.currentItem = 0
          }
-         "LUNCH" -> {
+         Constant.LUNCH.name -> {
             button2()
             binding.viewPager.currentItem = 1
          }
-         "DINNER" -> {
+         Constant.DINNER.name -> {
             button3()
             binding.viewPager.currentItem = 2
          }
@@ -124,7 +125,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button1() {
-      type = "BREAKFAST"
+      type = Constant.BREAKFAST.name
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -132,7 +133,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button2() {
-      type = "LUNCH"
+      type = Constant.LUNCH.name
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -140,7 +141,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button3() {
-      type = "DINNER"
+      type = Constant.DINNER.name
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
@@ -148,7 +149,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button4() {
-      type = "SNACK"
+      type = Constant.SNACK.name
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
