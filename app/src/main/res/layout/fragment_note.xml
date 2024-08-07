@@ -230,9 +230,9 @@
             app:layout_constraintEnd_toEndOf="@id/viewPager"
             app:layout_constraintBottom_toBottomOf="@id/viewPager">
             <ImageView
-               android:layout_width="26dp"
-               android:layout_height="26dp"
-               android:background="@drawable/oval"
+               android:layout_width="23dp"
+               android:layout_height="23dp"
+               android:background="@drawable/oval_cal_selected"
                android:backgroundTint="#33AAAAAA"
                android:src="@drawable/baseline_add"
                android:layout_margin="15dp"

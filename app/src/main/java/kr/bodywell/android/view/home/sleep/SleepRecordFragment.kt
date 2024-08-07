@@ -3,6 +3,7 @@ package kr.bodywell.android.view.home.sleep
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +14,18 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.isoFormatter
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.ViewModelUtil
 import kr.bodywell.android.view.home.DetailFragment
 import nl.joery.timerangepicker.TimeRangePicker
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class SleepRecordFragment : Fragment() {
    private var _binding: FragmentSleepRecordBinding? = null
@@ -106,13 +113,15 @@ class SleepRecordFragment : Fragment() {
                wakeTime = bedTime + sleepTime - 1440
             }else wakeTime = bedTime + sleepTime
 
-            val bed = selectedDate.year.toString().substring(2,4) + String.format("%02d", selectedDate.monthValue) + String.format("%02d", selectedDate.dayOfMonth) +
+            val bed = selectedDate.year.toString() + String.format("%02d", selectedDate.monthValue) + String.format("%02d", selectedDate.dayOfMonth) +
                String.format("%02d", bedHour) + String.format("%02d", bedMinute)
-            val wake = date.year.toString().substring(2,4) + String.format("%02d", date.monthValue) + String.format("%02d", date.dayOfMonth) +
+            val wake = date.year.toString() + String.format("%02d", date.monthValue) + String.format("%02d", date.dayOfMonth) +
                String.format("%02d", wakeTime / 60) + String.format("%02d", wakeTime % 60)
 
-            val bedFormat = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(isoFormatter)
-            val wakeFormat = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyMMddHHmm")).format(isoFormatter)
+            val bedToDateTime = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
+            val wakeToDateTime = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
+            val bedFormat = dateTimeToIso(bedToDateTime)
+            val wakeFormat = dateTimeToIso(wakeToDateTime)
 
             if(getSleep.createdAt == "") {
                dataManager.insertSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, createdAt = selectedDate.toString()))

@@ -222,8 +222,8 @@ object RegisterUtil {
 					}
 
 					val type = if(getAllFood.body()!![i].registerType == Constant.Admin.name) 1 else 0
-					dataManager.insertFood(Food(admin = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name,
-						unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calorie,
+					dataManager.insertFood(Food(admin = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].quantityUnit,
+						amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
 				}
 			}else {
@@ -343,12 +343,12 @@ object RegisterUtil {
 
 							val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer $access", drug.uid, drugTime.uid)
 							if(getMedicineIntake.isSuccessful) {
-								Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
+								Log.d(TAG, "getMedicineIntake1: ${getMedicineIntake.body()}")
 
 								val drugTimeId = dataManager.getDrugId(DRUG_TIME, "uid", drugTime.uid)
 								for(k in 0 until getMedicineIntake.body()!!.size) {
 									dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId, drugTimeId = drugTimeId,
-										checkedAt = getMedicineIntake.body()!![k].intakeAt.substring(0, 10)))
+										time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt))
 								}
 							}else {
 								Log.e(TAG, "getMedicineIntake: $getMedicineIntake")

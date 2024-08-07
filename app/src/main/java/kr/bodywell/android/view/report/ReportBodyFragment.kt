@@ -233,8 +233,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList1.size) {
-            val weight = if(itemList1[i].weight != null) 0.0 else itemList1[i].weight!!.toFloat()
-            entries.add(Entry(i.toFloat(), weight.toFloat()))
+            entries.add(Entry(i.toFloat(), itemList1[i].weight!!.toFloat()))
             xValue.add(itemList1[i].createdAt)
          }
 
@@ -249,8 +248,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList2.size) {
-            val bmi = if(itemList2[i].bmi != null) 0.0 else itemList2[i].bmi!!.toFloat()
-            entries.add(Entry(i.toFloat(), bmi.toFloat()))
+            entries.add(Entry(i.toFloat(), itemList2[i].bmi!!.toFloat()))
             xValue.add(itemList2[i].createdAt)
          }
 
@@ -265,8 +263,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList3.size) {
-            val fat = if(itemList3[i].fat != null) 0.0 else itemList3[i].fat!!.toFloat()
-            entries.add(Entry(i.toFloat(), fat.toFloat()))
+            entries.add(Entry(i.toFloat(), itemList3[i].fat!!.toFloat()))
             xValue.add(itemList3[i].createdAt)
          }
 
@@ -310,8 +307,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList1.size) {
-            val weight = if(itemList1[i].weight != null) 0.0 else itemList1[i].weight!!.toFloat()
-            entries.add(Entry(i.toFloat(), weight.toFloat()))
+            entries.add(Entry(i.toFloat(), itemList1[i].weight!!.toFloat()))
             xValue.add(itemList1[i].createdAt)
          }
 
@@ -326,8 +322,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList2.size) {
-            val bmi = if(itemList2[i].bmi != null) 0.0 else itemList2[i].bmi!!.toFloat()
-            entries.add(Entry(i.toFloat(), bmi.toFloat()))
+            entries.add(Entry(i.toFloat(), itemList2[i].bmi!!.toFloat()))
             xValue.add(itemList2[i].createdAt)
          }
 
@@ -342,8 +337,7 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList3.size) {
-            val fat = if(itemList3[i].fat != null) 0.0 else itemList3[i].fat!!.toFloat()
-            entries.add(Entry(i.toFloat(), fat.toFloat()))
+            entries.add(Entry(i.toFloat(), itemList3[i].fat!!.toFloat()))
             xValue.add(itemList3[i].createdAt)
          }
 

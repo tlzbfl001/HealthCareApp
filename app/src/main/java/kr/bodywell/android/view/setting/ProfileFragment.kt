@@ -211,6 +211,7 @@ class ProfileFragment : Fragment() {
 			val dialog = Dialog(requireActivity())
 			dialog.setContentView(R.layout.dialog_date_picker)
 			dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+			dialog.window!!.statusBarColor = Color.BLACK
 
 			val datePicker = dialog.findViewById<DatePicker>(R.id.datePicker)
 			val tvConfirm = dialog.findViewById<TextView>(R.id.tvConfirm)

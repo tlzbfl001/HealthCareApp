@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,7 @@ import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.view.home.MainFragment
@@ -219,8 +221,10 @@ class ReportDrugFragment : Fragment() {
       var count = 0
 
       for(i in 0 until getData.size){
+         Log.d(TAG, "getData: $getData")
          val getDailyGoal = dataManager.getGoal(getData[i])
          val getDrugCheckCount = dataManager.getDrugCheckCount(getData[i])
+         Log.d(TAG, "getDrugCheckCount: $getDrugCheckCount")
 
          if(getDrugCheckCount > 0) {
             val pt = if(getDailyGoal.drug == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drug.toFloat()) * 100
@@ -229,6 +233,7 @@ class ReportDrugFragment : Fragment() {
             lineList += pt
             barEntries.add(BarEntry(count.toFloat(), pt))
             count += 1
+            Log.d(TAG, "barEntries: $barEntries")
          }
       }
 

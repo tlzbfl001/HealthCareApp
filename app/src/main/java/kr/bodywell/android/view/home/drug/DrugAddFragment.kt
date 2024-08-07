@@ -228,7 +228,7 @@ class DrugAddFragment : Fragment() {
             if(viewModel.socketStatus()) {
                var str =""
                for(i in 0 until drugTimeList.size) {
-                  str += "${drugTimeList[i].time}/"
+                  str += "${drugTimeList[i].time}"
                }
                viewModel.sendMessage(str)
             }

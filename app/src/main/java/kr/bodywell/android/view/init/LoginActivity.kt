@@ -109,9 +109,9 @@ class LoginActivity : AppCompatActivity() {
                if(getUser.createdAt == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      val user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
-                     /*val intent = Intent(this, SignupActivity::class.java)
-                     intent.putExtra("user", User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!))
-                     startActivity(intent)*/
+//                     val intent = Intent(this, SignupActivity::class.java)
+//                     intent.putExtra("user", user)
+//                     startActivity(intent)
 
                      CoroutineScope(Dispatchers.IO).launch {
                         googleLoginRequest(this@LoginActivity, dataManager, user)
@@ -231,9 +231,6 @@ class LoginActivity : AppCompatActivity() {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-         }
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)

@@ -19,13 +19,16 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 object CustomUtil {
    const val TAG = "logTAG"
    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-   val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+//   val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'T'")
+   val isoFormatter: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT
    var layoutType = 1
    var drugTimeList = ArrayList<DrugTime>()
 
@@ -83,7 +86,7 @@ object CustomUtil {
    }
 
    fun dateToIso(date: String): String {
-      return LocalDate.parse(date).atStartOfDay().format(isoFormatter)
+      return LocalDate.parse(date).atStartOfDay().atOffset(ZoneOffset.UTC).format(isoFormatter)
    }
 
    fun dateTimeToIso(date: LocalDateTime): String {
@@ -91,7 +94,6 @@ object CustomUtil {
    }
 
    fun isoToDateTime(date: String): LocalDateTime {
-//         return LocalDateTime.parse(date, isoFormatter)
       return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date)).atZone(ZoneId.of("Asia/Seoul")))
    }
 

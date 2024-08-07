@@ -9,13 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseEditBinding
-import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 

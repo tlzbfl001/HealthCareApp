@@ -1,12 +1,6 @@
 package kr.bodywell.android.view.home
 
-import android.app.Activity
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsetsController
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import kr.bodywell.android.R

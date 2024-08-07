@@ -17,7 +17,7 @@
          android:id="@+id/tv1"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="25dp"
+         android:layout_marginTop="20dp"
          android:layout_marginLeft="25dp"
          android:text="로그인 후"
          android:textColor="#AFA7A7"

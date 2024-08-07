@@ -203,8 +203,7 @@ object ViewModelUtil {
 
 		for(i in 0 until getBodyUid.size) {
 			val dateToIso = dateToIso(getBodyUid[i].createdAt)
-			val dto = BodyDTO(getBodyUid[i].height, getBodyUid[i].weight, getBodyUid[i].bmi, getBodyUid[i].fat, getBodyUid[i].muscle,
-				getBodyUid[i].bmr, getBodyUid[i].intensity, dateToIso)
+			val dto = BodyDTO(getBodyUid[i].height, getBodyUid[i].weight, getBodyUid[i].bmi, getBodyUid[i].fat, getBodyUid[i].muscle, getBodyUid[i].bmr, getBodyUid[i].intensity, dateToIso)
 
 			val response = RetrofitAPI.api.createBody("Bearer ${getToken.access}", dto)
 			if(response.isSuccessful) {
@@ -268,7 +267,7 @@ object ViewModelUtil {
 			val drugTime = dataManager.getData(DRUG_TIME, getDrugCheckUid[i].drugTimeId)
 
 			if(drug.uid != "" && drugTime.uid != "") {
-				val data = MedicineIntakeDTO(getDrugCheckUid[i].intakeAt)
+				val data = MedicineIntakeDTO(getDrugCheckUid[i].createdAt)
 				val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid, data)
 				if(response.isSuccessful) {
 					Log.d(TAG, "createMedicineIntake: ${response.body()}")
@@ -285,7 +284,6 @@ object ViewModelUtil {
 
 		requestGoal(dataManager, getGoalUpdated, 2)
 
-		Log.d(TAG, "delay")
 		delay(5000)
 	}
 
@@ -544,7 +542,7 @@ object ViewModelUtil {
 					return
 				}
 			}else {
-				val getData = dataManager.getData(DRUG, CREATED_AT, data[i].createdAt)
+				val getData = dataManager.getData(GOAL, CREATED_AT, data[i].createdAt)
 				val dto = GoalDTO(data[i].body, data[i].food, data[i].exercise, data[i].waterVolume, data[i].water, data[i].sleep, data[i].drug)
 
 				val response = RetrofitAPI.api.updateGoal("Bearer ${getToken.access}", dto) //uid있어야되는데 서버api에 없음(서버수정필요)
@@ -625,7 +623,7 @@ object ViewModelUtil {
 					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].uid, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].name,
 						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
 						carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
-						count = syncDiets.body()?.data!![i].quantity, createdAt = syncDiets.body()?.data!![i].date))
+						count = syncDiets.body()?.data!![i].quantity, createdAt = syncDiets.body()?.data!![i].date.substring(0, 10)))
 				}
 			}
 		}else {
@@ -754,6 +752,7 @@ object ViewModelUtil {
 			Log.d(TAG, "syncMedicine: ${syncMedicine.body()}")
 			for(i in 0 until syncMedicine.body()?.data!!.size) {
 				val getData = dataManager.getData(DRUG, "startDate", syncMedicine.body()?.data!![i].starts.substring(0, 10))
+
 				if(getData.id > 0) {
 					if(syncMedicine.body()?.data!![i].deletedAt != "" && syncMedicine.body()?.data!![i].deletedAt != null) {
 						dataManager.deleteItem(DRUG, "id", getData.id)
@@ -780,7 +779,7 @@ object ViewModelUtil {
 									val drugTimeId = dataManager.getDrugId(DRUG_TIME, "uid", drugTime.uid)
 									for(k in 0 until getMedicineIntake.body()!!.size) {
 										dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = getData.id, drugTimeId = drugTimeId,
-											time = getMedicineTime.body()!![j].time, intakeAt = getMedicineIntake.body()!![k].intakeAt))
+											time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt))
 									}
 								}else {
 									Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
@@ -791,8 +790,8 @@ object ViewModelUtil {
 						}
 					}
 				}else if(syncMedicine.body()?.data!![i].createdAt == syncMedicine.body()?.data!![i].updatedAt) {
-					val drug = Drug(uid = syncMedicine.body()?.data!![i].uid, type = syncMedicine.body()?.data!![i].category,
-						name = syncMedicine.body()?.data!![i].name, amount = syncMedicine.body()?.data!![i].amount, unit = syncMedicine.body()?.data!![i].unit,
+					val drug = Drug(uid = syncMedicine.body()?.data!![i].uid, type = syncMedicine.body()?.data!![i].category, name = syncMedicine.body()?.data!![i].name,
+						amount = syncMedicine.body()?.data!![i].amount, unit = syncMedicine.body()?.data!![i].unit,
 						startDate = syncMedicine.body()?.data!![i].starts.substring(0, 10), endDate = syncMedicine.body()?.data!![i].ends.substring(0, 10))
 
 					val getMedicineTime = RetrofitAPI.api.getMedicineTime("Bearer ${getToken.access}", drug.uid)
@@ -810,9 +809,11 @@ object ViewModelUtil {
 							if(getMedicineIntake.isSuccessful) {
 								Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
 								val drugTimeId = dataManager.getDrugId(DRUG_TIME, "uid", drugTime.uid)
+
 								for(k in 0 until getMedicineIntake.body()!!.size) {
 									dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = getData.id, drugTimeId = drugTimeId,
-										time = getMedicineTime.body()!![j].time, intakeAt = getMedicineIntake.body()!![k].intakeAt))
+										time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt))
+									Log.d(TAG, "drugTime: $drugTime")
 								}
 							}else {
 								Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
@@ -833,7 +834,7 @@ object ViewModelUtil {
 			val drugTime = dataManager.getData(DRUG_TIME, getDrugCheck[i].drugTimeId)
 
 			if(drug.uid != "" && drugTime.uid != "") {
-				val syncMedicineIntake = RetrofitAPI.api.syncMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid , SyncDTO(syncedAt))
+				val syncMedicineIntake = RetrofitAPI.api.syncMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid, SyncDTO(syncedAt))
 				if(syncMedicineIntake.isSuccessful) {
 					Log.d(TAG, "syncMedicineIntake: ${syncMedicineIntake.body()}")
 					for(j in 0 until syncMedicineIntake.body()?.data!!.size) {
@@ -846,7 +847,7 @@ object ViewModelUtil {
 							}
 						}else if(syncMedicineIntake.body()?.data!![j].createdAt == syncMedicineIntake.body()?.data!![j].updatedAt) {
 							dataManager.insertDrugCheck(DrugCheck(uid = syncMedicineIntake.body()?.data!![j].uid, drugId = drug.id, drugTimeId = drugTime.id,
-								time = time, intakeAt = syncMedicineIntake.body()?.data!![j].intakeAt))
+								time = time, createdAt = syncMedicineIntake.body()?.data!![j].intakeAt.substring(0, 10)))
 						}
 					}
 				}else {

@@ -963,7 +963,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheck(data: String) : ArrayList<DrugCheck> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<DrugCheck>()
-      val sql = "select drugId, drugTimeId from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and intakeAt > '$data'"
+      val sql = "select drugId, drugTimeId from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and $CREATED_AT > '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = DrugCheck()
@@ -978,7 +978,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheckCount(data: String) : Int {
       val db = dbHelper!!.readableDatabase
       var count = 0
-      val sql = "select count(id) from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and substr(intakeAt,0,11) = '$data'"
+      val sql = "select count(id) from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and substr(createdAt,1,10) = '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          count = cursor.getInt(0)
@@ -990,12 +990,12 @@ class DataManager(private var context: Context?) {
    fun getDrugCheck(drugTimeId: Int, data: String) : DrugCheck {
       val db = dbHelper!!.readableDatabase
       val values = DrugCheck()
-      val sql = "select id, uid, intakeAt from $DRUG_CHECK where $USER_ID=${MyApp.prefs.getUserId()} and drugTimeId=$drugTimeId and substr(intakeAt,0,11)='$data'"
+      val sql = "select id, uid, $CREATED_AT from $DRUG_CHECK where $USER_ID=${MyApp.prefs.getUserId()} and drugTimeId=$drugTimeId and substr($CREATED_AT,1,10)='$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
          values.uid = cursor.getString(1)
-         values.intakeAt = cursor.getString(2)
+         values.createdAt = cursor.getString(2)
       }
       cursor.close()
       return values
@@ -1013,7 +1013,7 @@ class DataManager(private var context: Context?) {
          values.drugId = cursor.getInt(3)
          values.drugTimeId = cursor.getInt(4)
          values.time = cursor.getString(5)
-         values.intakeAt = cursor.getString(6)
+         values.createdAt = cursor.getString(6)
          values.checkedAt = cursor.getString(7)
          list.add(values)
       }
@@ -1024,7 +1024,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheck(drugTimeId: Int, time: String, date: String) : Drug {
       val db = dbHelper!!.readableDatabase
       val values = Drug()
-      val sql = "select id from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and drugTimeId=$drugTimeId and time = '$time' and substr(intakeAt,0,11)='$date'"
+      val sql = "select id from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and drugTimeId=$drugTimeId and time = '$time' and substr($CREATED_AT,1,10)='$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
@@ -1100,7 +1100,7 @@ class DataManager(private var context: Context?) {
    fun getDates(table: String, start: String, end: String) : ArrayList<String> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<String>()
-      val sql = "select distinct $CREATED_AT from $table where $USER_ID = ${MyApp.prefs.getUserId()} and $CREATED_AT BETWEEN '$start' and '$end' order by $CREATED_AT"
+      val sql = "select distinct substr(createdAt,1,10) from $table where $USER_ID = ${MyApp.prefs.getUserId()} and $CREATED_AT BETWEEN '$start' and '$end' order by $CREATED_AT"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          list.add(cursor.getString(0))
@@ -1451,7 +1451,7 @@ class DataManager(private var context: Context?) {
       values.put("drugId", data.drugId)
       values.put("drugTimeId", data.drugTimeId)
       values.put("time", data.time)
-      values.put("intakeAt", data.intakeAt)
+      values.put(CREATED_AT, data.createdAt)
       values.put("checkedAt", data.checkedAt)
       db!!.insert(DRUG_CHECK, null, values)
    }
