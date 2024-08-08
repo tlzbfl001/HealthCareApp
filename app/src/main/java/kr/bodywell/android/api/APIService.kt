@@ -406,24 +406,24 @@ interface APIService {
 		@Path("intakeUid") intakeUid: String
 	): Response<MedicineResponse>
 
-	@GET("user/goal")
-	suspend fun getGoal(
+	@GET("user/goals")
+	suspend fun getAllGoal(
 		@Header("Authorization") token: String
-	): Response<GoalResponse>
+	): Response<List<GoalResponse>>
 
-	@POST("user/goal")
+	@POST("user/goals")
 	suspend fun createGoal(
 		@Header("Authorization") token: String,
 		@Body dto: GoalDTO
 	): Response<GoalResponse>
 
-	@POST("user/goal/sync")
+	@POST("user/goals/sync")
 	suspend fun syncGoal(
 		@Header("Authorization") token: String,
 		@Body dto: SyncDTO
 	): Response<SyncGoalResponse>
 
-	@PATCH("user/goal")
+	@PATCH("user/goals")
 	suspend fun updateGoal(
 		@Header("Authorization") token: String,
 		@Body dto: GoalDTO

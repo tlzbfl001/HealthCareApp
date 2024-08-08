@@ -2,21 +2,19 @@ package kr.bodywell.android.view.home.drug
 
 import android.Manifest
 import android.app.Dialog
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,9 +28,8 @@ import kr.bodywell.android.databinding.FragmentDrugBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
-import kr.bodywell.android.util.PermissionUtil.REQUEST_CODE
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 
@@ -42,6 +39,7 @@ class DrugFragment : Fragment() {
 
    private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
+   private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var adapter: DrugAdapter1? = null
    private var dailyGoal = Goal()
 
@@ -50,6 +48,12 @@ class DrugFragment : Fragment() {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentDrugBinding.inflate(layoutInflater)
+
+      pLauncher = registerForActivityResult(
+         ActivityResultContracts.RequestMultiplePermissions()
+      ){
+
+      }
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -87,7 +91,13 @@ class DrugFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         if(requestPermission()) {
+         if(!checkAlarmPermissions(requireActivity())) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+               pLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
+            }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+               pLauncher.launch(arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM))
+            }
+         }else {
             replaceFragment1(requireActivity(), DrugRecordFragment())
          }
       }
@@ -148,23 +158,5 @@ class DrugFragment : Fragment() {
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()
-   }
-
-   private fun requestPermission(): Boolean {
-      var check = true
-
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE)
-            check = false
-         }
-      }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), REQUEST_CODE)
-            check = false
-         }
-      }
-
-      return check
    }
 }

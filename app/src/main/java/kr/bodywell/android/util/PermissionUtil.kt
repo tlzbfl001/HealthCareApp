@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -58,24 +57,12 @@ object PermissionUtil {
         }
     }
 
-    fun cameraRequest(context: Activity): Boolean {
-        var check = true
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            for(permission in CAMERA_PERMISSION_2) {
-                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_2), REQUEST_CODE)
-                    check = false
-                }
-            }
-        }else {
-            for(permission in CAMERA_PERMISSION_1) {
-                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(context, arrayOf(*CAMERA_PERMISSION_1), REQUEST_CODE)
-                    check = false
-                }
-            }
-        }
-        return check
+    fun checkAlarmPermissions(context: Context): Boolean {
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED
+        }else true
     }
 
     @SuppressLint("SimpleDateFormat")

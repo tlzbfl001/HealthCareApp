@@ -1,6 +1,7 @@
 package kr.bodywell.android.view.report
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -264,8 +265,7 @@ class ReportFoodFragment : Fragment() {
          if(foodKcal.int5 > 0) {
             xVal += format2.format(format1.parse(getData[i])!!)
             lineList += foodKcal.int5.toFloat()
-            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(foodKcal.int4.toFloat(), foodKcal.int3.toFloat(),
-               foodKcal.int2.toFloat(), foodKcal.int1.toFloat())))
+            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(foodKcal.int4.toFloat(), foodKcal.int3.toFloat(), foodKcal.int2.toFloat(), foodKcal.int1.toFloat())))
             count++
          }
       }
@@ -282,7 +282,7 @@ class ReportFoodFragment : Fragment() {
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
          lineDataSet.valueTextSize = 8f
-         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
          lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
          lineDataSet.valueFormatter = DefaultValueFormatter(0)
 
@@ -350,7 +350,7 @@ class ReportFoodFragment : Fragment() {
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
          lineDataSet.valueTextSize = 8f
-         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+         lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
          lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
          lineDataSet.valueFormatter = MyValueFormatter()
 
@@ -407,11 +407,12 @@ class ReportFoodFragment : Fragment() {
       lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
       lineDataSet.valueTextSize = 8f
-      lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+      lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
       lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
       lineDataSet.valueFormatter = DefaultValueFormatter(0)
 
       lineData.addDataSet(lineDataSet)
+      lineData.setValueTextColor(resources.getColor(R.color.black_white))
       data.setData(lineData)
 
       val barDataSet = BarDataSet(barEntries, "")
@@ -443,7 +444,8 @@ class ReportFoodFragment : Fragment() {
       chart.isDragXEnabled = true
 
       val xAxis = chart.xAxis
-      xAxis.axisLineColor = Color.BLACK
+      xAxis.axisLineColor = resources.getColor(R.color.black_white)
+      xAxis.textColor = resources.getColor(R.color.black_white)
       xAxis.axisLineWidth = 0.8f
       xAxis.position = XAxis.XAxisPosition.BOTTOM
       xAxis.spaceMax = 0.6f
@@ -457,7 +459,8 @@ class ReportFoodFragment : Fragment() {
       rightAxis.isEnabled = false
 
       val leftAxis = chart.axisLeft
-      leftAxis.axisLineColor = Color.BLACK
+      leftAxis.axisLineColor = resources.getColor(R.color.black_white)
+      leftAxis.textColor = resources.getColor(R.color.black_white)
       leftAxis.axisLineWidth = 0.8f
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
@@ -481,12 +484,16 @@ class ReportFoodFragment : Fragment() {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-         }
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+
+         val darkModeCheck = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+            }
+         }
       }
    }
 

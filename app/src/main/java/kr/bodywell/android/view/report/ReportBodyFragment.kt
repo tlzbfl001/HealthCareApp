@@ -1,6 +1,7 @@
 package kr.bodywell.android.view.report
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -153,7 +154,7 @@ class ReportBodyFragment : Fragment() {
 
       val getBody = dataManager.getBody(calendarDate.toString())
 
-      if (getBody.weight != null && getBody.weight!! > 0) {
+      if(getBody.weight != null && getBody.weight!! > 0) {
          binding.tvEmpty1.visibility = View.GONE
          binding.lineChart1.visibility = View.VISIBLE
 
@@ -358,8 +359,8 @@ class ReportBodyFragment : Fragment() {
       xAxis.setDrawLabels(true)
       xAxis.isGranularityEnabled = true
       xAxis.position = XAxis.XAxisPosition.BOTTOM
-      xAxis.textColor = Color.BLACK
-      xAxis.axisLineColor = Color.BLACK
+      xAxis.textColor = resources.getColor(R.color.black_white)
+      xAxis.axisLineColor = resources.getColor(R.color.black_white)
       xAxis.axisLineWidth = 1.1f
       xAxis.valueFormatter = IndexAxisValueFormatter(xValue)
       xAxis.granularity = 1f
@@ -374,7 +375,7 @@ class ReportBodyFragment : Fragment() {
       lineDataSet.lineWidth = 3.4f
       lineDataSet.circleRadius = 3.3f
       lineDataSet.color = Color.parseColor("#EAEAEA")
-      lineDataSet.setCircleColor(resources.getColor(R.color.black))
+      lineDataSet.setCircleColor(resources.getColor(R.color.black_white))
       lineDataSet.setDrawCircles(true)
       lineDataSet.setDrawCircleHole(false)
       lineDataSet.setDrawHorizontalHighlightIndicator(false)
@@ -386,6 +387,7 @@ class ReportBodyFragment : Fragment() {
       val lineData = LineData(dataSets)
       lineData.setValueTextSize(8f)
       lineData.setValueFormatter(MyValueFormatter())
+      lineData.setValueTextColor(resources.getColor(R.color.black_white))
 
       chart.data = lineData
       chart.description.isEnabled = false
@@ -427,12 +429,16 @@ class ReportBodyFragment : Fragment() {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-         }
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+
+         val darkModeCheck = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+            }
+         }
       }
    }
 

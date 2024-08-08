@@ -1,6 +1,7 @@
 package kr.bodywell.android.view.report
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -270,6 +271,7 @@ class ReportExerciseFragment : Fragment() {
          lineDataSet.valueFormatter = XValueFormatter()
 
          lineData.addDataSet(lineDataSet)
+         lineData.setValueTextColor(resources.getColor(R.color.black_white))
          data.setData(lineData)
 
          val barDataSet = BarDataSet(barEntries, "")
@@ -335,6 +337,7 @@ class ReportExerciseFragment : Fragment() {
          lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
 
          lineData.addDataSet(lineDataSet)
+         lineData.setValueTextColor(resources.getColor(R.color.black_white))
          data.setData(lineData)
 
          val barDataSet = BarDataSet(barEntries, "")
@@ -354,7 +357,8 @@ class ReportExerciseFragment : Fragment() {
 
    private fun chartCommon(chart: CombinedChart, xVal: Array<String>) {
       val xAxis = chart.xAxis
-      xAxis.axisLineColor = Color.BLACK
+      xAxis.textColor = resources.getColor(R.color.black_white)
+      xAxis.axisLineColor = resources.getColor(R.color.black_white)
       xAxis.axisLineWidth = 0.8f
       xAxis.position = XAxis.XAxisPosition.BOTTOM
       xAxis.spaceMax = 0.6f
@@ -368,7 +372,8 @@ class ReportExerciseFragment : Fragment() {
       rightAxis.isEnabled = false
 
       val leftAxis = chart.axisLeft
-      leftAxis.axisLineColor = Color.BLACK
+      leftAxis.axisLineColor = resources.getColor(R.color.black_white)
+      leftAxis.textColor = resources.getColor(R.color.black_white)
       leftAxis.axisLineWidth = 0.8f
       leftAxis.gridColor = Color.parseColor("#bbbbbb")
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
@@ -446,12 +451,16 @@ class ReportExerciseFragment : Fragment() {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-         }
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+
+         val darkModeCheck = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+            }
+         }
       }
    }
 

@@ -23,6 +23,8 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
 class DrugAdapter2 (
@@ -69,9 +71,12 @@ class DrugAdapter2 (
 
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
-            val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
-            alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
             dataManager.updateInt(DRUG, "isSet", 1, "id", itemList[pos].id)
+
+            val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
+            if(!checkAlarmPermissions(context)) {
+               alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
+            }
          }else {
             alarmReceiver.cancelAlarm(context, itemList[pos].id)
             dataManager.updateInt(DRUG, "isSet", 0, "id", itemList[pos].id)

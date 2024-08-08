@@ -8,6 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import java.time.LocalDate
 
 class RestartAlarmReceiver : BroadcastReceiver() {
@@ -33,7 +35,9 @@ class RestartAlarmReceiver : BroadcastReceiver() {
                         }
 
                         val message = getDrugDaily[i].name + " " + getDrugDaily[i].amount + getDrugDaily[i].unit
-                        alarmReceiver.setAlarm(context, getDrugDaily[i].id, getDrugDaily[i].startDate, getDrugDaily[i].endDate, timeList, message)
+                        if(!checkAlarmPermissions(context)) {
+                            alarmReceiver.setAlarm(context, getDrugDaily[i].id, getDrugDaily[i].startDate, getDrugDaily[i].endDate, timeList, message)
+                        }
                     }
                 }
             }

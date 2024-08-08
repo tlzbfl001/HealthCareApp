@@ -1,6 +1,5 @@
 package kr.bodywell.android.view
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -12,11 +11,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kr.bodywell.android.database.DBHelper.Companion.DRUG
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTING
@@ -36,7 +31,6 @@ import java.time.LocalDate
 import java.util.UUID
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-   @SuppressLint("StaticFieldLeak")
    private val context = application.applicationContext
    private var dataManager: DataManager = DataManager(context)
    private val uuid="00001101-0000-1000-8000-00805F9B34FB"
@@ -58,7 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
          if(networkStatusCheck(context)) {
             refreshToken(dataManager)
             if(!syncCheck) {
-               syncCheck = createSync(dataManager)
+               syncCheck = createSync(context, dataManager)
             }else {
                createApiRequest(dataManager)
             }

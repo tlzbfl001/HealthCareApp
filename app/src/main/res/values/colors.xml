@@ -6,8 +6,9 @@
    <color name="background">#ffffff</color>
    <color name="white_trans5">#ffffff</color>
    <color name="black_white">#000000</color>
-   <color name="grey_white">#ffffff</color>
+   <color name="white_light_grey">#ffffff</color>
    <color name="white_grey">#ffffff</color>
+   <color name="grey_white">#8F8686</color>
    <color name="main_top">#cfccfe</color>
    <color name="main_cal_btn">#A38FF1</color>
    <color name="progress_food_base">#26DF9EAD</color>

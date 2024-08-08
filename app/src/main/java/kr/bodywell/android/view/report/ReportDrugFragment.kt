@@ -1,6 +1,7 @@
 package kr.bodywell.android.view.report
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -221,10 +222,8 @@ class ReportDrugFragment : Fragment() {
       var count = 0
 
       for(i in 0 until getData.size){
-         Log.d(TAG, "getData: $getData")
          val getDailyGoal = dataManager.getGoal(getData[i])
          val getDrugCheckCount = dataManager.getDrugCheckCount(getData[i])
-         Log.d(TAG, "getDrugCheckCount: $getDrugCheckCount")
 
          if(getDrugCheckCount > 0) {
             val pt = if(getDailyGoal.drug == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drug.toFloat()) * 100
@@ -233,7 +232,6 @@ class ReportDrugFragment : Fragment() {
             lineList += pt
             barEntries.add(BarEntry(count.toFloat(), pt))
             count += 1
-            Log.d(TAG, "barEntries: $barEntries")
          }
       }
 
@@ -254,6 +252,7 @@ class ReportDrugFragment : Fragment() {
          lineDataSet.valueFormatter = XValueFormatter()
 
          lineData.addDataSet(lineDataSet)
+         lineData.setValueTextColor(resources.getColor(R.color.black_white))
          data.setData(lineData)
 
          val barDataSet = BarDataSet(barEntries, "")
@@ -268,7 +267,8 @@ class ReportDrugFragment : Fragment() {
          chart.data = data
 
          val xAxis = chart.xAxis
-         xAxis.axisLineColor = Color.BLACK
+         xAxis.textColor = resources.getColor(R.color.black_white)
+         xAxis.axisLineColor = resources.getColor(R.color.black_white)
          xAxis.axisLineWidth = 0.8f
          xAxis.position = XAxis.XAxisPosition.BOTTOM
          xAxis.spaceMax = 0.6f
@@ -283,7 +283,8 @@ class ReportDrugFragment : Fragment() {
          rightAxis.isEnabled = false
 
          val leftAxis = chart.axisLeft
-         leftAxis.axisLineColor = Color.BLACK
+         leftAxis.axisLineColor = resources.getColor(R.color.black_white)
+         leftAxis.textColor = resources.getColor(R.color.black_white)
          leftAxis.axisLineWidth = 0.8f
          leftAxis.gridColor = Color.parseColor("#bbbbbb")
          leftAxis.enableGridDashedLine(10f, 15f, 0f)
@@ -366,12 +367,16 @@ class ReportDrugFragment : Fragment() {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-         }
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+
+         val darkModeCheck = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+            }
+         }
       }
    }
 

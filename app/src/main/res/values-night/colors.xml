@@ -6,8 +6,9 @@
    <color name="background">#000000</color>
    <color name="white_trans5">#0DFFFFFF</color>
    <color name="black_white">#ffffff</color>
-   <color name="grey_white">#707070</color>
-   <color name="white_grey">#3A3A3A</color>
+   <color name="white_light_grey">#707070</color>
+   <color name="white_grey">#474747</color>
+   <color name="grey_white">#ffffff</color>
    <color name="main_top">#668468FF</color>
    <color name="main_cal_btn">#B2A38FF1</color>
    <color name="progress_food_base">#66FFFFFF</color>
@@ -23,5 +24,5 @@
    <color name="progress_sleep">#D1FFFFFF</color>
    <color name="progress_drug">#D1FFFFFF</color>
    <color name="white_transparent">#00FFFFFF</color>
-   <color name="report_background">#28FFFFFF</color>
+   <color name="report_background">#000000</color>
 </resources>

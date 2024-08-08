@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -91,12 +92,12 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
    @SuppressLint("MissingPermission")
    private fun setUpBluetooth() {
-      val f1 = IntentFilter(BluetoothDevice.ACTION_FOUND)
+      /*val f1 = IntentFilter(BluetoothDevice.ACTION_FOUND)
       val f2 = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
       val f3 = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
       requireActivity().registerReceiver(bReceiver, f1)
       requireActivity().registerReceiver(bReceiver, f2)
-      requireActivity().registerReceiver(bReceiver, f3)
+      requireActivity().registerReceiver(bReceiver, f3)*/
 
       setBluetoothAdapter()
 
@@ -120,7 +121,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       try {
          if(bAdapter?.isEnabled == true) {
             bAdapter?.startDiscovery()
-            binding.progressBar2.visibility=View.VISIBLE
+//            binding.progressBar2.visibility=View.VISIBLE
          }
       }catch (e: SecurityException) {
          e.printStackTrace()
@@ -169,7 +170,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
                discoveryItemAdapter.submitList(list.toList())
 
-               binding.progressBar2.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
+//               binding.progressBar2.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
 
                try{
                   Log.d(TAG, "Device: ${device?.name}")
@@ -188,12 +189,16 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
          decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
          statusBarColor = Color.TRANSPARENT
          navigationBarColor = Color.BLACK
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-         }
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+
+         val darkModeCheck = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+            }
+         }
       }
    }
 

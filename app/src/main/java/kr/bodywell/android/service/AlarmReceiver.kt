@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kr.bodywell.android.R
 import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import java.time.LocalDate
 import java.util.Calendar
 
@@ -33,7 +34,9 @@ class AlarmReceiver : BroadcastReceiver() {
             showAlarmNotification(context, notificationId!!.toInt(), message)
         }
 
-        setAlarm(context, notificationId!!.toInt(), startDate!!, endDate!!, timeList, message!!)
+        if(!checkAlarmPermissions(context)) {
+            setAlarm(context, notificationId!!.toInt(), startDate!!, endDate!!, timeList, message!!)
+        }
     }
 
     private fun showAlarmNotification(context: Context, notificationId: Int, message: String?) {
@@ -64,7 +67,7 @@ class AlarmReceiver : BroadcastReceiver() {
         intent.putExtra("message", message)
 
         pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
         }else {
             PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
@@ -129,7 +132,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val intent = Intent(context, AlarmReceiver::class.java)
 
         pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
         } else {
             PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
