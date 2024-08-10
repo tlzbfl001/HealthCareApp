@@ -4,7 +4,7 @@
    android:layout_width="match_parent"
    android:layout_height="match_parent"
    android:id="@+id/mainLayout"
-   android:background="#FFFBF3">
+   android:background="@color/exercise_black">
     <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/clX"
        android:layout_width="wrap_content"
@@ -21,7 +21,8 @@
            app:layout_constraintTop_toTopOf="parent"
            app:layout_constraintStart_toStartOf="parent"
            app:layout_constraintEnd_toEndOf="parent"
-           app:layout_constraintBottom_toBottomOf="parent"/>
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:tint="@color/black_white" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <TextView
        android:id="@+id/tvName"
@@ -31,7 +32,7 @@
        android:layout_marginLeft="25dp"
        android:text="운동명"
        android:textSize="20dp"
-       android:textColor="@color/black"
+       android:textColor="@color/black_white"
        android:textStyle="bold"
        app:layout_constraintTop_toBottomOf="@id/clX"
        app:layout_constraintStart_toStartOf="parent"/>

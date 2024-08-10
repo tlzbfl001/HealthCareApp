@@ -52,13 +52,10 @@ data class DietUpdateDTO(
 	@SerializedName("mealTime")
 	var mealTime: String = "",
 
-	@SerializedName("brandName")
-	var brandName: String = "",
-
-	@SerializedName("foodName")
+	@SerializedName("name")
 	var foodName: String = "",
 
-	@SerializedName("calories")
+	@SerializedName("calorie")
 	var calories: Int = 0,
 
 	@SerializedName("carbohydrate")

@@ -21,6 +21,7 @@ import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Constant
@@ -46,6 +47,7 @@ import kr.bodywell.android.view.init.SignupActivity
 import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 object RegisterUtil {
 	suspend fun googleLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
@@ -180,6 +182,7 @@ object RegisterUtil {
 	}
 
 	private suspend fun getData(ctx: LoginActivity, dataManager: DataManager, user: User, access: String, refresh: String) {
+		val getUserUid = RetrofitAPI.api.getUser("Bearer $access")
 		val getProfile = RetrofitAPI.api.getProfile("Bearer $access")
 		val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
 		val getAllDiet = RetrofitAPI.api.getAllDiet("Bearer $access")
@@ -191,8 +194,9 @@ object RegisterUtil {
 		val getMedicine = RetrofitAPI.api.getMedicine("Bearer $access")
 		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer $access")
 
-		if(getProfile.isSuccessful && getAllFood.isSuccessful && getAllDiet.isSuccessful && getAllWater.isSuccessful && getAllActivity.isSuccessful &&
+		if(getUserUid.isSuccessful && getProfile.isSuccessful && getAllFood.isSuccessful && getAllDiet.isSuccessful && getAllWater.isSuccessful && getAllActivity.isSuccessful &&
 			getAllWorkout.isSuccessful && getAllBody.isSuccessful && getAllSleep.isSuccessful && getMedicine.isSuccessful && getAllGoal.isSuccessful) {
+			Log.d(TAG, "getUserUid: ${getUserUid.body()}")
 			Log.d(TAG, "getAllFood: ${getAllFood.body()}")
 			Log.d(TAG, "getAllDiet: ${getAllDiet.body()}")
 			Log.d(TAG, "getAllWater: ${getAllWater.body()}")
@@ -212,11 +216,11 @@ object RegisterUtil {
 
 			// 사용자 정보 저장
 			if(getUser.createdAt == "") {
-				dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, name = getProfile.body()!!.name,
-					gender = gender, birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
+				dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getUserUid.body()!!.uid,
+					name = getProfile.body()!!.name, gender = gender, birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
 			}else {
-				dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, name = getProfile.body()!!.name,
-					gender = gender, birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
+				dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getUserUid.body()!!.uid,
+					name = getProfile.body()!!.name,	gender = gender, birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
 			}
 
 			getUser = dataManager.getUser(user.type, user.email)
@@ -290,17 +294,22 @@ object RegisterUtil {
 			}
 
 			for(i in 0 until getAllSleep.body()!!.size) {
-				dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].uid, startTime = getAllSleep.body()!![i].starts, endTime = getAllSleep.body()!![i].ends,
-					createdAt = getAllSleep.body()!![i].starts.substring(0, 10)))
+				val isoToStartTime = isoToDateTime(getAllSleep.body()!![i].starts)
+				val isoToEndTime = isoToDateTime(getAllSleep.body()!![i].ends)
+				dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].uid, startTime = isoToStartTime.toString(), endTime = isoToEndTime.toString()))
 			}
 
 			val alarmReceiver = AlarmReceiver()
 			val timeList = ArrayList<DrugTime>()
 
 			for(i in 0 until getMedicine.body()!!.size) {
-				val drug = Drug(uid = getMedicine.body()!![i].uid, type = getMedicine.body()!![i].category,
-					name = getMedicine.body()!![i].name, amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit,
-					startDate = getMedicine.body()!![i].starts.substring(0, 10), endDate = getMedicine.body()!![i].ends.substring(0, 10))
+				val startDate = LocalDate.parse(getMedicine.body()!![i].starts.substring(0, 10))
+				val endDate = LocalDate.parse(getMedicine.body()!![i].ends.substring(0, 10))
+				val count = startDate.until(endDate, ChronoUnit.DAYS) + 1
+
+				val drug = Drug(uid = getMedicine.body()!![i].uid, type = getMedicine.body()!![i].category, name = getMedicine.body()!![i].name,
+					amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit, count = count.toInt(),
+					startDate = startDate.toString(), endDate = endDate.toString())
 
 				val getMedicineTime = RetrofitAPI.api.getMedicineTime("Bearer $access", drug.uid)
 				if(getMedicineTime.isSuccessful) {
@@ -322,7 +331,7 @@ object RegisterUtil {
 							val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
 							for(k in 0 until getMedicineIntake.body()!!.size) {
 								dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId.id, drugTimeId = drugTimeId.id,
-									time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt))
+									time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt.substring(0, 10)))
 							}
 						}else {
 							Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
@@ -338,7 +347,9 @@ object RegisterUtil {
 			}
 
 			for(i in 0 until getAllGoal.body()!!.size) {
-				dataManager.insertGoal(Goal(uid = getAllGoal.body()!![i].uid, createdAt = getAllGoal.body()!![i].date.substring(0, 10)))
+				dataManager.insertGoal(Goal(uid = getAllGoal.body()!![i].uid, food = getAllGoal.body()!![i].kcalOfDiet, waterVolume=getAllGoal.body()!![i].waterAmountOfCup,
+					water=getAllGoal.body()!![i].waterIntake, exercise=getAllGoal.body()!![i].kcalOfWorkout, body=getAllGoal.body()!![i].weight,
+					sleep=getAllGoal.body()!![i].sleep, drug=getAllGoal.body()!![i].medicineIntake, createdAt = getAllGoal.body()!![i].date.substring(0, 10)))
 			}
 
 			val getSync = dataManager.getSynced()
@@ -369,6 +380,7 @@ object RegisterUtil {
 			val softwareVer = if(ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == null || ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == "") {
 				"" }else ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
 			val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
+			val getUserUid = RetrofitAPI.api.getUser("Bearer ${token.access}")
 			val createDevice = RetrofitAPI.api.createDevice("Bearer ${token.access}", data)
 			val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}")
 			val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer ${token.access}")
@@ -379,8 +391,9 @@ object RegisterUtil {
 			Log.d(TAG, "getAllActivity: ${getAllActivity.isSuccessful}/${getAllActivity.body()}")
 			Log.d(TAG, "getGoal: ${getGoal.isSuccessful}/${getGoal.body()}")
 
-			if(createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful && getGoal.isSuccessful) {
+			if(getUserUid.isSuccessful && createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful && getGoal.isSuccessful) {
 				MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id) // 사용자 Id 저장
+				dataManager.updateUserStr("uid", getUserUid.body()!!.uid)
 
 				// 토큰 정보 저장
 				val getToken = dataManager.getToken()

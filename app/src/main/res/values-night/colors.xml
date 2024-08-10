@@ -3,26 +3,30 @@
    <color name="white">#ffffff</color>
    <color name="black">#000000</color>
    <color name="transparent">#00FFFFFF</color>
-   <color name="background">#000000</color>
-   <color name="white_trans5">#0DFFFFFF</color>
+
+   <color name="white_black">#000000</color>
+   <color name="white_grey">#5C5C5C</color>
+   <color name="white_transparent">#00FFFFFF</color>
+   <color name="white_trans10">#1AFFFFFF</color>
    <color name="black_white">#ffffff</color>
-   <color name="white_light_grey">#707070</color>
-   <color name="white_grey">#474747</color>
    <color name="grey_white">#ffffff</color>
+
    <color name="main_top">#668468FF</color>
    <color name="main_cal_btn">#B2A38FF1</color>
-   <color name="progress_food_base">#66FFFFFF</color>
-   <color name="progress_water_base">#66FFFFFF</color>
-   <color name="progress_exercise_base">#66FFFFFF</color>
-   <color name="progress_body_base">#66FFFFFF</color>
-   <color name="progress_sleep_base">#66FFFFFF</color>
-   <color name="progress_drug_base">#66FFFFFF</color>
-   <color name="progress_food">#D1FFFFFF</color>
-   <color name="progress_water">#D1FFFFFF</color>
-   <color name="progress_exercise">#D1FFFFFF</color>
-   <color name="progress_body">#D1FFFFFF</color>
-   <color name="progress_sleep">#D1FFFFFF</color>
-   <color name="progress_drug">#D1FFFFFF</color>
-   <color name="white_transparent">#00FFFFFF</color>
-   <color name="report_background">#000000</color>
+
+   <color name="food_grey">#393939</color>
+   <color name="food_black">#000000</color>
+   <color name="water_grey">#393939</color>
+   <color name="exercise_grey">#393939</color>
+   <color name="exercise_black">#000000</color>
+   <color name="exercise_button_grey">#5C5C5C</color>
+   <color name="exercise_bar">#ffffff</color>
+   <color name="body_grey">#393939</color>
+   <color name="body_black">#000000</color>
+   <color name="sleep_grey">#393939</color>
+   <color name="drug_grey">#393939</color>
+   <color name="drug_black">#000000</color>
+   <color name="drug_list">#66516AC3</color>
+   <color name="drug_add">#66516AC3</color>
+   <color name="report_black">#000000</color>
 </resources>

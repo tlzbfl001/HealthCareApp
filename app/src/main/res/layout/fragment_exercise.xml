@@ -11,6 +11,7 @@
    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:background="@color/white_black"
       android:orientation="vertical">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
@@ -29,7 +30,8 @@
                android:src="@drawable/setting_goal"
                app:layout_constraintBottom_toBottomOf="@id/tvSetting"
                app:layout_constraintEnd_toStartOf="@id/tvSetting"
-               app:layout_constraintTop_toTopOf="@id/tvSetting" />
+               app:layout_constraintTop_toTopOf="@id/tvSetting"
+               app:tint="@color/black_white" />
             <TextView
                android:id="@+id/tvSetting"
                android:layout_width="wrap_content"
@@ -37,7 +39,7 @@
                android:layout_marginRight="25dp"
                android:paddingLeft="3dp"
                android:text="목표설정"
-               android:textColor="@color/black"
+               android:textColor="@color/black_white"
                android:textSize="15.8dp"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
@@ -55,7 +57,7 @@
                android:layout_width="match_parent"
                android:layout_height="match_parent"
                app:progress_text_size="0dp"
-               app:progress_background_color="#FBF4E8"
+               app:progress_background_color="@color/progress_base"
                app:progress_end_color="#FFB846"
                app:progress_start_color="#FFB846"
                app:progress_start_degree="280"
@@ -72,7 +74,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="소비칼로리"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:textSize="16.5dp"
                   android:textStyle="bold"
                   app:layout_constraintBottom_toTopOf="@id/tvConsume"
@@ -85,7 +87,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="0 kcal"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:textSize="16.5dp"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="17dp"
             android:text="목표칼로리"
-            android:textColor="@color/black"
+            android:textColor="@color/black_white"
             android:textSize="16.5dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/view1"
@@ -121,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0 kcal"
-            android:textColor="@color/black"
+            android:textColor="@color/black_white"
             android:textSize="16.5dp"
             app:layout_constraintEnd_toEndOf="@id/tv1"
             app:layout_constraintTop_toBottomOf="@id/tv1" />
@@ -131,7 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="남은칼로리"
-            android:textColor="@color/black"
+            android:textColor="@color/black_white"
             android:textSize="16.5dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -142,7 +144,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0 kcal"
-            android:textColor="@color/black"
+            android:textColor="@color/black_white"
             android:textSize="16.5dp"
             app:layout_constraintStart_toStartOf="@id/tv3"
             app:layout_constraintTop_toBottomOf="@id/tv3" />
@@ -153,7 +155,7 @@
          android:layout_height="60dp"
          android:layout_marginTop="20dp"
          android:background="@drawable/oval_water_bottom"
-         android:backgroundTint="#FFFBF3"
+         android:backgroundTint="@color/exercise_grey"
          app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintStart_toStartOf="parent"
@@ -163,7 +165,7 @@
          android:layout_width="match_parent"
          android:layout_height="match_parent"
          android:layout_marginTop="-30dp"
-         android:background="#FFFBF3"
+         android:background="@color/exercise_grey"
          android:orientation="vertical">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clRecord"
@@ -179,7 +181,7 @@
                android:layout_marginLeft="25dp"
                android:layout_marginTop="8dp"
                android:text="하루 운동"
-               android:textColor="@color/black"
+               android:textColor="@color/black_white"
                android:textSize="17dp"
                android:textStyle="bold"
                app:layout_constraintStart_toStartOf="parent"
@@ -200,13 +202,14 @@
                   android:src="@drawable/setting_goal"
                   app:layout_constraintBottom_toBottomOf="@id/tv5"
                   app:layout_constraintEnd_toStartOf="@id/tv5"
-                  app:layout_constraintTop_toTopOf="@id/tv5" />
+                  app:layout_constraintTop_toTopOf="@id/tv5"
+                  app:tint="@color/black_white" />
                <TextView
                   android:id="@+id/tv5"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="운동기록"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:textSize="15.8dp"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"

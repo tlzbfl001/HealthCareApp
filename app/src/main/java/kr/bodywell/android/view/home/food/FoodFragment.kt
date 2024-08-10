@@ -181,8 +181,8 @@ class FoodFragment : Fragment() {
       binding.tvIntake.text = "$sum kcal"
 
       if(sum > 0) {
-         binding.pbFood.setProgressStartColor(Color.parseColor("#EE6685"))
-         binding.pbFood.setProgressEndColor(Color.parseColor("#EE6685"))
+         binding.pbFood.setProgressStartColor(Color.parseColor("#BFE24F5C"))
+         binding.pbFood.setProgressEndColor(Color.parseColor("#BFE24F5C"))
          binding.pbFood.max = dailyGoal.food
          binding.pbFood.progress = sum
       }

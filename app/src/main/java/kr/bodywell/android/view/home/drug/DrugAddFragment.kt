@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,14 +28,18 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.drugTimeList
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setDrugTimeList
 import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class DrugAddFragment : Fragment() {
    private var _binding: FragmentDrugAddBinding? = null
@@ -45,6 +50,7 @@ class DrugAddFragment : Fragment() {
    private val viewModel: MainViewModel by activityViewModels()
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: DrugAdapter4? = null
+   private var getDrug  = Drug()
    private val itemList = ArrayList<Drug>()
    private val addList = ArrayList<String>()
    private val delList = ArrayList<Drug>()
@@ -86,7 +92,10 @@ class DrugAddFragment : Fragment() {
       drugTimeList.clear()
 
       val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
-      val getDrug = dataManager.getDrug(id)
+
+      getDrug = dataManager.getDrug(id)
+      count = getDrug.count
+      binding.tvCount.text = count.toString()
 
       if(id > -1) {
          binding.etType.setText(getDrug.type)
@@ -102,7 +111,6 @@ class DrugAddFragment : Fragment() {
             "set" -> unit6()
          }
 
-         count = getDrug.count
          binding.tvCount.text = count.toString()
 
          val getDrugTime = dataManager.getDrugTime(id)
@@ -169,11 +177,9 @@ class DrugAddFragment : Fragment() {
             Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
             if(id > -1) { // 데이터 수정
-               val endDate = LocalDate.parse(getDrug.startDate).plusDays((count - 1).toLong()).toString()
-
                val isUpdated = if(getDrug.uid == "") 0 else 1
                dataManager.updateDrug(Drug(id = id, type = type, name = name, amount = amount, unit = unit, count = count,
-                  startDate = getDrug.startDate, endDate = endDate, isSet = 1, isUpdated = isUpdated))
+                  startDate = getDrug.startDate, endDate = getEndDate(), isSet = 1, isUpdated = isUpdated))
 
                val getDrugTime = dataManager.getDrugTime(id)
 
@@ -205,9 +211,7 @@ class DrugAddFragment : Fragment() {
                      }
                   }
 
-                  if(delList[i].uid != "") {
-                     dataManager.insertUnused(Unused(type = "drugTime", value = delList[i].uid, drugUid=getDrug.uid, createdAt = getDrug.startDate))
-                  }
+                  if(delList[i].uid != "") dataManager.insertUnused(Unused(type = "drugTime", drugUid=getDrug.uid, value = delList[i].uid, createdAt = getDrug.startDate))
 
                   dataManager.deleteItem(DRUG_TIME, "id", delList[i].id)
                   dataManager.deleteItem(DRUG_CHECK, "drugTimeId", delList[i].id)
@@ -216,21 +220,16 @@ class DrugAddFragment : Fragment() {
                // addList 목록 데이터 저장
                for(i in 0 until addList.size) dataManager.insertDrugTime(DrugTime(uid = "", drugId = id, time = addList[i]))
 
-               if(!PermissionUtil.checkAlarmPermissions(requireActivity())) {
-                  alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
-               }
+               alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), getEndDate(), drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
             }else { // 데이터 저장
-               val endDate = selectedDate.plusDays((count - 1).toLong()).toString()
-               dataManager.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count, startDate = selectedDate.toString(), endDate = endDate))
+               dataManager.insertDrug(Drug(type = type, name = name, amount = amount, unit = unit, count = count, startDate = selectedDate.toString(), endDate = getEndDate()))
 
                val drugId = dataManager.getData(DRUG, "startDate", selectedDate.toString())
                for(i in 0 until drugTimeList.size) dataManager.insertDrugTime(DrugTime(drugId = drugId.id, time = drugTimeList[i].time))
 
-               if(!PermissionUtil.checkAlarmPermissions(requireActivity())) {
-                  alarmReceiver!!.setAlarm(requireActivity(), drugId.id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
-               }
+               alarmReceiver!!.setAlarm(requireActivity(), drugId.id, selectedDate.toString(), getEndDate(), drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }
@@ -240,6 +239,7 @@ class DrugAddFragment : Fragment() {
                for(i in 0 until drugTimeList.size) {
                   str += "${drugTimeList[i].time}"
                }
+
                viewModel.sendMessage(str)
             }
 
@@ -255,6 +255,14 @@ class DrugAddFragment : Fragment() {
       showTimeList()
 
       return binding.root
+   }
+
+   private fun getEndDate(): String {
+      return if(count > 1) {
+         selectedDate.plusDays((count-1).toLong()).toString()
+      }else {
+         selectedDate.toString()
+      }
    }
 
    private fun settingTime() {

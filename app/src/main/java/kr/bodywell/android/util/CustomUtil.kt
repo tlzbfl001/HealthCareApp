@@ -93,6 +93,10 @@ object CustomUtil {
       return date.atZone(ZoneId.of("Asia/Seoul")).toInstant().toString()
    }
 
+   fun dateTimeToIso2(date: LocalDateTime): String {
+      return date.atZone(ZoneOffset.UTC).toInstant().toString()
+   }
+
    fun isoToDateTime(date: String): LocalDateTime {
       return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date)).atZone(ZoneId.of("Asia/Seoul")))
    }

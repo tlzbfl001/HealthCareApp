@@ -3,6 +3,7 @@ package kr.bodywell.android.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
+import android.util.Log
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.BODY
@@ -38,6 +39,7 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.MyApp
 
 class DataManager(private var context: Context?) {
@@ -89,17 +91,18 @@ class DataManager(private var context: Context?) {
          values.email = cursor.getString(2)
          values.idToken = cursor.getString(3)
          values.accessToken = cursor.getString(4)
-         values.name = cursor.getString(5)
-         values.gender = cursor.getString(6)
-         values.birthday = cursor.getString(7)
-         values.image = cursor.getString(8)
-         values.height = cursor.getDouble(9)
-         values.weight = cursor.getDouble(10)
-         values.weightGoal = cursor.getDouble(11)
-         values.kcalGoal = cursor.getInt(12)
-         values.waterGoal = cursor.getInt(13)
-         values.waterUnit = cursor.getInt(14)
-         values.createdAt = cursor.getString(15)
+         values.uid = cursor.getString(5)
+         values.name = cursor.getString(6)
+         values.gender = cursor.getString(7)
+         values.birthday = cursor.getString(8)
+         values.image = cursor.getString(9)
+         values.height = cursor.getDouble(10)
+         values.weight = cursor.getDouble(11)
+         values.weightGoal = cursor.getDouble(12)
+         values.kcalGoal = cursor.getInt(13)
+         values.waterGoal = cursor.getInt(14)
+         values.waterUnit = cursor.getInt(15)
+         values.createdAt = cursor.getString(16)
       }
       cursor.close()
       return values
@@ -740,14 +743,13 @@ class DataManager(private var context: Context?) {
    fun getSleep(date: String) : Sleep {
       val db = dbHelper!!.readableDatabase
       val values = Sleep()
-      val sql = "select * from $SLEEP where $USER_ID = ${MyApp.prefs.getUserId()} and $CREATED_AT = '$date'"
+      val sql = "select * from $SLEEP where $USER_ID = ${MyApp.prefs.getUserId()} and substr(startTime,1,10) = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
          values.uid = cursor.getString(2)
          values.startTime = cursor.getString(3)
          values.endTime = cursor.getString(4)
-         values.createdAt = cursor.getString(5)
       }
       cursor.close()
       return values
@@ -978,7 +980,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheck(drugTimeId: Int, data: String) : DrugCheck {
       val db = dbHelper!!.readableDatabase
       val values = DrugCheck()
-      val sql = "select id, uid, $CREATED_AT from $DRUG_CHECK where $USER_ID=${MyApp.prefs.getUserId()} and drugTimeId=$drugTimeId and substr($CREATED_AT,1,10)='$data'"
+      val sql = "select id, uid, $CREATED_AT from $DRUG_CHECK where $USER_ID=${MyApp.prefs.getUserId()} and drugTimeId=$drugTimeId and $CREATED_AT='$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
@@ -1195,6 +1197,7 @@ class DataManager(private var context: Context?) {
          values.sleep = cursor.getInt(8)
          values.drug = cursor.getInt(9)
          values.createdAt = cursor.getString(10)
+         values.isUpdated = cursor.getInt(11)
          list.add(values)
       }
       cursor.close()
@@ -1257,6 +1260,25 @@ class DataManager(private var context: Context?) {
       return list
    }
 
+   fun getUnusedTime() : ArrayList<Unused> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Unused> = ArrayList()
+      val sql = "select * from $UNUSED where $USER_ID = ${MyApp.prefs.getUserId()} and type = 'drugTime'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Unused()
+         values.id = cursor.getInt(0)
+         values.type = cursor.getString(2)
+         values.value = cursor.getString(3)
+         values.drugUid = cursor.getString(4)
+         values.drugTimeUid = cursor.getString(5)
+         values.createdAt = cursor.getString(6)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
    fun getSynced() : String {
       val db = dbHelper!!.readableDatabase
       var value = ""
@@ -1276,6 +1298,7 @@ class DataManager(private var context: Context?) {
       values.put("email", data.email)
       values.put("idToken", data.idToken)
       values.put("accessToken", data.accessToken)
+      values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("gender", data.gender)
       values.put("birthday", data.birthday)
@@ -1401,7 +1424,6 @@ class DataManager(private var context: Context?) {
       values.put("uid", data.uid)
       values.put("startTime", data.startTime)
       values.put("endTime", data.endTime)
-      values.put(CREATED_AT, data.createdAt)
       db!!.insert(SLEEP, null, values)
    }
 
@@ -1639,7 +1661,7 @@ class DataManager(private var context: Context?) {
    fun updateSleep(data: Sleep){
       val db = dbHelper!!.writableDatabase
       val sql = "update $SLEEP set startTime='${data.startTime}', endTime='${data.endTime}', $IS_UPDATED=${data.isUpdated} " +
-         "where $USER_ID=${MyApp.prefs.getUserId()} and $CREATED_AT='${data.createdAt}'"
+         "where $USER_ID=${MyApp.prefs.getUserId()} and substr(startTime,1,10)='${data.startTime.substring(0, 10)}'"
       db.execSQL(sql)
       db.close()
    }

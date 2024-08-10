@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -28,14 +29,17 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.view.MainViewModel
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -277,15 +281,15 @@ class MainFragment : Fragment() {
       val getDrugCheckCount = dataManager.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {
-         binding.pbFood.setProgressStartColor(requireActivity().resources.getColor(R.color.progress_food))
-         binding.pbFood.setProgressEndColor(requireActivity().resources.getColor(R.color.progress_food))
+         binding.pbFood.setProgressStartColor(Color.parseColor("#BFE24F5C"))
+         binding.pbFood.setProgressEndColor(Color.parseColor("#BFE24F5C"))
          binding.pbFood.max = getDailyGoal.food
          binding.pbFood.progress = foodSum
       }
 
       if(getWater.count > 0) {
-         binding.pbWater.setProgressStartColor(requireActivity().resources.getColor(R.color.progress_water))
-         binding.pbWater.setProgressEndColor(requireActivity().resources.getColor(R.color.progress_water))
+         binding.pbWater.setProgressStartColor(Color.parseColor("#CC4AC0F2"))
+         binding.pbWater.setProgressEndColor(Color.parseColor("#CC4AC0F2"))
          if(getDailyGoal.water > 0) {
             binding.pbWater.max = getDailyGoal.water
             binding.pbWater.progress = getWater.count
@@ -296,8 +300,8 @@ class MainFragment : Fragment() {
       }
 
       if(exerciseSum > 0) {
-         binding.pbExercise.setProgressStartColor(requireActivity().resources.getColor(R.color.progress_exercise))
-         binding.pbExercise.setProgressEndColor(requireActivity().resources.getColor(R.color.progress_exercise))
+         binding.pbExercise.setProgressStartColor(Color.parseColor("#CCF6BD4B"))
+         binding.pbExercise.setProgressEndColor(Color.parseColor("#CCF6BD4B"))
          if(getDailyGoal.exercise > 0) {
             binding.pbExercise.max = getDailyGoal.exercise
             binding.pbExercise.progress = exerciseSum
@@ -317,8 +321,8 @@ class MainFragment : Fragment() {
       }
 
       if(getBody.weight != null && getBody.weight!! > 0) {
-         binding.pbBody.setProgressStartColor(requireActivity().resources.getColor(R.color.progress_body))
-         binding.pbBody.setProgressEndColor(requireActivity().resources.getColor(R.color.progress_body))
+         binding.pbBody.setProgressStartColor(Color.parseColor("#B8E189"))
+         binding.pbBody.setProgressEndColor(Color.parseColor("#B8E189"))
          if(getDailyGoal.body > 0) {
             binding.pbBody.max = getDailyGoal.body.roundToInt()
             binding.pbBody.progress = getBody.weight!!.toInt()
@@ -332,15 +336,15 @@ class MainFragment : Fragment() {
       var total = 0
 
       if(getSleep.startTime != "") {
-         val bedTime = isoToDateTime(getSleep.startTime)
-         val wakeTime = isoToDateTime(getSleep.endTime)
+         val bedTime = LocalDateTime.parse(getSleep.startTime)
+         val wakeTime = LocalDateTime.parse(getSleep.endTime)
          val diff = Duration.between(bedTime, wakeTime)
          total = diff.toMinutes().toInt()
       }
 
       if(total > 0) {
-         binding.pbSleep.setProgressStartColor(requireActivity().resources.getColor(R.color.progress_sleep))
-         binding.pbSleep.setProgressEndColor(requireActivity().resources.getColor(R.color.progress_sleep))
+         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
+         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
          if(getDailyGoal.sleep > 0) {
             binding.pbSleep.max = getDailyGoal.sleep
             binding.pbSleep.progress = total
@@ -351,8 +355,8 @@ class MainFragment : Fragment() {
       }
 
       if(getDrugCheckCount > 0) {
-         binding.pbDrug.setProgressStartColor(requireActivity().resources.getColor(R.color.progress_drug))
-         binding.pbDrug.setProgressEndColor(requireActivity().resources.getColor(R.color.progress_drug))
+         binding.pbDrug.setProgressStartColor(Color.parseColor("#9E63FC"))
+         binding.pbDrug.setProgressEndColor(Color.parseColor("#9E63FC"))
          if(getDailyGoal.drug > 0) {
             binding.pbDrug.max = getDailyGoal.drug
             binding.pbDrug.progress = getDrugCheckCount
@@ -378,13 +382,6 @@ class MainFragment : Fragment() {
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
-
-         val darkModeCheck = requireActivity().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-            }
-         }
       }
    }
 

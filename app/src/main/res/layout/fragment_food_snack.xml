@@ -9,6 +9,7 @@
    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:background="@color/white_black"
       android:orientation="vertical">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/cl1"
@@ -75,7 +76,7 @@
          android:orientation="vertical"
          android:layout_marginTop="20dp"
          android:background="@drawable/rec_top_radius_35"
-         android:backgroundTint="#FFFAFA">
+         android:backgroundTint="@color/food_grey">
          <TextView
             android:id="@+id/tvTitle1"
             android:layout_width="wrap_content"
@@ -85,7 +86,7 @@
             android:text="섭취 음식"
             android:textSize="17dp"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="@color/black_white"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
          <androidx.constraintlayout.widget.ConstraintLayout

@@ -28,5 +28,14 @@ data class GoalResponse (
 	var medicineIntake: Int = 0,
 
 	@SerializedName("date")
-	var date: String = ""
+	var date: String = "",
+
+	@SerializedName("createdAt")
+	var createdAt: String?,
+
+	@SerializedName("updatedAt")
+	var updatedAt: String?,
+
+	@SerializedName("deletedAt")
+	var deletedAt: String?
 )

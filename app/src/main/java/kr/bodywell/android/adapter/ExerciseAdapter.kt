@@ -13,7 +13,7 @@ class ExerciseAdapter (
 ) : RecyclerView.Adapter<ExerciseAdapter.ViewHolder>() {
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_main, parent, false)
+      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list1, parent, false)
       return ViewHolder(view)
    }
 

@@ -8,6 +8,7 @@ import kr.bodywell.android.api.dto.DietUpdateDTO
 import kr.bodywell.android.api.dto.FoodDTO
 import kr.bodywell.android.api.dto.FoodUpdateDTO
 import kr.bodywell.android.api.dto.GoalDTO
+import kr.bodywell.android.api.dto.GoalUpdateDTO
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
@@ -44,6 +45,7 @@ import kr.bodywell.android.api.response.SyncSleepResponse
 import kr.bodywell.android.api.response.SyncWaterResponse
 import kr.bodywell.android.api.response.SyncWorkoutResponse
 import kr.bodywell.android.api.response.TokenResponse
+import kr.bodywell.android.api.response.UserEmailResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
 import kr.bodywell.android.api.response.WorkoutResponse
@@ -80,11 +82,17 @@ interface APIService {
 	@GET("users/check-email/{email}")
 	suspend fun getUserEmail(
 		@Path("email") uid: String
+	): Response<UserEmailResponse>
+
+	@GET("user")
+	suspend fun getUser(
+		@Header("Authorization") token: String
 	): Response<UserResponse>
 
-	@DELETE("user")
+	@DELETE("users/{uid}/permanent")
 	suspend fun deleteUser(
-		@Header("Authorization") token: String
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
 	): Response<Void>
 
 	@GET("user/profile")
@@ -423,9 +431,10 @@ interface APIService {
 		@Body dto: SyncDTO
 	): Response<SyncGoalResponse>
 
-	@PATCH("user/goals")
+	@PATCH("user/goals/{uid}")
 	suspend fun updateGoal(
 		@Header("Authorization") token: String,
-		@Body dto: GoalDTO
+		@Path("uid") uid: String,
+		@Body dto: GoalUpdateDTO
 	): Response<GoalResponse>
 }

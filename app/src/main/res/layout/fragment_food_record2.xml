@@ -3,12 +3,12 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/white">
+   android:background="@color/white_black">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/constraint"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="#FFFAFA"
+      android:background="@color/food_grey"
       android:layout_marginBottom="7dp"
       android:elevation="4dp"
       app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +32,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@color/black_white" />
       </androidx.constraintlayout.widget.ConstraintLayout>
       <TextView
          android:id="@+id/tvTitle"
@@ -40,7 +41,7 @@
          android:layout_height="wrap_content"
          android:layout_marginTop="20dp"
          android:text="운동 기록하기"
-         android:textColor="@color/black"
+         android:textColor="@color/black_white"
          android:textSize="18dp"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintTop_toTopOf="parent"
@@ -61,7 +62,7 @@
          android:drawableTint="#989898"
          android:hint="운동 이름 입력"
          android:textColorHint="#989898"
-         android:textSize="16dp"
+         android:textSize="15dp"
          android:textColor="@color/black"
          app:layout_constraintTop_toBottomOf="@id/tvTitle"
          app:layout_constraintEnd_toEndOf="parent"

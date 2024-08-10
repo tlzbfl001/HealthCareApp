@@ -2,6 +2,8 @@ package kr.bodywell.android.adapter
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
@@ -67,7 +70,10 @@ class DrugAdapter2 (
          holder.recyclerView.adapter = adapter
       }
 
-      holder.switchOnOff.isChecked = itemList[pos].isSet == 1
+      if(itemList[pos].isSet == 1) {
+         holder.switchOnOff.isChecked = true
+         holder.ivAlarm.setColorFilter(Color.parseColor("#A47AE8"))
+      }
 
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
@@ -128,6 +134,7 @@ class DrugAdapter2 (
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       val tvType: TextView = itemView.findViewById(R.id.tvType)
       val switchOnOff: SwitchCompat = itemView.findViewById(R.id.switchOnOff)
+      val ivAlarm: ImageView = itemView.findViewById(R.id.ivAlarm)
       val tvName: TextView = itemView.findViewById(R.id.tvName)
       val tvPeriod: TextView = itemView.findViewById(R.id.tvPeriod)
       val tvCount: TextView = itemView.findViewById(R.id.tvCount)

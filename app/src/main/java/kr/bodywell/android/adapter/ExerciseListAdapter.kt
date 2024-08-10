@@ -28,7 +28,7 @@ class ExerciseListAdapter (
    init { dataManager.open() }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list, parent, false)
+      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list2, parent, false)
       return ViewHolder(view)
    }
 

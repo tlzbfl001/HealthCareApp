@@ -31,7 +31,7 @@ data class MedicineResponse (
 	var updatedAt: String?,
 
 	@SerializedName("deletedAt")
-	var deletedAt: String?,
+	var deletedAt: String?
 )
 
 data class MedicineTimeResponse (
@@ -68,5 +68,5 @@ data class MedicineIntakeResponse (
 	var updatedAt: String?,
 
 	@SerializedName("deletedAt")
-	var deletedAt: String?,
+	var deletedAt: String?
 )

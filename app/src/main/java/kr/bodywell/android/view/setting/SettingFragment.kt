@@ -288,19 +288,15 @@ class SettingFragment : Fragment() {
 
    private fun resignProcess() {
       CoroutineScope(Dispatchers.IO).launch {
-         val getUserEmail = RetrofitAPI.api.getUserEmail(getUser.email)
-         if(getUserEmail.isSuccessful) {
-            if(getUserEmail.body()!!.exists) {
-               val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
-               if(response.isSuccessful) {
-                  deleteData()
-               }else {
-                  requireActivity().runOnUiThread {
-                     Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
-                  }
-               }
-            }else {
+         val getUserUid = RetrofitAPI.api.getUser("Bearer ${getToken.access}")
+         if(getUserUid.isSuccessful) {
+            val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}", getUser.uid!!)
+            if(response.isSuccessful) {
                deleteData()
+            }else {
+               requireActivity().runOnUiThread {
+                  Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+               }
             }
          }
       }
@@ -348,13 +344,6 @@ class SettingFragment : Fragment() {
          val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
          val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
          binding.cl1.setPadding(0, statusBarHeight, 0, 0)
-
-         val darkModeCheck = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-         if(darkModeCheck == Configuration.UI_MODE_NIGHT_YES) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-               insetsController!!.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-            }
-         }
       }
    }
 

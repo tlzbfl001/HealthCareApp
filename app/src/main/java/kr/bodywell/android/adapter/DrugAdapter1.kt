@@ -1,7 +1,6 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,6 @@ import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.dateTimeFormatter
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.view.MainViewModel
@@ -52,10 +50,8 @@ class DrugAdapter1 (
             if(holder.tvCheck.isChecked) {
                 check += 1
                 if(getDrugCheck.createdAt == "") {
-                    val dateFormat = selectedDate.toString() + " " + itemList[pos].time
-                    val isoFormat = dateTimeToIso(LocalDateTime.parse(dateFormat, dateTimeFormatter))
                     dataManager.insertDrugCheck(DrugCheck(drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, time = itemList[pos].time,
-                        createdAt = isoFormat, checkedAt = LocalDateTime.now().toString()))
+                        createdAt = selectedDate.toString(), checkedAt = LocalDateTime.now().toString()))
                 }
             }else {
                 if(check > 0) check -= 1

@@ -157,6 +157,7 @@ class BodyFragment : Fragment() {
       if(getBody?.weight != null && getBody!!.weight!! > 0) {
          binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
          binding.pbBody.setProgressEndColor(Color.parseColor("#AED77D"))
+         binding.pbBody.max = dailyGoal!!.body.roundToInt()
          binding.pbBody.progress = getBody!!.weight.toString().toDouble().roundToInt()
 
          val split = getBody!!.weight.toString().split(".")

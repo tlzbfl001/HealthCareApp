@@ -31,8 +31,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
    }
 
    override fun onCreate(db: SQLiteDatabase) {
-      val user = "create table $USER(id integer primary key autoincrement, type text, email text, idToken text, accessToken text, name text, gender text, birthday text, " +
-         "image text, height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, $CREATED_AT text, $IS_UPDATED integer);"
+      val user = "create table $USER(id integer primary key autoincrement, type text, email text, idToken text, accessToken text, uid text, name text, gender text, " +
+         "birthday text, image text, height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(user)
 
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
@@ -61,7 +61,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "muscle real, bmi real, bmr real, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(body)
 
-      val sleep = "create table $SLEEP(id integer primary key autoincrement, $USER_ID integer, uid text, startTime text, endTime text, $CREATED_AT text, $IS_UPDATED integer);"
+      val sleep = "create table $SLEEP(id integer primary key autoincrement, $USER_ID integer, uid text, startTime text, endTime text, $IS_UPDATED integer);"
       db.execSQL(sleep)
 
       val drug = "create table $DRUG(id integer primary key autoincrement, $USER_ID integer, uid text, type text, name text, amount integer, unit text, " +

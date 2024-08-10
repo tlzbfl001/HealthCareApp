@@ -26,6 +26,7 @@ import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
@@ -100,8 +101,8 @@ class SleepFragment : Fragment() {
       getSleep = dataManager.getSleep(selectedDate.toString())
 
       if(getSleep.startTime != "" && getSleep.endTime != "") {
-         val bedTime = isoToDateTime(getSleep.startTime)
-         val wakeTime = isoToDateTime(getSleep.endTime)
+         val bedTime = LocalDateTime.parse(getSleep.startTime)
+         val wakeTime = LocalDateTime.parse(getSleep.endTime)
 
          val diff = Duration.between(bedTime, wakeTime)
          total =diff.toMinutes().toInt()

@@ -3,7 +3,6 @@ package kr.bodywell.android.view.home.sleep
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,18 +13,11 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
-import kr.bodywell.android.util.CustomUtil.isoFormatter
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
-import kr.bodywell.android.util.ViewModelUtil
 import kr.bodywell.android.view.home.DetailFragment
 import nl.joery.timerangepicker.TimeRangePicker
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
 class SleepRecordFragment : Fragment() {
    private var _binding: FragmentSleepRecordBinding? = null
@@ -98,8 +90,6 @@ class SleepRecordFragment : Fragment() {
       })
 
       binding.cvSave.setOnClickListener {
-         val getSleep = dataManager.getSleep(selectedDate.toString())
-
          if(sleepHour == 0 && sleepMinute == 0) {
             Toast.makeText(requireActivity(), "시간이 입력되지 않았습니다.", Toast.LENGTH_SHORT).show()
          }else {
@@ -118,20 +108,22 @@ class SleepRecordFragment : Fragment() {
             val wake = date.year.toString() + String.format("%02d", date.monthValue) + String.format("%02d", date.dayOfMonth) +
                String.format("%02d", wakeTime / 60) + String.format("%02d", wakeTime % 60)
 
-            val bedToDateTime = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
-            val wakeToDateTime = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
-            val bedFormat = dateTimeToIso(bedToDateTime)
-            val wakeFormat = dateTimeToIso(wakeToDateTime)
+            val bedTimeParse = LocalDateTime.parse(bed, DateTimeFormatter.ofPattern("yyyyMMddHHmm")).toString()
+            val wakeTimeParse = LocalDateTime.parse(wake, DateTimeFormatter.ofPattern("yyyyMMddHHmm")).toString()
 
-            if(getSleep.createdAt == "") {
-               dataManager.insertSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, createdAt = selectedDate.toString()))
+            val getSleep = dataManager.getSleep(selectedDate.toString())
+
+            if(getSleep.startTime == "") {
+               dataManager.insertSleep(Sleep(startTime = bedTimeParse, endTime = wakeTimeParse))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment3(requireActivity(), DetailFragment())
+            }else if(bedTimeParse == getSleep.startTime && wakeTimeParse == getSleep.endTime) {
+               Toast.makeText(requireActivity(), "수면시간이 동일합니다.", Toast.LENGTH_SHORT).show()
             }else {
-               dataManager.updateSleep(Sleep(startTime = bedFormat, endTime = wakeFormat, createdAt = selectedDate.toString(), isUpdated = 1))
+               dataManager.updateSleep(Sleep(startTime = bedTimeParse, endTime = wakeTimeParse, isUpdated = 1))
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment3(requireActivity(), DetailFragment())
             }
-
-            replaceFragment3(requireActivity(), DetailFragment())
          }
       }
 
