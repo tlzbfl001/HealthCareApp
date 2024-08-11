@@ -1,7 +1,6 @@
 package kr.bodywell.android.view.home.food
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +16,7 @@ import kr.bodywell.android.databinding.FragmentFoodDetailBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.home.DetailFragment
 
 class FoodDetailFragment : Fragment() {
@@ -44,15 +44,7 @@ class FoodDetailFragment : Fragment() {
    ): View {
       _binding = FragmentFoodDetailBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       dataManager = DataManager(activity)
       dataManager.open()

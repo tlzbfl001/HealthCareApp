@@ -51,7 +51,7 @@
             android:id="@+id/ivCalendar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="25dp"
             app:cardCornerRadius="14dp"
             app:layout_constraintStart_toEndOf="@id/tvName"

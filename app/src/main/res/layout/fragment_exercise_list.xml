@@ -30,7 +30,7 @@
        android:id="@+id/tvTitle"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:layout_marginTop="20dp"
+       android:layout_marginTop="15dp"
        android:text="나의 하루 운동 기록"
        android:textSize="18dp"
        android:textColor="@color/black_white"
@@ -55,7 +55,7 @@
          android:layout_marginLeft="14dp"
          android:layout_marginRight="14dp"
          android:text="입력"
-         android:textSize="17dp"
+         android:textSize="16dp"
          android:textColor="@color/black"/>
    </androidx.cardview.widget.CardView>
    <androidx.core.widget.NestedScrollView

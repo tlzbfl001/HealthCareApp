@@ -1,15 +1,11 @@
 package kr.bodywell.android.view.note
 
 import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
@@ -20,6 +16,7 @@ import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
@@ -46,7 +43,7 @@ class NoteWriteFragment : Fragment() {
    ): View {
       _binding = FragmentNoteWriteBinding.inflate(layoutInflater)
 
-      setStatusBar()
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -141,17 +138,6 @@ class NoteWriteFragment : Fragment() {
          binding.etTitle.hint = "제목."
          binding.etContent.hint = "내용입력"
          binding.ivFace.setImageResource(R.drawable.face1)
-      }
-   }
-
-   private fun setStatusBar() {
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
    }
 

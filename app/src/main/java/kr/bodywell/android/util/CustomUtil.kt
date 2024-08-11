@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
@@ -106,6 +107,14 @@ object CustomUtil {
       val compile = Pattern.compile(pattern)
       val match = compile.matcher(text)
       return match.find()
+   }
+
+   fun setStatusBar(context: Activity, mainLayout: ConstraintLayout) {
+      context.window?.apply {
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
    }
 
    fun getFoodCalories(context: Context, date:String) : Item {

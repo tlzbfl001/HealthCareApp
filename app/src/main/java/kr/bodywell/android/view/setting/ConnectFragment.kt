@@ -8,16 +8,12 @@ import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +29,7 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.view.MainViewModel
 import java.io.IOException
@@ -66,7 +63,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    ): View {
       _binding = FragmentConnectBinding.inflate(layoutInflater)
 
-      setStatusBar()
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -143,6 +140,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
          }
 
          binding.tvStatus1.visibility = if(list.isEmpty()) View.VISIBLE else View.GONE
+         binding.clPaired.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
          itemAdapter.submitList(list)
       }catch(e: SecurityException) {
          e.printStackTrace()
@@ -181,17 +179,6 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
             BluetoothDevice.ACTION_BOND_STATE_CHANGED -> getPairedDevices()
             BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> binding.progressBar2.visibility = View.GONE
          }
-      }
-   }
-
-   private fun setStatusBar() {
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
    }
 

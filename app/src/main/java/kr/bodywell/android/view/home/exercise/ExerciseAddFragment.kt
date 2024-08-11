@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DataManager
@@ -18,6 +19,7 @@ import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.time.LocalDateTime
 
 class ExerciseAddFragment : Fragment() {
@@ -45,15 +47,7 @@ class ExerciseAddFragment : Fragment() {
     ): View {
         _binding = FragmentExerciseAddBinding.inflate(layoutInflater)
 
-        requireActivity().window?.apply {
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            statusBarColor = Color.TRANSPARENT
-            navigationBarColor = Color.BLACK
-
-            val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-            val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-            binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-        }
+        setStatusBar(requireActivity(), binding.mainLayout)
 
         dataManager = DataManager(activity)
         dataManager.open()

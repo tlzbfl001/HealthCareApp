@@ -40,13 +40,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    var intVM = MutableLiveData<Int>()
    var msgVM = MutableLiveData<String>()
 
-   init {
+   /*init {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
       updateData()
       Log.d(TAG, "access: ${getToken.access}")
-   }
+   }*/
 
    private fun updateData() = viewModelScope.launch {
       while(requestStatus) {

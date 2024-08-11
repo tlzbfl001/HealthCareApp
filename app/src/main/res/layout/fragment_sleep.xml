@@ -114,7 +114,7 @@
             android:id="@+id/view1"
             android:layout_width="1dp"
             android:layout_height="40dp"
-            android:background="@color/black"
+            android:background="@color/black_white"
             android:layout_marginLeft="15dp"
             app:layout_constraintStart_toEndOf="@id/tv1"
             app:layout_constraintTop_toTopOf="@id/tv1"
@@ -126,7 +126,7 @@
             android:layout_height="wrap_content"
             android:text="0h 0m"
             android:textSize="16.5dp"
-            android:textColor="@color/black"
+            android:textColor="@color/black_white"
             app:layout_constraintTop_toBottomOf="@id/tv1"
             app:layout_constraintEnd_toEndOf="@id/tv1"/>
          <TextView

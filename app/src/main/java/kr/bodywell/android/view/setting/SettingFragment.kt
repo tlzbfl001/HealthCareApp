@@ -3,15 +3,12 @@ package kr.bodywell.android.view.setting
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -56,6 +53,7 @@ import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_2
@@ -92,7 +90,7 @@ class SettingFragment : Fragment() {
    ): View {
       _binding = FragmentSettingBinding.inflate(layoutInflater)
 
-      setStatusBar()
+      setStatusBar(requireActivity(), binding.constarint)
 
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
@@ -193,7 +191,7 @@ class SettingFragment : Fragment() {
                            Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            gsc.revokeAccess().addOnCompleteListener {
-                              if(it.isSuccessful) resignProcess() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              if(it.isSuccessful) deleteData() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
                      }
@@ -206,7 +204,7 @@ class SettingFragment : Fragment() {
                            lifecycleScope.launch {
                               NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
                                  override fun onSuccess() {
-                                    resignProcess()
+                                    deleteData()
                                  }
 
                                  override fun onFailure(httpStatus: Int, message: String) {
@@ -227,7 +225,7 @@ class SettingFragment : Fragment() {
                            }else if (token != null) {
                               UserApiClient.instance.unlink { err ->
                                  lifecycleScope.launch{
-                                    if(err == null) resignProcess() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                                    if(err == null) deleteData() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                  }
                               }
                            }
@@ -334,17 +332,6 @@ class SettingFragment : Fragment() {
       finishAffinity(requireActivity())
       startActivity(Intent(requireActivity(), InitActivity::class.java))
       exitProcess(0)
-   }
-
-   private fun setStatusBar() {
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.cl1.setPadding(0, statusBarHeight, 0, 0)
-      }
    }
 
    override fun onDetach() {

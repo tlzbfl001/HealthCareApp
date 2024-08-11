@@ -1,7 +1,6 @@
 package kr.bodywell.android.view.home.body
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,6 +18,7 @@ import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.home.DetailFragment
 import java.util.Calendar
 
@@ -47,15 +47,7 @@ class BodyRecordFragment : Fragment() {
    ): View {
       _binding = FragmentBodyRecordBinding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       bundle.putString("type", "body")
 

@@ -1,14 +1,11 @@
 package kr.bodywell.android.view.home
 
 import android.content.Context
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsetsController
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
@@ -21,6 +18,7 @@ import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.drug.DrugFragment
@@ -52,7 +50,7 @@ class DetailFragment : Fragment() {
    ): View {
       _binding = FragmentDetailBinding.inflate(layoutInflater)
 
-      setStatusBar()
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       binding.tvDate.text = dateFormat(selectedDate)
 
@@ -137,17 +135,6 @@ class DetailFragment : Fragment() {
             button6()
             binding.viewPager.currentItem = 5
          }
-      }
-   }
-
-   private fun setStatusBar() {
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
    }
 

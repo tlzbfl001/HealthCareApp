@@ -6,10 +6,15 @@
 
    <color name="white_black">#ffffff</color>
    <color name="white_grey">#ffffff</color>
+   <color name="white_light_grey">#ffffff</color>
    <color name="white_transparent">#ffffff</color>
    <color name="white_trans10">#ffffff</color>
    <color name="black_white">#000000</color>
    <color name="grey_white">#8F8686</color>
+   <color name="light_grey_dark_grey">#F1F1F1</color>
+   <color name="light_grey_grey">#C8C8C8</color>
+   <color name="light_grey_black">#F1F1F1</color>
+   <color name="logo">#595858</color>
 
    <color name="main_top">#cfccfe</color>
    <color name="main_cal_btn">#A38FF1</color>
@@ -31,4 +36,5 @@
    <color name="drug_list">#ffffff</color>
    <color name="drug_add">#516AC3</color>
    <color name="report_black">#F2F8F5</color>
+   <color name="note_grey">#F4FAEC</color>
 </resources>

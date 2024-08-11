@@ -35,11 +35,4 @@
       android:textColor="#aaa"
       app:layout_constraintTop_toBottomOf="@id/ivDevice"
       app:layout_constraintStart_toStartOf="@id/tvName"/>
-   <ImageView
-      android:layout_width="15dp"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:src="@drawable/setting"
-      app:layout_constraintTop_toTopOf="@id/ivDevice"
-      app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

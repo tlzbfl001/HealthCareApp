@@ -95,6 +95,7 @@ class WaterFragment : Fragment() {
 
          if(count > 0) {
             count -= 1
+            binding.rv.visibility = View.VISIBLE
             binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.progress = count
@@ -109,6 +110,8 @@ class WaterFragment : Fragment() {
 
             if(getWater.uid != "") dataManager.updateInt(WATER, IS_UPDATED, 1, selectedDate.toString())
          }
+
+         if(count == 0) binding.rv.visibility = View.GONE
 
          if(count == 0 && getWater.createdAt != "") {
             binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
@@ -126,6 +129,7 @@ class WaterFragment : Fragment() {
          if(count < 100) {
             count += 1
 
+            binding.rv.visibility = View.VISIBLE
             binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
             binding.pbWater.max = dailyGoal.water
@@ -161,11 +165,13 @@ class WaterFragment : Fragment() {
       count = getWater.count
 
       if(count > 0) {
+         binding.rv.visibility = View.VISIBLE
          binding.pbWater.setProgressStartColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.setProgressEndColor(Color.parseColor("#4AC0F2"))
          binding.pbWater.max = dailyGoal.water
          binding.pbWater.progress = count
       }else {
+         binding.rv.visibility = View.GONE
          binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
          binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
       }

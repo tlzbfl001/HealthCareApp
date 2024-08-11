@@ -1,7 +1,6 @@
 package kr.bodywell.android.view.home.exercise
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +19,7 @@ import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 
 class ExerciseRecord1Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord1Binding? = null
@@ -47,22 +47,14 @@ class ExerciseRecord1Fragment : Fragment() {
    ): View {
       _binding = FragmentExerciseRecord1Binding.inflate(layoutInflater)
 
-      requireActivity().window?.apply {
-         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-         statusBarColor = Color.TRANSPARENT
-         navigationBarColor = Color.BLACK
-
-         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
-         binding.constraint.setPadding(0, statusBarHeight, 0, 0)
-      }
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       dataManager = DataManager(activity)
       dataManager.open()
 
       bundle.putString("back", "1")
 
-      binding.constraint.setOnTouchListener { _, _ ->
+      binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }

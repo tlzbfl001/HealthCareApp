@@ -30,7 +30,7 @@
       android:id="@+id/tvTitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="20dp"
+      android:layout_marginTop="15dp"
       android:text="나의 하루 식단 기록"
       android:textSize="18dp"
       android:textColor="@color/black_white"
@@ -57,7 +57,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/white_grey"
             app:cardCornerRadius="15dp"
             app:cardElevation="5dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -73,7 +73,7 @@
                   android:layout_height="wrap_content"
                   android:text="기본 정보"
                   android:textSize="17dp"
-                  android:textColor="#888888"
+                  android:textColor="@color/black_white"
                   android:textStyle="bold"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintTop_toTopOf="parent"/>
@@ -84,16 +84,16 @@
                   android:layout_marginTop="20dp"
                   android:text="BMI"
                   android:textSize="16dp"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintTop_toBottomOf="@id/tv1"/>
                <EditText
                    android:id="@+id/etBmi"
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
-                   android:backgroundTint="#969696"
+                   android:backgroundTint="@color/grey_white"
                    android:textSize="16dp"
-                   android:textColor="@color/black"
+                   android:textColor="@color/black_white"
                    android:singleLine="true"
                    android:inputType="numberDecimal"
                    android:maxLength="5"
@@ -108,7 +108,7 @@
                    android:layout_marginTop="20dp"
                    android:text="체지방율"
                    android:textSize="16dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@id/tv2"/>
                <EditText
@@ -116,9 +116,9 @@
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:paddingRight="20dp"
-                  android:backgroundTint="#969696"
+                  android:backgroundTint="@color/grey_white"
                   android:textSize="16dp"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:singleLine="true"
                   android:inputType="numberDecimal"
                   android:maxLength="5"
@@ -133,7 +133,7 @@
                    android:layout_marginRight="5dp"
                    android:text="%"
                    android:textSize="15dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintBottom_toBottomOf="@id/etFat"/>
                <TextView
@@ -143,7 +143,7 @@
                    android:layout_marginTop="20dp"
                    android:text="골격근량"
                    android:textSize="16dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toBottomOf="@id/tv3"/>
                <EditText
@@ -151,9 +151,9 @@
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:paddingRight="20dp"
-                  android:backgroundTint="#969696"
+                  android:backgroundTint="@color/grey_white"
                   android:textSize="16dp"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:singleLine="true"
                   android:inputType="numberDecimal"
                   android:maxLength="5"
@@ -168,7 +168,7 @@
                    android:layout_marginRight="5dp"
                    android:text="kg"
                    android:textSize="14dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintBottom_toBottomOf="@id/etMuscle"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -180,7 +180,7 @@
              android:layout_marginTop="30dp"
              android:layout_marginLeft="25dp"
              android:layout_marginRight="25dp"
-             app:cardBackgroundColor="@color/white"
+             app:cardBackgroundColor="@color/white_grey"
              app:cardCornerRadius="15dp"
              app:cardElevation="5dp"
              app:layout_constraintTop_toBottomOf="@id/cv1"
@@ -197,7 +197,7 @@
                   android:layout_marginLeft="15dp"
                   android:text="기초대사량 구하기"
                   android:textSize="17dp"
-                  android:textColor="#888888"
+                  android:textColor="@color/black_white"
                   android:textStyle="bold"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintTop_toTopOf="parent"/>
@@ -218,7 +218,7 @@
                   android:layout_marginLeft="5dp"
                   android:text="내 신체 정보 입력"
                   android:textSize="16dp"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   app:layout_constraintTop_toTopOf="@id/tv6"
                   app:layout_constraintBottom_toBottomOf="@id/tv6"
                   app:layout_constraintStart_toEndOf="@id/tv6"/>
@@ -229,7 +229,7 @@
                    android:layout_marginLeft="15dp"
                    android:text="키"
                    android:textSize="16dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toTopOf="@id/etHeight"
                    app:layout_constraintBottom_toBottomOf="@id/etHeight"/>
@@ -237,11 +237,11 @@
                   android:id="@+id/etHeight"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
-                  android:backgroundTint="#969696"
+                  android:backgroundTint="@color/grey_white"
                   android:layout_marginTop="13dp"
                   android:layout_marginRight="15dp"
                   android:textSize="16dp"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:singleLine="true"
                   android:inputType="numberDecimal"
                   android:maxLength="5"
@@ -255,7 +255,7 @@
                    android:layout_marginRight="20dp"
                    android:text="cm"
                    android:textSize="14dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintBottom_toBottomOf="@id/etHeight"/>
                <TextView
@@ -265,7 +265,7 @@
                    android:layout_marginLeft="15dp"
                    android:text="몸무게"
                    android:textSize="16dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintStart_toStartOf="parent"
                    app:layout_constraintTop_toTopOf="@id/etWeight"
                    app:layout_constraintBottom_toBottomOf="@id/etWeight"/>
@@ -273,10 +273,10 @@
                   android:id="@+id/etWeight"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
-                  android:backgroundTint="#969696"
+                  android:backgroundTint="@color/grey_white"
                   android:layout_marginRight="15dp"
                   android:textSize="16dp"
-                  android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                   android:singleLine="true"
                   android:inputType="numberDecimal"
                   android:maxLength="5"
@@ -290,7 +290,7 @@
                    android:layout_marginRight="20dp"
                    android:text="kg"
                    android:textSize="14dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintBottom_toBottomOf="@id/etWeight"/>
                <TextView
@@ -310,7 +310,7 @@
                    android:layout_marginLeft="5dp"
                    android:text="내 신체 정보 입력"
                    android:textSize="16dp"
-                   android:textColor="@color/black"
+                  android:textColor="@color/black_white"
                    app:layout_constraintTop_toTopOf="@id/tv11"
                    app:layout_constraintBottom_toBottomOf="@id/tv11"
                    app:layout_constraintStart_toEndOf="@id/tv11"/>
@@ -334,7 +334,7 @@
                       android:checked="true"
                       android:text="활동 안함 : 전혀 운동을 하지 않음"
                       android:textSize="12dp"
-                      android:textColor="@color/black"/>
+                     android:textColor="@color/black_white"/>
                   <com.google.android.material.radiobutton.MaterialRadioButton
                       android:id="@+id/radioBtn2"
                       android:layout_width="wrap_content"
@@ -345,7 +345,7 @@
                       android:drawablePadding="8dp"
                       android:text="가벼운 활동 : 가벼운 운동이나 스포츠 1~3일"
                       android:textSize="12dp"
-                      android:textColor="@color/black"/>
+                     android:textColor="@color/black_white"/>
                   <com.google.android.material.radiobutton.MaterialRadioButton
                       android:id="@+id/radioBtn3"
                       android:layout_width="wrap_content"
@@ -356,7 +356,7 @@
                       android:drawablePadding="8dp"
                       android:text="보통 활동 : 적당한 운동이나 스포츠 3~5일"
                       android:textSize="12dp"
-                      android:textColor="@color/black"/>
+                     android:textColor="@color/black_white"/>
                   <com.google.android.material.radiobutton.MaterialRadioButton
                       android:id="@+id/radioBtn4"
                       android:layout_width="wrap_content"
@@ -367,7 +367,7 @@
                       android:drawablePadding="8dp"
                       android:text="매우 활동 : 강렬한 운동이나 스포츠 6~7일"
                       android:textSize="12dp"
-                      android:textColor="@color/black"/>
+                     android:textColor="@color/black_white"/>
                   <com.google.android.material.radiobutton.MaterialRadioButton
                       android:id="@+id/radioBtn5"
                       android:layout_width="wrap_content"
@@ -378,7 +378,7 @@
                       android:drawablePadding="8dp"
                       android:text="심한 활동 : 매우 심한 운동이나 물리적 작업"
                       android:textSize="12dp"
-                      android:textColor="@color/black"/>
+                     android:textColor="@color/black_white"/>
                </RadioGroup>
                <androidx.cardview.widget.CardView
                    android:id="@+id/cvResult"
