@@ -1,28 +1,19 @@
 package kr.bodywell.android.view.init
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsetsController
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
-import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
-import kr.bodywell.android.util.RegisterUtil.kakaoSignupRequest
-import kr.bodywell.android.util.RegisterUtil.naverSignupRequest
 import kr.bodywell.android.util.RegisterUtil.registerTest
 
 class SignupActivity : AppCompatActivity() {

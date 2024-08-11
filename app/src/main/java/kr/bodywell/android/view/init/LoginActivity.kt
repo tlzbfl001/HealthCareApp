@@ -1,12 +1,9 @@
 package kr.bodywell.android.view.init
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -31,7 +28,6 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
 import kr.bodywell.android.util.RegisterUtil.naverLoginRequest
 import kr.bodywell.android.view.home.MainActivity

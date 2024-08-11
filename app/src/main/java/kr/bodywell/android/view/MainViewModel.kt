@@ -11,7 +11,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED
@@ -22,8 +21,6 @@ import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.ViewModelUtil.createApiRequest
 import kr.bodywell.android.util.ViewModelUtil.createSync
-import kr.bodywell.android.util.ViewModelUtil.getToken
-import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.refreshToken
 import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import kr.bodywell.android.util.ViewModelUtil.syncCheck

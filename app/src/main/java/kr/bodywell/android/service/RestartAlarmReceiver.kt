@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import java.time.LocalDate
 

@@ -1,12 +1,9 @@
 package kr.bodywell.android.view.init
 
-import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsetsController
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ActivityInputBinding
 

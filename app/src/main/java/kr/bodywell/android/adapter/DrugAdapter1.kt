@@ -16,8 +16,6 @@ import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeFormatter
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDateTime
 

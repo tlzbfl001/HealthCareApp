@@ -2,7 +2,6 @@ package kr.bodywell.android.adapter
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
@@ -26,7 +24,6 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
-import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
