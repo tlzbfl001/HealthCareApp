@@ -1,31 +1,33 @@
 package kr.bodywell.android.adapter
 
-import android.graphics.Color
+import android.app.Activity
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ItemBtListBinding
 import kr.bodywell.android.model.Bluetooth
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.BluetoothUtil
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.view.home.body.BodyRecordFragment
 
 class BTItemAdapter(
    private val listener: Listener,
    private val adapterType: Boolean
 ) : ListAdapter<Bluetooth, BTItemAdapter.MyHolder>(Comparator()) {
-   private var oldTextView: TextView? = null
-   private var newData = ""
-
-   class MyHolder(view: View, private val adapter: BTItemAdapter, private val listener: Listener, private val adapterType: Boolean) : RecyclerView.ViewHolder(view) {
+   class MyHolder(view: View, private val listener: Listener, private val adapterType: Boolean) : RecyclerView.ViewHolder(view) {
       private val b = ItemBtListBinding.bind(view)
       private var listItem: Bluetooth? = null
 
       init {
          itemView.setOnClickListener{
-            b.tvStatus.visibility = View.VISIBLE
             if(adapterType) {
                try {
                   listItem?.device?.createBond()
@@ -34,13 +36,11 @@ class BTItemAdapter(
                }
             }else {
                listItem?.let { it1 -> listener.onClick(it1) }
-               adapter.selectTextView(b.tvStatus)
             }
          }
       }
 
       fun bind(item: Bluetooth) = with(b) {
-         tvName.visibility = if(adapterType) View.GONE else View.VISIBLE
          listItem = item
 
          try {
@@ -63,25 +63,11 @@ class BTItemAdapter(
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_bt_list, parent,false)
-      return MyHolder(view, this, listener, adapterType)
+      return MyHolder(view, listener, adapterType)
    }
 
    override fun onBindViewHolder(holder: MyHolder, pos: Int) {
       holder.bind(getItem(pos))
-   }
-
-   fun selectTextView(textView: TextView) {
-      oldTextView?.visibility = View.GONE
-      oldTextView?.text = ""
-      oldTextView = textView
-      oldTextView?.visibility = View.VISIBLE
-      oldTextView?.setTextColor(Color.parseColor("#035DAC"))
-      oldTextView?.text = newData
-   }
-
-   fun setData(data: String){
-      newData = data
-      notifyDataSetChanged()
    }
 
    interface Listener {

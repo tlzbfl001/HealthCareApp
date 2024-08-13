@@ -12,6 +12,8 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:src="@drawable/baseline_devices"
+      android:layout_marginLeft="25dp"
+      android:layout_marginRight="25dp"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"/>
    <TextView
@@ -20,19 +22,9 @@
       android:layout_height="wrap_content"
       android:text="text"
       android:textSize="15.5dp"
-      android:textColor="@color/black"
-      android:layout_marginLeft="8dp"
+      android:textColor="@color/black_white"
+      android:layout_marginLeft="10dp"
       app:layout_constraintStart_toEndOf="@id/ivDevice"
       app:layout_constraintTop_toTopOf="@id/ivDevice"
       app:layout_constraintBottom_toBottomOf="@id/ivDevice"/>
-   <TextView
-      android:id="@+id/tvStatus"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:visibility="gone"
-      android:text="연결중..."
-      android:textSize="14dp"
-      android:textColor="#aaa"
-      app:layout_constraintTop_toBottomOf="@id/ivDevice"
-      app:layout_constraintStart_toStartOf="@id/tvName"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

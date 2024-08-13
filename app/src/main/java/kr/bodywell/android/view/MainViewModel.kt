@@ -21,6 +21,8 @@ import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.ViewModelUtil.createApiRequest
 import kr.bodywell.android.util.ViewModelUtil.createSync
+import kr.bodywell.android.util.ViewModelUtil.getToken
+import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.refreshToken
 import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import kr.bodywell.android.util.ViewModelUtil.syncCheck
@@ -31,19 +33,19 @@ import java.util.UUID
 class MainViewModel(application: Application) : AndroidViewModel(application) {
    private val context = application.applicationContext
    private var dataManager: DataManager = DataManager(context)
-   private val uuid="00001101-0000-1000-8000-00805F9B34FB"
+   private val uuid="00002a05-0000-1000-8000-00805f9b34fb"
    private var mSocket: BluetoothSocket? = null
    var dateVM = MutableLiveData<LocalDate>()
    var intVM = MutableLiveData<Int>()
    var msgVM = MutableLiveData<String>()
 
-   /*init {
+   init {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
       updateData()
       Log.d(TAG, "access: ${getToken.access}")
-   }*/
+   }
 
    private fun updateData() = viewModelScope.launch {
       while(requestStatus) {

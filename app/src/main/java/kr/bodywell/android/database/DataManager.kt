@@ -3,6 +3,7 @@ package kr.bodywell.android.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
+import android.util.Log
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.BODY
@@ -38,6 +39,7 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.MyApp
 
 class DataManager(private var context: Context?) {

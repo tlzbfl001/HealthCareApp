@@ -187,4 +187,6 @@
    <string name="naverClientSecret">tkqS2oroTP</string>
    <string name="kakaoNativeAppKey">d9c3b1c89cfbb632aa6cbfeadd09861e</string>
    <string name="kakaoOauthHost">kakaod9c3b1c89cfbb632aa6cbfeadd09861e</string>
+   <!-- TODO: Remove or change this placeholder text -->
+   <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

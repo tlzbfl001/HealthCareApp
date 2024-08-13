@@ -26,9 +26,8 @@ import java.util.regex.Pattern
 
 object CustomUtil {
    const val TAG = "logTAG"
+   private val isoFormatter: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT
    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-//   val isoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'T'")
-   val isoFormatter: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT
    var layoutType = 1
    var drugTimeList = ArrayList<DrugTime>()
 

@@ -378,19 +378,17 @@ object RegisterUtil {
 			val hardwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 			val softwareVer = if(ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == null || ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == "") {
 				"" }else ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
-			val data = DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer)
 			val getUserUid = RetrofitAPI.api.getUser("Bearer ${token.access}")
-			val createDevice = RetrofitAPI.api.createDevice("Bearer ${token.access}", data)
+			val createDevice = RetrofitAPI.api.createDevice("Bearer ${token.access}", DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer))
 			val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}")
 			val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer ${token.access}")
-			val getGoal = RetrofitAPI.api.getAllGoal("Bearer ${token.access}")
 
+			Log.d(TAG, "getUserUid: ${getUserUid.isSuccessful}/${getUserUid.body()}")
 			Log.d(TAG, "createDevice: ${createDevice.isSuccessful}/${createDevice.body()}")
 			Log.d(TAG, "getAllFood: ${getAllFood.isSuccessful}/${getAllFood.body()}")
 			Log.d(TAG, "getAllActivity: ${getAllActivity.isSuccessful}/${getAllActivity.body()}")
-			Log.d(TAG, "getGoal: ${getGoal.isSuccessful}/${getGoal.body()}")
 
-			if(getUserUid.isSuccessful && createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful && getGoal.isSuccessful) {
+			if(getUserUid.isSuccessful && createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful) {
 				MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id) // 사용자 Id 저장
 				dataManager.updateUserStr("uid", getUserUid.body()!!.uid)
 
@@ -415,10 +413,6 @@ object RegisterUtil {
 					dataManager.insertExercise(Exercise(admin = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString()))
-				}
-
-				for(i in 0 until getAllActivity.body()!!.size) {
-					dataManager.insertGoal(Goal(uid = getGoal.body()!![i].uid, createdAt = LocalDate.now().toString()))
 				}
 
 				val getSync = dataManager.getSynced()

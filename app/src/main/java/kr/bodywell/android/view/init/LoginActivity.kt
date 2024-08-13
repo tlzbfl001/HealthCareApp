@@ -28,6 +28,7 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
 import kr.bodywell.android.util.RegisterUtil.naverLoginRequest
 import kr.bodywell.android.view.home.MainActivity
@@ -106,13 +107,13 @@ class LoginActivity : AppCompatActivity() {
                if(getUser.createdAt == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      val user = User(type = "google", email = it.result.email!!, idToken = it.result.idToken!!)
-                     val intent = Intent(this, SignupActivity::class.java)
-                     intent.putExtra("user", user)
-                     startActivity(intent)
+//                     val intent = Intent(this, SignupActivity::class.java)
+//                     intent.putExtra("user", user)
+//                     startActivity(intent)
 
-//                     CoroutineScope(Dispatchers.IO).launch {
-//                        googleLoginRequest(this@LoginActivity, dataManager, user)
-//                     }
+                     CoroutineScope(Dispatchers.IO).launch {
+                        googleLoginRequest(this@LoginActivity, dataManager, user)
+                     }
                   }else {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }

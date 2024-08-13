@@ -571,7 +571,6 @@ object ViewModelUtil {
 			if(type == 1) {
 				val dateToIso = dateToIso(data[i].createdAt)
 				val dto = GoalDTO(data[i].body, data[i].food, data[i].exercise, data[i].waterVolume, data[i].water, data[i].sleep, data[i].drug, dateToIso)
-				Log.d(TAG, "dto: ${dto}")
 
 				val response = RetrofitAPI.api.createGoal("Bearer ${getToken.access}", dto)
 				if(response.isSuccessful) {
@@ -625,7 +624,7 @@ object ViewModelUtil {
 					if(syncFood.body()?.data!![i].deletedAt != null) {
 						dataManager.deleteItem(FOOD, "id", getData.id)
 					}else {
-						dataManager.updateFood(Food(name = syncFood.body()?.data!![i].name, unit = syncFood.body()?.data!![i].volumeUnit,
+						dataManager.updateFood(Food(id=getData.id, name = syncFood.body()?.data!![i].name, unit = syncFood.body()?.data!![i].volumeUnit,
 							amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calorie, carbohydrate = syncFood.body()?.data!![i].carbohydrate,
 							protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat))
 						dataManager.updateStr(FOOD, "uid", syncFood.body()?.data!![i].uid, "id", getData.id)
@@ -938,7 +937,7 @@ object ViewModelUtil {
 						if(syncGoal.body()?.data!![i].deletedAt != null) {
 							dataManager.deleteItem(GOAL, "id", getData.id)
 						}else {
-							dataManager.updateGoal(Goal(uid = syncGoal.body()?.data!![i].uid, food = syncGoal.body()?.data!![i].kcalOfDiet,
+							dataManager.updateGoal(Goal(id=getData.id, uid = syncGoal.body()?.data!![i].uid, food = 1000,
 								waterVolume = syncGoal.body()?.data!![i].waterAmountOfCup, water = syncGoal.body()?.data!![i].waterIntake,
 								exercise = syncGoal.body()?.data!![i].kcalOfWorkout, body = syncGoal.body()?.data!![i].weight,
 								sleep = syncGoal.body()?.data!![i].sleep, drug = syncGoal.body()?.data!![i].medicineIntake))

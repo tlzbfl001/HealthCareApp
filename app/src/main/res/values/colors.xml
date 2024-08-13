@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-   <color name="white">#ffffff</color>
-   <color name="black">#000000</color>
    <color name="transparent">#00FFFFFF</color>
-
    <color name="white_black">#ffffff</color>
+   <color name="white_grey30">#ffffff</color>
    <color name="white_grey">#ffffff</color>
    <color name="white_light_grey">#ffffff</color>
    <color name="white_transparent">#ffffff</color>
    <color name="white_trans10">#ffffff</color>
    <color name="black_white">#000000</color>
-   <color name="grey_white">#8F8686</color>
    <color name="light_grey_dark_grey">#F1F1F1</color>
    <color name="light_grey_grey">#C8C8C8</color>
    <color name="light_grey_black">#F1F1F1</color>
+   <color name="grey_white">#8F8686</color>
+   <color name="grey_dark_grey">#838383</color>
    <color name="logo">#595858</color>
-
    <color name="main_top">#cfccfe</color>
    <color name="main_cal_btn">#A38FF1</color>
-
-   <color name="progress_base">#33D8D8D8</color>
-
+   <color name="progress_base">#4DCCCCCC</color>
    <color name="food_grey">#FFFAFA</color>
    <color name="food_black">#FFFAFA</color>
    <color name="water_grey">#DCEDF7</color>
@@ -37,4 +33,6 @@
    <color name="drug_add">#516AC3</color>
    <color name="report_black">#F2F8F5</color>
    <color name="note_grey">#F4FAEC</color>
+   <color name="note_green">#88C0DD9F</color>
+   <color name="note_dark_green">#88C0DD9F</color>
 </resources>
