@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import kr.bodywell.android.R
 
-class Tab1 : Fragment() {
+class Tab2Fragment : Fragment() {
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
 	): View? {
-		return inflater.inflate(R.layout.fragment_tab1, container, false)
+		return inflater.inflate(R.layout.fragment_tab2, container, false)
 	}
 }

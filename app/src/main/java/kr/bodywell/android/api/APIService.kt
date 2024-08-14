@@ -1,5 +1,6 @@
 package kr.bodywell.android.api
 
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DeviceDTO
@@ -24,6 +25,7 @@ import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
 import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
+import kr.bodywell.android.api.response.CheckResponse
 import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DietResponse
 import kr.bodywell.android.api.response.FoodResponse
@@ -45,7 +47,6 @@ import kr.bodywell.android.api.response.SyncSleepResponse
 import kr.bodywell.android.api.response.SyncWaterResponse
 import kr.bodywell.android.api.response.SyncWorkoutResponse
 import kr.bodywell.android.api.response.TokenResponse
-import kr.bodywell.android.api.response.UserEmailResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
 import kr.bodywell.android.api.response.WorkoutResponse
@@ -57,6 +58,7 @@ import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface APIService {
 	@POST("auth/google/login")
@@ -82,7 +84,7 @@ interface APIService {
 	@GET("users/check-email/{email}")
 	suspend fun getUserEmail(
 		@Path("email") uid: String
-	): Response<UserEmailResponse>
+	): Response<CheckResponse>
 
 	@GET("user")
 	suspend fun getUser(
@@ -158,12 +160,6 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<DietResponse>>
 
-	@GET("user/diets/{uid}")
-	suspend fun getDiet(
-		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
-	): Response<DietResponse>
-
 	@POST("user/diets")
 	suspend fun createDiets(
 		@Header("Authorization") token: String,
@@ -223,6 +219,12 @@ interface APIService {
 	suspend fun getAllActivity(
 		@Header("Authorization") token: String
 	): Response<List<ActivityResponse>>
+
+	@GET("user/activities/check-name")
+	suspend fun getCheckActivity(
+		@Header("Authorization") token: String,
+		@Query("name") name: String
+	): Response<CheckResponse>
 
 	@POST("user/activities")
 	suspend fun createActivity(

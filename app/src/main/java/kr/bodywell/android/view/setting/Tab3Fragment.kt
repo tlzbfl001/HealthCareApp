@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import kr.bodywell.android.R
 
-class Tab3 : Fragment() {
+class Tab3Fragment : Fragment() {
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?

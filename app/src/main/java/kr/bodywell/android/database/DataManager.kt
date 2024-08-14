@@ -964,7 +964,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheck(data: String) : ArrayList<DrugCheck> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<DrugCheck>()
-      val sql = "select drugId, drugTimeId from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and $CREATED_AT > '$data'"
+      val sql = "select drugId, drugTimeId from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and checkedAt > '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = DrugCheck()
@@ -979,7 +979,7 @@ class DataManager(private var context: Context?) {
    fun getDrugCheckCount(data: String) : Int {
       val db = dbHelper!!.readableDatabase
       var count = 0
-      val sql = "select count(id) from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and substr(createdAt,1,10) = '$data'"
+      val sql = "select count(id) from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and substr($CREATED_AT,1,10) = '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          count = cursor.getInt(0)

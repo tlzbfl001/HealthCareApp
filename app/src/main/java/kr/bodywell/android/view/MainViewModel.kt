@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED

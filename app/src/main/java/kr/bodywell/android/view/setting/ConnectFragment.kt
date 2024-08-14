@@ -28,19 +28,24 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.BTItemAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.view.MainViewModel
+import kr.bodywell.android.view.home.body.BodyRecordFragment
 import java.io.IOException
 import java.util.UUID
 
@@ -306,6 +311,12 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       MyApp.prefs.setMacId(Constant.BT_PREFS.name, device.device.address)
       replaceFragment1(requireActivity(), BluetoothFragment())
    }
+
+//   companion object {
+//      private val SERVICE_UUID: UUID = UUID.fromString("0d58cf3c-3f57-11ec-9356-0242ac130003")
+//      private val CHARACTERISTIC_UUID: UUID = UUID.fromString("0d58cfe6-3f57-11ec-9356-0242ac130003")
+//      private val CCCD_UUID: UUID = UUID.fromString("00002a05-0000-1000-8000-00805f9b34fb")
+//   }
 
    override fun onDetach() {
       super.onDetach()

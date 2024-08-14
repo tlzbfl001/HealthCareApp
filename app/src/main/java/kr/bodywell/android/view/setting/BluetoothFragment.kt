@@ -1,28 +1,18 @@
 package kr.bodywell.android.view.setting
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TableLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.kakao.sdk.talk.TalkApi
-import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBluetoothBinding
-import kr.bodywell.android.databinding.FragmentConnectBinding
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
-import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.lang.RuntimeException
 
 class BluetoothFragment : Fragment() {
@@ -30,10 +20,6 @@ class BluetoothFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private lateinit var dataManager: DataManager
-	private lateinit var tab1: Tab1
-	private lateinit var tab2: Tab2
-	private lateinit var tab3: Tab3
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -51,25 +37,39 @@ class BluetoothFragment : Fragment() {
 	): View {
 		_binding = FragmentBluetoothBinding.inflate(layoutInflater)
 
-		Log.i(TAG, "getMacId: ${MyApp.prefs.getMacId()}")
+		setStatusBar(requireActivity(), binding.mainLayout)
+
+		binding.clBack.setOnClickListener {
+			replaceFragment3(requireActivity(), SettingFragment())
+		}
+
+		binding.viewPager.adapter = MyAdapter(requireActivity())
+		TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, index ->
+			tab.text = when(index) {
+				0 -> "CONNECTION"
+				1 -> "TERMINAL"
+				2 -> "SERVICES"
+				else -> throw RuntimeException("Invalid position : $index")
+			}
+		}.attach()
 
 		return binding.root
 	}
 
-//	class MyAdapter(activity: Activity): FragmentStateAdapter(activity) {
-//		override fun getItemCount(): Int {
-//			return 3
-//		}
-//
-//		override fun createFragment(position: Int): Fragment {
-//			return when(position) {
-//				0 -> Tab1()
-//				1 -> Tab2()
-//				2 -> Tab3()
-//				else -> throw RuntimeException("Invalid position : $position")
-//			}
-//		}
-//	}
+	class MyAdapter(activity: FragmentActivity): FragmentStateAdapter(activity) {
+		override fun getItemCount(): Int {
+			return 3
+		}
+
+		override fun createFragment(position: Int): Fragment {
+			return when(position) {
+				0 -> Tab1Fragment()
+				1 -> Tab2Fragment()
+				2 -> Tab3Fragment()
+				else -> throw RuntimeException("Invalid position : $position")
+			}
+		}
+	}
 
 	override fun onDetach() {
 		super.onDetach()

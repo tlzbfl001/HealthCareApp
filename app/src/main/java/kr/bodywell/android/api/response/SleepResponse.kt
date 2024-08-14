@@ -21,8 +21,3 @@ data class SleepResponse (
 	@SerializedName("deletedAt")
 	var deletedAt: String?
 )
-
-data class SleepResponses (
-	@SerializedName("sleeps")
-	var sleeps: List<SleepResponse>
-)

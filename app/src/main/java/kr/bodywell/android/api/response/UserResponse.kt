@@ -7,7 +7,7 @@ data class UserResponse (
 	var uid: String = ""
 )
 
-data class UserEmailResponse (
+data class CheckResponse (
 	@SerializedName("exists")
 	var exists: Boolean = false
 )
