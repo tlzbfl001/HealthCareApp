@@ -3,7 +3,6 @@ package kr.bodywell.android.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
-import android.util.Log
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.BODY
@@ -39,7 +38,6 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.MyApp
 
 class DataManager(private var context: Context?) {
@@ -170,6 +168,19 @@ class DataManager(private var context: Context?) {
       return values
    }
 
+   fun getSleep(table: String, column: String, data: String) : Food {
+      val db = dbHelper!!.readableDatabase
+      val values = Food()
+      val sql = "select id, uid from $table where $USER_ID = ${MyApp.prefs.getUserId()} and substr($column,1,10) = '$data'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         values.id = cursor.getInt(0)
+         values.uid = cursor.getString(1)
+      }
+      cursor.close()
+      return values
+   }
+
    fun getFood(column: String, data: Int) : Food {
       val db = dbHelper!!.readableDatabase
       val values = Food()
@@ -277,7 +288,7 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Food()
          values.id=cursor.getInt(0)
-         values.admin=cursor.getInt(2)
+         values.registerType=cursor.getString(2)
          values.uid=cursor.getString(3)
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
@@ -642,12 +653,12 @@ class DataManager(private var context: Context?) {
    fun getSearchExercise(column: String) : ArrayList<Exercise> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<Exercise>()
-      val sql = "select id, admin, uid, name from $EXERCISE where $USER_ID = ${MyApp.prefs.getUserId()} group by name order by $column desc"
+      val sql = "select id, registerType, uid, name from $EXERCISE where $USER_ID = ${MyApp.prefs.getUserId()} group by name order by $column desc"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = Exercise()
          values.id = cursor.getInt(0)
-         values.admin = cursor.getInt(1)
+         values.registerType = cursor.getString(1)
          values.uid = cursor.getString(2)
          values.name = cursor.getString(3)
          list.add(values)
@@ -1329,7 +1340,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getUserId())
-      values.put("admin", data.admin)
+      values.put("registerType", data.registerType)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("unit", data.unit)
@@ -1380,7 +1391,7 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getUserId())
-      values.put("admin", data.admin)
+      values.put("registerType", data.registerType)
       values.put("uid", data.uid)
       values.put("name", data.name)
       values.put("useCount", data.useCount)

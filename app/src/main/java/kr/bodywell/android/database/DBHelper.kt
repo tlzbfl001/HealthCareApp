@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 6
+      const val DATABASE_VERSION = 7
       const val USER = "user"
       const val TOKEN = "token"
       const val FOOD = "food"
@@ -26,6 +26,8 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val UNUSED = "unused"
       const val SYNC_TIME = "syncTime"
       const val USER_ID = "userId"
+      const val TYPE_ADMIN = "Admin"
+      const val TYPE_USER = "User"
       const val CREATED_AT = "createdAt"
       const val IS_UPDATED = "isUpdated"
    }
@@ -38,7 +40,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
       db.execSQL(token)
 
-      val food = "create table $FOOD(id integer primary key autoincrement, $USER_ID integer, admin integer, uid text, name text, unit text, amount integer, kcal integer, " +
+      val food = "create table $FOOD(id integer primary key autoincrement, $USER_ID integer, registerType text, uid text, name text, unit text, amount integer, kcal integer, " +
          "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, $IS_UPDATED integer);"
       db.execSQL(food)
 
@@ -49,7 +51,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val water = "create table $WATER(id integer primary key autoincrement, $USER_ID integer, uid text, count integer, volume integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(water)
 
-      val exercise = "create table $EXERCISE(id integer primary key autoincrement, $USER_ID integer, admin integer, uid text, name text, " +
+      val exercise = "create table $EXERCISE(id integer primary key autoincrement, $USER_ID integer, registerType text, uid text, name text, " +
          "useCount integer, useDate text, $IS_UPDATED integer);"
       db.execSQL(exercise)
 

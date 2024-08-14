@@ -231,8 +231,8 @@
       android:id="@+id/cl2"
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_marginTop="10dp"
-      android:layout_marginBottom="10dp"
+      android:layout_marginTop="5dp"
+      android:layout_marginBottom="5dp"
       app:layout_constraintTop_toBottomOf="@id/cl1"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
@@ -247,8 +247,8 @@
          app:layout_constraintBottom_toTopOf="@id/clRow2">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clFood"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -307,8 +307,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clWater"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clFood"
@@ -377,8 +377,8 @@
          app:layout_constraintBottom_toTopOf="@id/clRow3">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clExercise"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -438,8 +438,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clBody"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clExercise"
@@ -508,8 +508,8 @@
          app:layout_constraintBottom_toBottomOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clSleep"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -569,8 +569,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clDrug"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clSleep"

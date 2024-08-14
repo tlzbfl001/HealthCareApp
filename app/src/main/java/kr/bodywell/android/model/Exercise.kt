@@ -2,13 +2,14 @@ package kr.bodywell.android.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 
 @Parcelize
 data class Exercise (
    var id: Int = 0,
    var userId: Int = 0,
    var uid: String = "",
-   var admin: Int = 0,
+   var registerType: String = TYPE_USER,
    var name: String = "",
    var intensity: String = "HIGH",
    var workoutTime: Int = 0,

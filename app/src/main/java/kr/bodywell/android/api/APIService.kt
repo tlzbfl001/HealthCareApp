@@ -254,12 +254,6 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<WorkoutResponse>>
 
-	@GET("user/workouts/{uid}")
-	suspend fun getWorkout(
-		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
-	): Response<WorkoutResponse>
-
 	@POST("user/workouts")
 	suspend fun createWorkout(
 		@Header("Authorization") token: String,

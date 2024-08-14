@@ -138,7 +138,7 @@ class SettingFragment : Fragment() {
                .setMessage("정말 로그아웃 하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
-                     "google" -> {
+                     Constant.GOOGLE.name -> {
                         val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
                            .requestIdToken(resources.getString(R.string.googleWebClientId))
                            .requestEmail()
@@ -150,12 +150,12 @@ class SettingFragment : Fragment() {
                            if(it.isSuccessful) logoutProcess() else Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                         }
                      }
-                     "naver" -> {
+                     Constant.NAVER.name -> {
                         NaverIdLoginSDK.initialize(requireActivity(), resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
                         NaverIdLoginSDK.logout()
                         logoutProcess()
                      }
-                     "kakao" -> {
+                     Constant.KAKAO.name -> {
                         UserApiClient.instance.logout { error ->
                            if(error != null) Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show() else logoutProcess()
                         }
@@ -178,7 +178,7 @@ class SettingFragment : Fragment() {
                .setMessage("정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
-                     "google" -> {
+                     Constant.GOOGLE.name -> {
                         val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
                         val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
                            .requestIdToken(resources.getString(R.string.googleWebClientId))
@@ -195,7 +195,7 @@ class SettingFragment : Fragment() {
                            }
                         }
                      }
-                     "naver" -> {
+                     Constant.NAVER.name -> {
                         NaverIdLoginSDK.initialize(requireActivity(), resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
 
                         if(NaverIdLoginSDK.getAccessToken() == null) {
@@ -218,7 +218,7 @@ class SettingFragment : Fragment() {
                            }
                         }
                      }
-                     "kakao" -> {
+                     Constant.KAKAO.name -> {
                         UserApiClient.instance.accessTokenInfo { token, error ->
                            if(error != null) {
                               Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()

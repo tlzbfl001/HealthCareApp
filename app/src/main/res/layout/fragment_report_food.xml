@@ -336,7 +336,7 @@
          android:layout_marginTop="4dp"
          android:layout_marginLeft="25dp"
          android:layout_marginRight="25dp"
-         app:cardBackgroundColor="@color/white_grey30"
+         app:cardBackgroundColor="@color/white_grey"
          app:cardElevation="3dp"
          app:cardCornerRadius="10dp"
          app:layout_constraintTop_toBottomOf="@id/cl1"
@@ -354,7 +354,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
-            android:textSize="15dp"
+            android:textSize="14dp"
             android:textColor="#EEEEEE"/>
       </androidx.cardview.widget.CardView>
       <androidx.constraintlayout.widget.ConstraintLayout
@@ -471,7 +471,7 @@
          android:layout_marginTop="4dp"
          android:layout_marginLeft="25dp"
          android:layout_marginRight="25dp"
-         app:cardBackgroundColor="@color/white_grey30"
+         app:cardBackgroundColor="@color/white_grey"
          app:cardElevation="3dp"
          app:cardCornerRadius="10dp"
          app:layout_constraintTop_toBottomOf="@id/cl2"
@@ -489,7 +489,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
-            android:textSize="15dp"
+            android:textSize="14dp"
             android:textColor="#EEEEEE"/>
       </androidx.cardview.widget.CardView>
       <TextView
@@ -513,7 +513,7 @@
          android:layout_marginLeft="25dp"
          android:layout_marginRight="25dp"
          android:layout_marginBottom="25dp"
-         app:cardBackgroundColor="@color/white_grey30"
+         app:cardBackgroundColor="@color/white_grey"
          app:cardElevation="3dp"
          app:cardCornerRadius="10dp"
          app:layout_constraintTop_toBottomOf="@id/tvTitle3"
@@ -531,7 +531,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
-            android:textSize="15dp"
+            android:textSize="14dp"
             android:textColor="#EEEEEE"/>
       </androidx.cardview.widget.CardView>
    </androidx.constraintlayout.widget.ConstraintLayout>

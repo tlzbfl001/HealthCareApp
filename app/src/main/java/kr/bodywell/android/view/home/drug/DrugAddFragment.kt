@@ -80,13 +80,12 @@ class DrugAddFragment : Fragment() {
       val id = if(arguments?.getString("id") == null) -1 else arguments?.getString("id").toString().toInt()
 
       getDrug = dataManager.getDrug(id)
-      count = getDrug.count
-      binding.tvCount.text = count.toString()
 
       if(id > -1) {
          binding.etType.setText(getDrug.type)
          binding.etName.setText(getDrug.name)
          binding.etAmount.setText(getDrug.amount.toString())
+         count = getDrug.count
 
          when(getDrug.unit) {
             "정" -> unit1()
@@ -104,6 +103,8 @@ class DrugAddFragment : Fragment() {
 
          binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
       }
+
+      binding.tvCount.text = count.toString()
 
       binding.mainLayout.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())

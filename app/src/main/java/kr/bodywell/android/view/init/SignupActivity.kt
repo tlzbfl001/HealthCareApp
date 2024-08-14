@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
@@ -122,19 +123,19 @@ class SignupActivity : AppCompatActivity() {
                if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
 //                  registerTest(this@SignupActivity, dataManager, user)
                   when(user.type) {
-                     "google" -> {
+                     Constant.GOOGLE.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
                            googleSignupRequest(this@SignupActivity, dataManager, user)
                            isClickable = true
                         }
                      }
-                     "naver" -> {
+                     Constant.NAVER.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
                            naverSignupRequest(this@SignupActivity, dataManager, user)
                            isClickable = true
                         }
                      }
-                     "kakao" -> {
+                     Constant.KAKAO.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
                            kakaoSignupRequest(this@SignupActivity, dataManager, user)
                            isClickable = true

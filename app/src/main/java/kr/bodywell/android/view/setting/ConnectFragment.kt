@@ -23,30 +23,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.BTItemAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.view.MainViewModel
-import kr.bodywell.android.view.home.body.BodyRecordFragment
 import java.io.IOException
 import java.util.UUID
 
@@ -263,25 +257,25 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
       override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
          super.onCharacteristicWrite(gatt, characteristic, status)
-         if (characteristic.uuid == CHARACTERISTIC_UUID) {
+         if (characteristic.uuid == UUID.fromString(resources.getString(R.string.characteristicUUID))) {
             Log.i(TAG, "Write status: $status")
          }
       }
 
       override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
          super.onCharacteristicRead(gatt, characteristic, status)
-         if (characteristic.uuid == CHARACTERISTIC_UUID) {
+         if (characteristic.uuid == UUID.fromString(resources.getString(R.string.characteristicUUID))) {
             Log.i(TAG, String(characteristic.value))
          }
       }
    }
 
    fun startReceivingPasswordUpdates() {
-      val service = gatt?.getService(SERVICE_UUID)
-      val characteristic = service?.getCharacteristic(CHARACTERISTIC_UUID)
+      val service = gatt?.getService(UUID.fromString(resources.getString(R.string.serviceUUID)))
+      val characteristic = service?.getCharacteristic(UUID.fromString(resources.getString(R.string.characteristicUUID)))
       if (characteristic != null) {
          gatt?.setCharacteristicNotification(characteristic, true)
-         val desc = characteristic.getDescriptor(CCCD_UUID)
+         val desc = characteristic.getDescriptor(UUID.fromString(resources.getString(R.string.cccdUUID)))
          desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
          gatt?.writeDescriptor(desc)
       }
@@ -298,8 +292,8 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    }
 
    private fun writeCharacteristic(msg: String) {
-      val service = gatt?.getService(SERVICE_UUID)
-      val characteristic = service?.getCharacteristic(CHARACTERISTIC_UUID)
+      val service = gatt?.getService(UUID.fromString(resources.getString(R.string.serviceUUID)))
+      val characteristic = service?.getCharacteristic(UUID.fromString(resources.getString(R.string.characteristicUUID)))
 
       if (characteristic != null) {
          characteristic.value = msg.toByteArray()
@@ -311,12 +305,6 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
    override fun onClick(device: Bluetooth) {
       MyApp.prefs.setMacId(Constant.BT_PREFS.name, device.device.address)
       replaceFragment1(requireActivity(), BluetoothFragment())
-   }
-
-   companion object {
-      private val SERVICE_UUID: UUID = UUID.fromString("0d58cf3c-3f57-11ec-9356-0242ac130003")
-      private val CHARACTERISTIC_UUID: UUID = UUID.fromString("0d58cfe6-3f57-11ec-9356-0242ac130003")
-      private val CCCD_UUID: UUID = UUID.fromString("00002a05-0000-1000-8000-00805f9b34fb")
    }
 
    override fun onDetach() {

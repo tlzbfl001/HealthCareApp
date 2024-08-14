@@ -11,9 +11,11 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper.Companion.BODY
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -49,7 +51,7 @@ class BodyRecordFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      bundle.putString("type", "body")
+      bundle.putString("type", BODY)
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -309,7 +311,7 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            val bmr = if(getUser.gender == "Male") {
+            val bmr = if(getUser.gender == Constant.Male.name) {
                val num = ((10*binding.etWeight.text.toString().toDouble())+(6.25*binding.etHeight.text.toString().toDouble())-(5*age)+5)*step
                String.format("%.1f", num)
             }else {

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.FOOD
+import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
@@ -42,7 +43,7 @@ class FoodRecordAdapter (
 
       holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
 
-      if(itemList[position].admin == 0) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+      if(itemList[position].registerType == TYPE_USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)

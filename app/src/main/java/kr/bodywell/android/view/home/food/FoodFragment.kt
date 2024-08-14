@@ -158,7 +158,7 @@ class FoodFragment : Fragment() {
          }
       }
 
-      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
          dailyView()
          listView()
       })

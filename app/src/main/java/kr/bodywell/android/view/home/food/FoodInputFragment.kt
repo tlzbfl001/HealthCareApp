@@ -340,9 +340,6 @@ class FoodInputFragment : Fragment() {
             dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate, protein = protein,
                fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), createdAt = selectedDate.toString()))
 
-            dataManager.insertDailyFood(Food(type = type, name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate,
-               protein = protein, fat = fat, salt = salt, sugar = sugar, count = 1, createdAt = selectedDate.toString()))
-
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
          }

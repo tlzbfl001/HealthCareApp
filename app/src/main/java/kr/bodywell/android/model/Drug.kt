@@ -11,7 +11,7 @@ data class Drug(
    var name: String = "",
    var amount: Int = 0,
    var unit: String = "",
-   var count: Int = 0,
+   var count: Int = 1,
    var startDate: String = "",
    var endDate: String = "",
    var createdAt: String = "",

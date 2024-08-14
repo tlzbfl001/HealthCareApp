@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper.Companion.NOTE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteWriteBinding
 import kr.bodywell.android.model.Note
@@ -49,7 +50,7 @@ class NoteWriteFragment : Fragment() {
       dataManager.open()
 
       val getNote = dataManager.getNote(selectedDate.toString())
-      bundle.putString("data", "note")
+      bundle.putString("data", NOTE)
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())

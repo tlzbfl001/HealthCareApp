@@ -23,6 +23,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter2
 import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
+import kr.bodywell.android.database.DBHelper.Companion.NOTE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteBinding
 import kr.bodywell.android.model.Image
@@ -71,7 +72,7 @@ class NoteFragment : Fragment() {
       dataManager.open()
 
       // 날짜 초기화
-      if(arguments?.getString("data").toString() != "note") selectedDate = LocalDate.now()
+      if(arguments?.getString("data").toString() != NOTE) selectedDate = LocalDate.now()
 
       binding.clExpand.setOnClickListener {
          val dialog = NoteCalendarDialog(requireActivity())

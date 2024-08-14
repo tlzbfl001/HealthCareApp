@@ -21,6 +21,8 @@ import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
+import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Constant
@@ -50,22 +52,22 @@ import java.time.temporal.ChronoUnit
 
 object RegisterUtil {
 	suspend fun googleLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
-		val getEmailResponse = RetrofitAPI.api.getUserEmail(user.email) // 이미 가입한 이메일인지 확인
+		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email) // 이미 가입한 이메일인지 확인
 
-		if(getEmailResponse.isSuccessful) {
-			Log.d(TAG, "getUserEmail: ${getEmailResponse.body()}")
-			if(getEmailResponse.body()!!.exists) { // 이미 가입한 이메일인 경우 서버에서 데이터 가져옴
+		if(getUserEmail.isSuccessful) {
+			Log.d(TAG, "getUserEmail: ${getUserEmail.body()}")
+			if(getUserEmail.body()!!.exists) { // 이미 가입한 이메일인 경우 서버에서 데이터 가져옴
 				ctx.runOnUiThread {
 					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
 							CoroutineScope(Dispatchers.IO).launch {
-								val loginResponse = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
-								if(loginResponse.isSuccessful) {
-									Log.d(TAG, "loginWithGoogle: ${loginResponse.body()}")
-									getData(ctx, dataManager, user, loginResponse.body()!!.accessToken, loginResponse.body()!!.refreshToken) // 서버데이터 가져오기
+								val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
+								if(response.isSuccessful) {
+									Log.d(TAG, "loginWithGoogle: ${response.body()}")
+									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken) // 서버데이터 가져오기
 								}else {
-									Log.e(TAG, "loginWithGoogle: $loginResponse")
+									Log.e(TAG, "loginWithGoogle: $response")
 								}
 							}
 						}.setNegativeButton("취소", null).create().show()
@@ -76,27 +78,27 @@ object RegisterUtil {
 				ctx.startActivity(intent)
 			}
 		}else {
-			Log.e(TAG, "getUserEmail: $getEmailResponse")
+			Log.e(TAG, "getUserEmail: $getUserEmail")
 		}
 	}
 
 	suspend fun naverLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
-		val getEmailResponse = RetrofitAPI.api.getUserEmail(user.email)
+		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
 
-		if(getEmailResponse.isSuccessful) {
-			Log.d(TAG, "getUserEmail: ${getEmailResponse.body()}")
-			if (getEmailResponse.body()!!.exists) {
+		if(getUserEmail.isSuccessful) {
+			Log.d(TAG, "getUserEmail: ${getUserEmail.body()}")
+			if (getUserEmail.body()!!.exists) {
 				ctx.runOnUiThread {
 					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
 							CoroutineScope(Dispatchers.IO).launch {
-								val loginResponse = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
-								if (loginResponse.isSuccessful) {
-									Log.d(TAG, "loginWithNaver: ${loginResponse.body()}")
-									getData(ctx, dataManager, user, loginResponse.body()!!.accessToken, loginResponse.body()!!.refreshToken)
+								val response = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
+								if (response.isSuccessful) {
+									Log.d(TAG, "loginWithNaver: ${response.body()}")
+									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken)
 								} else {
-									Log.e(TAG, "loginWithNaver: $loginResponse")
+									Log.e(TAG, "loginWithNaver: $response")
 								}
 							}
 						}.setNegativeButton("취소", null).create().show()
@@ -110,22 +112,22 @@ object RegisterUtil {
 	}
 
 	suspend fun kakaoLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
-		val getEmailResponse = RetrofitAPI.api.getUserEmail(user.email)
+		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
 
-		if(getEmailResponse.isSuccessful) {
-			Log.d(TAG, "getUserEmail: ${getEmailResponse.body()}")
-			if (getEmailResponse.body()!!.exists) {
+		if(getUserEmail.isSuccessful) {
+			Log.d(TAG, "getUserEmail: ${getUserEmail.body()}")
+			if (getUserEmail.body()!!.exists) {
 				ctx.runOnUiThread {
 					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
 							CoroutineScope(Dispatchers.IO).launch {
-								val loginResponse = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
-								if (loginResponse.isSuccessful) {
-									Log.d(TAG, "loginWithKakao: ${loginResponse.body()}")
-									getData(ctx, dataManager, user, loginResponse.body()!!.accessToken, loginResponse.body()!!.refreshToken)
+								val response = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
+								if (response.isSuccessful) {
+									Log.d(TAG, "loginWithKakao: ${response.body()}")
+									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken)
 								} else {
-									Log.e(TAG, "loginWithKakao: $loginResponse")
+									Log.e(TAG, "loginWithKakao: $response")
 								}
 							}
 						}.setNegativeButton("취소", null).create().show()
@@ -242,8 +244,8 @@ object RegisterUtil {
 					useDate = isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 				}
 
-				val type = if(getAllFood.body()!![i].registerType == Constant.Admin.name) 1 else 0
-				dataManager.insertFood(Food(admin = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].quantityUnit,
+				val type = if(getAllFood.body()!![i].registerType == TYPE_ADMIN) TYPE_ADMIN else TYPE_USER
+				dataManager.insertFood(Food(registerType = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].quantityUnit,
 					amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 					protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
 			}
@@ -277,8 +279,8 @@ object RegisterUtil {
 					useDate = isoToDateTime(getAllActivity.body()!![i].usages!![0].updatedAt).toString()
 				}
 
-				val type = if(getAllActivity.body()!![i].registerType == Constant.Admin.name) 1 else 0
-				dataManager.insertExercise(Exercise(admin = type, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate))
+				val type = if(getAllActivity.body()!![i].registerType == TYPE_ADMIN) TYPE_ADMIN else TYPE_USER
+				dataManager.insertExercise(Exercise(registerType = type, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate))
 			}
 
 			for(i in 0 until getAllWorkout.body()!!.size) {
@@ -402,7 +404,7 @@ object RegisterUtil {
 
 				// 서버 데이터 저장
 				for(i in 0 until getAllFood.body()!!.size) {
-					dataManager.insertFood(Food(admin = 1, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
+					dataManager.insertFood(Food(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
 						amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString())
@@ -410,7 +412,7 @@ object RegisterUtil {
 				}
 
 				for(i in 0 until getAllActivity.body()!!.size) {
-					dataManager.insertExercise(Exercise(admin = 1, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
+					dataManager.insertExercise(Exercise(registerType = TYPE_ADMIN, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString()))
 				}
