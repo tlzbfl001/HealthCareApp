@@ -16,7 +16,6 @@ import kr.bodywell.android.api.dto.GoalUpdateDTO
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
-import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.api.dto.ProfileDTO
@@ -46,7 +45,6 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Drug
-import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Food
@@ -57,9 +55,7 @@ import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.dateTimeFormatter
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso2
 import kr.bodywell.android.util.CustomUtil.dateToIso
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
@@ -92,7 +88,7 @@ object ViewModelUtil {
 		val getSleepUid = dataManager.getSleepUid()
 		val getSleepUpdated = dataManager.getSleepUpdated()
 		val getDrugUid = dataManager.getDrugUid()
-		val getDrugCheckUid = dataManager.getDrugCheckUid()
+//		val getDrugCheckUid = dataManager.getDrugCheckUid()
 		val getDrugUpdated = dataManager.getDrugUpdated()
 		val getGoalUid = dataManager.getGoalUid()
 		val getGoalUpdated = dataManager.getGoalUpdated()
@@ -107,8 +103,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteFood: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				WATER -> {
@@ -118,8 +113,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteWater: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				DAILY_FOOD -> {
@@ -129,8 +123,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteDiets: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				EXERCISE -> {
@@ -140,8 +133,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteActivity: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				DAILY_EXERCISE -> {
@@ -151,8 +143,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteWorkout: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				DRUG_CHECK -> {
@@ -162,8 +153,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteMedicineIntake: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				DRUG_TIME -> {
@@ -173,8 +163,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteMedicineTime: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 				DRUG -> {
@@ -184,8 +173,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}else {
 						Log.e(TAG, "deleteMedicine: $response")
-						requestStatus = false
-						return
+						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id) else return
 					}
 				}
 			}
@@ -290,13 +278,13 @@ object ViewModelUtil {
 
 		requestMedicine(dataManager, getDrugUpdated, 2)
 
-		for(i in 0 until getDrugCheckUid.size) {
+		/*for(i in 0 until getDrugCheckUid.size) {
 			val drug = dataManager.getData(DRUG, getDrugCheckUid[i].drugId)
 			val drugTime = dataManager.getData(DRUG_TIME, getDrugCheckUid[i].drugTimeId)
 
 			if(drug.uid != "" && drugTime.uid != "") {
 				val dateFormat = getDrugCheckUid[i].createdAt + " " + getDrugCheckUid[i].time
-				val isoFormat = dateTimeToIso2(LocalDateTime.parse(dateFormat, dateTimeFormatter))
+				val isoFormat = dateTimeToIso(LocalDateTime.parse(dateFormat, dateTimeFormatter))
 
 				val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid, MedicineIntakeDTO(isoFormat))
 				if(response.isSuccessful) {
@@ -308,7 +296,7 @@ object ViewModelUtil {
 					return
 				}
 			}
-		}
+		}*/
 
 		requestGoal(dataManager, getGoalUid, 1)
 
@@ -332,13 +320,13 @@ object ViewModelUtil {
 					return
 				}
 			}else {
-				val getData = dataManager.getData(FOOD, "name", data[i].name)
+				// 다른 device에는 uid가 있고, 현재 device는 업데이트만되어있고 uid가없으면 data[i].uid는 서버에서가져온 uid고 아니면 data[i].uid임
 				val dto = FoodUpdateDTO(data[i].carbohydrate, data[i].protein, data[i].fat, data[i].count, "개", data[i].amount, data[i].unit)
 
-				val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", getData.uid, dto)
+				val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", data[i].uid, dto)
 				if(response.isSuccessful) {
 					Log.d(TAG, "updateFood: ${response.body()}")
-					dataManager.updateStr(FOOD, "uid", getData.uid, "id", data[i].id) // uid 업데이트
+					dataManager.updateStr(FOOD, "uid", data[i].uid, "id", data[i].id) // uid 업데이트
 					dataManager.updateInt(FOOD, IS_UPDATED, 0, "id", data[i].id) // 업데이트 체크 0
 				}else {
 					Log.d(TAG, "updateFood: $response")
@@ -351,15 +339,15 @@ object ViewModelUtil {
 
 	private suspend fun requestDiet(dataManager: DataManager, data: ArrayList<Food>, type: Int) {
 		for(i in 0 until data.size) {
+			val dateToIso = dateToIso(data[i].createdAt)
 			if(type == 1) {
 				val getFood = dataManager.getFood("name", data[i].name)
 				if(getFood.uid != "") {
 					val photos = ArrayList<String>()
 					val getImage = dataManager.getImage(data[i].type, data[i].createdAt)
-//          			for(j in 0 until getImage.size) photos.add(getImage[j].imageUri)
-					for(k in 0 until getImage.size) photos.add("https://example.com/picture.jpg")
+//          		for(j in 0 until getImage.size) photos.add(getImage[j].imageUri)
+					photos.add("https://example.com/picture.jpg")
 
-					val dateToIso = dateToIso(data[i].createdAt)
 					val dto = DietDTO(data[i].type, data[i].name, data[i].kcal, data[i].carbohydrate, data[i].protein, data[i].fat,
 						data[i].count,"개", data[i].amount, data[i].unit, photos, dateToIso, FoodData(getFood.uid))
 
@@ -380,7 +368,6 @@ object ViewModelUtil {
 //            for(j in 0 until getImage.size) photos.add(getImage[j].imageUri)
 				photos.add("https://example.com/picture.jpg")
 
-				val dateToIso = dateToIso(data[i].createdAt)
 				val dto = DietUpdateDTO(data[i].type, data[i].name, data[i].kcal, data[i].carbohydrate, data[i].protein, data[i].fat,
 					data[i].count, "개", data[i].amount, data[i].unit, photos, dateToIso)
 
@@ -432,17 +419,15 @@ object ViewModelUtil {
 			val getCheckActivity = RetrofitAPI.api.getCheckActivity("Bearer ${getToken.access}", data[i].name)
 			if(getCheckActivity.isSuccessful) {
 				if(getCheckActivity.body()!!.exists) {
-					if(data[i].uid != "") {
-						val response = RetrofitAPI.api.updateActivity("Bearer ${getToken.access}", data[i].uid, ActivityDTO(data[i].name))
-						if(response.isSuccessful) {
-							Log.d(TAG, "updateActivity: ${response.body()}")
-							dataManager.updateStr(EXERCISE, "uid", data[i].uid, "id", data[i].id)
-							dataManager.updateInt(EXERCISE, IS_UPDATED, 0, "id", data[i].id)
-						}else {
-							Log.d(TAG, "updateActivity: $response")
-							requestStatus = false
-							return
-						}
+					val response = RetrofitAPI.api.updateActivity("Bearer ${getToken.access}", data[i].uid, ActivityDTO(data[i].name))
+					if(response.isSuccessful) {
+						Log.d(TAG, "updateActivity: ${response.body()}")
+						dataManager.updateStr(EXERCISE, "uid", data[i].uid, "id", data[i].id)
+						dataManager.updateInt(EXERCISE, IS_UPDATED, 0, "id", data[i].id)
+					}else {
+						Log.d(TAG, "updateActivity: $response")
+						requestStatus = false
+						return
 					}
 				}else {
 					val response = RetrofitAPI.api.createActivity("Bearer ${getToken.access}", ActivityDTO(data[i].name))
@@ -475,13 +460,12 @@ object ViewModelUtil {
 					return
 				}
 			}else {
-				val getData = dataManager.getData(DAILY_EXERCISE, CREATED_AT, data[i].createdAt)
 				val dto = WorkoutUpdateDTO(data[i].kcal, data[i].intensity, data[i].workoutTime)
 
 				val response = RetrofitAPI.api.updateWorkout("Bearer ${getToken.access}", data[i].uid, dto)
 				if(response.isSuccessful) {
 					Log.d(TAG, "updateWorkout: ${response.body()}")
-					dataManager.updateStr(DAILY_EXERCISE, "uid", getData.uid, "id", data[i].id)
+					dataManager.updateStr(DAILY_EXERCISE, "uid", data[i].uid, "id", data[i].id)
 					dataManager.updateInt(DAILY_EXERCISE, IS_UPDATED, 0, "id", data[i].id)
 				}else {
 					Log.e(TAG, "updateWorkout: $response")
@@ -507,7 +491,6 @@ object ViewModelUtil {
 					val getDrugTime = dataManager.getDrugTime(data[i].id)
 					for(j in 0 until getDrugTime.size) {
 						val createMedicineTime = RetrofitAPI.api.createMedicineTime("Bearer ${getToken.access}", response.body()!!.uid, MedicineTimeDTO(getDrugTime[j].time))
-
 						if(createMedicineTime.isSuccessful) {
 							Log.d(TAG, "createMedicineTime: ${createMedicineTime.body()}")
 							dataManager.updateStr(DRUG_TIME, "uid", createMedicineTime.body()!!.uid, "id", getDrugTime[j].id)
@@ -522,15 +505,13 @@ object ViewModelUtil {
 					return
 				}
 			}else {
-				val getData = dataManager.getData(DRUG, "startDate", data[i].startDate)
-
-				val updateMedicine = RetrofitAPI.api.updateMedicine("Bearer ${getToken.access}", getData.uid, dto)
+				val updateMedicine = RetrofitAPI.api.updateMedicine("Bearer ${getToken.access}", data[i].uid, dto)
 				if(updateMedicine.isSuccessful) {
 					Log.d(TAG, "updateMedicine: ${updateMedicine.body()}")
 
 					val getUnusedTime = dataManager.getUnusedTime()
 					for(j in 0 until getUnusedTime.size) {
-						val response = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", getData.uid, getUnusedTime[j].value)
+						val response = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", data[i].uid, getUnusedTime[j].value)
 						if(response.isSuccessful) {
 							Log.d(TAG, "deleteMedicineTime: ${response.body()}")
 						}else {
@@ -540,28 +521,24 @@ object ViewModelUtil {
 						}
 					}
 
-					if(requestStatus) {
-						val getDrugTime = dataManager.getDrugTimeData(data[i].id)
+					val getDrugTime = dataManager.getDrugTimeData(data[i].id)
 
-						for(j in 0 until getDrugTime.size) {
-							val timeDTO = MedicineTimeDTO(getDrugTime[j].time)
+					for(j in 0 until getDrugTime.size) {
+						val timeDTO = MedicineTimeDTO(getDrugTime[j].time)
 
-							val createMedicineTime = RetrofitAPI.api.createMedicineTime("Bearer ${getToken.access}", getData.uid, timeDTO)
-							if(createMedicineTime.isSuccessful) {
-								Log.d(TAG, "createMedicineTime: ${createMedicineTime.body()}")
-								dataManager.updateStr(DRUG_TIME, "uid", createMedicineTime.body()!!.uid, "id", getDrugTime[j].id)
-							}else {
-								Log.e(TAG, "createMedicineTime: $createMedicineTime")
-								requestStatus = false
-								return
-							}
-						}
-
-						if(requestStatus) {
-							dataManager.updateStr(DRUG, "uid", getData.uid, "id", data[i].id)
-							dataManager.updateInt(DRUG, IS_UPDATED, 0, "id", data[i].id)
+						val createMedicineTime = RetrofitAPI.api.createMedicineTime("Bearer ${getToken.access}", data[i].uid, timeDTO)
+						if(createMedicineTime.isSuccessful) {
+							Log.d(TAG, "createMedicineTime: ${createMedicineTime.body()}")
+							dataManager.updateStr(DRUG_TIME, "uid", createMedicineTime.body()!!.uid, "id", getDrugTime[j].id)
+						}else {
+							Log.e(TAG, "createMedicineTime: $createMedicineTime")
+							requestStatus = false
+							return
 						}
 					}
+
+					dataManager.updateStr(DRUG, "uid", data[i].uid, "id", data[i].id)
+					dataManager.updateInt(DRUG, IS_UPDATED, 0, "id", data[i].id)
 				}else {
 					Log.e(TAG, "updateMedicine: $updateMedicine")
 					requestStatus = false
@@ -587,13 +564,12 @@ object ViewModelUtil {
 					return
 				}
 			}else {
-				val getData = dataManager.getData(GOAL, CREATED_AT, data[i].createdAt)
 				val dto = GoalUpdateDTO(data[i].body, data[i].food, data[i].exercise, data[i].waterVolume, data[i].water, data[i].sleep, data[i].drug)
 
 				val response = RetrofitAPI.api.updateGoal("Bearer ${getToken.access}", data[i].uid, dto)
 				if(response.isSuccessful) {
 					Log.d(TAG, "updateGoal: ${response.body()}")
-					dataManager.updateStr(GOAL, "uid", getData.uid, "id", data[i].id)
+					dataManager.updateStr(GOAL, "uid", data[i].uid, "id", data[i].id)
 					dataManager.updateInt(GOAL, IS_UPDATED, 0, "id", data[i].id)
 				}else {
 					Log.d(TAG, "updateGoal: $response")
@@ -605,11 +581,10 @@ object ViewModelUtil {
 	}
 
 	suspend fun createSync(context: Context, dataManager: DataManager):Boolean {
-//		syncedAt = dateTimeToIso(LocalDateTime.parse(dataManager.getSynced()))
-		syncedAt = "2024-08-14T07:30:27.738916Z"
-		Log.d(TAG, "syncedAt: $syncedAt / ${isoToDateTime(syncedAt)}")
+		syncedAt = dateTimeToIso(LocalDateTime.parse(dataManager.getSynced()))
+		Log.d(TAG, "syncedAt: $syncedAt / ${dataManager.getSynced()}")
 
-		/*val syncProfile = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		val syncProfile = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncProfile.isSuccessful) {
 			Log.d(TAG, "syncProfile: ${syncProfile.body()}")
 			if(syncProfile.body()?.data != null) {
@@ -626,26 +601,27 @@ object ViewModelUtil {
 			for(i in 0 until syncFood.body()?.data!!.size) {
 				val getData = dataManager.getData(FOOD, "name", syncFood.body()?.data!![i].name)
 
+				var useCount = 0
+				var useDate = ""
+				if(syncFood.body()?.data!![i].usages != null) {
+					useCount = syncFood.body()?.data!![i].usages!![0].usageCount
+					useDate = isoToDateTime(syncFood.body()?.data!![i].usages!![0].updatedAt).toString()
+				}
+
 				if(getData.id > 0) {
 					if(syncFood.body()?.data!![i].deletedAt != null) {
 						dataManager.deleteItem(FOOD, "id", getData.id)
 					}else {
 						dataManager.updateFood(Food(id=getData.id, registerType=syncFood.body()?.data!![i].registerType, name = syncFood.body()?.data!![i].name,
-							unit = syncFood.body()?.data!![i].volumeUnit, amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calorie, carbohydrate = syncFood.body()?.data!![i].carbohydrate,
-							protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat))
-						dataManager.updateStr(FOOD, "uid", syncFood.body()?.data!![i].uid, "id", getData.id)
+							unit = syncFood.body()?.data!![i].volumeUnit, amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calorie,
+							carbohydrate = syncFood.body()?.data!![i].carbohydrate, protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat))
+						dataManager.updateFood(syncFood.body()?.data!![i].uid, useCount, useDate, getData.id)
 					}
 				}else if(syncFood.body()?.data!![i].createdAt != null && syncFood.body()?.data!![i].deletedAt == null) {
-					var useCount = 0
-					var useDate = ""
-					if(syncFood.body()?.data!![i].usages != null) {
-						useCount = syncFood.body()?.data!![i].usages!![0].usageCount
-						useDate = isoToDateTime(syncFood.body()?.data!![i].usages!![0].updatedAt).toString()
-					}
-					dataManager.insertFood(Food(registerType=syncFood.body()?.data!![i].registerType, uid = syncFood.body()?.data!![i].uid, name = syncFood.body()?.data!![i].name,
-						unit = syncFood.body()?.data!![i].volumeUnit, amount = syncFood.body()?.data!![i].volume, kcal = syncFood.body()?.data!![i].calorie,
-						carbohydrate = syncFood.body()?.data!![i].carbohydrate, protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat,
-						useCount = useCount, useDate = useDate))
+					dataManager.insertFood(Food(registerType=syncFood.body()?.data!![i].registerType, uid = syncFood.body()?.data!![i].uid,
+						name = syncFood.body()?.data!![i].name, unit = syncFood.body()?.data!![i].volumeUnit, amount = syncFood.body()?.data!![i].volume,
+						kcal = syncFood.body()?.data!![i].calorie, carbohydrate = syncFood.body()?.data!![i].carbohydrate,
+						protein = syncFood.body()?.data!![i].protein, fat = syncFood.body()?.data!![i].fat, useCount = useCount, useDate = useDate))
 				}
 			}
 		}else {
@@ -656,18 +632,22 @@ object ViewModelUtil {
 		if(syncDiets.isSuccessful) {
 			Log.d(TAG, "syncDiets: ${syncDiets.body()}")
 			for(i in 0 until syncDiets.body()?.data!!.size) {
-				val getData = dataManager.getData(DAILY_FOOD, CREATED_AT, syncDiets.body()?.data!![i].date.substring(0, 10))
+				val getData = dataManager.getData(DAILY_FOOD, "uid", syncDiets.body()?.data!![i].uid)
+				Log.d(TAG, "getData: $getData")
 
 				if(getData.id > 0) {
 					if(syncDiets.body()?.data!![i].deletedAt != null) {
+						Log.d(TAG, "delete")
 						dataManager.deleteItem(DAILY_FOOD, "id", getData.id)
 					}else {
+						Log.d(TAG, "update")
 						dataManager.updateDailyFood(Food(id=getData.id, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
 							carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
 							count = syncDiets.body()?.data!![i].quantity))
 						dataManager.updateStr(DAILY_FOOD, "uid", syncDiets.body()?.data!![i].uid, "id", getData.id)
 					}
 				}else if(syncDiets.body()?.data!![i].createdAt != null && syncDiets.body()?.data!![i].deletedAt == null) {
+					Log.d(TAG, "create")
 					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].uid, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].name,
 						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
 						carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
@@ -706,14 +686,11 @@ object ViewModelUtil {
 				if(syncActivity.body()?.data!![i].deletedAt != null) {
 					dataManager.deleteItem(EXERCISE, "uid", syncActivity.body()?.data!![i].uid)
 				}else if(syncActivity.body()?.data!![i].createdAt != null && syncActivity.body()?.data!![i].deletedAt == null) {
-					val getData1 = dataManager.getData(EXERCISE, "name", syncActivity.body()?.data!![i].name)
-					val getData2 = dataManager.getData(EXERCISE, "uid", syncActivity.body()?.data!![i].uid)
+					val getData = dataManager.getData(EXERCISE, "name", syncActivity.body()?.data!![i].name)
 
-					if(getData1.id > 0) {
-						dataManager.updateStr(EXERCISE, "uid", syncActivity.body()?.data!![i].uid, "id", getData1.id)
-					}else if(getData2.uid != "") {
-						dataManager.updateStr(EXERCISE, "name", syncActivity.body()?.data!![i].name, "id", getData2.id)
-						dataManager.updateStr(EXERCISE, "registerType", syncActivity.body()?.data!![i].registerType, "id", getData1.id)
+					if(getData.id > 0) {
+						dataManager.updateStr(EXERCISE, "uid", syncActivity.body()?.data!![i].uid, "id", getData.id)
+						dataManager.updateStr(EXERCISE, "registerType", syncActivity.body()?.data!![i].registerType, "id", getData.id)
 					}else {
 						var useCount = 0
 						var useDate = ""
@@ -734,7 +711,7 @@ object ViewModelUtil {
 		if(syncWorkout.isSuccessful) {
 			Log.d(TAG, "syncWorkout: ${syncWorkout.body()}")
 			for(i in 0 until syncWorkout.body()?.data!!.size) {
-				val getData = dataManager.getData(DAILY_EXERCISE, CREATED_AT, syncWorkout.body()?.data!![i].date.substring(0, 10))
+				val getData = dataManager.getData(DAILY_EXERCISE, "uid", syncWorkout.body()?.data!![i].uid)
 
 				if(getData.id > 0) {
 					if(syncWorkout.body()?.data!![i].deletedAt != null) {
@@ -766,7 +743,8 @@ object ViewModelUtil {
 					}else {
 						dataManager.updateBody(Body(id = getData.id, uid = syncBody.body()?.data!![i].uid, height = syncBody.body()?.data!![i].height,
 							weight = syncBody.body()?.data!![i].weight, intensity = syncBody.body()?.data!![i].workoutIntensity, fat = syncBody.body()?.data!![i].bodyFatPercentage,
-							muscle = syncBody.body()?.data!![i].skeletalMuscleMass, bmi = syncBody.body()?.data!![i].bodyMassIndex, bmr = syncBody.body()?.data!![i].basalMetabolicRate))
+							muscle = syncBody.body()?.data!![i].skeletalMuscleMass, bmi = syncBody.body()?.data!![i].bodyMassIndex, bmr = syncBody.body()?.data!![i].basalMetabolicRate)
+						)
 					}
 				}else if(syncBody.body()?.data!![i].createdAt != null && syncBody.body()?.data!![i].deletedAt == null) {
 					dataManager.insertBody(Body(uid = syncBody.body()?.data!![i].uid, height = syncBody.body()?.data!![i].height, weight = syncBody.body()?.data!![i].weight,
@@ -800,7 +778,7 @@ object ViewModelUtil {
 			}
 		}else {
 			Log.e(TAG, "syncSleep: $syncSleep")
-		}*/
+		}
 
 		val syncMedicine = RetrofitAPI.api.syncMedicine("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncMedicine.isSuccessful) {
@@ -816,15 +794,11 @@ object ViewModelUtil {
 
 				if(getData.id > 0) { // 데이터 존재하고 sync값과 일치하면 delete, update
 					if(syncMedicine.body()?.data!![i].deletedAt != null) {
-						Log.d(TAG, "delete")
-
 						dataManager.deleteItem(DRUG, "id", getData.id)
 						dataManager.deleteItem(DRUG_TIME, "drugId", getData.id)
 						dataManager.deleteItem(DRUG_CHECK, "drugId", getData.id)
 						alarmReceiver.cancelAlarm(context, getData.id)
 					}else {
-						Log.d(TAG, "update")
-
 						val drug = Drug(id = getData.id, uid = syncMedicine.body()?.data!![i].uid, type = syncMedicine.body()?.data!![i].category,
 							name = syncMedicine.body()?.data!![i].name, amount = syncMedicine.body()?.data!![i].amount, unit = syncMedicine.body()?.data!![i].unit,
 							count = count.toInt(), startDate = startDate.toString(), endDate = endDate.toString())
@@ -843,21 +817,22 @@ object ViewModelUtil {
 								timeList.add(DrugTime(time = drugTime.time))
 								dataManager.insertDrugTime(drugTime) // drugTime 데이터 저장
 
-								val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid) // drugCheck 데이터 가져오기
-								if(getMedicineIntake.isSuccessful) {
-									Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
-									val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
-
-									for(k in 0 until getMedicineIntake.body()!!.size) {
-										val intakeAt = isoToDateTime(getMedicineIntake.body()!![k].intakeAt).toString()
-										Log.d(TAG, "intakeAt: ${getMedicineIntake.body()!![k].intakeAt}")
-										Log.d(TAG, "isoToDateTime: ${intakeAt}")
-										dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = getData.id, drugTimeId = drugTimeId.id,
-											time = drugTime.time, createdAt = intakeAt.substring(0, 10))) // drugCheck 데이터 저장
-									}
-								}else {
-									Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
-								}
+//								val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid) // 체크된 데이터 가져오기
+//								if(getMedicineIntake.isSuccessful) {
+//									Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
+//									val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
+//
+//									for(k in 0 until getMedicineIntake.body()!!.size) {
+//										val intakeAt = isoToDateTime(getMedicineIntake.body()!![k].intakeAt)
+//										val time = String.format("%02d:%02d", intakeAt.hour, intakeAt.minute)
+//										val createdAt = "${intakeAt.year}-${String.format("%02d", intakeAt.monthValue)}-${String.format("%02d", intakeAt.dayOfMonth)}"
+//
+//										dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = getData.id, drugTimeId = drugTimeId.id,
+//											time = time, createdAt = createdAt)) // drugCheck 데이터 저장
+//									}
+//								}else {
+//									Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
+//								}
 							}
 
 							if(checkAlarmPermissions(context)) { // 알람 재등록
@@ -868,46 +843,47 @@ object ViewModelUtil {
 						}
 					}
 				}else if(syncMedicine.body()?.data!![i].createdAt != null && syncMedicine.body()?.data!![i].deletedAt == null) { // data가 존재하지않으면 insert
-					Log.d(TAG, "insert")
-
 					val drug = Drug(uid = syncMedicine.body()?.data!![i].uid, type = syncMedicine.body()?.data!![i].category, name = syncMedicine.body()?.data!![i].name,
 						amount = syncMedicine.body()?.data!![i].amount, unit = syncMedicine.body()?.data!![i].unit, count = count.toInt(),
 						startDate = startDate.toString(), endDate = endDate.toString())
 
+					var drugId: Int
+
 					val getMedicineTime = RetrofitAPI.api.getMedicineTime("Bearer ${getToken.access}", drug.uid)
 					if(getMedicineTime.isSuccessful) {
 						Log.d(TAG, "getMedicineTime: ${getMedicineTime.body()}")
-						dataManager.insertDrug(drug)
-						val drugId = dataManager.getData(DRUG, "startDate", startDate.toString())
 
 						val timeList = ArrayList<DrugTime>()
+						dataManager.insertDrug(drug)
+
+						val getDrug = dataManager.getData(DRUG, "startDate", drug.startDate)
+						drugId = getDrug.id
 
 						for(j in 0 until getMedicineTime.body()!!.size) {
-							val drugTime = DrugTime(uid = getMedicineTime.body()!![j].uid, drugId = drugId.id, time = getMedicineTime.body()!![j].time)
+							val drugTime = DrugTime(uid = getMedicineTime.body()!![j].uid, drugId = drugId, time = getMedicineTime.body()!![j].time)
 							dataManager.insertDrugTime(drugTime)
-
 							timeList.add(DrugTime(time = drugTime.time))
 
-							val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid)
-							if(getMedicineIntake.isSuccessful) {
-								Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
-								val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
-
-								for(k in 0 until getMedicineIntake.body()!!.size) {
-									val intakeAt = isoToDateTime(getMedicineIntake.body()!![k].intakeAt).toString()
-									Log.d(TAG, "intakeAt: ${getMedicineIntake.body()!![k].intakeAt}")
-									Log.d(TAG, "isoToDateTime: ${intakeAt}")
-									dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId.id, drugTimeId = drugTimeId.id,
-										time = drugTime.time, createdAt = intakeAt.substring(0, 10)))
-								}
-							}else {
-								Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
-							}
+//							val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid)
+//							if(getMedicineIntake.isSuccessful) {
+//								Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
+//								val getDrugTime = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
+//
+//								for(k in 0 until getMedicineIntake.body()!!.size) {
+//									val intakeAt = isoToDateTime(getMedicineIntake.body()!![k].intakeAt)
+//									val time = String.format("%02d:%02d", intakeAt.hour, intakeAt.minute)
+//									val createdAt = "${intakeAt.year}-${String.format("%02d", intakeAt.monthValue)}-${String.format("%02d", intakeAt.dayOfMonth)}"
+//
+//									dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId, drugTimeId = getDrugTime.id,
+//										time = time, createdAt = createdAt))
+//								}
+//							}else {
+//								Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
+//							}
 						}
 
-						val getDrugId = dataManager.getData(DRUG, "startDate", drug.startDate)
-						if(checkAlarmPermissions(context)) { // 알람 등록
-							alarmReceiver.setAlarm(context, getDrugId.id, drug.startDate, drug.endDate, timeList, "${drug.name} ${drug.amount}${drug.unit}")
+						if(checkAlarmPermissions(context) && drugId > 0) { // 알람 등록
+							alarmReceiver.setAlarm(context, drugId, drug.startDate, drug.endDate, timeList, "${drug.name} ${drug.amount}${drug.unit}")
 						}
 					}else {
 						Log.e(TAG, "getMedicineTime: $getMedicineTime")
@@ -918,38 +894,7 @@ object ViewModelUtil {
 			Log.e(TAG, "syncMedicine: $syncMedicine")
 		}
 
-		val getDrugCheck = dataManager.getDrugCheck(syncedAt)
-		for(i in 0 until getDrugCheck.size) {
-			val drug = dataManager.getData(DRUG, getDrugCheck[i].drugId)
-			val drugTime = dataManager.getData(DRUG_TIME, getDrugCheck[i].drugTimeId)
-
-			if(drug.uid != "" && drugTime.uid != "") {
-				val syncMedicineIntake = RetrofitAPI.api.syncMedicineIntake("Bearer ${getToken.access}", drug.uid, drugTime.uid, SyncDTO(syncedAt))
-				if(syncMedicineIntake.isSuccessful) {
-					Log.d(TAG, "syncMedicineIntake: ${syncMedicineIntake.body()}")
-
-					for(j in 0 until syncMedicineIntake.body()?.data!!.size) {
-						val intakeAt = isoToDateTime(syncMedicineIntake.body()?.data!![j].intakeAt).toString()
-						val getData = dataManager.getDrugCheck(drugTime.id, intakeAt.substring(11, 16), intakeAt.substring(0, 10))
-						Log.d(TAG, "intakeAt: ${syncMedicineIntake.body()?.data!![j].intakeAt}")
-						Log.d(TAG, "isoToDateTime: ${intakeAt}")
-						Log.d(TAG, "time: ${intakeAt.substring(11, 16)}")
-						Log.d(TAG, "date: ${intakeAt.substring(0, 10)}")
-
-						if(getData.id > 0) {
-							if(syncMedicineIntake.body()?.data!![j].deletedAt != null) dataManager.deleteItem(DRUG_CHECK, "id", getData.id)
-						}else if(syncMedicineIntake.body()?.data!![i].createdAt != null && syncMedicineIntake.body()?.data!![j].deletedAt == null) {
-							dataManager.insertDrugCheck(DrugCheck(uid = syncMedicineIntake.body()?.data!![j].uid, drugId = drug.id, drugTimeId = drugTime.id,
-								time = intakeAt.substring(11, 16), createdAt = intakeAt.substring(0, 10)))
-						}
-					}
-				}else {
-					Log.e(TAG, "syncMedicine: $syncMedicine")
-				}
-			}
-		}
-
-		/*val syncGoal = RetrofitAPI.api.syncGoal("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		val syncGoal = RetrofitAPI.api.syncGoal("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncGoal.isSuccessful) {
 			Log.d(TAG, "syncGoal: ${syncGoal.body()}")
 
@@ -961,7 +906,7 @@ object ViewModelUtil {
 						if(syncGoal.body()?.data!![i].deletedAt != null) {
 							dataManager.deleteItem(GOAL, "id", getData.id)
 						}else {
-							dataManager.updateGoal(Goal(id=getData.id, uid = syncGoal.body()?.data!![i].uid, food = 1000,
+							dataManager.updateGoal(Goal(id=getData.id, uid = syncGoal.body()?.data!![i].uid, food = syncGoal.body()?.data!![i].kcalOfDiet,
 								waterVolume = syncGoal.body()?.data!![i].waterAmountOfCup, water = syncGoal.body()?.data!![i].waterIntake,
 								exercise = syncGoal.body()?.data!![i].kcalOfWorkout, body = syncGoal.body()?.data!![i].weight,
 								sleep = syncGoal.body()?.data!![i].sleep, drug = syncGoal.body()?.data!![i].medicineIntake))
@@ -976,9 +921,9 @@ object ViewModelUtil {
 			}
 		}else {
 			Log.e(TAG, "syncGoal: $syncGoal")
-		}*/
+		}
 
-		dataManager.updateStr(SYNC_TIME, "syncedAt", LocalDateTime.now().toString(), USER_ID, MyApp.prefs.getUserId())
+		dataManager.updateStr(SYNC_TIME, "syncedAt", LocalDateTime.now().minusSeconds(30).toString(), USER_ID, MyApp.prefs.getUserId())
 
 		return true
 	}
@@ -1014,23 +959,23 @@ object ViewModelUtil {
 				Constant.NAVER.name -> {
 					val response = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(getUser.accessToken))
 					if (response.isSuccessful) {
-						Log.d(TAG, "loginWithNaver: ${response.body()}")
+						Log.d(TAG, "naverLogin: ${response.body()}")
 						dataManager.updateToken(Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken,
 							accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
 						getToken = dataManager.getToken()
 					} else {
-						Log.e(TAG, "loginWithNaver: $response")
+						Log.e(TAG, "naverLogin: $response")
 					}
 				}
 				Constant.KAKAO.name -> {
 					val response = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(getUser.accessToken, getUser.idToken))
 					if (response.isSuccessful) {
-						Log.d(TAG, "loginWithKakao: ${response.body()}")
+						Log.d(TAG, "kakaoLogin: ${response.body()}")
 						dataManager.updateToken(Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken,
 							accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
 						getToken = dataManager.getToken()
 					} else {
-						Log.e(TAG, "loginWithKakao: $response")
+						Log.e(TAG, "kakaoLogin: $response")
 					}
 				}
 			}

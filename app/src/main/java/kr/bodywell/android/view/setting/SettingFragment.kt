@@ -191,7 +191,7 @@ class SettingFragment : Fragment() {
                            Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            gsc.revokeAccess().addOnCompleteListener {
-                              if(it.isSuccessful) resignProcess() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              if(it.isSuccessful) deleteData() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
                      }
@@ -204,7 +204,7 @@ class SettingFragment : Fragment() {
                            lifecycleScope.launch {
                               NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
                                  override fun onSuccess() {
-                                    resignProcess()
+                                    deleteData()
                                  }
 
                                  override fun onFailure(httpStatus: Int, message: String) {
@@ -225,7 +225,7 @@ class SettingFragment : Fragment() {
                            }else if (token != null) {
                               UserApiClient.instance.unlink { err ->
                                  lifecycleScope.launch{
-                                    if(err == null) resignProcess() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                                    if(err == null) deleteData() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                  }
                               }
                            }

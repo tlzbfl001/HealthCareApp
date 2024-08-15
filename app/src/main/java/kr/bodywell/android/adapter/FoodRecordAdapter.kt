@@ -47,7 +47,7 @@ class FoodRecordAdapter (
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
-         val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu, null)
+         val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu1, null)
 
          val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
          val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)

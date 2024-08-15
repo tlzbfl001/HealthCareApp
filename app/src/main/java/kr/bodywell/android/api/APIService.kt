@@ -1,6 +1,5 @@
 package kr.bodywell.android.api
 
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DeviceDTO

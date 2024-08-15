@@ -58,7 +58,7 @@ class BodyFragment : Fragment() {
       tvTitle.text = "신체 / 목표 체중 입력"
       et.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
       tvUnit.text = "kg"
-      btnSave.setCardBackgroundColor(Color.parseColor("#81C335"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#AED77D"))
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
@@ -155,8 +155,8 @@ class BodyFragment : Fragment() {
 
       var remain = 0.0
       if(getBody?.weight != null && getBody!!.weight!! > 0) {
-         binding.pbBody.setProgressStartColor(Color.parseColor("#AED77D"))
-         binding.pbBody.setProgressEndColor(Color.parseColor("#AED77D"))
+         binding.pbBody.setProgressStartColor(resources.getColor(R.color.body_progress))
+         binding.pbBody.setProgressEndColor(resources.getColor(R.color.body_progress))
          binding.pbBody.max = dailyGoal!!.body.roundToInt()
          binding.pbBody.progress = getBody!!.weight.toString().toDouble().roundToInt()
 

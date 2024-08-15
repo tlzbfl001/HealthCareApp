@@ -106,8 +106,8 @@ class SleepFragment : Fragment() {
          val diff = Duration.between(bedTime, wakeTime)
          total =diff.toMinutes().toInt()
 
-         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
-         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
+         binding.pbSleep.setProgressStartColor(resources.getColor(R.color.sleep_progress))
+         binding.pbSleep.setProgressEndColor(resources.getColor(R.color.sleep_progress))
          binding.pbSleep.max = dailyGoal.sleep
          binding.pbSleep.progress = total
          binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"

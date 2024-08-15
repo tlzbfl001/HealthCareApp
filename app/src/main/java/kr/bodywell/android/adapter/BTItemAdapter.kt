@@ -1,7 +1,5 @@
 package kr.bodywell.android.adapter
 
-import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.ItemBtListBinding
 import kr.bodywell.android.model.Bluetooth
-import kr.bodywell.android.model.Constant
-import kr.bodywell.android.util.BluetoothUtil
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.replaceFragment1
-import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.view.home.body.BodyRecordFragment
 
 class BTItemAdapter(
    private val listener: Listener,

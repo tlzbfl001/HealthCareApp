@@ -18,8 +18,6 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.replaceFragment2
-import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 
 class ExerciseRecordAdapter (
    private val context: Activity,
@@ -46,20 +44,12 @@ class ExerciseRecordAdapter (
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
-         val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu, null)
+         val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu2, null)
 
          val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
-         val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
          clX.setOnClickListener { dialog.dismiss() }
-
-         clEdit.setOnClickListener {
-            bundle.putString("id", itemList[position].id.toString())
-            bundle.putString("back", back)
-            replaceFragment2(context, ExerciseEditFragment(), bundle)
-            dialog.dismiss()
-         }
 
          clDelete.setOnClickListener {
             AlertDialog.Builder(context, R.style.AlertDialogStyle)

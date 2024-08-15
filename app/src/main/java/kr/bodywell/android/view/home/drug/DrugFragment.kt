@@ -67,7 +67,7 @@ class DrugFragment : Fragment() {
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
       tvTitle.text = "약복용 / 하루 복용 횟수"
       tvUnit.text = "회"
-      btnSave.setCardBackgroundColor(Color.parseColor("#8F6FF5"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#CC9E63FC"))
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
@@ -102,14 +102,14 @@ class DrugFragment : Fragment() {
          }
       }
 
-      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> { item ->
+      viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
          dailyView()
       })
 
       viewModel.intVM.observe(viewLifecycleOwner, Observer<Int> { item ->
          if(item > 0) {
-            binding.pbDrug.setProgressStartColor(Color.parseColor("#9F76DF"))
-            binding.pbDrug.setProgressEndColor(Color.parseColor("#9F76DF"))
+            binding.pbDrug.setProgressStartColor(resources.getColor(R.color.drug_progress))
+            binding.pbDrug.setProgressEndColor(resources.getColor(R.color.drug_progress))
             binding.pbDrug.progress = item
          }else {
             binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)

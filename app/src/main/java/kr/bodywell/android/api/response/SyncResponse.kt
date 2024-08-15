@@ -4,88 +4,55 @@ import com.google.gson.annotations.SerializedName
 
 data class SyncProfileResponse(
 	@SerializedName("data")
-	var data: ProfileResponse,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: ProfileResponse
 )
 
 data class SyncFoodResponse(
 	@SerializedName("data")
-	var data: MutableList<FoodResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<FoodResponse>
 )
 
 data class SyncDietsResponse(
 	@SerializedName("data")
-	var data: MutableList<DietResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<DietResponse>
 )
 
 data class SyncWaterResponse(
 	@SerializedName("data")
-	var data: MutableList<WaterResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<WaterResponse>
 )
 
 data class SyncActivityResponse(
 	@SerializedName("data")
-	var data: MutableList<ActivityResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<ActivityResponse>
 )
 
 data class SyncWorkoutResponse(
 	@SerializedName("data")
-	var data: MutableList<WorkoutResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<WorkoutResponse>
 )
 
 data class SyncBodyResponse(
 	@SerializedName("data")
-	var data: MutableList<BodyResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<BodyResponse>
 )
 
 data class SyncSleepResponse(
 	@SerializedName("data")
-	var data: MutableList<SleepResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<SleepResponse>
 )
 
 data class SyncMedicineResponse(
 	@SerializedName("data")
-	var data: MutableList<MedicineResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: MutableList<MedicineResponse>
 )
 
 data class SyncMedicineIntakeResponse(
 	@SerializedName("data")
-	var data: List<MedicineIntakeResponse>,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: List<MedicineIntakeResponse>
 )
 
 data class SyncGoalResponse(
 	@SerializedName("data")
-	var data: List<GoalResponse>?,
-
-	@SerializedName("syncedAt")
-	var syncedAt: String = ""
+	var data: List<GoalResponse>?
 )

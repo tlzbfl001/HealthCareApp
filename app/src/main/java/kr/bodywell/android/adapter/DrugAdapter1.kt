@@ -17,7 +17,6 @@ import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.view.MainViewModel
-import java.time.LocalDateTime
 
 class DrugAdapter1 (
     private val context: Context,
@@ -49,7 +48,7 @@ class DrugAdapter1 (
                 check += 1
                 if(getDrugCheck.createdAt == "") {
                     dataManager.insertDrugCheck(DrugCheck(drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, time = itemList[pos].time,
-                        createdAt = selectedDate.toString(), checkedAt = LocalDateTime.now().toString()))
+                        createdAt = selectedDate.toString()))
                 }
             }else {
                 if(check > 0) check -= 1

@@ -1,45 +1,22 @@
 package kr.bodywell.android.view.setting
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
-import android.bluetooth.BluetoothManager
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
-import android.bluetooth.le.ScanSettings
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
-import kr.bodywell.android.adapter.BTItemAdapter
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.databinding.FragmentTab1Binding
-import kr.bodywell.android.model.Bluetooth
-import kr.bodywell.android.model.Constant
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
-import java.io.IOException
 import java.util.UUID
 
 @SuppressLint("MissingPermission")
@@ -50,6 +27,7 @@ class Tab1Fragment : Fragment() {
 	private lateinit var dataManager: DataManager
 	private var bluetoothAdapter: BluetoothAdapter? = null
 	private var gatt: BluetoothGatt? = null
+	private val bundle = Bundle()
 
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
@@ -57,13 +35,11 @@ class Tab1Fragment : Fragment() {
 	): View {
 		_binding = FragmentTab1Binding.inflate(layoutInflater)
 
-		Log.i(TAG, "getMacId: ${MyApp.prefs.getMacId()}")
-
 		dataManager = DataManager(activity)
 		dataManager.open()
 
 		binding.btnConnect.setOnClickListener {
-			if(MyApp.prefs.getMacId() != "") connect(MyApp.prefs.getMacId())
+			connect(MyApp.prefs.getDevice().elementAt(1))
 		}
 
 		binding.btnInit.setOnClickListener {
@@ -98,11 +74,9 @@ class Tab1Fragment : Fragment() {
 		override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
 			super.onConnectionStateChange(gatt, status, newState)
 			if (newState == BluetoothGatt.STATE_CONNECTED) {
-				binding.tvConnect.text = "Connected"
 				Log.i(TAG, "Connected to GATT server.")
 				gatt.discoverServices()
 			} else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-				binding.tvConnect.text = "Disconnected"
 				Log.i(TAG, "Disconnected from GATT server.")
 			}
 		}

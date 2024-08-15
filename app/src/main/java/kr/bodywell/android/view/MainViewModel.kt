@@ -1,24 +1,13 @@
 package kr.bodywell.android.view
 
 import android.app.Application
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTED
-import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_CONNECTING
-import kr.bodywell.android.util.BluetoothUtil.BLUETOOTH_NO_CONNECTED
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.ViewModelUtil.createApiRequest
 import kr.bodywell.android.util.ViewModelUtil.createSync
@@ -27,25 +16,20 @@ import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.refreshToken
 import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import kr.bodywell.android.util.ViewModelUtil.syncCheck
-import java.io.IOException
 import java.time.LocalDate
-import java.util.UUID
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
    private val context = application.applicationContext
    private var dataManager: DataManager = DataManager(context)
-   private val uuid="00002a05-0000-1000-8000-00805f9b34fb"
-   private var mSocket: BluetoothSocket? = null
    var dateVM = MutableLiveData<LocalDate>()
    var intVM = MutableLiveData<Int>()
-   var msgVM = MutableLiveData<String>()
 
    init {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
-      updateData()
-      Log.d(TAG, "access: ${getToken.access}")
+//      updateData()
+//      Log.d(TAG, "access: ${getToken.access}")
    }
 
    private fun updateData() = viewModelScope.launch {
@@ -57,71 +41,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }else {
                createApiRequest(dataManager)
             }
-         }
-      }
-   }
-
-   fun btConnect(bAdapter: BluetoothAdapter) {
-      val mac = MyApp.prefs.getMacId()
-      if(bAdapter.isEnabled && mac.isNotEmpty() && mac != "") {
-         val device = bAdapter.getRemoteDevice(mac)
-         startConnect(device)
-      }else {
-         Log.d(TAG, "블루투스가 연결되지 않았습니다.")
-      }
-   }
-
-   private fun startConnect(device: BluetoothDevice) {
-      try{
-         mSocket=device.createRfcommSocketToServiceRecord(UUID.fromString(uuid))
-         msgVM.value = BLUETOOTH_CONNECTING
-         mSocket?.connect()
-         msgVM.value = BLUETOOTH_CONNECTED
-//         readMessage()
-      }catch (e: IOException) {
-         msgVM.value = BLUETOOTH_NO_CONNECTED
-         e.printStackTrace()
-      }catch(se: SecurityException) {
-         se.printStackTrace()
-      }
-   }
-
-   private fun readMessage() = viewModelScope.launch {
-      while(isActive) {
-         val buffer = ByteArray(256)
-         try {
-            val length=mSocket?.inputStream?.read(buffer)
-            val message=String(buffer,0,length ?: 0)
-            msgVM.value = message
-         }catch(e: IOException) {
-            msgVM.value = BLUETOOTH_NO_CONNECTED
-            e.printStackTrace()
-         }
-
-         delay(3000)
-      }
-   }
-
-   fun sendMessage(message: String) {
-      if(mSocket!!.isConnected) {
-         try {
-            mSocket?.outputStream?.write(message.toByteArray())
-         }catch(e: IOException) {
-            e.printStackTrace()
-         }
-      }
-   }
-
-   fun socketStatus(): Boolean {
-      return mSocket != null && mSocket!!.isConnected
-   }
-
-
-   fun closeBtConnection() {
-      try {
-         mSocket?.close()
-      }catch (e: IOException) {
-         e.printStackTrace()
+         }else delay(10000)
       }
    }
 

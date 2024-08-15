@@ -170,7 +170,6 @@ class DrugAddFragment : Fragment() {
 
                val getDrugTime = dataManager.getDrugTime(id)
 
-               // 생성 시간중 삭제된 시간
                for(i in 0 until getDrugTime.size) {
                   var check = false
                   for(j in 0 until drugTimeList.size) {
@@ -179,7 +178,6 @@ class DrugAddFragment : Fragment() {
                   }
                }
 
-               // 생성 시간중 새로 등록된 시간
                for(i in 0 until drugTimeList.size) {
                   var check = false
                   for(j in 0 until getDrugTime.size) {
@@ -188,7 +186,7 @@ class DrugAddFragment : Fragment() {
                   }
                }
 
-               // delList 목록 데이터 삭제, unused table에 등록
+               // delList 데이터 삭제, unused table에 등록
                for(i in 0 until delList.size) {
                   val getDrugCheck = dataManager.getDrugCheck(delList[i].id)
 
@@ -204,7 +202,7 @@ class DrugAddFragment : Fragment() {
                   dataManager.deleteItem(DRUG_CHECK, "drugTimeId", delList[i].id)
                }
 
-               // addList 목록 데이터 저장
+               // addList 데이터 저장
                for(i in 0 until addList.size) dataManager.insertDrugTime(DrugTime(uid = "", drugId = id, time = addList[i]))
 
                alarmReceiver!!.setAlarm(requireActivity(), id, selectedDate.toString(), getEndDate(), drugTimeList, "$name $amount$unit")
@@ -219,15 +217,6 @@ class DrugAddFragment : Fragment() {
                alarmReceiver!!.setAlarm(requireActivity(), drugId.id, selectedDate.toString(), getEndDate(), drugTimeList, "$name $amount$unit")
 
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            }
-
-            if(viewModel.socketStatus()) {
-               var str =""
-               for(i in 0 until drugTimeList.size) {
-                  str += "${drugTimeList[i].time}"
-               }
-
-               viewModel.sendMessage(str)
             }
 
             replaceFragment3(requireActivity(), DrugRecordFragment())

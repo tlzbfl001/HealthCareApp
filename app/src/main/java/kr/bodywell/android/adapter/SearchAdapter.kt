@@ -20,7 +20,6 @@ import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
-import kr.bodywell.android.view.home.exercise.ExerciseEditFragment
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class SearchAdapter(
@@ -47,35 +46,28 @@ class SearchAdapter(
             itemClickListener?.onClick(it, holder.adapterPosition)
         }
 
-        if(itemList[position].string1 == TYPE_ADMIN) holder.cl.visibility = View.GONE
+        if(itemList[position].string1 == TYPE_ADMIN) holder.cl.visibility = View.GONE else holder.cl.visibility = View.VISIBLE
 
         holder.cl.setOnClickListener {
-            val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
-            val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu, null)
+            if(type != "") {
+                val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu1, null)
 
-            val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
-            val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
-            val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
+                val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
+                val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
+                val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
-            clX.setOnClickListener { dialog.dismiss() }
+                clX.setOnClickListener { dialog.dismiss() }
 
-            clEdit.setOnClickListener {
-                if(type != "") {
+                clEdit.setOnClickListener {
                     bundle.putString("id", itemList[position].int1.toString())
                     bundle.putString("type", type)
                     bundle.putString("back", back)
                     replaceFragment2(context, FoodEditFragment(), bundle)
                     dialog.dismiss()
-                }else {
-                    bundle.putString("id", itemList[position].int1.toString())
-                    bundle.putString("back", back)
-                    replaceFragment2(context, ExerciseEditFragment(), bundle)
-                    dialog.dismiss()
                 }
-            }
 
-            clDelete.setOnClickListener {
-                if(type != "") {
+                clDelete.setOnClickListener {
                     AlertDialog.Builder(context, R.style.AlertDialogStyle)
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
@@ -94,7 +86,20 @@ class SearchAdapter(
                             }else Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
                         }.setNegativeButton("취소", null).create().show()
                     dialog.dismiss()
-                }else {
+                }
+
+                dialog.setContentView(bottomSheetView)
+                dialog.show()
+            }else {
+                val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu2, null)
+
+                val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
+                val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
+
+                clX.setOnClickListener { dialog.dismiss() }
+
+                clDelete.setOnClickListener {
                     AlertDialog.Builder(context, R.style.AlertDialogStyle)
                         .setTitle("운동 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
@@ -116,10 +121,10 @@ class SearchAdapter(
                         .create().show()
                     dialog.dismiss()
                 }
-            }
 
-            dialog.setContentView(bottomSheetView)
-            dialog.show()
+                dialog.setContentView(bottomSheetView)
+                dialog.show()
+            }
         }
     }
 

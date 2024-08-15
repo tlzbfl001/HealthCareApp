@@ -18,9 +18,6 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
@@ -28,9 +25,6 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
-import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
-import kr.bodywell.android.util.RegisterUtil.naverLoginRequest
 import kr.bodywell.android.view.home.MainActivity
 
 class LoginActivity : AppCompatActivity() {
@@ -83,8 +77,6 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }
       }
-
-      // Log.d(TAG, "getKeyHash: " + Utility.getKeyHash(this))
    }
 
    private fun googleLogin() {
@@ -107,18 +99,18 @@ class LoginActivity : AppCompatActivity() {
                if(getUser.createdAt == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      val user = User(type = Constant.GOOGLE.name, email = it.result.email!!, idToken = it.result.idToken!!)
-//                     val intent = Intent(this, SignupActivity::class.java)
-//                     intent.putExtra("user", user)
-//                     startActivity(intent)
+                     val intent = Intent(this, SignupActivity::class.java)
+                     intent.putExtra("user", user)
+                     startActivity(intent)
 
-                     CoroutineScope(Dispatchers.IO).launch {
-                        googleLoginRequest(this@LoginActivity, dataManager, user)
-                     }
+//                     CoroutineScope(Dispatchers.IO).launch {
+//                        googleLoginRequest(this@LoginActivity, dataManager, user)
+//                     }
                   }else {
                      Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                   }
                }else { // 로그인
-                  MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id)
+                  MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
                   startActivity(Intent(this, MainActivity::class.java))
                }
             }else {
@@ -138,18 +130,18 @@ class LoginActivity : AppCompatActivity() {
                   if(getUser.createdAt == "") { // 회원 가입
                      if(NaverIdLoginSDK.getAccessToken() != "" && NaverIdLoginSDK.getAccessToken() != null && result.profile?.email != "" && result.profile?.email != null) {
                         val user = User(type = Constant.NAVER.name, accessToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!)
-//                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-//                        intent.putExtra("user", user)
-//                        startActivity(intent)
+                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                        intent.putExtra("user", user)
+                        startActivity(intent)
 
-                        CoroutineScope(Dispatchers.IO).launch {
-                           naverLoginRequest(this@LoginActivity, dataManager, user)
-                        }
+//                        CoroutineScope(Dispatchers.IO).launch {
+//                           naverLoginRequest(this@LoginActivity, dataManager, user)
+//                        }
                      }else {
                         Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                      }
                   }else { // 로그인
-                     MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id)
+                     MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
                }
@@ -204,18 +196,18 @@ class LoginActivity : AppCompatActivity() {
             if(getUser.createdAt == "") { // 회원 가입
                if(token.idToken != "" && token.idToken != null && user.kakaoAccount?.email != "" && user.kakaoAccount?.email != null) {
                   val data = User(type = Constant.KAKAO.name, idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!)
-//                  val intent = Intent(this, SignupActivity::class.java)
-//                  intent.putExtra("user", data)
-//                  startActivity(intent)
+                  val intent = Intent(this, SignupActivity::class.java)
+                  intent.putExtra("user", data)
+                  startActivity(intent)
 
-                  CoroutineScope(Dispatchers.IO).launch {
-                     kakaoLoginRequest(this@LoginActivity, dataManager, data)
-                  }
+//                  CoroutineScope(Dispatchers.IO).launch {
+//                     kakaoLoginRequest(this@LoginActivity, dataManager, data)
+//                  }
                }else {
                   Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
                }
             }else { // 로그인
-               MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id)
+               MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
                startActivity(Intent(this, MainActivity::class.java))
             }
          }else {

@@ -1,8 +1,8 @@
 package kr.bodywell.android.model
 
 enum class Constant {
-	USER_PREFS,
-	BT_PREFS,
+	USER_PREFERENCE,
+	DEVICE,
 	GOOGLE,
 	NAVER,
 	KAKAO,

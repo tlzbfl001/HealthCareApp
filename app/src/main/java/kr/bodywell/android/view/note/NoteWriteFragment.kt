@@ -17,7 +17,6 @@ import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
-import kr.bodywell.android.util.CustomUtil.setStatusBar
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
@@ -44,7 +43,16 @@ class NoteWriteFragment : Fragment() {
    ): View {
       _binding = FragmentNoteWriteBinding.inflate(layoutInflater)
 
-      setStatusBar(requireActivity(), binding.mainLayout)
+      requireActivity().window?.apply {
+         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+         val statusBarHeight = if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else { 0 }
+         binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
+      }
+
+      binding.mainLayout.setOnTouchListener { _, _ ->
+         hideKeyboard(requireActivity())
+         true
+      }
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -52,7 +60,7 @@ class NoteWriteFragment : Fragment() {
       val getNote = dataManager.getNote(selectedDate.toString())
       bundle.putString("data", NOTE)
 
-      binding.mainLayout.setOnTouchListener { _, _ ->
+      binding.linear.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }

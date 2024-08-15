@@ -93,6 +93,5 @@ class MainActivity : AppCompatActivity() {
 
    override fun onDestroy() {
       super.onDestroy()
-      if(viewModel.socketStatus()) viewModel.closeBtConnection()
    }
 }

@@ -20,14 +20,12 @@ import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Drug
-import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Food
@@ -53,9 +51,7 @@ import java.time.temporal.ChronoUnit
 object RegisterUtil {
 	suspend fun googleLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email) // 이미 가입한 이메일인지 확인
-
 		if(getUserEmail.isSuccessful) {
-			Log.d(TAG, "getUserEmail: ${getUserEmail.body()}")
 			if(getUserEmail.body()!!.exists) { // 이미 가입한 이메일인 경우 서버에서 데이터 가져옴
 				ctx.runOnUiThread {
 					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
@@ -64,7 +60,6 @@ object RegisterUtil {
 							CoroutineScope(Dispatchers.IO).launch {
 								val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
 								if(response.isSuccessful) {
-									Log.d(TAG, "loginWithGoogle: ${response.body()}")
 									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken) // 서버데이터 가져오기
 								}else {
 									Log.e(TAG, "loginWithGoogle: $response")
@@ -84,9 +79,7 @@ object RegisterUtil {
 
 	suspend fun naverLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
-
 		if(getUserEmail.isSuccessful) {
-			Log.d(TAG, "getUserEmail: ${getUserEmail.body()}")
 			if (getUserEmail.body()!!.exists) {
 				ctx.runOnUiThread {
 					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
@@ -95,7 +88,6 @@ object RegisterUtil {
 							CoroutineScope(Dispatchers.IO).launch {
 								val response = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
 								if (response.isSuccessful) {
-									Log.d(TAG, "loginWithNaver: ${response.body()}")
 									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken)
 								} else {
 									Log.e(TAG, "loginWithNaver: $response")
@@ -113,9 +105,7 @@ object RegisterUtil {
 
 	suspend fun kakaoLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
-
 		if(getUserEmail.isSuccessful) {
-			Log.d(TAG, "getUserEmail: ${getUserEmail.body()}")
 			if (getUserEmail.body()!!.exists) {
 				ctx.runOnUiThread {
 					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
@@ -124,7 +114,6 @@ object RegisterUtil {
 							CoroutineScope(Dispatchers.IO).launch {
 								val response = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
 								if (response.isSuccessful) {
-									Log.d(TAG, "loginWithKakao: ${response.body()}")
 									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken)
 								} else {
 									Log.e(TAG, "loginWithKakao: $response")
@@ -142,9 +131,7 @@ object RegisterUtil {
 
 	suspend fun googleSignupRequest(ctx: SignupActivity, dataManager: DataManager, user: User) {
 		val loginResponse = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
-
 		if(loginResponse.isSuccessful) {
-			Log.d(TAG, "loginWithGoogle: ${loginResponse.body()}")
 			saveData(ctx, dataManager, user, Token(access = loginResponse.body()!!.accessToken, refresh = loginResponse.body()!!.refreshToken))
 		}else {
 			Log.e(TAG, "loginWithGoogle: $loginResponse")
@@ -156,9 +143,7 @@ object RegisterUtil {
 
 	suspend fun naverSignupRequest(ctx: SignupActivity, dataManager: DataManager, user: User) {
 		val loginResponse = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
-
 		if(loginResponse.isSuccessful) {
-			Log.d(TAG, "loginWithNaver: ${loginResponse.body()}")
 			saveData(ctx, dataManager, user, Token(access = loginResponse.body()!!.accessToken, refresh = loginResponse.body()!!.refreshToken))
 		}else {
 			Log.e(TAG, "loginWithNaver: $loginResponse")
@@ -170,9 +155,7 @@ object RegisterUtil {
 
 	suspend fun kakaoSignupRequest(ctx: SignupActivity, dataManager: DataManager, user: User) {
 		val loginResponse = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
-
 		if(loginResponse.isSuccessful) {
-			Log.d(TAG, "loginWithKakao: ${loginResponse.body()}")
 			saveData(ctx, dataManager, user, Token(access = loginResponse.body()!!.accessToken, refresh = loginResponse.body()!!.refreshToken))
 		}else {
 			Log.e(TAG, "loginWithKakao: $loginResponse")
@@ -195,18 +178,20 @@ object RegisterUtil {
 		val getMedicine = RetrofitAPI.api.getMedicine("Bearer $access")
 		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer $access")
 
+		Log.d(TAG, "getUserUid: ${getUserUid.body()}")
+		Log.d(TAG, "getProfile: ${getProfile.body()}")
+		Log.d(TAG, "getAllFood: ${getAllFood.body()}")
+		Log.d(TAG, "getAllDiet: ${getAllDiet.body()}")
+		Log.d(TAG, "getAllWater: ${getAllWater.body()}")
+		Log.d(TAG, "getAllActivity: ${getAllActivity.body()}")
+		Log.d(TAG, "getAllWorkout: ${getAllWorkout.body()}")
+		Log.d(TAG, "getAllBody: ${getAllBody.body()}")
+		Log.d(TAG, "getAllSleep: ${getAllSleep.body()}")
+		Log.d(TAG, "getMedicine: ${getMedicine.body()}")
+		Log.d(TAG, "getAllGoal: ${getAllGoal.body()}")
+
 		if(getUserUid.isSuccessful && getProfile.isSuccessful && getAllFood.isSuccessful && getAllDiet.isSuccessful && getAllWater.isSuccessful && getAllActivity.isSuccessful &&
 			getAllWorkout.isSuccessful && getAllBody.isSuccessful && getAllSleep.isSuccessful && getMedicine.isSuccessful && getAllGoal.isSuccessful) {
-			Log.d(TAG, "getUserUid: ${getUserUid.body()}")
-			Log.d(TAG, "getAllFood: ${getAllFood.body()}")
-			Log.d(TAG, "getAllDiet: ${getAllDiet.body()}")
-			Log.d(TAG, "getAllWater: ${getAllWater.body()}")
-			Log.d(TAG, "getAllActivity: ${getAllActivity.body()}")
-			Log.d(TAG, "getAllWorkout: ${getAllWorkout.body()}")
-			Log.d(TAG, "getAllBody: ${getAllBody.body()}")
-			Log.d(TAG, "getAllSleep: ${getAllSleep.body()}")
-			Log.d(TAG, "getMedicine: ${getMedicine.body()}")
-			Log.d(TAG, "getGoal: ${getAllGoal.body()}")
 
 			var getUser = dataManager.getUser(user.type, user.email)
 			val getToken = dataManager.getToken()
@@ -225,7 +210,7 @@ object RegisterUtil {
 			}
 
 			getUser = dataManager.getUser(user.type, user.email)
-			MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id)
+			MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
 
 			// 토큰 정보 저장
 			if(getToken.accessCreated == "") {
@@ -239,7 +224,8 @@ object RegisterUtil {
 				var useCount = 0
 				var useDate = ""
 
-				if(getAllFood.body()!![i].usages!!.size > 0) {
+				if(getAllFood.body()!![i].usages!!.isNotEmpty()) { // usages가 empty인것도 있기때문에 useCount, useDate 값없을수있음.
+					Log.d(TAG, "data: ${getAllFood.body()!!} / usages: ${getAllFood.body()!![i].usages}")
 					useCount = getAllFood.body()!![i].usages!![0].usageCount
 					useDate = isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 				}
@@ -314,8 +300,6 @@ object RegisterUtil {
 
 				val getMedicineTime = RetrofitAPI.api.getMedicineTime("Bearer $access", drug.uid)
 				if(getMedicineTime.isSuccessful) {
-					Log.d(TAG, "getMedicineTime: ${getMedicineTime.body()}")
-
 					dataManager.insertDrug(drug) // drug 데이터 저장
 					val drugId = dataManager.getData(DRUG, "startDate", drug.startDate) // drug id 가져오기
 
@@ -325,18 +309,16 @@ object RegisterUtil {
 
 						timeList.add(DrugTime(time = drugTime.time))
 
-						val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer $access", drug.uid, drugTime.uid)
-						if(getMedicineIntake.isSuccessful) {
-							Log.d(TAG, "getMedicineIntake: ${getMedicineIntake.body()}")
-
-							val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
-							for(k in 0 until getMedicineIntake.body()!!.size) {
-								dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId.id, drugTimeId = drugTimeId.id,
-									time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt.substring(0, 10)))
-							}
-						}else {
-							Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
-						}
+//						val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer $access", drug.uid, drugTime.uid)
+//						if(getMedicineIntake.isSuccessful) {
+//							val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
+//							for(k in 0 until getMedicineIntake.body()!!.size) {
+//								dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId.id, drugTimeId = drugTimeId.id,
+//									time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt.substring(0, 10)))
+//							}
+//						}else {
+//							Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
+//						}
 					}
 
 					if(!checkAlarmPermissions(ctx)) { // 알람 등록
@@ -380,18 +362,19 @@ object RegisterUtil {
 			val hardwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
 			val softwareVer = if(ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == null || ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == "") {
 				"" }else ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
+
 			val getUserUid = RetrofitAPI.api.getUser("Bearer ${token.access}")
 			val createDevice = RetrofitAPI.api.createDevice("Bearer ${token.access}", DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer))
 			val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}")
 			val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer ${token.access}")
 
-			Log.d(TAG, "getUserUid: ${getUserUid.isSuccessful}/${getUserUid.body()}")
-			Log.d(TAG, "createDevice: ${createDevice.isSuccessful}/${createDevice.body()}")
-			Log.d(TAG, "getAllFood: ${getAllFood.isSuccessful}/${getAllFood.body()}")
-			Log.d(TAG, "getAllActivity: ${getAllActivity.isSuccessful}/${getAllActivity.body()}")
+			Log.d(TAG, "getUserUid: ${getUserUid.body()}")
+			Log.d(TAG, "createDevice: ${createDevice.body()}")
+			Log.d(TAG, "getAllFood: ${getAllFood.body()}")
+			Log.d(TAG, "getAllActivity: ${getAllActivity.body()}")
 
 			if(getUserUid.isSuccessful && createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful) {
-				MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser.id) // 사용자 Id 저장
+				MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id) // 사용자 Id 저장
 				dataManager.updateUserStr("uid", getUserUid.body()!!.uid)
 
 				// 토큰 정보 저장
@@ -452,7 +435,7 @@ object RegisterUtil {
 
 		val getUser2 = dataManager.getUser(user.type, user.email)
 
-		MyApp.prefs.setUserId(Constant.USER_PREFS.name, getUser2.id) // 사용자 Id 저장
+		MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser2.id) // 사용자 Id 저장
 
 		val dialog = Dialog(ctx)
 		dialog.setContentView(R.layout.dialog_signup)

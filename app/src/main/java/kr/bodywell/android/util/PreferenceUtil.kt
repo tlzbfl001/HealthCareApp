@@ -12,15 +12,15 @@ class PreferenceUtil(context: Context) {
     }
 
     fun getUserId(): Int {
-        return prefs.getInt(Constant.USER_PREFS.name, 0)
+        return prefs.getInt(Constant.USER_PREFERENCE.name, 0)
     }
 
-    fun setMacId(key: String, str: String) {
-        prefs.edit().putString(key, str).apply()
+    fun setDevice(hashSet: HashSet<String>) {
+        prefs.edit().putStringSet(Constant.DEVICE.name, hashSet).apply()
     }
 
-    fun getMacId(): String {
-        return prefs.getString(Constant.BT_PREFS.name, "")!!
+    fun getDevice(): Set<String> {
+        return prefs.getStringSet(Constant.DEVICE.name, null)!!
     }
 
     fun removePrefs() {

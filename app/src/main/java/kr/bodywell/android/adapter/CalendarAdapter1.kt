@@ -1,7 +1,6 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -36,16 +35,9 @@ class CalendarAdapter1 (
          }
 
          if (!days.contains(null) && date.month != days[6]!!.month) {
-            if(context.resources.configuration.uiMode.and(Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
-               when(type) {
-                  1 -> holder.tvDate.setTextColor(Color.GRAY)
-                  else -> holder.tvDate.setTextColor(Color.WHITE)
-               }
-            }else {
-               when(type) {
-                  1 -> holder.tvDate.setTextColor(Color.WHITE)
-                  else -> holder.tvDate.setTextColor(Color.LTGRAY)
-               }
+            when(type) {
+               1 -> holder.tvDate.setTextColor(Color.WHITE)
+               else -> holder.tvDate.setTextColor(Color.LTGRAY)
             }
          }
       }

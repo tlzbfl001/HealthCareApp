@@ -74,7 +74,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL(drugTime)
 
       val drugCheck = "create table $DRUG_CHECK(id integer primary key autoincrement, $USER_ID integer, uid text, drugId integer, drugTimeId integer, " +
-         "time text, $CREATED_AT text, checkedAt text);"
+         "time text, $CREATED_AT text);"
       db.execSQL(drugCheck)
 
       val note = "create table $NOTE(id integer primary key autoincrement, $USER_ID integer, title text, content integer, status integer, $CREATED_AT text);"
