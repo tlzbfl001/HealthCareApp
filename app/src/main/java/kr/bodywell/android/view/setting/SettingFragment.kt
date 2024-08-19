@@ -111,13 +111,11 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvAlarm.setOnClickListener {
-         val intent = Intent()
-         intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
-         intent.putExtra("android.provider.extra.APP_PACKAGE", requireActivity().packageName)
-         startActivity(intent)
+         replaceFragment1(requireActivity(), AlarmFragment())
       }
 
       binding.tvConnect.setOnClickListener {
+         // 블루투스 권한 설정
          if(!checkBtPermissions(requireActivity())) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                pLauncher.launch(BT_PERMISSION_2)

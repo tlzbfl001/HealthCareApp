@@ -112,8 +112,8 @@ class ExerciseFragment : Fragment() {
       sum = getExerciseCalories(requireActivity(), selectedDate.toString())
 
       if(sum > 0) {
-         binding.pbExercise.setProgressStartColor(resources.getColor(R.color.exercise_progress))
-         binding.pbExercise.setProgressEndColor(resources.getColor(R.color.exercise_progress))
+         binding.pbExercise.setProgressStartColor(Color.parseColor("#CCF6BD4B"))
+         binding.pbExercise.setProgressEndColor(Color.parseColor("#CCF6BD4B"))
          binding.pbExercise.max = dailyGoal.exercise
          binding.pbExercise.progress = sum
       }

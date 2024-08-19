@@ -1,11 +1,11 @@
 package kr.bodywell.android.view.home.drug
 
-import android.Manifest
+import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,10 +27,16 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
+import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
-import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
+import kr.bodywell.android.util.CustomUtil.isSetPermission
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import kr.bodywell.android.view.MainViewModel
+import kr.bodywell.android.view.setting.AlarmFragment
 import java.time.LocalDate
 
 class DrugFragment : Fragment() {
@@ -42,6 +48,7 @@ class DrugFragment : Fragment() {
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var adapter: DrugAdapter1? = null
    private var dailyGoal = Goal()
+   private var alertDialog: AlertDialog? = null
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +64,21 @@ class DrugFragment : Fragment() {
 
       dataManager = DataManager(activity)
       dataManager.open()
+
+      if(!checkAlarmPermission2(requireActivity())) isSetPermission = true
+
+      val builder = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+      alertDialog = builder.setTitle("알람 권한 설정")
+            .setMessage("알람 권한이 허용되지 않았습니다. 알림 설정으로 이동하시겠습니까?")
+            .setPositiveButton("확인") { _, _ ->
+               replaceFragment1(requireActivity(), AlarmFragment())
+            }
+            .setNegativeButton("취소", null)
+            .create()
+
+      if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
+         alertDialog!!.show()
+      }
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -91,12 +113,8 @@ class DrugFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         if(!checkAlarmPermissions(requireActivity())) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-               pLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
-            }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-               pLauncher.launch(arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM))
-            }
+         if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
+            Toast.makeText(requireActivity(), "알람 권한이 허용되지 않았습니다.", Toast.LENGTH_SHORT).show()
          }else {
             replaceFragment1(requireActivity(), DrugRecordFragment())
          }
@@ -108,8 +126,8 @@ class DrugFragment : Fragment() {
 
       viewModel.intVM.observe(viewLifecycleOwner, Observer<Int> { item ->
          if(item > 0) {
-            binding.pbDrug.setProgressStartColor(resources.getColor(R.color.drug_progress))
-            binding.pbDrug.setProgressEndColor(resources.getColor(R.color.drug_progress))
+            binding.pbDrug.setProgressStartColor(Color.parseColor("#9E63FC"))
+            binding.pbDrug.setProgressEndColor(Color.parseColor("#9E63FC"))
             binding.pbDrug.progress = item
          }else {
             binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
@@ -142,6 +160,31 @@ class DrugFragment : Fragment() {
       binding.pbDrug.max = dailyGoal.drug
       binding.pbDrug.progress = check
 
+      if(isSetPermission) {
+         if(checkAlarmPermission1(requireActivity()) && checkAlarmPermission2(requireActivity())) {
+            val alarmReceiver = AlarmReceiver()
+            val getDrugDate = dataManager.getDrugDate(LocalDate.now().toString())
+
+            for(i in 0 until getDrugDate.size) {
+               val getDrugData = dataManager.getDrugData(getDrugDate[i])
+
+               if(getDrugData.isSet == 1) {
+                  val timeList = ArrayList<DrugTime>()
+                  val getDrugTime = dataManager.getDrugTime(getDrugData.id)
+
+                  for(j in 0 until getDrugTime.size) {
+                     timeList.add(DrugTime(time = getDrugTime[j].time))
+                  }
+
+                  val message = getDrugData.name + " " + getDrugData.amount + getDrugData.unit
+                  alarmReceiver.setAlarm(requireActivity(), getDrugData.id, getDrugData.startDate, getDrugData.endDate, timeList, message)
+               }
+            }
+
+            isSetPermission = false
+         }
+      }
+
       // 약복용 리스트 생성
       val getDrugDaily = dataManager.getDrug(selectedDate.toString())
       for(i in 0 until getDrugDaily.size) {
@@ -158,5 +201,10 @@ class DrugFragment : Fragment() {
       binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
       binding.recyclerView.adapter = adapter
       binding.recyclerView.requestLayout()
+   }
+
+   override fun onPause() {
+      super.onPause()
+      if(alertDialog != null) alertDialog!!.dismiss()
    }
 }

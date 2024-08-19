@@ -3,6 +3,7 @@ package kr.bodywell.android.util
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -57,12 +58,27 @@ object PermissionUtil {
         }
     }
 
-    fun checkAlarmPermissions(context: Context): Boolean {
+    fun checkAlarmPermission1(context: Context): Boolean {
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ContextCompat.checkSelfPermission(context, Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED
         }else true
+    }
+
+    fun checkAlarmPermission2(context: Context): Boolean {
+        var result = false
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) { // 권한이 있다면 true를 반환
+                result = true
+            }
+        }else { // 나머지 버전은 해당사항 없음
+            result = true
+        }
+
+        return result
     }
 
     @SuppressLint("SimpleDateFormat")

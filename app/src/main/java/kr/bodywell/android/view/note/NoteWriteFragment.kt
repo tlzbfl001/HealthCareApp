@@ -60,10 +60,10 @@ class NoteWriteFragment : Fragment() {
       val getNote = dataManager.getNote(selectedDate.toString())
       bundle.putString("data", NOTE)
 
-      binding.linear.setOnTouchListener { _, _ ->
-         hideKeyboard(requireActivity())
-         true
-      }
+//      binding.linear.setOnTouchListener { _, _ ->
+//         hideKeyboard(requireActivity())
+//         true
+//      }
 
       binding.clBack.setOnClickListener {
          replaceFragment2(requireActivity(), NoteFragment(), bundle)

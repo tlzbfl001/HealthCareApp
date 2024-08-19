@@ -129,6 +129,12 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<FoodResponse>>
 
+	@GET("user/foods/{uid}")
+	suspend fun getFood(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<FoodResponse>
+
 	@POST("user/foods")
 	suspend fun createFood(
 		@Header("Authorization") token: String,
@@ -158,6 +164,12 @@ interface APIService {
 	suspend fun getAllDiet(
 		@Header("Authorization") token: String
 	): Response<List<DietResponse>>
+
+	@GET("user/diets/{uid}")
+	suspend fun getDiet(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<DietResponse>
 
 	@POST("user/diets")
 	suspend fun createDiets(
@@ -189,6 +201,12 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<WaterResponse>>
 
+	@GET("user/waters/{uid}")
+	suspend fun getWater(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<WaterResponse>
+
 	@POST("user/waters")
 	suspend fun createWater(
 		@Header("Authorization") token: String,
@@ -218,6 +236,12 @@ interface APIService {
 	suspend fun getAllActivity(
 		@Header("Authorization") token: String
 	): Response<List<ActivityResponse>>
+
+	@GET("user/activities/{uid}")
+	suspend fun getActivity(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<ActivityResponse>
 
 	@GET("user/activities/check-name")
 	suspend fun getCheckActivity(
@@ -254,6 +278,12 @@ interface APIService {
 	suspend fun getAllWorkout(
 		@Header("Authorization") token: String
 	): Response<List<WorkoutResponse>>
+
+	@GET("user/workouts/{uid}")
+	suspend fun getWorkout(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<WorkoutResponse>
 
 	@POST("user/workouts")
 	suspend fun createWorkout(
@@ -329,9 +359,21 @@ interface APIService {
 	): Response<SleepResponse>
 
 	@GET("user/medicines")
-	suspend fun getMedicine(
+	suspend fun getAllMedicine(
 		@Header("Authorization") token: String
 	): Response<List<MedicineResponse>>
+
+	@GET("user/medicines/{uid}")
+	suspend fun getMedicine(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String
+	): Response<MedicineResponse>
+
+	@GET("user/medicines/check-date")
+	suspend fun getCheckMedicine(
+		@Header("Authorization") token: String,
+		@Query("date") date: String
+	): Response<CheckResponse>
 
 	@POST("user/medicines")
 	suspend fun createMedicine(
@@ -359,10 +401,17 @@ interface APIService {
 	): Response<MedicineResponse>
 
 	@GET("user/medicines/{uid}/times")
-	suspend fun getMedicineTime(
+	suspend fun getAllMedicineTime(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String
 	): Response<List<MedicineTimeResponse>>
+
+	@GET("user/medicines/{uid}/times/{timeUid}")
+	suspend fun getMedicineTime(
+		@Header("Authorization") token: String,
+		@Path("uid") uid: String,
+		@Path("timeUid") timeUid: String
+	): Response<MedicineTimeResponse>
 
 	@POST("user/medicines/{uid}/times")
 	suspend fun createMedicineTime(
@@ -377,37 +426,6 @@ interface APIService {
 		@Path("uid") uid: String,
 		@Path("timeUid") timeUid: String
 	): Response<MedicineTimeResponse>
-
-	@GET("user/medicines/{uid}/times/{timeUid}/intakes")
-	suspend fun getMedicineIntake(
-		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
-		@Path("timeUid") timeUid: String
-	): Response<List<MedicineIntakeResponse>>
-
-	@POST("user/medicines/{uid}/times/{timeUid}/intakes")
-	suspend fun createMedicineIntake(
-		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
-		@Path("timeUid") timeUid: String,
-		@Body dto: MedicineIntakeDTO
-	): Response<MedicineResponse>
-
-	@POST("user/medicines/{uid}/times/{timeUid}/intakes/sync")
-	suspend fun syncMedicineIntake(
-		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
-		@Path("timeUid") timeUid: String,
-		@Body dto: SyncDTO
-	): Response<SyncMedicineIntakeResponse>
-
-	@DELETE("user/medicines/{uid}/times/{timeUid}/intakes/{intakeUid}")
-	suspend fun deleteMedicineIntake(
-		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
-		@Path("timeUid") timeUid: String,
-		@Path("intakeUid") intakeUid: String
-	): Response<MedicineResponse>
 
 	@GET("user/goals")
 	suspend fun getAllGoal(

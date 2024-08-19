@@ -13,9 +13,11 @@
    <color name="light_grey_black">#000000</color>
    <color name="grey_white">#ffffff</color>
    <color name="grey_dark_grey">#4A4A4A</color>
+
    <color name="logo">#ffffff</color>
    <color name="main_top">#668468FF</color>
    <color name="main_cal_btn">#B2A38FF1</color>
+
    <color name="food_grey">#323232</color>
    <color name="food_black">#000000</color>
    <color name="water_grey">#323232</color>
@@ -30,6 +32,7 @@
    <color name="drug_black">#000000</color>
    <color name="drug_list">#66516AC3</color>
    <color name="drug_add">#66516AC3</color>
+
    <color name="report_black">#000000</color>
    <color name="note_grey">#2C2C2C</color>
    <color name="note_green">#758761</color>

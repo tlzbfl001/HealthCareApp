@@ -190,4 +190,6 @@
    <string name="serviceUUID">0d58cf3c-3f57-11ec-9356-0242ac130003</string>
    <string name="characteristicUUID">0d58cfe6-3f57-11ec-9356-0242ac130003</string>
    <string name="cccdUUID">00002a05-0000-1000-8000-00805f9b34fb</string>
+   <!-- TODO: Remove or change this placeholder text -->
+   <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -155,8 +155,8 @@ class BodyFragment : Fragment() {
 
       var remain = 0.0
       if(getBody?.weight != null && getBody!!.weight!! > 0) {
-         binding.pbBody.setProgressStartColor(resources.getColor(R.color.body_progress))
-         binding.pbBody.setProgressEndColor(resources.getColor(R.color.body_progress))
+         binding.pbBody.setProgressStartColor(Color.parseColor("#B8E189"))
+         binding.pbBody.setProgressEndColor(Color.parseColor("#B8E189"))
          binding.pbBody.max = dailyGoal!!.body.roundToInt()
          binding.pbBody.progress = getBody!!.weight.toString().toDouble().roundToInt()
 

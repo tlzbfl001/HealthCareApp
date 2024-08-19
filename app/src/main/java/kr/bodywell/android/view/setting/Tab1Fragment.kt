@@ -39,7 +39,7 @@ class Tab1Fragment : Fragment() {
 		dataManager.open()
 
 		binding.btnConnect.setOnClickListener {
-			connect(MyApp.prefs.getDevice().elementAt(1))
+			if(MyApp.prefs.getDevice().isNotEmpty()) connect(MyApp.prefs.getDevice().elementAt(1))
 		}
 
 		binding.btnInit.setOnClickListener {

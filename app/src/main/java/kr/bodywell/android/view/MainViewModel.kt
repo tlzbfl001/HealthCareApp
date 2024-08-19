@@ -1,6 +1,7 @@
 package kr.bodywell.android.view
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.ViewModelUtil.createApiRequest
 import kr.bodywell.android.util.ViewModelUtil.createSync
@@ -28,8 +30,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
-//      updateData()
-//      Log.d(TAG, "access: ${getToken.access}")
+      updateData()
+      Log.d(TAG, "access: ${getToken.access}")
    }
 
    private fun updateData() = viewModelScope.launch {

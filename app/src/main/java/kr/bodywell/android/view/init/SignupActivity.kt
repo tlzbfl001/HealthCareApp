@@ -9,11 +9,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
+import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
+import kr.bodywell.android.util.RegisterUtil.kakaoSignupRequest
+import kr.bodywell.android.util.RegisterUtil.naverSignupRequest
 import kr.bodywell.android.util.RegisterUtil.registerTest
 
 class SignupActivity : AppCompatActivity() {
@@ -114,8 +121,8 @@ class SignupActivity : AppCompatActivity() {
 
             if(networkStatusCheck(this)) {
                if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-                  registerTest(this@SignupActivity, dataManager, user)
-                  /*when(user.type) {
+//                  registerTest(this@SignupActivity, dataManager, user)
+                  when(user.type) {
                      Constant.GOOGLE.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
                            googleSignupRequest(this@SignupActivity, dataManager, user)
@@ -134,7 +141,7 @@ class SignupActivity : AppCompatActivity() {
                            isClickable = true
                         }
                      }
-                  }*/
+                  }
                }else Toast.makeText(this, "필수 이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show()
             }else Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }

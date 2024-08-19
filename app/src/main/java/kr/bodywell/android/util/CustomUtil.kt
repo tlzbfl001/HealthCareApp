@@ -26,10 +26,9 @@ import java.util.regex.Pattern
 
 object CustomUtil {
    const val TAG = "logTAG"
-   private val isoFormatter: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT
-   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
    var layoutType = 1
    var drugTimeList = ArrayList<DrugTime>()
+   var isSetPermission = false
 
    fun replaceFragment1(activity: Activity, fragment: Fragment?) {
       (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
@@ -85,7 +84,7 @@ object CustomUtil {
    }
 
    fun dateToIso(date: String): String {
-      return LocalDate.parse(date).atStartOfDay().atOffset(ZoneOffset.UTC).format(isoFormatter)
+      return LocalDate.parse(date).atStartOfDay().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
    }
 
    fun dateTimeToIso(date: LocalDateTime): String {

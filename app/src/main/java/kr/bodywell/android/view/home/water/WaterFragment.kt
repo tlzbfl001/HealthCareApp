@@ -96,8 +96,8 @@ class WaterFragment : Fragment() {
          if(count > 0) {
             count -= 1
             binding.rv.visibility = View.VISIBLE
-            binding.pbWater.setProgressStartColor(resources.getColor(R.color.water_progress))
-            binding.pbWater.setProgressEndColor(resources.getColor(R.color.water_progress))
+            binding.pbWater.setProgressStartColor(Color.parseColor("#CC4AC0F2"))
+            binding.pbWater.setProgressEndColor(Color.parseColor("#CC4AC0F2"))
             binding.pbWater.progress = count
 
             getWater = dataManager.getWater(selectedDate.toString())

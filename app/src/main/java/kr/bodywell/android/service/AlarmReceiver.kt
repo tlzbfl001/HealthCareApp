@@ -1,5 +1,6 @@
 package kr.bodywell.android.service
 
+import android.R.id
 import android.app.AlarmManager
 import android.app.AlarmManager.AlarmClockInfo
 import android.app.NotificationChannel
@@ -9,41 +10,43 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kr.bodywell.android.R
 import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import java.time.LocalDate
 import java.util.Calendar
+
 
 class AlarmReceiver : BroadcastReceiver() {
     private var pendingIntent: PendingIntent? = null
     private val channelId = "channel1"
     private val channelName: CharSequence = "AlarmChannel"
-    private val today = LocalDate.now()
 
     override fun onReceive(context: Context, intent: Intent) {
+        val today = LocalDate.now()
         val notificationId = intent.getStringExtra("notificationId")
         val startDate = intent.getStringExtra("startDate")
         val endDate = intent.getStringExtra("endDate")
-        val timeList: ArrayList<DrugTime> = intent.getParcelableArrayListExtra("timeList")!!
+        val timeList = intent.getParcelableArrayListExtra<DrugTime>("timeList")
         val message = intent.getStringExtra("message")
 
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) {
             showAlarmNotification(context, notificationId!!.toInt(), message)
         }
 
-        if(!checkAlarmPermissions(context)) {
-            setAlarm(context, notificationId!!.toInt(), startDate!!, endDate!!, timeList, message!!)
-        }
+        setAlarm(context, notificationId!!.toInt(), startDate!!, endDate!!, timeList!!, message!!)
     }
 
     private fun showAlarmNotification(context: Context, notificationId: Int, message: String?) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.logo2)
+            .setSmallIcon(R.drawable.logo4)
             .setContentTitle("약복용")
             .setContentText(message)
             .setColor(ContextCompat.getColor(context, R.color.transparent))
@@ -66,12 +69,9 @@ class AlarmReceiver : BroadcastReceiver() {
         intent.putExtra("timeList", timeList)
         intent.putExtra("message", message)
 
-        pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
-        }else {
-            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
+        pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
+        val today = LocalDate.now()
         val cal = Calendar.getInstance()
 
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { //설정된 알람주기동안 실행
@@ -87,7 +87,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 if(selectTime > currentTime) { //선택된 시간이 현재시간보다 크면 알람실행
                     try{
-                        alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                        if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
+                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                        }
                     }catch (e: SecurityException) {
                         e.printStackTrace()
                     }
@@ -102,7 +104,9 @@ class AlarmReceiver : BroadcastReceiver() {
                     selectTime = cal.timeInMillis
 
                     try{
-                        alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                        if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
+                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                        }
                     }catch (e: SecurityException) {
                         e.printStackTrace()
                     }
@@ -131,11 +135,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
 
-        pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
-        } else {
-            PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
+        pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         alarmManager.cancel(pendingIntent!!)
     }

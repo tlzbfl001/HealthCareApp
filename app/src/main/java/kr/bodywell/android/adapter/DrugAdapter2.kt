@@ -24,7 +24,7 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
-import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
 class DrugAdapter2 (
@@ -77,7 +77,7 @@ class DrugAdapter2 (
             dataManager.updateInt(DRUG, "isSet", 1, "id", itemList[pos].id)
 
             val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
-            if(!checkAlarmPermissions(context)) {
+            if(!checkAlarmPermission1(context)) {
                alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
             }
          }else {

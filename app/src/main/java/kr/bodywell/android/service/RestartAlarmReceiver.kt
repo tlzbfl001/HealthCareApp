@@ -3,12 +3,15 @@ package kr.bodywell.android.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import java.time.LocalDate
 
 class RestartAlarmReceiver : BroadcastReceiver() {
@@ -23,20 +26,21 @@ class RestartAlarmReceiver : BroadcastReceiver() {
                 val dataManager = DataManager(context)
                 dataManager.open()
 
-                val getDrugDaily = dataManager.getDrug(LocalDate.now().toString())
-                for(i in 0 until getDrugDaily.size) {
-                    if(getDrugDaily[i].isSet == 1) {
+                val getDrugDate = dataManager.getDrugDate(LocalDate.now().toString())
+
+                for(i in 0 until getDrugDate.size) {
+                    val getDrugData = dataManager.getDrugData(getDrugDate[i])
+                    
+                    if(getDrugData.isSet == 1) {
                         val timeList = ArrayList<DrugTime>()
-                        val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
+                        val getDrugTime = dataManager.getDrugTime(getDrugData.id)
 
                         for(j in 0 until getDrugTime.size) {
                             timeList.add(DrugTime(time = getDrugTime[j].time))
                         }
 
-                        val message = getDrugDaily[i].name + " " + getDrugDaily[i].amount + getDrugDaily[i].unit
-                        if(!checkAlarmPermissions(context)) {
-                            alarmReceiver.setAlarm(context, getDrugDaily[i].id, getDrugDaily[i].startDate, getDrugDaily[i].endDate, timeList, message)
-                        }
+                        val message = getDrugData.name + " " + getDrugData.amount + getDrugData.unit
+                        alarmReceiver.setAlarm(context, getDrugData.id, getDrugData.startDate, getDrugData.endDate, timeList, message)
                     }
                 }
             }

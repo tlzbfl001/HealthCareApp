@@ -38,7 +38,7 @@ import kr.bodywell.android.model.Water
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
-import kr.bodywell.android.util.PermissionUtil.checkAlarmPermissions
+import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
@@ -175,7 +175,7 @@ object RegisterUtil {
 		val getAllWorkout = RetrofitAPI.api.getAllWorkout("Bearer $access")
 		val getAllBody = RetrofitAPI.api.getAllBody("Bearer $access")
 		val getAllSleep = RetrofitAPI.api.getAllSleep("Bearer $access")
-		val getMedicine = RetrofitAPI.api.getMedicine("Bearer $access")
+		val getMedicine = RetrofitAPI.api.getAllMedicine("Bearer $access")
 		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer $access")
 
 		Log.d(TAG, "getUserUid: ${getUserUid.body()}")
@@ -225,7 +225,6 @@ object RegisterUtil {
 				var useDate = ""
 
 				if(getAllFood.body()!![i].usages!!.isNotEmpty()) { // usages가 empty인것도 있기때문에 useCount, useDate 값없을수있음.
-					Log.d(TAG, "data: ${getAllFood.body()!!} / usages: ${getAllFood.body()!![i].usages}")
 					useCount = getAllFood.body()!![i].usages!![0].usageCount
 					useDate = isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 				}
@@ -260,7 +259,7 @@ object RegisterUtil {
 				var useCount = 0
 				var useDate = ""
 
-				if(getAllActivity.body()!![i].usages!!.size > 0) {
+				if(getAllActivity.body()!![i].usages!!.isNotEmpty()) {
 					useCount = getAllActivity.body()!![i].usages!![0].usageCount
 					useDate = isoToDateTime(getAllActivity.body()!![i].usages!![0].updatedAt).toString()
 				}
@@ -298,7 +297,7 @@ object RegisterUtil {
 					amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit, count = count.toInt(),
 					startDate = startDate.toString(), endDate = endDate.toString())
 
-				val getMedicineTime = RetrofitAPI.api.getMedicineTime("Bearer $access", drug.uid)
+				val getMedicineTime = RetrofitAPI.api.getAllMedicineTime("Bearer $access", drug.uid)
 				if(getMedicineTime.isSuccessful) {
 					dataManager.insertDrug(drug) // drug 데이터 저장
 					val drugId = dataManager.getData(DRUG, "startDate", drug.startDate) // drug id 가져오기
@@ -321,7 +320,7 @@ object RegisterUtil {
 //						}
 					}
 
-					if(!checkAlarmPermissions(ctx)) { // 알람 등록
+					if(!checkAlarmPermission1(ctx)) { // 알람 등록
 						alarmReceiver.setAlarm(ctx, drugId.id, drug.startDate, drug.endDate, timeList, "${drug.name} ${drug.amount}${drug.unit}")
 					}
 				}else {
