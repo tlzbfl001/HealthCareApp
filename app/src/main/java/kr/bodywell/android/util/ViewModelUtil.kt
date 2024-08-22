@@ -749,21 +749,7 @@ object ViewModelUtil {
 			Log.d(TAG, "syncDiets: ${syncDiets.body()}")
 
 			for(i in 0 until syncDiets.body()?.data!!.size) {
-				val getFood = dataManager.getData(FOOD, "name", syncDiets.body()?.data!![i].name)
 				val getDailyFood = dataManager.getData(DAILY_FOOD, "name", syncDiets.body()?.data!![i].name)
-
-				if(getFood.uid != "") {
-					val response = RetrofitAPI.api.getFood("Bearer ${getToken.access}", getFood.uid)
-					if(response.isSuccessful) {
-						if(response.body()?.usages!!.isNotEmpty()) {
-							val useDate = isoToDateTime(response.body()?.usages!![0].updatedAt).toString()
-							dataManager.updateInt(FOOD, "useCount", response.body()?.usages!![0].usageCount, "id", getFood.id)
-							dataManager.updateStr(FOOD, "useDate", useDate, "id", getFood.id)
-						}
-					}else {
-						Log.e(TAG, "getFood: $response")
-					}
-				}
 
 				if(getDailyFood.id > 0) {
 					if(syncDiets.body()?.data!![i].deletedAt != null) {
@@ -773,12 +759,40 @@ object ViewModelUtil {
 							kcal = syncDiets.body()?.data!![i].calorie, carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein,
 							fat = syncDiets.body()?.data!![i].fat, count = syncDiets.body()?.data!![i].quantity))
 						dataManager.updateStr(DAILY_FOOD, "uid", syncDiets.body()?.data!![i].uid, "id", getDailyFood.id)
+
+						val getFood = dataManager.getData(FOOD, "name", syncDiets.body()?.data!![i].name)
+						if(getFood.uid != "") {
+							val response = RetrofitAPI.api.getFood("Bearer ${getToken.access}", getFood.uid)
+							if(response.isSuccessful) {
+								if(response.body()?.usages!!.isNotEmpty()) {
+									val useDate = isoToDateTime(response.body()?.usages!![0].updatedAt).toString()
+									dataManager.updateInt(FOOD, "useCount", response.body()?.usages!![0].usageCount, "id", getFood.id)
+									dataManager.updateStr(FOOD, "useDate", useDate, "id", getFood.id)
+								}
+							}else {
+								Log.e(TAG, "getFood: $response")
+							}
+						}
 					}
 				}else if(syncDiets.body()?.data!![i].createdAt != null && syncDiets.body()?.data!![i].deletedAt == null) {
 					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].uid, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].name,
 						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
 						carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
 						count = syncDiets.body()?.data!![i].quantity, createdAt = syncDiets.body()?.data!![i].date.substring(0, 10)))
+
+					val getFood = dataManager.getData(FOOD, "name", syncDiets.body()?.data!![i].name)
+					if(getFood.uid != "") {
+						val response = RetrofitAPI.api.getFood("Bearer ${getToken.access}", getFood.uid)
+						if(response.isSuccessful) {
+							if(response.body()?.usages!!.isNotEmpty()) {
+								val useDate = isoToDateTime(response.body()?.usages!![0].updatedAt).toString()
+								dataManager.updateInt(FOOD, "useCount", response.body()?.usages!![0].usageCount, "id", getFood.id)
+								dataManager.updateStr(FOOD, "useDate", useDate, "id", getFood.id)
+							}
+						}else {
+							Log.e(TAG, "getFood: $response")
+						}
+					}
 				}
 			}
 		}else {
@@ -829,7 +843,7 @@ object ViewModelUtil {
 				}else {
 					var useCount = 0
 					var useDate = ""
-					if(syncActivity.body()?.data!![i].usages!!.isNotEmpty()) {
+					if(syncActivity.body()?.data!![i].usages != null) {
 						useCount = syncActivity.body()?.data!![i].usages!![0].usageCount
 						useDate = isoToDateTime(syncActivity.body()?.data!![i].usages!![0].updatedAt).toString()
 					}
@@ -847,21 +861,7 @@ object ViewModelUtil {
 			Log.d(TAG, "syncWorkout: ${syncWorkout.body()}")
 
 			for(i in 0 until syncWorkout.body()?.data!!.size) {
-				val getExercise = dataManager.getData(EXERCISE, "name", syncWorkout.body()?.data!![i].name)
 				val getDailyExercise = dataManager.getData(DAILY_EXERCISE, "uid", syncWorkout.body()?.data!![i].uid)
-
-				if(getExercise.uid != "") {
-					val getActivity = RetrofitAPI.api.getActivity("Bearer ${getToken.access}", getExercise.uid)
-					if(getActivity.isSuccessful) {
-						if(getActivity.body()?.usages!!.isNotEmpty()) {
-							val useDate = isoToDateTime(getActivity.body()?.usages!![0].updatedAt).toString()
-							dataManager.updateInt(EXERCISE, "useCount", getActivity.body()?.usages!![0].usageCount, "id", getExercise.id)
-							dataManager.updateStr(EXERCISE, "useDate", useDate, "id", getExercise.id)
-						}
-					}else {
-						Log.e(TAG, "getActivity: ${getActivity.code()}")
-					}
-				}
 
 				if(getDailyExercise.id > 0) {
 					if(syncWorkout.body()?.data!![i].deletedAt != null) {
@@ -870,11 +870,39 @@ object ViewModelUtil {
 						dataManager.updateDailyExercise(Exercise(id = getDailyExercise.id, intensity = syncWorkout.body()?.data!![i].intensity,
 							workoutTime = syncWorkout.body()?.data!![i].time, kcal = syncWorkout.body()?.data!![i].calorie))
 						dataManager.updateStr(DAILY_EXERCISE, "uid", syncWorkout.body()?.data!![i].uid, "id", getDailyExercise.id)
+
+						val getExercise = dataManager.getData(EXERCISE, "name", syncWorkout.body()?.data!![i].name)
+						if(getExercise.uid != "") {
+							val getActivity = RetrofitAPI.api.getActivity("Bearer ${getToken.access}", getExercise.uid)
+							if(getActivity.isSuccessful) {
+								if(getActivity.body()?.usages != null) {
+									val useDate = isoToDateTime(getActivity.body()?.usages!![0].updatedAt).toString()
+									dataManager.updateInt(EXERCISE, "useCount", getActivity.body()?.usages!![0].usageCount, "id", getExercise.id)
+									dataManager.updateStr(EXERCISE, "useDate", useDate, "id", getExercise.id)
+								}
+							}else {
+								Log.e(TAG, "getActivity: $getActivity")
+							}
+						}
 					}
 				}else if(syncWorkout.body()?.data!![i].createdAt != null && syncWorkout.body()?.data!![i].deletedAt == null) {
 					dataManager.insertDailyExercise(Exercise(uid = syncWorkout.body()?.data!![i].uid, name = syncWorkout.body()?.data!![i].name,
 						intensity = syncWorkout.body()?.data!![i].intensity, workoutTime = syncWorkout.body()?.data!![i].time,
 						kcal = syncWorkout.body()?.data!![i].calorie, createdAt = syncWorkout.body()?.data!![i].date.substring(0, 10)))
+
+					val getExercise = dataManager.getData(EXERCISE, "name", syncWorkout.body()?.data!![i].name)
+					if(getExercise.uid != "") {
+						val getActivity = RetrofitAPI.api.getActivity("Bearer ${getToken.access}", getExercise.uid)
+						if(getActivity.isSuccessful) {
+							if(getActivity.body()?.usages != null) {
+								val useDate = isoToDateTime(getActivity.body()?.usages!![0].updatedAt).toString()
+								dataManager.updateInt(EXERCISE, "useCount", getActivity.body()?.usages!![0].usageCount, "id", getExercise.id)
+								dataManager.updateStr(EXERCISE, "useDate", useDate, "id", getExercise.id)
+							}
+						}else {
+							Log.e(TAG, "getActivity: $getActivity")
+						}
+					}
 				}
 			}
 		}else {
