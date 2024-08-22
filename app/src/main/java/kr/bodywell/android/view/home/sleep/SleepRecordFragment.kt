@@ -107,12 +107,14 @@ class SleepRecordFragment : Fragment() {
 
             if(getSleep.startTime == "") {
                dataManager.insertSleep(Sleep(startTime = bedTimeParse, endTime = wakeTimeParse))
+
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment3(requireActivity(), DetailFragment())
             }else if(bedTimeParse == getSleep.startTime && wakeTimeParse == getSleep.endTime) {
                Toast.makeText(requireActivity(), "수면시간이 동일합니다.", Toast.LENGTH_SHORT).show()
             }else {
-               dataManager.updateSleep(Sleep(startTime = bedTimeParse, endTime = wakeTimeParse, isUpdated = 1))
+               dataManager.updateSleep(Sleep(id = getSleep.id, startTime = bedTimeParse, endTime = wakeTimeParse, isUpdated = 1))
+
                Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment3(requireActivity(), DetailFragment())
             }

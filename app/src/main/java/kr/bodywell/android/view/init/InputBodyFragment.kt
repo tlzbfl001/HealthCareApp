@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper
+import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputBodyBinding
 import kr.bodywell.android.model.Constant
@@ -178,7 +180,7 @@ class InputBodyFragment : Fragment() {
          val height = if(binding.etHeight.text.toString() == "") height.toDouble() else binding.etHeight.text.toString().toDouble()
          val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else binding.etWeight.text.toString().toDouble()
 
-         dataManager.updateUserStr("gender", gender)
+         dataManager.updateUserStr(USER, "gender", gender, "id")
          dataManager.updateUserDouble("height", height)
          dataManager.updateUserDouble("weight", weight)
 

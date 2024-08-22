@@ -238,21 +238,20 @@ class ReportDrugFragment : Fragment() {
          for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#4E38A4")
+         lineDataSet.color = Color.parseColor("#B499F1")
          lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
          lineDataSet.valueTextSize = 8f
          lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
          lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-         lineDataSet.valueFormatter = XValueFormatter()
 
          lineData.addDataSet(lineDataSet)
          lineData.setValueTextColor(resources.getColor(R.color.black_white))
          data.setData(lineData)
 
          val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.color = Color.parseColor("#4E38A4")
+         barDataSet.color = Color.parseColor("#B499F1")
          barDataSet.valueTextSize = 0f
 
          val barData = BarData(barDataSet)
@@ -287,6 +286,7 @@ class ReportDrugFragment : Fragment() {
          leftAxis.axisMinimum = 0f
          leftAxis.axisMaximum = 100f
 
+         chart.setExtraOffsets(3f, 20f, 5f, 5f)
          chart.description.isEnabled = false
          chart.legend.isEnabled = false
          chart.setScaleEnabled(false)
@@ -305,12 +305,6 @@ class ReportDrugFragment : Fragment() {
       binding.tvEmpty1.visibility = View.VISIBLE
       binding.chart.visibility = View.GONE
       binding.tvEmpty2.visibility = View.VISIBLE
-   }
-
-   class XValueFormatter : IValueFormatter {
-      override fun getFormattedValue(value: Float, entry: Entry, dataSetIndex: Int, viewPortHandler: ViewPortHandler): String {
-         return "${value.toInt()}%"
-      }
    }
 
    private fun rankView(type: Int, start: String, end: String) {

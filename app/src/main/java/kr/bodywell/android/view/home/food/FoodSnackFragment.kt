@@ -108,7 +108,6 @@ class FoodSnackFragment : Fragment() {
     }
 
     private fun listView() {
-
         val dataList = dataManager.getDailyFood(type, selectedDate.toString())
 
         if(dataList.size != 0) {
@@ -136,7 +135,6 @@ class FoodSnackFragment : Fragment() {
                             }*/
 
                             if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_FOOD, value = dataList[pos].uid, createdAt = selectedDate.toString()))
-
                             dataList.removeAt(pos)
                             intakeAdapter.notifyDataSetChanged()
 

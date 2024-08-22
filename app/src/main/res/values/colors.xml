@@ -2,33 +2,41 @@
 <resources>
    <color name="transparent">#00FFFFFF</color>
    <color name="white_black">#ffffff</color>
+   <color name="white_trans5">#ffffff</color>
    <color name="white_grey30">#ffffff</color>
    <color name="white_grey">#ffffff</color>
    <color name="white_light_grey">#ffffff</color>
    <color name="white_transparent">#ffffff</color>
-   <color name="white_trans10">#ffffff</color>
    <color name="black_white">#000000</color>
    <color name="light_grey_dark_grey">#F1F1F1</color>
    <color name="light_grey_grey">#C8C8C8</color>
    <color name="light_grey_black">#F1F1F1</color>
    <color name="grey_white">#8F8686</color>
-   <color name="grey_dark_grey">#838383</color>
-
+   <color name="grey">#ACACAC</color>
+   <color name="light_grey">#DCDCDC</color>
+   <color name="dark_grey">#7E7E7E</color>
    <color name="logo">#595858</color>
    <color name="main_top">#cfccfe</color>
-   <color name="main_cal_btn">#A38FF1</color>
    <color name="progress_base">#33CCCCCC</color>
+   <color name="light_purple">#9F98FF</color>
 
-   <color name="food_grey">#FFFAFA</color>
+   <color name="food">#CCE24F5C</color>
+   <color name="water">#CC4AC0F2</color>
+   <color name="exercise">#CCF6BD4B</color>
+   <color name="body">#CCAED77D</color>
+   <color name="sleep">#CC667D99</color>
+   <color name="drug">#A282EC</color>
+
+   <color name="food_grey">#FFF8F8</color>
    <color name="food_black">#FFFAFA</color>
-   <color name="water_grey">#DCEDF7</color>
+   <color name="water_grey">#EBF8FF</color>
    <color name="exercise_grey">#FFFBF3</color>
    <color name="exercise_black">#FFFBF3</color>
    <color name="exercise_button_grey">#FFE9BE</color>
    <color name="exercise_bar">#EE9700</color>
-   <color name="body_grey">#FAFFF5</color>
+   <color name="body_grey">#F9FFF3</color>
    <color name="body_black">#FAFFF5</color>
-   <color name="sleep_grey">#284267</color>
+   <color name="sleep_grey">#DA426698</color>
    <color name="drug_grey">#F2EAFF</color>
    <color name="drug_black">#F2EAFF</color>
    <color name="drug_list">#ffffff</color>
@@ -36,6 +44,6 @@
 
    <color name="report_black">#F2F8F5</color>
    <color name="note_grey">#F4FAEC</color>
-   <color name="note_green">#88C0DD9F</color>
-   <color name="note_dark_green">#88C0DD9F</color>
+   <color name="note_green">#337CC48C</color>
+   <color name="note_dark_green">#33638831</color>
 </resources>

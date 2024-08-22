@@ -50,7 +50,6 @@ class ExerciseListAdapter (
                if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_EXERCISE, value = itemList[pos].uid, createdAt = itemList[pos].createdAt))
 
                dataManager.deleteItem(DAILY_EXERCISE, "id", itemList[pos].id)
-
                itemList.removeAt(pos)
                notifyDataSetChanged()
 

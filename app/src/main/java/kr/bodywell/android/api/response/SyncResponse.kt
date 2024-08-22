@@ -47,11 +47,6 @@ data class SyncMedicineResponse(
 	var data: MutableList<MedicineResponse>
 )
 
-data class SyncMedicineIntakeResponse(
-	@SerializedName("data")
-	var data: List<MedicineIntakeResponse>
-)
-
 data class SyncGoalResponse(
 	@SerializedName("data")
 	var data: List<GoalResponse>?

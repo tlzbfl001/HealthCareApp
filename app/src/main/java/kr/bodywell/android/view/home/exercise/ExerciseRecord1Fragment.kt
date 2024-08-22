@@ -99,7 +99,7 @@ class ExerciseRecord1Fragment : Fragment() {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
-         val adapter = ExerciseRecordAdapter(requireActivity(), itemList, "1")
+         val adapter = ExerciseRecordAdapter(requireActivity(), itemList)
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
          adapter.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {

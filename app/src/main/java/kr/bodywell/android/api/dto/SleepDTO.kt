@@ -9,11 +9,3 @@ data class SleepDTO(
 	@SerializedName("ends")
 	var ends: String = ""
 )
-
-data class SleepUpdateDTO(
-	@SerializedName("starts")
-	var starts: String = "",
-
-	@SerializedName("ends")
-	var ends: String = ""
-)

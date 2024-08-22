@@ -80,7 +80,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
       tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
 
       days = CalendarUtil.monthArray()
-      val adapter = CalendarAdapter1(context, days, 2)
+      val adapter = CalendarAdapter1(days, 2)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
 
       rv?.layoutManager = layoutManager

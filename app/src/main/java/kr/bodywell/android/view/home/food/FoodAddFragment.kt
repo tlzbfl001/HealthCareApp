@@ -28,7 +28,7 @@ class FoodAddFragment : Fragment() {
 	private var bundle = Bundle()
 	private var getFood = Food()
 	private var type = Constant.BREAKFAST.name
-	private var unit = "g"
+	private var unit = "mg"
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)

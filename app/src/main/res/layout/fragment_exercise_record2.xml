@@ -25,7 +25,7 @@
          <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/x1"
+            android:src="@drawable/x"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="7dp"
             android:layout_marginBottom="7dp"
@@ -93,7 +93,7 @@
          android:layout_height="wrap_content"
          android:gravity="center"
          android:background="@drawable/rec_25_border_gray"
-         android:backgroundTint="#FFAD0D"
+         android:backgroundTint="@color/exercise"
          android:layout_marginRight="15dp"
          android:paddingTop="6dp"
          android:paddingBottom="6dp"

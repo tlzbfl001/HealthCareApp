@@ -976,21 +976,6 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getDrugCheck(data: Int) : ArrayList<DrugCheck> {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<DrugCheck>()
-      val sql = "select id, uid from $DRUG_CHECK where $USER_ID = ${MyApp.prefs.getUserId()} and drugTimeId = $data"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val values = DrugCheck()
-         values.id = cursor.getInt(0)
-         values.uid = cursor.getString(1)
-         list.add(values)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getDrugCheckCount(data: String) : Int {
       val db = dbHelper!!.readableDatabase
       var count = 0
@@ -1225,8 +1210,7 @@ class DataManager(private var context: Context?) {
          values.type = cursor.getString(2)
          values.value = cursor.getString(3)
          values.drugUid = cursor.getString(4)
-         values.drugTimeUid = cursor.getString(5)
-         values.createdAt = cursor.getString(6)
+         values.createdAt = cursor.getString(5)
          list.add(values)
       }
       cursor.close()
@@ -1244,8 +1228,7 @@ class DataManager(private var context: Context?) {
          values.type = cursor.getString(2)
          values.value = cursor.getString(3)
          values.drugUid = cursor.getString(4)
-         values.drugTimeUid = cursor.getString(5)
-         values.createdAt = cursor.getString(6)
+         values.createdAt = cursor.getString(5)
          list.add(values)
       }
       cursor.close()
@@ -1483,7 +1466,6 @@ class DataManager(private var context: Context?) {
       values.put("type", data.type)
       values.put("value", data.value)
       values.put("drugUid", data.drugUid)
-      values.put("drugTimeUid", data.drugTimeUid)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(UNUSED, null, values)
    }
@@ -1496,9 +1478,9 @@ class DataManager(private var context: Context?) {
       db!!.insert(SYNC_TIME, null, values)
    }
 
-   fun updateUserStr(column: String, data: String){
+   fun updateUserStr(table: String, column1: String, data: String, column2: String){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $USER set $column='$data' where id = ${MyApp.prefs.getUserId()}"
+      val sql = "update $table set $column1='$data' where $column2 = ${MyApp.prefs.getUserId()}"
       db.execSQL(sql)
       db.close()
    }
@@ -1590,33 +1572,46 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateFood(data: Food){
+   fun updateData1(table: String, data1: String,data2: String, data3: Int){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
-         "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, $IS_UPDATED=1 where id=${data.id}"
+      val sql = "update $table set registerType='$data1', uid='$data2' where id=$data3"
       db.execSQL(sql)
       db.close()
    }
 
-   fun updateFood(data1: String, data2: Int, data3: String, id: Int){
+   fun updateData2(table: String, data1: Int, data2: String, data3: Int){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $FOOD set uid='$data1', useCount='$data2', useDate='$data3' where id=$id"
+      val sql = "update $table set useCount=$data1, useDate='$data2' where id=$data3"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateFood(data: Food){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
+         "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, $IS_UPDATED=${data.isUpdated} where id=${data.id}"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateData(table: String, data: Food){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set registerType='${data.registerType}', uid='${data.uid}', useCount=${data.useCount}, useDate='${data.useDate}' where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
 
    fun updateDailyFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $DAILY_FOOD set unit=${data.unit}, amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, protein=${data.protein}, " +
+      val sql = "update $DAILY_FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, protein=${data.protein}, " +
          "fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, count=${data.count}, $IS_UPDATED=${data.isUpdated} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
 
-   fun updateExercise(table: String, data: Exercise){
+   fun updateDailyExercise(data: Exercise){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $table set name='${data.name}', intensity='${data.intensity}', workoutTime=${data.workoutTime}, kcal=${data.kcal}, isUpdated=${data.isUpdated}, " +
-         "$CREATED_AT='${data.createdAt}' where id=${data.id}"
+      val sql = "update $DAILY_EXERCISE set intensity='${data.intensity}', workoutTime=${data.workoutTime}, kcal=${data.kcal}, isUpdated=${data.isUpdated} where id=${data.id}"
       db.execSQL(sql)
       db.close()
    }
@@ -1640,7 +1635,7 @@ class DataManager(private var context: Context?) {
    fun updateSleep(data: Sleep){
       val db = dbHelper!!.writableDatabase
       val sql = "update $SLEEP set startTime='${data.startTime}', endTime='${data.endTime}', $IS_UPDATED=${data.isUpdated} " +
-         "where $USER_ID=${MyApp.prefs.getUserId()} and substr(startTime,1,10)='${data.startTime.substring(0, 10)}'"
+         "where $USER_ID=${MyApp.prefs.getUserId()} and id=${data.id}"
       db.execSQL(sql)
       db.close()
    }

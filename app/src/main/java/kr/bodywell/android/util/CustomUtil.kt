@@ -28,7 +28,6 @@ object CustomUtil {
    const val TAG = "logTAG"
    var layoutType = 1
    var drugTimeList = ArrayList<DrugTime>()
-   var isSetPermission = false
 
    fun replaceFragment1(activity: Activity, fragment: Fragment?) {
       (activity as MainActivity).supportFragmentManager.beginTransaction().apply {
@@ -96,7 +95,7 @@ object CustomUtil {
    }
 
    fun filterText(text: String): Boolean {
-      val pattern = "^[ㄱ-ㅣ가-힣a-zA-Z0-9]+\$" // 한글, 영문, 숫자 패턴
+      val pattern = "^[0-9a-zA-Zㄱ-ㅎ가-힣 ]*\$" // 한글, 영문, 숫자 패턴
       val compile = Pattern.compile(pattern)
       val match = compile.matcher(text)
       return match.find()

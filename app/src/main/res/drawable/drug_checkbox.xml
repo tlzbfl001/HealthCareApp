@@ -23,7 +23,7 @@
             <item>
                 <shape>
                     <corners android:radius="3dp" />
-                    <solid android:color="#999999" />
+                    <solid android:color="#ACACAC" />
                 </shape>
             </item>
             <item android:drawable="@drawable/drug_check_item_white"

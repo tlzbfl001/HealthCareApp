@@ -6,6 +6,5 @@ data class Unused(
 	var type: String = "",
 	var value: String = "",
 	var drugUid: String = "",
-	var drugTimeUid: String = "",
 	var createdAt: String = ""
 )

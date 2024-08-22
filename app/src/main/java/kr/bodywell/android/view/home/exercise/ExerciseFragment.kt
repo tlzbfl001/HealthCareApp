@@ -56,10 +56,10 @@ class ExerciseFragment : Fragment() {
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
 
       tvTitle.text = "운동 / 목표 칼로리 입력"
-      btnSave.setCardBackgroundColor(Color.parseColor("#CCF6BD4B"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#B3F6BD4B"))
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.createdAt == "") {
                dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), createdAt = selectedDate.toString()))
@@ -112,8 +112,8 @@ class ExerciseFragment : Fragment() {
       sum = getExerciseCalories(requireActivity(), selectedDate.toString())
 
       if(sum > 0) {
-         binding.pbExercise.setProgressStartColor(Color.parseColor("#CCF6BD4B"))
-         binding.pbExercise.setProgressEndColor(Color.parseColor("#CCF6BD4B"))
+         binding.pbExercise.setProgressStartColor(resources.getColor(R.color.exercise))
+         binding.pbExercise.setProgressEndColor(resources.getColor(R.color.exercise))
          binding.pbExercise.max = dailyGoal.exercise
          binding.pbExercise.progress = sum
       }

@@ -46,7 +46,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.logo4)
+            .setSmallIcon(R.drawable.logo2)
             .setContentTitle("약복용")
             .setContentText(message)
             .setColor(ContextCompat.getColor(context, R.color.transparent))
@@ -87,7 +87,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 if(selectTime > currentTime) { //선택된 시간이 현재시간보다 크면 알람실행
                     try{
-                        if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
+                        if(checkAlarmPermission2(context)) {
                             alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                         }
                     }catch (e: SecurityException) {
@@ -104,7 +104,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     selectTime = cal.timeInMillis
 
                     try{
-                        if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
+                        if(checkAlarmPermission2(context)) {
                             alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                         }
                     }catch (e: SecurityException) {
@@ -124,7 +124,9 @@ class AlarmReceiver : BroadcastReceiver() {
             val selectTime = cal.timeInMillis
 
             try{
-                alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
+                    alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                }
             }catch (e: SecurityException) {
                 e.printStackTrace()
             }

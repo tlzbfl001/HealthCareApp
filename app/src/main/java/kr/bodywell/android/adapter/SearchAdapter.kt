@@ -32,7 +32,9 @@ class SearchAdapter(
     private var itemList = ArrayList<Item>()
     private var itemClickListener : OnItemClickListener? = null
 
-    init { dataManager.open() }
+    init {
+        dataManager.open()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -107,7 +109,9 @@ class SearchAdapter(
                             val result = dataManager.deleteItem(EXERCISE, "id", itemList[position].int1)
 
                             if(result > 0) {
-                                if(itemList[position].string2 != "") dataManager.insertUnused(Unused(type = EXERCISE, value = itemList[position].string2, createdAt = selectedDate.toString()))
+                                if(itemList[position].string2 != "") {
+                                    dataManager.insertUnused(Unused(type = EXERCISE, value = itemList[position].string2, createdAt = selectedDate.toString()))
+                                }
 
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()

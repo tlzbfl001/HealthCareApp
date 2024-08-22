@@ -21,7 +21,7 @@
          android:layout_width="227dp"
          android:layout_height="25dp"
          android:layout_gravity="center"
-         android:src="@drawable/logo3"
+         android:src="@drawable/logo4"
          android:alpha="0.5"/>
    </FrameLayout>
    <androidx.constraintlayout.widget.ConstraintLayout

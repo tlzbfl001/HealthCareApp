@@ -367,7 +367,7 @@ class ReportBodyFragment : Fragment() {
       xAxis.gridColor = Color.parseColor("#EAEAEA")
 
       val yAxisLeft = chart.axisLeft
-      yAxisLeft.textSize = 7f
+      yAxisLeft.textSize = 8f
 
       val lineDataSet = LineDataSet(entries, "data")
       lineDataSet.lineWidth = 3.4f
@@ -396,7 +396,7 @@ class ReportBodyFragment : Fragment() {
       chart.axisLeft.isEnabled = false
       chart.setVisibleXRangeMaximum(7f)
       chart.isDragXEnabled = true
-      chart.setExtraOffsets(0f, 0f, 0f, 10f)
+      chart.setExtraOffsets(12f, 15f, 15f, 10f)
       chart.animateY(1000, Easing.EasingOption.EaseInOutExpo)
       chart.notifyDataSetChanged()
       chart.invalidate()

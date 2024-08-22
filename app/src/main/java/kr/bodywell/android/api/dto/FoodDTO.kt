@@ -32,6 +32,9 @@ data class FoodDTO(
 )
 
 data class FoodUpdateDTO(
+	@SerializedName("calorie")
+	var calorie: Int = 0,
+
 	@SerializedName("carbohydrate")
 	var carbohydrate: Double = 0.0,
 

@@ -14,6 +14,7 @@ import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseDailyEditBinding
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -87,10 +88,8 @@ class ExerciseDailyEditFragment : Fragment() {
 				|| binding.etKcal.text.toString().toInt() < 1) {
 				Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				dataManager.updateStr(DAILY_EXERCISE, "intensity", intensity.name, "id", id)
-				dataManager.updateInt(DAILY_EXERCISE, "workoutTime", binding.etTime.text.toString().trim().toInt(), "id", id)
-				dataManager.updateInt(DAILY_EXERCISE, "kcal", binding.etKcal.text.toString().trim().toInt(), "id", id)
-				dataManager.updateInt(DAILY_EXERCISE, "isUpdated", 1, "id", id)
+				dataManager.updateDailyExercise(Exercise(id = id, intensity = intensity.name, workoutTime = binding.etTime.text.toString().trim().toInt(),
+					kcal = binding.etKcal.text.toString().trim().toInt(), isUpdated = 1))
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 				replaceFragment1(requireActivity(), ExerciseListFragment())

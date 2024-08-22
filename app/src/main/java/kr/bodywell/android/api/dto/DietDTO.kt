@@ -37,12 +37,15 @@ data class DietDTO(
 	var photos: ArrayList<String> = ArrayList(),
 
 	@SerializedName("date")
-	var date: String = ""
+	var date: String = "",
+
+	@SerializedName("food")
+	var food: FoodData?
 )
 
 data class FoodData(
 	@SerializedName("uid")
-	var uid: String = ""
+	var uid: String? = ""
 )
 
 data class DietUpdateDTO(
@@ -50,7 +53,7 @@ data class DietUpdateDTO(
 	var mealTime: String = "",
 
 	@SerializedName("name")
-	var foodName: String = "",
+	var name: String = "",
 
 	@SerializedName("calorie")
 	var calories: Int = 0,

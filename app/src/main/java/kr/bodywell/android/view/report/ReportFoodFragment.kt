@@ -275,7 +275,7 @@ class ReportFoodFragment : Fragment() {
          for(index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#FB9797")
+         lineDataSet.color = Color.parseColor("#F17883")
          lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
@@ -288,10 +288,10 @@ class ReportFoodFragment : Fragment() {
          data.setData(lineData)
 
          val barColor = ArrayList<Int>()
-         barColor.add(Color.parseColor("#FFC6D7"))
-         barColor.add(Color.parseColor("#ABE764"))
-         barColor.add(Color.parseColor("#FFE500"))
-         barColor.add(Color.parseColor("#FE9A9A"))
+         barColor.add(Color.parseColor("#FFD5E2"))
+         barColor.add(Color.parseColor("#BDDC98"))
+         barColor.add(Color.parseColor("#F8CC73"))
+         barColor.add(Color.parseColor("#F17883"))
 
          val barDataSet = BarDataSet(barEntries, "")
          barDataSet.colors = barColor
@@ -343,7 +343,7 @@ class ReportFoodFragment : Fragment() {
          }
 
          val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#FFAD0D")
+         lineDataSet.color = Color.parseColor("#EFB522")
          lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
@@ -356,10 +356,10 @@ class ReportFoodFragment : Fragment() {
          data.setData(lineData)
 
          val barColor = ArrayList<Int>()
-         barColor.add(Color.parseColor("#FAE498"))
-         barColor.add(Color.parseColor("#FBCE59"))
-         barColor.add(Color.parseColor("#FFAD0D"))
-         barColor.add(Color.parseColor("#DBA00A"))
+         barColor.add(Color.parseColor("#F3E1A3"))
+         barColor.add(Color.parseColor("#F4D279"))
+         barColor.add(Color.parseColor("#EFC75D"))
+         barColor.add(Color.parseColor("#EFB522"))
 
          val barDataSet = BarDataSet(barEntries, "")
          barDataSet.colors = barColor
@@ -400,7 +400,7 @@ class ReportFoodFragment : Fragment() {
       }
 
       val lineDataSet = LineDataSet(entries, "Line DataSet")
-      lineDataSet.color = Color.parseColor("#6F89BF")
+      lineDataSet.color = Color.parseColor("#98AEDB")
       lineDataSet.lineWidth = 1f
       lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
@@ -414,7 +414,7 @@ class ReportFoodFragment : Fragment() {
       data.setData(lineData)
 
       val barDataSet = BarDataSet(barEntries, "")
-      barDataSet.color = Color.parseColor("#6F89BF")
+      barDataSet.color = Color.parseColor("#98AEDB")
       barDataSet.valueTextSize = 0f
 
       val barData = BarData(barDataSet)

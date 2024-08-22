@@ -60,7 +60,7 @@
                android:layout_height="21dp"
                android:background="@drawable/oval"
                android:backgroundTint="#EEEEEE"
-               android:src="@drawable/x2"
+               android:src="@drawable/x"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"/>

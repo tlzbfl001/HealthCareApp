@@ -66,7 +66,7 @@ class FoodFragment : Fragment() {
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "입력된 문자가 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.createdAt == "") {
                dataManager.insertGoal(Goal(food = et.text.toString().toInt(), createdAt = selectedDate.toString()))
@@ -109,7 +109,7 @@ class FoodFragment : Fragment() {
             }
             isExpand1 = !isExpand1
          }else {
-            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
          }
       }
 
@@ -124,7 +124,7 @@ class FoodFragment : Fragment() {
             }
             isExpand2 = !isExpand2
          }else {
-            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
          }
       }
 
@@ -139,7 +139,7 @@ class FoodFragment : Fragment() {
             }
             isExpand3 = !isExpand3
          }else {
-            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
          }
       }
 
@@ -154,7 +154,7 @@ class FoodFragment : Fragment() {
             }
             isExpand4 = !isExpand4
          }else {
-            Toast.makeText(requireActivity(), "데이터가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
          }
       }
 
@@ -181,8 +181,8 @@ class FoodFragment : Fragment() {
       binding.tvIntake.text = "$sum kcal"
 
       if(sum > 0) {
-         binding.pbFood.setProgressStartColor(Color.parseColor("#BFE24F5C"))
-         binding.pbFood.setProgressEndColor(Color.parseColor("#BFE24F5C"))
+         binding.pbFood.setProgressStartColor(resources.getColor(R.color.food))
+         binding.pbFood.setProgressEndColor(resources.getColor(R.color.food))
          binding.pbFood.max = dailyGoal.food
          binding.pbFood.progress = sum
       }
@@ -190,35 +190,35 @@ class FoodFragment : Fragment() {
       val remain = dailyGoal.food - sum
       if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
-      /*// 갤러리 초기화
-      val imageList = ArrayList<Image>()
-      binding.viewPager.adapter = null
-
-      val getData1 = dataManager.getImage("BREAKFAST", selectedDate.toString())
-      val getData2 = dataManager.getImage("LUNCH", selectedDate.toString())
-      val getData3 = dataManager.getImage("DINNER", selectedDate.toString())
-      val getData4 = dataManager.getImage("SNACK", selectedDate.toString())
-
-      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
-      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
-      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
-      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
-
-      if(imageList.size > 0) {
-         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
-         binding.viewPager.adapter = adapter
-         binding.viewPager.setPadding(0, 0, 0, 0)
-
-         binding.clLeft.setOnClickListener {
-            val current = binding.viewPager.currentItem
-            if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
-         }
-
-         binding.clRight.setOnClickListener {
-            val current = binding.viewPager.currentItem
-            binding.viewPager.setCurrentItem(current+1, true)
-         }
-      }*/
+//      // 갤러리 초기화
+//      val imageList = ArrayList<Image>()
+//      binding.viewPager.adapter = null
+//
+//      val getData1 = dataManager.getImage("BREAKFAST", selectedDate.toString())
+//      val getData2 = dataManager.getImage("LUNCH", selectedDate.toString())
+//      val getData3 = dataManager.getImage("DINNER", selectedDate.toString())
+//      val getData4 = dataManager.getImage("SNACK", selectedDate.toString())
+//
+//      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
+//      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
+//      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
+//      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
+//
+//      if(imageList.size > 0) {
+//         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+//         binding.viewPager.adapter = adapter
+//         binding.viewPager.setPadding(0, 0, 0, 0)
+//
+//         binding.clLeft.setOnClickListener {
+//            val current = binding.viewPager.currentItem
+//            if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+//         }
+//
+//         binding.clRight.setOnClickListener {
+//            val current = binding.viewPager.currentItem
+//            binding.viewPager.setCurrentItem(current+1, true)
+//         }
+//      }
    }
 
    private fun listView() {

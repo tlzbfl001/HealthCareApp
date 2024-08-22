@@ -51,14 +51,11 @@ class AlarmFragment : Fragment() {
 	override fun onResume() {
 		super.onResume()
 
-		binding.tvPerm1.visibility = View.VISIBLE
-		binding.cvPerm1.visibility = View.VISIBLE
-
 		if(checkAlarmPermission1(requireActivity())) {
-			binding.tvPerm1.text = "권한 설정 완료"
+			binding.tvPerm1.text = "켜짐"
 			binding.tvPerm1.setTextColor(Color.parseColor("#A38FF1"))
 		}else {
-			binding.tvPerm1.text = "권한 미설정"
+			binding.tvPerm1.text = "꺼짐"
 			binding.tvPerm1.setTextColor(Color.parseColor("#CCCCCC"))
 		}
 
@@ -73,10 +70,10 @@ class AlarmFragment : Fragment() {
 			binding.tvPerm2.visibility = View.VISIBLE
 			binding.cvPerm2.visibility = View.VISIBLE
 			if(checkAlarmPermission2(requireActivity())) {
-				binding.tvPerm2.text = "권한 설정 완료"
+				binding.tvPerm2.text = "켜짐"
 				binding.tvPerm2.setTextColor(Color.parseColor("#A38FF1"))
 			}else {
-				binding.tvPerm2.text = "권한 미설정"
+				binding.tvPerm2.text = "꺼짐"
 				binding.tvPerm2.setTextColor(Color.parseColor("#CCCCCC"))
 			}
 

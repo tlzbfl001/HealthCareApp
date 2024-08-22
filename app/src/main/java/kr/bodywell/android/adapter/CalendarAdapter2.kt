@@ -28,7 +28,7 @@ class CalendarAdapter2 (
       }else {
          holder.tvDate.text = date.dayOfMonth.toString()
          if (date == selectedDate) {
-            holder.cv.setCardBackgroundColor(Color.parseColor("#6645EA"))
+            holder.cv.setCardBackgroundColor(Color.parseColor("#6C95C2"))
             holder.tvWeek.setTextColor(Color.WHITE)
             holder.tvDate.setTextColor(Color.WHITE)
          }

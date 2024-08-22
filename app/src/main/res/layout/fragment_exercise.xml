@@ -40,14 +40,14 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black_white"
-               android:textSize="15.8dp"
+               android:textSize="15dp"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl2"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="179dp"
+            android:layout_height="179dp"
             android:layout_marginTop="18dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,11 +58,11 @@
                android:layout_height="match_parent"
                app:progress_text_size="0dp"
                app:progress_background_color="@color/progress_base"
-               app:progress_end_color="#FFB846"
-               app:progress_start_color="#FFB846"
-               app:progress_start_degree="280"
+               app:progress_end_color="@color/exercise"
+               app:progress_start_color="@color/exercise"
+               app:progress_start_degree="90"
                app:progress_stroke_cap="round"
-               app:progress_stroke_width="17dp"
+               app:progress_stroke_width="14.5dp"
                app:progress_style="solid_line" />
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
@@ -149,24 +149,18 @@
             app:layout_constraintStart_toStartOf="@id/tv3"
             app:layout_constraintTop_toBottomOf="@id/tv3" />
       </androidx.constraintlayout.widget.ConstraintLayout>
-      <View
-         android:id="@+id/viewBottom"
-         android:layout_width="match_parent"
-         android:layout_height="60dp"
-         android:layout_marginTop="20dp"
-         android:background="@drawable/oval_water_bottom"
-         android:backgroundTint="@color/exercise_grey"
-         app:layout_constraintBottom_toBottomOf="parent"
-         app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintTop_toBottomOf="@id/tvGoal" />
       <LinearLayout
          android:id="@+id/cl3"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:layout_marginTop="-30dp"
-         android:background="@color/exercise_grey"
-         android:orientation="vertical">
+         android:background="@drawable/rec_top_radius_35"
+         android:backgroundTint="@color/exercise_grey"
+         android:orientation="vertical"
+         android:layout_marginTop="20dp"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/tvGoal" >
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clRecord"
             android:layout_width="match_parent"
@@ -179,10 +173,10 @@
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:layout_marginLeft="25dp"
-               android:layout_marginTop="8dp"
+               android:layout_marginTop="25dp"
                android:text="하루 운동"
                android:textColor="@color/black_white"
-               android:textSize="17dp"
+               android:textSize="16.5dp"
                android:textStyle="bold"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
@@ -210,7 +204,7 @@
                   android:layout_height="wrap_content"
                   android:text="운동기록"
                   android:textColor="@color/black_white"
-                  android:textSize="15.8dp"
+                  android:textSize="15dp"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintTop_toTopOf="parent" />

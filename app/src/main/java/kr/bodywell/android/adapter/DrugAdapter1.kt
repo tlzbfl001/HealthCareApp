@@ -26,7 +26,9 @@ class DrugAdapter1 (
     private var dataManager: DataManager = DataManager(context)
     private var check = 0
 
-    init { dataManager.open() }
+    init {
+        dataManager.open()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_daily, parent, false)
@@ -37,6 +39,7 @@ class DrugAdapter1 (
         holder.tvTime.text = itemList[pos].time
         holder.tvName.text = itemList[pos].name
         holder.tvAmount.text = itemList[pos].amount.toString() + itemList[pos].unit
+
         check = itemList[pos].initCheck
         viewModel.setInt(check)
         if(itemList[pos].checked > 0) holder.tvCheck.isChecked = true
@@ -44,6 +47,7 @@ class DrugAdapter1 (
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
             val getDrugCheck = dataManager.getDrugCheck(itemList[pos].drugTimeId, selectedDate.toString())
+
             if(holder.tvCheck.isChecked) {
                 check += 1
                 if(getDrugCheck.createdAt == "") {
@@ -52,14 +56,7 @@ class DrugAdapter1 (
                 }
             }else {
                 if(check > 0) check -= 1
-                if(getDrugCheck.id > 0) {
-                    val getDrug = dataManager.getData(DRUG, itemList[pos].drugId)
-                    val getDrugTime = dataManager.getData(DRUG_TIME, itemList[pos].drugTimeId)
-                    if(getDrug.uid != "" && getDrugTime.uid != "" && getDrugCheck.uid != "") {
-                        dataManager.insertUnused(Unused(type = DRUG_CHECK, value = getDrugCheck.uid, drugUid = getDrug.uid, drugTimeUid = getDrugTime.uid, createdAt = itemList[pos].date))
-                    }
-                    dataManager.deleteItem(DRUG_CHECK, "id", getDrugCheck.id)
-                }
+                if(getDrugCheck.createdAt != "") dataManager.deleteItem(DRUG_CHECK, "id", getDrugCheck.id)
             }
 
             viewModel.setInt(check)

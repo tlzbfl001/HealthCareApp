@@ -92,7 +92,6 @@ class MainFragment : Fragment() {
       val getUser = dataManager.getUser()
 
       if(getUser.name != "") binding.tvName.text = getUser.name + " 님"
-
       if(getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
 
       binding.clFood.setOnClickListener {
@@ -164,7 +163,7 @@ class MainFragment : Fragment() {
 
    fun setWeekView() {
       days = weekArray(selectedDate)
-      adapter = CalendarAdapter1(requireActivity(), days, 1)
+      adapter = CalendarAdapter1(days, 1)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
       binding.recyclerView.adapter = adapter
@@ -276,15 +275,15 @@ class MainFragment : Fragment() {
       val getDrugCheckCount = dataManager.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {
-         binding.pbFood.setProgressStartColor(Color.parseColor("#BFE24F5C"))
-         binding.pbFood.setProgressEndColor(Color.parseColor("#BFE24F5C"))
+         binding.pbFood.setProgressStartColor(resources.getColor(R.color.food))
+         binding.pbFood.setProgressEndColor(resources.getColor(R.color.food))
          binding.pbFood.max = getDailyGoal.food
          binding.pbFood.progress = foodSum
       }
 
       if(getWater.count > 0) {
-         binding.pbWater.setProgressStartColor(Color.parseColor("#CC4AC0F2"))
-         binding.pbWater.setProgressEndColor(Color.parseColor("#CC4AC0F2"))
+         binding.pbWater.setProgressStartColor(resources.getColor(R.color.water))
+         binding.pbWater.setProgressEndColor(resources.getColor(R.color.water))
          if(getDailyGoal.water > 0) {
             binding.pbWater.max = getDailyGoal.water
             binding.pbWater.progress = getWater.count
@@ -295,8 +294,8 @@ class MainFragment : Fragment() {
       }
 
       if(exerciseSum > 0) {
-         binding.pbExercise.setProgressStartColor(Color.parseColor("#CCF6BD4B"))
-         binding.pbExercise.setProgressEndColor(Color.parseColor("#CCF6BD4B"))
+         binding.pbExercise.setProgressStartColor(resources.getColor(R.color.exercise))
+         binding.pbExercise.setProgressEndColor(resources.getColor(R.color.exercise))
          if(getDailyGoal.exercise > 0) {
             binding.pbExercise.max = getDailyGoal.exercise
             binding.pbExercise.progress = exerciseSum
@@ -316,8 +315,8 @@ class MainFragment : Fragment() {
       }
 
       if(getBody.weight != null && getBody.weight!! > 0) {
-         binding.pbBody.setProgressStartColor(Color.parseColor("#B8E189"))
-         binding.pbBody.setProgressEndColor(Color.parseColor("#B8E189"))
+         binding.pbBody.setProgressStartColor(resources.getColor(R.color.body))
+         binding.pbBody.setProgressEndColor(resources.getColor(R.color.body))
          if(getDailyGoal.body > 0) {
             binding.pbBody.max = getDailyGoal.body.roundToInt()
             binding.pbBody.progress = getBody.weight!!.toInt()
@@ -338,8 +337,8 @@ class MainFragment : Fragment() {
       }
 
       if(total > 0) {
-         binding.pbSleep.setProgressStartColor(Color.parseColor("#667D99"))
-         binding.pbSleep.setProgressEndColor(Color.parseColor("#667D99"))
+         binding.pbSleep.setProgressStartColor(resources.getColor(R.color.sleep))
+         binding.pbSleep.setProgressEndColor(resources.getColor(R.color.sleep))
          if(getDailyGoal.sleep > 0) {
             binding.pbSleep.max = getDailyGoal.sleep
             binding.pbSleep.progress = total
@@ -350,8 +349,8 @@ class MainFragment : Fragment() {
       }
 
       if(getDrugCheckCount > 0) {
-         binding.pbDrug.setProgressStartColor(Color.parseColor("#9E63FC"))
-         binding.pbDrug.setProgressEndColor(Color.parseColor("#9E63FC"))
+         binding.pbDrug.setProgressStartColor(resources.getColor(R.color.drug))
+         binding.pbDrug.setProgressEndColor(resources.getColor(R.color.drug))
          if(getDailyGoal.drug > 0) {
             binding.pbDrug.max = getDailyGoal.drug
             binding.pbDrug.progress = getDrugCheckCount

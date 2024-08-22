@@ -22,6 +22,7 @@ import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
+import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Constant
@@ -38,7 +39,6 @@ import kr.bodywell.android.model.Water
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
-import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
@@ -49,18 +49,18 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 object RegisterUtil {
-	suspend fun googleLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
+	suspend fun googleLoginRequest(context: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email) // 이미 가입한 이메일인지 확인
 		if(getUserEmail.isSuccessful) {
 			if(getUserEmail.body()!!.exists) { // 이미 가입한 이메일인 경우 서버에서 데이터 가져옴
-				ctx.runOnUiThread {
-					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
+				context.runOnUiThread {
+					AlertDialog.Builder(context, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
 							CoroutineScope(Dispatchers.IO).launch {
 								val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
 								if(response.isSuccessful) {
-									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken) // 서버데이터 가져오기
+									getData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken)) // 서버데이터 가져오기
 								}else {
 									Log.e(TAG, "loginWithGoogle: $response")
 								}
@@ -68,27 +68,27 @@ object RegisterUtil {
 						}.setNegativeButton("취소", null).create().show()
 				}
 			}else { // 가입하지않은 이메일일 경우 새로 회원가입
-				val intent = Intent(ctx, SignupActivity::class.java)
+				val intent = Intent(context, SignupActivity::class.java)
 				intent.putExtra("user", user)
-				ctx.startActivity(intent)
+				context.startActivity(intent)
 			}
 		}else {
 			Log.e(TAG, "getUserEmail: $getUserEmail")
 		}
 	}
 
-	suspend fun naverLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
+	suspend fun naverLoginRequest(context: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
 		if(getUserEmail.isSuccessful) {
 			if (getUserEmail.body()!!.exists) {
-				ctx.runOnUiThread {
-					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
+				context.runOnUiThread {
+					AlertDialog.Builder(context, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
 							CoroutineScope(Dispatchers.IO).launch {
 								val response = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
 								if (response.isSuccessful) {
-									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken)
+									getData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
 								} else {
 									Log.e(TAG, "loginWithNaver: $response")
 								}
@@ -96,25 +96,25 @@ object RegisterUtil {
 						}.setNegativeButton("취소", null).create().show()
 				}
 			} else {
-				val intent = Intent(ctx, SignupActivity::class.java)
+				val intent = Intent(context, SignupActivity::class.java)
 				intent.putExtra("user", user)
-				ctx.startActivity(intent)
+				context.startActivity(intent)
 			}
 		}
 	}
 
-	suspend fun kakaoLoginRequest(ctx: LoginActivity, dataManager: DataManager, user: User) {
+	suspend fun kakaoLoginRequest(context: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
 		if(getUserEmail.isSuccessful) {
 			if (getUserEmail.body()!!.exists) {
-				ctx.runOnUiThread {
-					AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
+				context.runOnUiThread {
+					AlertDialog.Builder(context, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
 							CoroutineScope(Dispatchers.IO).launch {
 								val response = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
 								if (response.isSuccessful) {
-									getData(ctx, dataManager, user, response.body()!!.accessToken, response.body()!!.refreshToken)
+									getData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
 								} else {
 									Log.e(TAG, "loginWithKakao: $response")
 								}
@@ -122,61 +122,61 @@ object RegisterUtil {
 						}.setNegativeButton("취소", null).create().show()
 				}
 			} else {
-				val intent = Intent(ctx, SignupActivity::class.java)
+				val intent = Intent(context, SignupActivity::class.java)
 				intent.putExtra("user", user)
-				ctx.startActivity(intent)
+				context.startActivity(intent)
 			}
 		}
 	}
 
-	suspend fun googleSignupRequest(ctx: SignupActivity, dataManager: DataManager, user: User) {
-		val loginResponse = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
-		if(loginResponse.isSuccessful) {
-			saveData(ctx, dataManager, user, Token(access = loginResponse.body()!!.accessToken, refresh = loginResponse.body()!!.refreshToken))
+	suspend fun googleSignupRequest(context: SignupActivity, dataManager: DataManager, user: User) {
+		val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
+		if(response.isSuccessful) {
+			saveData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
 		}else {
-			Log.e(TAG, "loginWithGoogle: $loginResponse")
-			ctx.runOnUiThread {
-				Toast.makeText(ctx, "회원가입 실패", Toast.LENGTH_SHORT).show()
+			Log.e(TAG, "loginWithGoogle: $response")
+			context.runOnUiThread {
+				Toast.makeText(context, "회원가입 실패", Toast.LENGTH_SHORT).show()
 			}
 		}
 	}
 
-	suspend fun naverSignupRequest(ctx: SignupActivity, dataManager: DataManager, user: User) {
-		val loginResponse = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
-		if(loginResponse.isSuccessful) {
-			saveData(ctx, dataManager, user, Token(access = loginResponse.body()!!.accessToken, refresh = loginResponse.body()!!.refreshToken))
+	suspend fun naverSignupRequest(context: SignupActivity, dataManager: DataManager, user: User) {
+		val response = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
+		if(response.isSuccessful) {
+			saveData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
 		}else {
-			Log.e(TAG, "loginWithNaver: $loginResponse")
-			ctx.runOnUiThread {
-				Toast.makeText(ctx, "회원가입 실패", Toast.LENGTH_SHORT).show()
+			Log.e(TAG, "loginWithNaver: $response")
+			context.runOnUiThread {
+				Toast.makeText(context, "회원가입 실패", Toast.LENGTH_SHORT).show()
 			}
 		}
 	}
 
-	suspend fun kakaoSignupRequest(ctx: SignupActivity, dataManager: DataManager, user: User) {
-		val loginResponse = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
-		if(loginResponse.isSuccessful) {
-			saveData(ctx, dataManager, user, Token(access = loginResponse.body()!!.accessToken, refresh = loginResponse.body()!!.refreshToken))
+	suspend fun kakaoSignupRequest(context: SignupActivity, dataManager: DataManager, user: User) {
+		val response = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(user.accessToken, user.idToken))
+		if(response.isSuccessful) {
+			saveData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
 		}else {
-			Log.e(TAG, "loginWithKakao: $loginResponse")
-			ctx.runOnUiThread {
-				Toast.makeText(ctx, "회원가입 실패", Toast.LENGTH_SHORT).show()
+			Log.e(TAG, "loginWithKakao: $response")
+			context.runOnUiThread {
+				Toast.makeText(context, "회원가입 실패", Toast.LENGTH_SHORT).show()
 			}
 		}
 	}
 
-	private suspend fun getData(ctx: LoginActivity, dataManager: DataManager, user: User, access: String, refresh: String) {
-		val getUserUid = RetrofitAPI.api.getUser("Bearer $access")
-		val getProfile = RetrofitAPI.api.getProfile("Bearer $access")
-		val getAllFood = RetrofitAPI.api.getAllFood("Bearer $access")
-		val getAllDiet = RetrofitAPI.api.getAllDiet("Bearer $access")
-		val getAllWater = RetrofitAPI.api.getAllWater("Bearer $access")
-		val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer $access")
-		val getAllWorkout = RetrofitAPI.api.getAllWorkout("Bearer $access")
-		val getAllBody = RetrofitAPI.api.getAllBody("Bearer $access")
-		val getAllSleep = RetrofitAPI.api.getAllSleep("Bearer $access")
-		val getMedicine = RetrofitAPI.api.getAllMedicine("Bearer $access")
-		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer $access")
+	private suspend fun getData(context: LoginActivity, dataManager: DataManager, user: User, token: Token) {
+		val getUserUid = RetrofitAPI.api.getUser("Bearer ${token.access}")
+		val getProfile = RetrofitAPI.api.getProfile("Bearer ${token.access}")
+		val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}")
+		val getAllDiet = RetrofitAPI.api.getAllDiet("Bearer ${token.access}")
+		val getAllWater = RetrofitAPI.api.getAllWater("Bearer ${token.access}")
+		val getAllActivity = RetrofitAPI.api.getAllActivity("Bearer ${token.access}")
+		val getAllWorkout = RetrofitAPI.api.getAllWorkout("Bearer ${token.access}")
+		val getAllBody = RetrofitAPI.api.getAllBody("Bearer ${token.access}")
+		val getAllSleep = RetrofitAPI.api.getAllSleep("Bearer ${token.access}")
+		val getMedicine = RetrofitAPI.api.getAllMedicine("Bearer ${token.access}")
+		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer ${token.access}")
 
 		Log.d(TAG, "getUserUid: ${getUserUid.body()}")
 		Log.d(TAG, "getProfile: ${getProfile.body()}")
@@ -214,9 +214,9 @@ object RegisterUtil {
 
 			// 토큰 정보 저장
 			if(getToken.accessCreated == "") {
-				dataManager.insertToken(Token(access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
+				dataManager.insertToken(Token(access = token.access, refresh = token.refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
 			}else {
-				dataManager.updateToken(Token(access = access, refresh = refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
+				dataManager.updateToken(Token(access = token.access, refresh = token.refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
 			}
 
 			// 서버 데이터 저장
@@ -297,7 +297,7 @@ object RegisterUtil {
 					amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit, count = count.toInt(),
 					startDate = startDate.toString(), endDate = endDate.toString())
 
-				val getMedicineTime = RetrofitAPI.api.getAllMedicineTime("Bearer $access", drug.uid)
+				val getMedicineTime = RetrofitAPI.api.getAllMedicineTime("Bearer ${token.access}", drug.uid)
 				if(getMedicineTime.isSuccessful) {
 					dataManager.insertDrug(drug) // drug 데이터 저장
 					val drugId = dataManager.getData(DRUG, "startDate", drug.startDate) // drug id 가져오기
@@ -305,24 +305,10 @@ object RegisterUtil {
 					for(j in 0 until getMedicineTime.body()!!.size) {
 						val drugTime = DrugTime(uid = getMedicineTime.body()!![j].uid, drugId = drugId.id, time = getMedicineTime.body()!![j].time)
 						dataManager.insertDrugTime(drugTime)
-
 						timeList.add(DrugTime(time = drugTime.time))
-
-//						val getMedicineIntake = RetrofitAPI.api.getMedicineIntake("Bearer $access", drug.uid, drugTime.uid)
-//						if(getMedicineIntake.isSuccessful) {
-//							val drugTimeId = dataManager.getData(DRUG_TIME, "uid", drugTime.uid)
-//							for(k in 0 until getMedicineIntake.body()!!.size) {
-//								dataManager.insertDrugCheck(DrugCheck(uid = getMedicineIntake.body()!![k].uid, drugId = drugId.id, drugTimeId = drugTimeId.id,
-//									time = drugTime.time, createdAt = getMedicineIntake.body()!![k].intakeAt.substring(0, 10)))
-//							}
-//						}else {
-//							Log.e(TAG, "getMedicineIntake: $getMedicineIntake")
-//						}
 					}
 
-					if(!checkAlarmPermission1(ctx)) { // 알람 등록
-						alarmReceiver.setAlarm(ctx, drugId.id, drug.startDate, drug.endDate, timeList, "${drug.name} ${drug.amount}${drug.unit}")
-					}
+					alarmReceiver.setAlarm(context, drugId.id, drug.startDate, drug.endDate, timeList, "${drug.name} ${drug.amount}${drug.unit}")
 				}else {
 					Log.e(TAG, "getMedicineTime: $getMedicineTime")
 				}
@@ -337,13 +323,13 @@ object RegisterUtil {
 			val getSync = dataManager.getSynced()
 			if(getSync == "") dataManager.insertSync(LocalDateTime.now().toString()) else dataManager.updateSync(LocalDateTime.now().toString())
 
-			ctx.startActivity(Intent(ctx, MainActivity::class.java))
+			context.startActivity(Intent(context, MainActivity::class.java))
 		}else {
-			Toast.makeText(ctx, "로그인 실패", Toast.LENGTH_SHORT).show()
+			Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
 		}
 	}
 
-	private fun saveData(ctx: SignupActivity, dataManager: DataManager, user: User, token: Token) {
+	private fun saveData(context: SignupActivity, dataManager: DataManager, user: User, token: Token) {
 		var getUser = dataManager.getUser(user.type, user.email)
 
 		// 사용자 정보 저장
@@ -359,8 +345,10 @@ object RegisterUtil {
 			val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
 			val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
 			val hardwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
-			val softwareVer = if(ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == null || ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName == "") {
-				"" }else ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
+			val softwareVer = if(context.packageManager.getPackageInfo(context.packageName, 0).versionName == null
+				|| context.packageManager.getPackageInfo(context.packageName, 0).versionName == "") {
+				""
+			}else context.packageManager.getPackageInfo(context.packageName, 0).versionName
 
 			val getUserUid = RetrofitAPI.api.getUser("Bearer ${token.access}")
 			val createDevice = RetrofitAPI.api.createDevice("Bearer ${token.access}", DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer))
@@ -374,7 +362,6 @@ object RegisterUtil {
 
 			if(getUserUid.isSuccessful && createDevice.isSuccessful && getAllFood.isSuccessful && getAllActivity.isSuccessful) {
 				MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id) // 사용자 Id 저장
-				dataManager.updateUserStr("uid", getUserUid.body()!!.uid)
 
 				// 토큰 정보 저장
 				val getToken = dataManager.getToken()
@@ -399,20 +386,22 @@ object RegisterUtil {
 						createdAt = LocalDate.now().toString()))
 				}
 
+				dataManager.updateUserStr(USER, "uid", getUserUid.body()!!.uid, "id")
+
 				val getSync = dataManager.getSynced()
 				if(getSync == "") dataManager.insertSync(LocalDateTime.now().toString()) else dataManager.updateSync(LocalDateTime.now().toString())
 
-				ctx.runOnUiThread{
-					val dialog = Dialog(ctx)
+				context.runOnUiThread{
+					val dialog = Dialog(context)
 					dialog.setContentView(R.layout.dialog_signup)
 					dialog.setCancelable(false)
 					dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 					val btnConfirm = dialog.findViewById<TextView>(R.id.btnConfirm)
 
 					btnConfirm.setOnClickListener {
-						val intent = Intent(ctx, InputActivity::class.java)
+						val intent = Intent(context, InputActivity::class.java)
 						intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-						ctx.startActivity(intent)
+						context.startActivity(intent)
 						dialog.dismiss()
 					}
 
@@ -450,11 +439,5 @@ object RegisterUtil {
 		}
 
 		dialog.show()
-	}
-
-	private fun decodeToken(token: String): String {
-		val decodeData = String(Base64.decode(token.split(".")[1], Base64.URL_SAFE), charset("UTF-8"))
-		val obj = JSONObject(decodeData)
-		return obj.get("sub").toString()
 	}
 }

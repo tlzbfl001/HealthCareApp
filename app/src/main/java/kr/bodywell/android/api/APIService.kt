@@ -12,12 +12,10 @@ import kr.bodywell.android.api.dto.GoalUpdateDTO
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
-import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
-import kr.bodywell.android.api.dto.SleepUpdateDTO
 import kr.bodywell.android.api.dto.SyncDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
@@ -29,7 +27,6 @@ import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DietResponse
 import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.api.response.GoalResponse
-import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
 import kr.bodywell.android.api.response.ProfileResponse
@@ -39,7 +36,6 @@ import kr.bodywell.android.api.response.SyncBodyResponse
 import kr.bodywell.android.api.response.SyncDietsResponse
 import kr.bodywell.android.api.response.SyncFoodResponse
 import kr.bodywell.android.api.response.SyncGoalResponse
-import kr.bodywell.android.api.response.SyncMedicineIntakeResponse
 import kr.bodywell.android.api.response.SyncMedicineResponse
 import kr.bodywell.android.api.response.SyncProfileResponse
 import kr.bodywell.android.api.response.SyncSleepResponse
@@ -355,7 +351,7 @@ interface APIService {
 	suspend fun updateSleep(
 		@Header("Authorization") token: String,
 		@Path("uid") uid: String,
-		@Body dto: SleepUpdateDTO
+		@Body dto: SleepDTO
 	): Response<SleepResponse>
 
 	@GET("user/medicines")

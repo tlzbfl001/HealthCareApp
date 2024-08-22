@@ -87,7 +87,7 @@
                android:layout_height="24dp"
                android:layout_marginTop="7dp"
                android:layout_marginRight="7dp"
-               android:src="@drawable/x1"
+               android:src="@drawable/x"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent"
                app:tint="@color/black_white" />

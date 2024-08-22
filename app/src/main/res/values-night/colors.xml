@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <color name="transparent">#00FFFFFF</color>
-   <color name="white_black">#000000</color>
+   <color name="white_black">#222222</color>
    <color name="white_grey30">#4DB5B5B5</color>
-   <color name="white_grey">#4A4A4A</color>
+   <color name="white_trans5">#0DFFFFFF</color>
+   <color name="white_grey">#5C5C5C</color>
    <color name="white_light_grey">#AAAAAA</color>
    <color name="white_transparent">#00FFFFFF</color>
-   <color name="white_trans10">#1AFFFFFF</color>
    <color name="black_white">#ffffff</color>
    <color name="light_grey_dark_grey">#4A4A4A</color>
    <color name="light_grey_grey">#5C5C5C</color>
-   <color name="light_grey_black">#000000</color>
+   <color name="light_grey_black">#222222</color>
    <color name="grey_white">#ffffff</color>
-   <color name="grey_dark_grey">#4A4A4A</color>
-
    <color name="logo">#ffffff</color>
    <color name="main_top">#668468FF</color>
-   <color name="main_cal_btn">#B2A38FF1</color>
 
-   <color name="food_grey">#323232</color>
-   <color name="food_black">#000000</color>
-   <color name="water_grey">#323232</color>
-   <color name="exercise_grey">#323232</color>
-   <color name="exercise_black">#000000</color>
+   <color name="food">#B3E24F5C</color>
+   <color name="water">#994AC0F2</color>
+   <color name="exercise">#CCFFC756</color>
+   <color name="body">#99AED77D</color>
+   <color name="sleep">#99667D99</color>
+   <color name="drug">#B3A282EC</color>
+
+   <color name="food_grey">#26CCCCCC</color>
+   <color name="food_black">#222222</color>
+   <color name="water_grey">#26CCCCCC</color>
+   <color name="exercise_grey">#26CCCCCC</color>
+   <color name="exercise_black">#222222</color>
    <color name="exercise_button_grey">#5C5C5C</color>
    <color name="exercise_bar">#ffffff</color>
-   <color name="body_grey">#323232</color>
-   <color name="body_black">#000000</color>
-   <color name="sleep_grey">#323232</color>
-   <color name="drug_grey">#323232</color>
-   <color name="drug_black">#000000</color>
+   <color name="body_grey">#26CCCCCC</color>
+   <color name="body_black">#222222</color>
+   <color name="sleep_grey">#26CCCCCC</color>
+   <color name="drug_grey">#26CCCCCC</color>
+   <color name="drug_black">#222222</color>
    <color name="drug_list">#66516AC3</color>
-   <color name="drug_add">#66516AC3</color>
+   <color name="drug_add">#99516AC3</color>
 
-   <color name="report_black">#000000</color>
-   <color name="note_grey">#2C2C2C</color>
-   <color name="note_green">#758761</color>
-   <color name="note_dark_green">#5A684A</color>
+   <color name="report_black">#0DFFFFFF</color>
+   <color name="note_grey">#0DFFFFFF</color>
+   <color name="note_green">#99A1C674</color>
+   <color name="note_dark_green">#6FD2FF9C</color>
 </resources>

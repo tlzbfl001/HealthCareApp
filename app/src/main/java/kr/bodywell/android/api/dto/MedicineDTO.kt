@@ -26,8 +26,3 @@ data class MedicineTimeDTO(
 	@SerializedName("time")
 	var time: String = ""
 )
-
-data class MedicineIntakeDTO(
-	@SerializedName("intakedAt")
-	var intakedAt: String = ""
-)

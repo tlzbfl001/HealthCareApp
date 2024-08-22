@@ -15,6 +15,7 @@ import kr.bodywell.android.databinding.FragmentNoteWriteBinding
 import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 
@@ -60,10 +61,10 @@ class NoteWriteFragment : Fragment() {
       val getNote = dataManager.getNote(selectedDate.toString())
       bundle.putString("data", NOTE)
 
-//      binding.linear.setOnTouchListener { _, _ ->
-//         hideKeyboard(requireActivity())
-//         true
-//      }
+      binding.linear.setOnTouchListener { _, _ ->
+         hideKeyboard(requireActivity())
+         true
+      }
 
       binding.clBack.setOnClickListener {
          replaceFragment2(requireActivity(), NoteFragment(), bundle)

@@ -139,7 +139,7 @@
          android:layout_width="51dp"
          android:layout_height="48dp"
          android:background="@drawable/oval_cal_selected"
-         android:backgroundTint="#6A6A6A"
+         android:backgroundTint="@color/dark_grey"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toEndOf="@id/clMenu3"
          app:layout_constraintEnd_toEndOf="parent"
@@ -220,9 +220,9 @@
          android:layout_marginTop="12dp"
          android:layout_marginLeft="25dp"
          android:text="복용약"
-         android:textSize="16dp"
-         android:textStyle="bold"
+         android:textSize="15dp"
          android:textColor="@color/black_white"
+         android:textStyle="bold"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"/>
       <androidx.cardview.widget.CardView
@@ -262,9 +262,9 @@
          android:layout_marginTop="25dp"
          android:layout_marginLeft="25dp"
          android:text="복용 달성도(%)"
-         android:textSize="16dp"
-         android:textStyle="bold"
+         android:textSize="15dp"
          android:textColor="@color/black_white"
+         android:textStyle="bold"
          app:layout_constraintTop_toBottomOf="@id/cv1"
          app:layout_constraintStart_toStartOf="parent"/>
       <androidx.cardview.widget.CardView

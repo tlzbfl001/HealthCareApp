@@ -74,12 +74,9 @@ class DrugAdapter2 (
 
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
-            dataManager.updateInt(DRUG, "isSet", 1, "id", itemList[pos].id)
-
             val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
-            if(!checkAlarmPermission1(context)) {
-               alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
-            }
+            alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
+            dataManager.updateInt(DRUG, "isSet", 1, "id", itemList[pos].id)
          }else {
             alarmReceiver.cancelAlarm(context, itemList[pos].id)
             dataManager.updateInt(DRUG, "isSet", 0, "id", itemList[pos].id)
@@ -96,24 +93,13 @@ class DrugAdapter2 (
             .setTitle("복용약 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               val drugCheckUid = dataManager.getDrugUid(DRUG_CHECK, "drugTimeId", "drugId", itemList[pos].id)
-               for(i in 0 until drugCheckUid.size) {
-                  val drugTime = dataManager.getData(DRUG_TIME, drugCheckUid[i].drugTimeId)
-                  if(drugTime.uid != "" && drugCheckUid[i].uid != "") {
-                     dataManager.insertUnused(Unused(type = DRUG_CHECK, value = drugCheckUid[i].uid,
-                        drugUid = itemList[pos].uid, drugTimeUid = drugTime.uid, createdAt = itemList[pos].startDate))
-                  }
-               }
-
                if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = DRUG, value = itemList[pos].uid, createdAt = itemList[pos].startDate))
 
                dataManager.deleteItem(DRUG_CHECK, "drugId", itemList[pos].id)
                dataManager.deleteItem(DRUG_TIME, "drugId", itemList[pos].id)
                dataManager.deleteItem(DRUG, "id", itemList[pos].id)
-
                alarmReceiver.cancelAlarm(context, itemList[pos].id)
                itemList.removeAt(pos)
-
                notifyDataSetChanged()
 
                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()

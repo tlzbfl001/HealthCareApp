@@ -1,6 +1,7 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Drug
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.drugTimeList
 import kr.bodywell.android.view.MainViewModel
 

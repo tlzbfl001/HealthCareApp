@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
 import kr.bodywell.android.model.Constant
@@ -235,14 +236,16 @@ class ProfileFragment : Fragment() {
 			val weight = if(binding.etWeight.text.trim().toString() == "") 0.0 else binding.etWeight.text.trim().toString().toDouble()
 			val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
 
-			if(binding.etName.text.trim().isEmpty()) {
+			if(height < 1 || weight < 1) {
+				Toast.makeText(context, "키, 몸무게는 1이상 입력하여야합니다.", Toast.LENGTH_SHORT).show()
+			}else if(binding.etName.text.trim().isEmpty()) {
 				Toast.makeText(context, "이름은 최소 1자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
-			}else if(!filterText(binding.etName.text.trim().toString())) {
+			}else if(!filterText(binding.etName.text.toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
 				dataManager.updateProfile(User(name=name, gender=gender, birthday=birthday, height=height, weight=weight, isUpdated=1))
 
-				if(image != "") dataManager.updateUserStr("image", image)
+				if(image != "") dataManager.updateUserStr(USER, "image", image, "id")
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 				replaceFragment3(requireActivity(), SettingFragment())

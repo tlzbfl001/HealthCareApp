@@ -13,7 +13,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toTopOf="@id/cl1"
-      app:layout_constraintVertical_weight="8" />
+      app:layout_constraintVertical_weight="9" />
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/cl1"
       android:layout_width="match_parent"
@@ -27,8 +27,8 @@
          android:id="@+id/dotsIndicator"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         app:dotsColor="#D9D9D9"
-         app:selectedDotColor="#9F98FF"
+         app:dotsColor="@color/light_grey"
+         app:selectedDotColor="@color/light_purple"
          app:dotsCornerRadius="8dp"
          app:dotsSize="10dp"
          app:dotsSpacing="4dp"
@@ -43,7 +43,7 @@
          android:layout_marginLeft="30dp"
          android:layout_marginRight="30dp"
          android:layout_marginBottom="40dp"
-         app:cardBackgroundColor="#9F98FF"
+         app:cardBackgroundColor="@color/light_purple"
          app:cardCornerRadius="30dp"
          app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +62,7 @@
                android:paddingLeft="45dp"
                android:text="시작"
                android:textColor="@color/white"
-               android:textSize="17dp"
+               android:textSize="16dp"
                app:layout_constraintBottom_toBottomOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent"

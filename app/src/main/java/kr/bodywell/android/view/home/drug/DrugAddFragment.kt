@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.drugTimeList
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -49,7 +51,8 @@ class DrugAddFragment : Fragment() {
    private val addList = ArrayList<String>()
    private val delList = ArrayList<Drug>()
    private var unit = "정"
-   var count = 1
+   private var count = 1
+   private var check = false
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -64,8 +67,7 @@ class DrugAddFragment : Fragment() {
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
-   ):
-      View {
+   ):View {
       _binding = FragmentDrugAddBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
@@ -129,17 +131,29 @@ class DrugAddFragment : Fragment() {
          override fun afterTextChanged(p0: Editable?) {}
       })
 
-      binding.clUnit1.setOnClickListener { unit1() }
+      binding.clUnit1.setOnClickListener {
+         unit1()
+      }
 
-      binding.clUnit2.setOnClickListener { unit2() }
+      binding.clUnit2.setOnClickListener {
+         unit2()
+      }
 
-      binding.clUnit3.setOnClickListener { unit3() }
+      binding.clUnit3.setOnClickListener {
+         unit3()
+      }
 
-      binding.clUnit4.setOnClickListener { unit4() }
+      binding.clUnit4.setOnClickListener {
+         unit4()
+      }
 
-      binding.clUnit5.setOnClickListener { unit5() }
+      binding.clUnit5.setOnClickListener {
+         unit5()
+      }
 
-      binding.clUnit6.setOnClickListener { unit6() }
+      binding.clUnit6.setOnClickListener {
+         unit6()
+      }
 
       binding.ivMinus.setOnClickListener {
          if(count > 1) {
@@ -164,6 +178,7 @@ class DrugAddFragment : Fragment() {
             Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
          }else {
             val endDate = selectedDate.plusDays((count-1).toLong()).toString()
+
             if(id > -1) { // 데이터 수정
                val isUpdated = if(getDrug.uid == "") 0 else 1
                dataManager.updateDrug(Drug(id = id, type = type, name = name, amount = amount, unit = unit, count = count,
@@ -241,8 +256,20 @@ class DrugAddFragment : Fragment() {
                   m = dateTime.minute
                }
 
-               setDrugTimeList(String.format("%02d", h)+":"+String.format("%02d", m))
-               showTimeList()
+               val time = String.format("%02d", h)+":"+String.format("%02d", m)
+
+               for(i in 0 until drugTimeList.size) {
+                  Log.d(CustomUtil.TAG, "drugTimeList: ${drugTimeList[i].time}")
+                  if(drugTimeList[i].time == time) check = true
+               }
+
+               if(check) {
+                  check = false
+                  Toast.makeText(activity, "시간이 중복됩니다.", Toast.LENGTH_SHORT).show()
+               }else {
+                  setDrugTimeList(time)
+                  showTimeList()
+               }
             }
 
             override fun onNegativeClick() {}

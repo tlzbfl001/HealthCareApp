@@ -21,14 +21,14 @@ import kr.bodywell.android.util.CalendarUtil.selectedDate
 
 class ExerciseRecordAdapter (
    private val context: Activity,
-   private var itemList: ArrayList<Exercise> = ArrayList<Exercise>(),
-   private val back: String
+   private var itemList: ArrayList<Exercise> = ArrayList<Exercise>()
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
-   private var bundle = Bundle()
    private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
 
-   init { dataManager.open() }
+   init {
+      dataManager.open()
+   }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)

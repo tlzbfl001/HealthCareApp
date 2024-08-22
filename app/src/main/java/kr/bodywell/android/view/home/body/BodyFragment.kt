@@ -35,8 +35,8 @@ class BodyFragment : Fragment() {
 
    private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
-   private var dailyGoal: Goal? = null
-   private var getBody: Body? = null
+   private var dailyGoal = Goal()
+   private var getBody = Body()
    private var isExpand = false
 
    override fun onCreateView(
@@ -58,18 +58,18 @@ class BodyFragment : Fragment() {
       tvTitle.text = "신체 / 목표 체중 입력"
       et.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
       tvUnit.text = "kg"
-      btnSave.setCardBackgroundColor(Color.parseColor("#AED77D"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#B3AED77D"))
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal!!.createdAt == "") {
+            if(dailyGoal.createdAt == "") {
                dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateDouble(GOAL, BODY, et.text.toString().toDouble(), selectedDate.toString())
-               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal!!.id)
+               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
             dailyGoal()
@@ -88,8 +88,10 @@ class BodyFragment : Fragment() {
       binding.clBmi.setOnClickListener {
          if (isExpand) {
             binding.clBmiExpend.visibility = View.GONE
+            binding.ivExpand1.setImageResource(R.drawable.arrow_down)
          } else {
             binding.clBmiExpend.visibility = View.VISIBLE
+            binding.ivExpand1.setImageResource(R.drawable.arrow_up)
          }
          isExpand = !isExpand
       }
@@ -97,8 +99,10 @@ class BodyFragment : Fragment() {
       binding.clFat.setOnClickListener {
          if (isExpand) {
             binding.clFatExpend.visibility = View.GONE
+            binding.ivExpand2.setImageResource(R.drawable.arrow_down)
          } else {
             binding.clFatExpend.visibility = View.VISIBLE
+            binding.ivExpand2.setImageResource(R.drawable.arrow_up)
          }
          isExpand = !isExpand
       }
@@ -106,8 +110,10 @@ class BodyFragment : Fragment() {
       binding.clMuscle.setOnClickListener {
          if (isExpand) {
             binding.clMuscleExpend.visibility = View.GONE
-         } else {
+            binding.ivExpand3.setImageResource(R.drawable.arrow_down)
+         }else {
             binding.clMuscleExpend.visibility = View.VISIBLE
+            binding.ivExpand3.setImageResource(R.drawable.arrow_up)
          }
          isExpand = !isExpand
       }
@@ -115,8 +121,10 @@ class BodyFragment : Fragment() {
       binding.clBmr.setOnClickListener {
          if (isExpand) {
             binding.tvBmrExpend.visibility = View.GONE
+            binding.ivExpand4.setImageResource(R.drawable.arrow_down)
          } else {
             binding.tvBmrExpend.visibility = View.VISIBLE
+            binding.ivExpand4.setImageResource(R.drawable.arrow_up)
          }
          isExpand = !isExpand
       }
@@ -141,54 +149,54 @@ class BodyFragment : Fragment() {
 
       dailyGoal = dataManager.getGoal(selectedDate.toString())
 
-      if (dailyGoal!!.body > 0) {
-         binding.pbBody.max = dailyGoal!!.body.roundToInt()
+      if (dailyGoal.body > 0) {
+         binding.pbBody.max = dailyGoal.body.roundToInt()
 
-         val split = dailyGoal!!.body.toString().split(".")
+         val split = dailyGoal.body.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
-            else -> binding.tvGoal.text = "${dailyGoal!!.body} kg"
+            else -> binding.tvGoal.text = "${dailyGoal.body} kg"
          }
       }
 
       getBody = dataManager.getBody(selectedDate.toString())
 
       var remain = 0.0
-      if(getBody?.weight != null && getBody!!.weight!! > 0) {
-         binding.pbBody.setProgressStartColor(Color.parseColor("#B8E189"))
-         binding.pbBody.setProgressEndColor(Color.parseColor("#B8E189"))
-         binding.pbBody.max = dailyGoal!!.body.roundToInt()
-         binding.pbBody.progress = getBody!!.weight.toString().toDouble().roundToInt()
+      if(getBody.weight != null && getBody.weight!! > 0) {
+         binding.pbBody.setProgressStartColor(resources.getColor(R.color.body))
+         binding.pbBody.setProgressEndColor(resources.getColor(R.color.body))
+         binding.pbBody.max = dailyGoal.body.roundToInt()
+         binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
 
-         val split = getBody!!.weight.toString().split(".")
+         val split = getBody.weight.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvWeight.text = "${split[0]} kg"
-            else -> binding.tvWeight.text = "${String.format("%.1f", getBody!!.weight)} kg"
+            else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
          }
 
-         remain = dailyGoal!!.body - getBody!!.weight!!.toString().toDouble()
+         remain = dailyGoal.body - getBody.weight!!.toString().toDouble()
       }
 
-      if (remain > 0) {
+      if(remain > 0) {
          val split = remain.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvRemain.text = "${split[0]} kg"
             else -> binding.tvRemain.text = "$remain kg"
          }
-         binding.tvWeight.text = "${getBody!!.weight} kg"
+         binding.tvWeight.text = "${getBody.weight} kg"
       }
    }
 
    private fun dailyList() {
-      if(getBody?.bmi != null) binding.tvBmi.text = getBody!!.bmi.toString() else binding.tvBmi.text = "0"
-      if(getBody?.fat != null) binding.tvFat.text = "${getBody!!.fat} %" else binding.tvFat.text = "0 %"
-      if(getBody?.muscle != null) binding.tvMuscle.text = "${getBody!!.muscle} kg" else binding.tvMuscle.text = "0 kg"
-      if(getBody?.bmr != null) binding.tvBmr.text = "${getBody!!.bmr} kcal" else binding.tvBmr.text = "0 kcal"
+      if(getBody.bmi != null) binding.tvBmi.text = getBody.bmi.toString() else binding.tvBmi.text = "0"
+      if(getBody.fat != null) binding.tvFat.text = "${getBody.fat} %" else binding.tvFat.text = "0 %"
+      if(getBody.muscle != null) binding.tvMuscle.text = "${getBody.muscle} kg" else binding.tvMuscle.text = "0 kg"
+      if(getBody.bmr != null) binding.tvBmr.text = "${getBody.bmr} kcal" else binding.tvBmr.text = "0 kcal"
 
       // 체질량지수 범위
       var bmi = 0
-      if(getBody!!.bmi != null) {
-         val format1 = String.format("%.1f", getBody!!.bmi)
+      if(getBody.bmi != null) {
+         val format1 = String.format("%.1f", getBody.bmi)
          bmi = format1.replace(".", "").toInt()
       }
       when {
@@ -256,8 +264,8 @@ class BodyFragment : Fragment() {
 
       // 체지방율 범위
       var fat = 0
-      if(getBody!!.bmi != null) {
-         val format2 = String.format("%.1f", getBody!!.fat)
+      if(getBody.bmi != null) {
+         val format2 = String.format("%.1f", getBody.fat)
          fat = format2.replace(".", "").toInt()
       }
       when {
@@ -310,8 +318,8 @@ class BodyFragment : Fragment() {
 
       // 골격근량 범위
       var muscle = 0
-      if(getBody!!.bmi != null) {
-         val format3 = String.format("%.1f", getBody!!.muscle)
+      if(getBody.bmi != null) {
+         val format3 = String.format("%.1f", getBody.muscle)
          muscle = format3.replace(".", "").toInt()
       }
       when {
