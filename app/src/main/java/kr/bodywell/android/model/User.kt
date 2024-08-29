@@ -14,7 +14,7 @@ data class User(
     var name: String? = "",
     var gender: String? = "",
     var birthday: String? = "",
-    var image: String? = "",
+    var profileImage: String? = "",
     var height: Double? = 0.0,
     var weight: Double? = 0.0,
     var weightGoal: Double = 0.0,

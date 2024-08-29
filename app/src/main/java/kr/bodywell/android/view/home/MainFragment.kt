@@ -1,9 +1,9 @@
 package kr.bodywell.android.view.home
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.GestureDetector
@@ -92,7 +92,12 @@ class MainFragment : Fragment() {
       val getUser = dataManager.getUser()
 
       if(getUser.name != "") binding.tvName.text = getUser.name + " 님"
-      if(getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
+
+      if(getUser.profileImage != "") {
+         val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부 저장소에 저장되어 있는 이미지 경로
+         val bm = BitmapFactory.decodeFile(imgPath)
+         binding.ivUser.setImageBitmap(bm)
+      }
 
       binding.clFood.setOnClickListener {
          layoutType = 1

@@ -19,6 +19,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper
+import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputInfoBinding
@@ -128,7 +129,7 @@ class InputInfoFragment : Fragment() {
       binding.cvContinue.setOnClickListener {
          val name = if(binding.etName.text.toString() == "") "바디웰" else binding.etName.text.toString()
          val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
-         val image = if(image == "") "" else image
+         val image = if(image == "") null else image
 
          if(binding.etName.text.length in 1..1) {
             Toast.makeText(context, "이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
@@ -137,7 +138,7 @@ class InputInfoFragment : Fragment() {
          }else {
             dataManager.updateUserStr(USER, "name", name, "id")
             dataManager.updateUserStr(USER, "birthday", birthday, "id")
-            dataManager.updateUserStr(USER, "image", image!!, "id")
+            dataManager.updateUserStr(USER, "profileImage", image!!, "id")
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                replace(R.id.inputFrame, InputBodyFragment())

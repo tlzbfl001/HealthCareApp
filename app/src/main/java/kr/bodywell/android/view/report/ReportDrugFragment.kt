@@ -274,7 +274,6 @@ class ReportDrugFragment : Fragment() {
 
          val rightAxis = chart.axisRight
          rightAxis.axisMinimum = 0f
-         rightAxis.axisMaximum = 100f
          rightAxis.isEnabled = false
 
          val leftAxis = chart.axisLeft
@@ -284,9 +283,8 @@ class ReportDrugFragment : Fragment() {
          leftAxis.gridColor = Color.parseColor("#bbbbbb")
          leftAxis.enableGridDashedLine(10f, 15f, 0f)
          leftAxis.axisMinimum = 0f
-         leftAxis.axisMaximum = 100f
 
-         chart.setExtraOffsets(3f, 20f, 5f, 5f)
+         chart.setExtraOffsets(12f, 15f, 15f, 10f)
          chart.description.isEnabled = false
          chart.legend.isEnabled = false
          chart.setScaleEnabled(false)

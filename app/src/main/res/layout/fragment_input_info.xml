@@ -125,7 +125,7 @@
        android:layout_marginBottom="30dp"
        android:layout_marginLeft="25dp"
        android:layout_marginRight="25dp"
-      app:cardBackgroundColor="@color/light_purple"
+      app:cardBackgroundColor="#9F98FF"
        app:cardCornerRadius="35dp"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toEndOf="parent"

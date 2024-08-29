@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.util.Base64
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
@@ -43,7 +42,6 @@ import kr.bodywell.android.view.home.MainActivity
 import kr.bodywell.android.view.init.InputActivity
 import kr.bodywell.android.view.init.LoginActivity
 import kr.bodywell.android.view.init.SignupActivity
-import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -178,17 +176,17 @@ object RegisterUtil {
 		val getMedicine = RetrofitAPI.api.getAllMedicine("Bearer ${token.access}")
 		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer ${token.access}")
 
-		Log.d(TAG, "getUserUid: ${getUserUid.body()}")
-		Log.d(TAG, "getProfile: ${getProfile.body()}")
-		Log.d(TAG, "getAllFood: ${getAllFood.body()}")
-		Log.d(TAG, "getAllDiet: ${getAllDiet.body()}")
-		Log.d(TAG, "getAllWater: ${getAllWater.body()}")
-		Log.d(TAG, "getAllActivity: ${getAllActivity.body()}")
-		Log.d(TAG, "getAllWorkout: ${getAllWorkout.body()}")
-		Log.d(TAG, "getAllBody: ${getAllBody.body()}")
-		Log.d(TAG, "getAllSleep: ${getAllSleep.body()}")
-		Log.d(TAG, "getMedicine: ${getMedicine.body()}")
-		Log.d(TAG, "getAllGoal: ${getAllGoal.body()}")
+		Log.d(TAG, "getUserUid: ${getUserUid.isSuccessful} / ${getUserUid.body()}")
+		Log.d(TAG, "getProfile: ${getProfile.isSuccessful} / ${getProfile.body()}")
+		Log.d(TAG, "getAllFood: ${getAllFood.isSuccessful} / ${getAllFood.body()}")
+		Log.d(TAG, "getAllDiet: ${getAllDiet.isSuccessful} / ${getAllDiet.body()}")
+		Log.d(TAG, "getAllWater: ${getAllWater.isSuccessful} / ${getAllWater.body()}")
+		Log.d(TAG, "getAllActivity: ${getAllActivity.isSuccessful} / ${getAllActivity.body()}")
+		Log.d(TAG, "getAllWorkout: ${getAllWorkout.isSuccessful} / ${getAllWorkout.body()}")
+		Log.d(TAG, "getAllBody: ${getAllBody.isSuccessful} / ${getAllBody.body()}")
+		Log.d(TAG, "getAllSleep: ${getAllSleep.isSuccessful} / ${getAllSleep.body()}")
+		Log.d(TAG, "getMedicine: ${getMedicine.isSuccessful} / ${getMedicine.body()}")
+		Log.d(TAG, "getAllGoal: ${getAllGoal.isSuccessful} / ${getAllGoal.body()}")
 
 		if(getUserUid.isSuccessful && getProfile.isSuccessful && getAllFood.isSuccessful && getAllDiet.isSuccessful && getAllWater.isSuccessful && getAllActivity.isSuccessful &&
 			getAllWorkout.isSuccessful && getAllBody.isSuccessful && getAllSleep.isSuccessful && getMedicine.isSuccessful && getAllGoal.isSuccessful) {
@@ -224,13 +222,13 @@ object RegisterUtil {
 				var useCount = 0
 				var useDate = ""
 
-				if(getAllFood.body()!![i].usages!!.isNotEmpty()) { // usages가 empty인것도 있기때문에 useCount, useDate 값없을수있음.
+				if(getAllFood.body()!![i].usages != null) { // usages가 empty인것도 있기때문에 useCount, useDate 값없을수있음.
 					useCount = getAllFood.body()!![i].usages!![0].usageCount
 					useDate = isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 				}
 
 				val type = if(getAllFood.body()!![i].registerType == TYPE_ADMIN) TYPE_ADMIN else TYPE_USER
-				dataManager.insertFood(Food(registerType = type, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].quantityUnit,
+				dataManager.insertFood(Food(registerType = type, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].quantityUnit,
 					amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 					protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
 			}
@@ -244,14 +242,14 @@ object RegisterUtil {
 				val getFood = dataManager.getFood("name", getAllDiet.body()!![i].name)
 				if(getAllDiet.body()!![i].photos.size > 0 && getFood.id > 0) {
 					for(j in 0 until getAllDiet.body()!![i].photos.size) {
-						dataManager.insertImage(Image(type = getAllDiet.body()!![i].mealTime, dataId = getFood.id, imageUri = getAllDiet.body()!![i].photos[j],
+						dataManager.insertImage(Image(type = getAllDiet.body()!![i].mealTime, imageUri = getAllDiet.body()!![i].photos[j],
 							createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
 					}
 				}
 			}
 
 			for(i in 0 until getAllWater.body()!!.size) {
-				dataManager.insertWater(Water(uid = getAllWater.body()!![i].uid, count = getAllWater.body()!![i].count, volume = getAllWater.body()!![i].mL,
+				dataManager.insertWater(Water(uid = getAllWater.body()!![i].id, count = getAllWater.body()!![i].count, volume = getAllWater.body()!![i].mL,
 					createdAt = getAllWater.body()!![i].date))
 			}
 
@@ -259,22 +257,22 @@ object RegisterUtil {
 				var useCount = 0
 				var useDate = ""
 
-				if(getAllActivity.body()!![i].usages!!.isNotEmpty()) {
+				if(getAllActivity.body()!![i].usages != null) {
 					useCount = getAllActivity.body()!![i].usages!![0].usageCount
 					useDate = isoToDateTime(getAllActivity.body()!![i].usages!![0].updatedAt).toString()
 				}
 
 				val type = if(getAllActivity.body()!![i].registerType == TYPE_ADMIN) TYPE_ADMIN else TYPE_USER
-				dataManager.insertExercise(Exercise(registerType = type, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate))
+				dataManager.insertExercise(Exercise(registerType = type, uid = getAllActivity.body()!![i].id, name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate))
 			}
 
 			for(i in 0 until getAllWorkout.body()!!.size) {
-				dataManager.insertDailyExercise(Exercise(uid = getAllWorkout.body()!![i].uid, name = getAllWorkout.body()!![i].name, intensity = getAllWorkout.body()!![i].intensity,
+				dataManager.insertDailyExercise(Exercise(uid = getAllWorkout.body()!![i].id, name = getAllWorkout.body()!![i].name, intensity = getAllWorkout.body()!![i].intensity,
 					workoutTime = getAllWorkout.body()!![i].time, kcal = getAllWorkout.body()!![i].calorie, createdAt = getAllWorkout.body()!![i].date.substring(0, 10)))
 			}
 
 			for(i in 0 until getAllBody.body()!!.size) {
-				dataManager.insertBody(Body(uid = getAllBody.body()!![i].uid, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
+				dataManager.insertBody(Body(uid = getAllBody.body()!![i].id, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
 					intensity = getAllBody.body()!![i].workoutIntensity, fat = getAllBody.body()!![i].bodyFatPercentage, muscle = getAllBody.body()!![i].skeletalMuscleMass,
 					bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, createdAt = getAllBody.body()!![i].time.substring(0, 10)))
 			}
@@ -282,7 +280,7 @@ object RegisterUtil {
 			for(i in 0 until getAllSleep.body()!!.size) {
 				val isoToStartTime = isoToDateTime(getAllSleep.body()!![i].starts)
 				val isoToEndTime = isoToDateTime(getAllSleep.body()!![i].ends)
-				dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].uid, startTime = isoToStartTime.toString(), endTime = isoToEndTime.toString()))
+				dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].id, startTime = isoToStartTime.toString(), endTime = isoToEndTime.toString()))
 			}
 
 			val alarmReceiver = AlarmReceiver()
@@ -293,7 +291,7 @@ object RegisterUtil {
 				val endDate = LocalDate.parse(getMedicine.body()!![i].ends.substring(0, 10))
 				val count = startDate.until(endDate, ChronoUnit.DAYS) + 1
 
-				val drug = Drug(uid = getMedicine.body()!![i].uid, type = getMedicine.body()!![i].category, name = getMedicine.body()!![i].name,
+				val drug = Drug(uid = getMedicine.body()!![i].id, type = getMedicine.body()!![i].category, name = getMedicine.body()!![i].name,
 					amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit, count = count.toInt(),
 					startDate = startDate.toString(), endDate = endDate.toString())
 
@@ -303,7 +301,7 @@ object RegisterUtil {
 					val drugId = dataManager.getData(DRUG, "startDate", drug.startDate) // drug id 가져오기
 
 					for(j in 0 until getMedicineTime.body()!!.size) {
-						val drugTime = DrugTime(uid = getMedicineTime.body()!![j].uid, drugId = drugId.id, time = getMedicineTime.body()!![j].time)
+						val drugTime = DrugTime(uid = getMedicineTime.body()!![j].id, drugId = drugId.id, time = getMedicineTime.body()!![j].time)
 						dataManager.insertDrugTime(drugTime)
 						timeList.add(DrugTime(time = drugTime.time))
 					}
@@ -325,7 +323,9 @@ object RegisterUtil {
 
 			context.startActivity(Intent(context, MainActivity::class.java))
 		}else {
-			Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
+			context.runOnUiThread {
+				Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
+			}
 		}
 	}
 
@@ -373,7 +373,7 @@ object RegisterUtil {
 
 				// 서버 데이터 저장
 				for(i in 0 until getAllFood.body()!!.size) {
-					dataManager.insertFood(Food(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].uid, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
+					dataManager.insertFood(Food(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
 						amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString())
@@ -381,7 +381,7 @@ object RegisterUtil {
 				}
 
 				for(i in 0 until getAllActivity.body()!!.size) {
-					dataManager.insertExercise(Exercise(registerType = TYPE_ADMIN, uid = getAllActivity.body()!![i].uid, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
+					dataManager.insertExercise(Exercise(registerType = TYPE_ADMIN, uid = getAllActivity.body()!![i].id, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
 						createdAt = LocalDate.now().toString()))
 				}

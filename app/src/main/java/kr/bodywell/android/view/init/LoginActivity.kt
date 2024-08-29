@@ -26,7 +26,9 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.resetAlarm
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
@@ -117,6 +119,7 @@ class LoginActivity : AppCompatActivity() {
                   }
                }else { // 로그인
                   MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
+                  resetAlarm(this)
                   startActivity(Intent(this, MainActivity::class.java))
                }
             }else {
@@ -148,6 +151,7 @@ class LoginActivity : AppCompatActivity() {
                      }
                   }else { // 로그인
                      MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
+                     resetAlarm(this@LoginActivity)
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
                }
@@ -214,6 +218,7 @@ class LoginActivity : AppCompatActivity() {
                }
             }else { // 로그인
                MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
+               resetAlarm(this)
                startActivity(Intent(this, MainActivity::class.java))
             }
          }else {

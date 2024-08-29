@@ -65,7 +65,7 @@
       android:layout_marginTop="6dp"
       android:layout_marginLeft="25dp"
       android:layout_marginRight="18dp"
-      android:background="@color/white_black"
+      android:background="@color/transparent"
       app:tabPaddingTop="0dp"
       app:tabPaddingStart="0dp"
       app:tabPaddingEnd="7dp"

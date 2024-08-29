@@ -62,13 +62,15 @@ class DrugFragment : Fragment() {
 
       if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
          binding.clPerm.visibility = View.VISIBLE
-         binding.cv1.visibility = View.GONE
+         binding.cl1.visibility = View.GONE
+         binding.cv.visibility = View.GONE
          binding.btnPerm.setOnClickListener {
             replaceFragment1(requireActivity(), AlarmFragment())
          }
       }else {
          binding.clPerm.visibility = View.GONE
-         binding.cv1.visibility = View.VISIBLE
+         binding.cl1.visibility = View.VISIBLE
+         binding.cv.visibility = View.VISIBLE
       }
 
       val dialog = Dialog(requireActivity())
@@ -153,19 +155,26 @@ class DrugFragment : Fragment() {
 
       // 약복용 리스트 생성
       val getDrugDaily = dataManager.getDrug(selectedDate.toString())
-      for(i in 0 until getDrugDaily.size) {
-         val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
-         for(j in 0 until getDrugTime.size) {
-            val getDrugCheck = dataManager.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
-            itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = getDrugDaily[i].startDate,
-               name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheck.id)
-            )
-         }
-      }
 
-      adapter = DrugAdapter1(requireActivity(), itemList, viewModel)
-      binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.recyclerView.adapter = adapter
-      binding.recyclerView.requestLayout()
+      if(getDrugDaily.size > 0) {
+         binding.cv.visibility = View.VISIBLE
+
+         for(i in 0 until getDrugDaily.size) {
+            val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
+            for(j in 0 until getDrugTime.size) {
+               val getDrugCheck = dataManager.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
+               itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = getDrugDaily[i].startDate,
+                  name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheck.id)
+               )
+            }
+         }
+
+         adapter = DrugAdapter1(requireActivity(), itemList, viewModel)
+         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         binding.recyclerView.adapter = adapter
+         binding.recyclerView.requestLayout()
+      }else {
+         binding.cv.visibility = View.GONE
+      }
    }
 }

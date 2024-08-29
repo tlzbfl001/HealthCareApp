@@ -34,19 +34,30 @@ object PermissionUtil {
         Manifest.permission.BLUETOOTH_CONNECT
     )
 
-    private val CAMERA_PERMISSION_1 = arrayOf(
+    val CAMERA_PERMISSION_1 = arrayOf(
         Manifest.permission.CAMERA,
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private val CAMERA_PERMISSION_2 = arrayOf(
+    val CAMERA_PERMISSION_2 = arrayOf(
         Manifest.permission.CAMERA,
         Manifest.permission.READ_MEDIA_IMAGES
     )
 
-    fun checkBtPermissions(context: Activity): Boolean {
+    fun checkCameraPermission(context: Activity): Boolean {
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+               && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+        }else {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+               && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+               && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    fun checkBtPermission(context: Activity): Boolean {
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ContextCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

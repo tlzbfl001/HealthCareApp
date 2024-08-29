@@ -4,16 +4,17 @@
    <color name="white_black">#222222</color>
    <color name="white_grey30">#4DB5B5B5</color>
    <color name="white_trans5">#0DFFFFFF</color>
-   <color name="white_grey">#5C5C5C</color>
+   <color name="white_grey">#515151</color>
    <color name="white_light_grey">#AAAAAA</color>
    <color name="white_transparent">#00FFFFFF</color>
    <color name="black_white">#ffffff</color>
    <color name="light_grey_dark_grey">#4A4A4A</color>
-   <color name="light_grey_grey">#5C5C5C</color>
+   <color name="light_grey_grey">#515151</color>
    <color name="light_grey_black">#222222</color>
+   <color name="grey_dark_grey">#515151</color>
    <color name="grey_white">#ffffff</color>
    <color name="logo">#ffffff</color>
-   <color name="main_top">#668468FF</color>
+   <color name="main_top">#598468FF</color>
 
    <color name="food">#B3E24F5C</color>
    <color name="water">#994AC0F2</color>
@@ -27,7 +28,7 @@
    <color name="water_grey">#26CCCCCC</color>
    <color name="exercise_grey">#26CCCCCC</color>
    <color name="exercise_black">#222222</color>
-   <color name="exercise_button_grey">#5C5C5C</color>
+   <color name="exercise_button_grey">#515151</color>
    <color name="exercise_bar">#ffffff</color>
    <color name="body_grey">#26CCCCCC</color>
    <color name="body_black">#222222</color>

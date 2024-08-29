@@ -1,13 +1,9 @@
 package kr.bodywell.android.view.note
 
-import android.app.Activity
-import android.app.Dialog
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.Gravity
@@ -17,6 +13,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
@@ -26,15 +24,13 @@ import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.NOTE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteBinding
-import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.saveFile
+import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import kr.bodywell.android.view.home.MainFragment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -46,9 +42,9 @@ class NoteFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var days = ArrayList<LocalDate?>()
-   private var dialog: Dialog? = null
-   private var uri:Uri? = null
+   private var type = "NOTE"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -67,6 +63,12 @@ class NoteFragment : Fragment() {
       _binding = FragmentNoteBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
+
+      pLauncher = registerForActivityResult(
+         ActivityResultContracts.RequestMultiplePermissions()
+      ){
+
+      }
 
       dataManager = DataManager(activity)
       dataManager.open()
@@ -111,30 +113,17 @@ class NoteFragment : Fragment() {
          }
       }))
 
-      // 카메라 설정
-//      binding.clCamera.setOnClickListener {
-//         if(cameraRequest(requireActivity())) {
-//            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-//            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-//
-//            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-//            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-//
-//            clCamera.setOnClickListener {
-//               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//               startActivityForResult(intent, CAMERA_REQUEST_CODE)
-//            }
-//
-//            clPhoto.setOnClickListener {
-//               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-//               intent.type = "image/*"
-//               startActivityForResult(intent, STORAGE_REQUEST_CODE)
-//            }
-//
-//            dialog!!.setContentView(bottomSheetView)
-//            dialog!!.show()
-//         }
-//      }
+      binding.clGallery.setOnClickListener {
+         if(checkCameraPermission(requireActivity())) {
+            replaceFragment1(requireActivity(), GalleryFragment())
+         }else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+               pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_2)
+            }else {
+               pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_1)
+            }
+         }
+      }
 
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
@@ -183,11 +172,11 @@ class NoteFragment : Fragment() {
 
       binding.tvKcal2.text = "$total kcal"
 
-//      setImageView()
+      setImageView()
    }
 
    private fun setImageView() {
-      val dataList = dataManager.getImage("5", selectedDate.toString())
+      val dataList = dataManager.getImage(type, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
       binding.viewPager.setPadding(140, 0, 140, 0)
@@ -266,36 +255,6 @@ class NoteFragment : Fragment() {
 
       override fun onTouchEvent(view: RecyclerView, motionEvent: MotionEvent) {}
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-   }
-
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-      super.onActivityResult(requestCode, resultCode, data)
-      if(resultCode == Activity.RESULT_OK){
-         when(requestCode){
-            CAMERA_REQUEST_CODE -> {
-               if(data?.extras?.get("data") != null){
-                  val img = data.extras?.get("data") as Bitmap
-                  uri = saveFile(requireActivity(), "image/jpeg", img)
-
-                  dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), createdAt = selectedDate.toString()))
-                  setImageView()
-
-                  dialog!!.dismiss()
-               }
-            }
-            STORAGE_REQUEST_CODE -> {
-               uri = data!!.data
-
-               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags)
-
-               dataManager.insertImage(Image(type = "5", imageUri = uri.toString(), createdAt = selectedDate.toString()))
-               setImageView()
-
-               dialog!!.dismiss()
-            }
-         }
-      }
    }
 
    override fun onDetach() {

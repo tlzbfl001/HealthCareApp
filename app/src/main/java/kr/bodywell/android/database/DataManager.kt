@@ -3,6 +3,7 @@ package kr.bodywell.android.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
+import android.util.Log
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.BODY
@@ -38,6 +39,7 @@ import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.Water
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.MyApp
 
 class DataManager(private var context: Context?) {
@@ -47,18 +49,6 @@ class DataManager(private var context: Context?) {
    fun open(): DataManager {
       dbHelper = DBHelper(context)
       return this
-   }
-
-   fun getUserCount() : Int {
-      val db = dbHelper!!.readableDatabase
-      var count = 0
-      val sql = "select count(id) from $USER"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         count = cursor.getInt(0)
-      }
-      cursor.close()
-      return count
    }
 
    fun getUser(type: String, email: String) : User {
@@ -93,7 +83,7 @@ class DataManager(private var context: Context?) {
          values.name = cursor.getString(6)
          values.gender = cursor.getString(7)
          values.birthday = cursor.getString(8)
-         values.image = cursor.getString(9)
+         values.profileImage = cursor.getString(9)
          values.height = cursor.getDouble(10)
          values.weight = cursor.getDouble(11)
          values.weightGoal = cursor.getDouble(12)
@@ -109,14 +99,14 @@ class DataManager(private var context: Context?) {
    fun getUserUpdated() : User {
       val db = dbHelper!!.readableDatabase
       val values = User()
-      val sql = "select id, name, gender, birthday, image, height, weight, $CREATED_AT from $USER where id = ${MyApp.prefs.getUserId()} and $IS_UPDATED = 1"
+      val sql = "select id, name, gender, birthday, profileImage, height, weight, $CREATED_AT from $USER where id = ${MyApp.prefs.getUserId()} and $IS_UPDATED = 1"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id=cursor.getInt(0)
          values.name = cursor.getString(1)
          values.gender = cursor.getString(2)
          values.birthday = cursor.getString(3)
-         values.image = cursor.getString(4)
+         values.profileImage = cursor.getString(4)
          values.height = cursor.getDouble(5)
          values.weight = cursor.getDouble(6)
          values.createdAt = cursor.getString(7)
@@ -146,19 +136,6 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.readableDatabase
       val values = Food()
       val sql = "select id, uid from $table where $USER_ID = ${MyApp.prefs.getUserId()} and $column = '$data'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         values.id = cursor.getInt(0)
-         values.uid = cursor.getString(1)
-      }
-      cursor.close()
-      return values
-   }
-
-   fun getData(table: String, data: Int) : Food {
-      val db = dbHelper!!.readableDatabase
-      val values = Food()
-      val sql = "select id, uid from $table where $USER_ID = ${MyApp.prefs.getUserId()} and id = $data"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id = cursor.getInt(0)
@@ -843,31 +820,30 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun getDrugDate(data: String) : ArrayList<String> {
+   fun getDrugDate(data: String) : ArrayList<Int> {
       val db = dbHelper!!.readableDatabase
-      val list = ArrayList<String>()
-      val sql = "select distinct startDate from $DRUG where $USER_ID=${MyApp.prefs.getUserId()} and startDate >= '$data'"
+      val list = ArrayList<Int>()
+      val sql = "select id from $DRUG where $USER_ID=${MyApp.prefs.getUserId()} and startDate >= '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         list.add(cursor.getString(0))
+         list.add(cursor.getInt(0))
       }
       cursor.close()
       return list
    }
 
-   fun getDrugData(data: String) : Drug {
+   fun getDrugData(data: Int) : Drug {
       val db = dbHelper!!.readableDatabase
       val values = Drug()
-      val sql = "select id, name, amount, unit, startDate, endDate, isSet from $DRUG where $USER_ID=${MyApp.prefs.getUserId()} and startDate='$data'"
+      val sql = "select name, amount, unit, startDate, endDate, isSet from $DRUG where $USER_ID=${MyApp.prefs.getUserId()} and id=$data"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         values.id = cursor.getInt(0)
-         values.name = cursor.getString(1)
-         values.amount = cursor.getInt(2)
-         values.unit = cursor.getString(3)
-         values.startDate = cursor.getString(4)
-         values.endDate = cursor.getString(5)
-         values.isSet = cursor.getInt(6)
+         values.name = cursor.getString(0)
+         values.amount = cursor.getInt(1)
+         values.unit = cursor.getString(2)
+         values.startDate = cursor.getString(3)
+         values.endDate = cursor.getString(4)
+         values.isSet = cursor.getInt(5)
       }
       cursor.close()
       return values
@@ -1160,7 +1136,6 @@ class DataManager(private var context: Context?) {
       }
       cursor.close()
       return list
-
    }
 
    fun getImage(type: String, date: String) : ArrayList<Image> {
@@ -1258,7 +1233,7 @@ class DataManager(private var context: Context?) {
       values.put("name", data.name)
       values.put("gender", data.gender)
       values.put("birthday", data.birthday)
-      values.put("image", data.image)
+      values.put("profileImage", data.profileImage)
       values.put("height", data.height)
       values.put("weight", data.weight)
       values.put("weightGoal", data.weightGoal)
@@ -1544,7 +1519,7 @@ class DataManager(private var context: Context?) {
    fun updateUser2(data: User){
       val db = dbHelper!!.writableDatabase
       val sql = "update $USER set idToken='${data.idToken}', accessToken='${data.accessToken}', name='${data.name}', gender='${data.gender}', birthday='${data.birthday}', " +
-         "image='${data.image}', height='${data.height}', weight='${data.weight}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
+         "image='${data.profileImage}', height='${data.height}', weight='${data.weight}', $CREATED_AT='${data.createdAt}' where type='${data.type}' and email='${data.email}'"
       db.execSQL(sql)
       db.close()
    }
@@ -1657,7 +1632,7 @@ class DataManager(private var context: Context?) {
 
    fun deleteTable(table: String, column: String): Int {
       val db = dbHelper!!.writableDatabase
-      val result = db.delete(table, "$column=${MyApp.prefs.getUserId()}", null)
+      val result = db.delete(table, "$column=2", null)
       db.close()
       return result
    }

@@ -1080,7 +1080,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="15dp"
       android:layout_marginBottom="30dp"
-      app:cardBackgroundColor="@color/light_purple"
+      app:cardBackgroundColor="#9F98FF"
       app:cardCornerRadius="30dp"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"

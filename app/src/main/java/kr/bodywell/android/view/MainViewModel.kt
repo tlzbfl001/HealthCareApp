@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
@@ -31,6 +33,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
       updateData()
+
       Log.d(TAG, "access: ${getToken.access}")
    }
 

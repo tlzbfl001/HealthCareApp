@@ -1,7 +1,7 @@
 package kr.bodywell.android.adapter
 
 import android.content.Context
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +24,13 @@ class PhotoSlideAdapter(
       val view: View = inflater.inflate(R.layout.item_photo_slide, container, false)
       val imageView: ImageView = view.findViewById(R.id.imageView)
 
-      imageView.setImageURI(Uri.parse(itemList[position].imageUri))
+      if(itemList[position].bitmap == null) {
+         val imgPath = context.filesDir.toString() + "/" + itemList[position].imageUri
+         val bm = BitmapFactory.decodeFile(imgPath)
+         imageView.setImageBitmap(bm)
+      }else {
+         imageView.setImageBitmap(itemList[position].bitmap)
+      }
 
       container.addView(view, 0)
 

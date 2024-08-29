@@ -3,7 +3,7 @@ package kr.bodywell.android.view.setting
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -43,8 +43,8 @@ import kr.bodywell.android.database.DBHelper.Companion.SLEEP
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
 import kr.bodywell.android.database.DBHelper.Companion.UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.USER
-import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
+import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Constant
@@ -57,12 +57,13 @@ import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkBtPermissions
+import kr.bodywell.android.util.PermissionUtil.checkBtPermission
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.InitActivity
 import kr.bodywell.android.view.init.LoginActivity
 import java.util.Calendar
 import kotlin.system.exitProcess
+
 
 class SettingFragment : Fragment() {
    private var _binding: FragmentSettingBinding? = null
@@ -116,7 +117,7 @@ class SettingFragment : Fragment() {
 
       binding.tvConnect.setOnClickListener {
          // 블루투스 권한 설정
-         if(!checkBtPermissions(requireActivity())) {
+         if(!checkBtPermission(requireActivity())) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                pLauncher.launch(BT_PERMISSION_2)
             }else {
@@ -243,7 +244,11 @@ class SettingFragment : Fragment() {
 
    private fun userProfile() {
       if(getUser.name != "") binding.tvName.text = getUser.name
-      if(getUser.image != "") binding.ivUser.setImageURI(Uri.parse(getUser.image))
+      if(getUser.profileImage != "") {
+         val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부 저장소에 저장되어 있는 이미지 경로
+         val bm = BitmapFactory.decodeFile(imgPath)
+         binding.ivUser.setImageBitmap(bm)
+      }
 
       if(getUser.birthday != "") {
          val current = Calendar.getInstance()
@@ -276,7 +281,17 @@ class SettingFragment : Fragment() {
    }
 
    private fun logoutProcess() {
+      val alarmReceiver = AlarmReceiver()
+      val getDrugId = dataManager.getDrugId()
+
+      for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
+
       MyApp.prefs.removePrefs()
+
+      requireActivity().runOnUiThread {
+         Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
+      }
+
       finishAffinity(requireActivity())
       startActivity(Intent(requireActivity(), LoginActivity::class.java))
       exitProcess(0)
@@ -286,7 +301,7 @@ class SettingFragment : Fragment() {
       CoroutineScope(Dispatchers.IO).launch {
          val getUserUid = RetrofitAPI.api.getUser("Bearer ${getToken.access}")
          if(getUserUid.isSuccessful) {
-            val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}", getUser.uid!!)
+            val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
             if(response.isSuccessful) {
                deleteData()
             }else {

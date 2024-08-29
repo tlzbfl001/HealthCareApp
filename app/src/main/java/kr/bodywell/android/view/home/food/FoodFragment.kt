@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
+import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.GOAL
@@ -24,6 +25,7 @@ import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
+import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -190,35 +192,35 @@ class FoodFragment : Fragment() {
       val remain = dailyGoal.food - sum
       if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
-//      // 갤러리 초기화
-//      val imageList = ArrayList<Image>()
-//      binding.viewPager.adapter = null
-//
-//      val getData1 = dataManager.getImage("BREAKFAST", selectedDate.toString())
-//      val getData2 = dataManager.getImage("LUNCH", selectedDate.toString())
-//      val getData3 = dataManager.getImage("DINNER", selectedDate.toString())
-//      val getData4 = dataManager.getImage("SNACK", selectedDate.toString())
-//
-//      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageUri = Uri.parse(getData1[i].imageUri).toString()))
-//      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageUri = Uri.parse(getData2[i].imageUri).toString()))
-//      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageUri = Uri.parse(getData3[i].imageUri).toString()))
-//      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageUri = Uri.parse(getData4[i].imageUri).toString()))
-//
-//      if(imageList.size > 0) {
-//         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
-//         binding.viewPager.adapter = adapter
-//         binding.viewPager.setPadding(0, 0, 0, 0)
-//
-//         binding.clLeft.setOnClickListener {
-//            val current = binding.viewPager.currentItem
-//            if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
-//         }
-//
-//         binding.clRight.setOnClickListener {
-//            val current = binding.viewPager.currentItem
-//            binding.viewPager.setCurrentItem(current+1, true)
-//         }
-//      }
+      // 갤러리 초기화
+      val imageList = ArrayList<Image>()
+      binding.viewPager.adapter = null
+
+      val getData1 = dataManager.getImage("BREAKFAST", selectedDate.toString())
+      val getData2 = dataManager.getImage("LUNCH", selectedDate.toString())
+      val getData3 = dataManager.getImage("DINNER", selectedDate.toString())
+      val getData4 = dataManager.getImage("SNACK", selectedDate.toString())
+
+      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageUri = getData1[i].imageUri))
+      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageUri = getData2[i].imageUri))
+      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageUri = getData3[i].imageUri))
+      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageUri = getData4[i].imageUri))
+
+      if(imageList.size > 0) {
+         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+         binding.viewPager.adapter = adapter
+         binding.viewPager.setPadding(0, 0, 0, 0)
+
+         binding.clLeft.setOnClickListener {
+            val current = binding.viewPager.currentItem
+            if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+         }
+
+         binding.clRight.setOnClickListener {
+            val current = binding.viewPager.currentItem
+            binding.viewPager.setCurrentItem(current+1, true)
+         }
+      }
    }
 
    private fun listView() {

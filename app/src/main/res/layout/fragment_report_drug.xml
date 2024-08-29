@@ -139,7 +139,7 @@
          android:layout_width="51dp"
          android:layout_height="48dp"
          android:background="@drawable/oval_cal_selected"
-         android:backgroundTint="@color/dark_grey"
+         android:backgroundTint="@color/grey_dark_grey"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toEndOf="@id/clMenu3"
          app:layout_constraintEnd_toEndOf="parent"
@@ -253,7 +253,7 @@
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
             android:textColor="#EEEEEE"
-            android:textSize="14dp" />
+            android:textSize="15dp"/>
       </androidx.cardview.widget.CardView>
       <TextView
          android:id="@+id/tvTitle2"
@@ -303,7 +303,7 @@
                android:layout_height="wrap_content"
                android:layout_gravity="center"
                android:text="데이터가 없습니다."
-               android:textSize="14dp"
+               android:textSize="15dp"
                android:textColor="#EEEEEE"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"

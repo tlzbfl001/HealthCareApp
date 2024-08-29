@@ -189,10 +189,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
-               android:paddingTop="15dp"
-               android:paddingBottom="30dp"
-               android:paddingLeft="15dp"
-               android:paddingRight="15dp">
+               android:padding="15dp">
                <TextView
                   android:id="@+id/tv5"
                   android:layout_width="wrap_content"
@@ -399,13 +396,19 @@
                       android:textSize="16dp"
                       android:textStyle="bold"/>
                </androidx.cardview.widget.CardView>
+               <View
+                  android:id="@+id/view"
+                  android:layout_width="match_parent"
+                  android:layout_height="25dp"
+                  app:layout_constraintTop_toBottomOf="@id/cvResult"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"/>
                <androidx.constraintlayout.widget.ConstraintLayout
                   android:id="@+id/clResult"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:visibility="gone"
-                  android:layout_marginTop="30dp"
-                  app:layout_constraintTop_toBottomOf="@id/cvResult"
+                  app:layout_constraintTop_toBottomOf="@id/view"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintBottom_toBottomOf="parent">
@@ -413,8 +416,8 @@
                      android:id="@+id/tvBmrText"
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="기초대사량:"
-                     android:textSize="16dp"
+                     android:text="나의 기초대사량:"
+                     android:textSize="14dp"
                      android:textColor="@color/black_white"
                      app:layout_constraintTop_toTopOf="parent"
                      app:layout_constraintStart_toStartOf="parent"/>
@@ -435,8 +438,8 @@
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:layout_marginTop="5dp"
-                     android:text="하루 에너지 소비량:"
-                     android:textSize="16dp"
+                     android:text="나의 하루 에너지소비량:"
+                     android:textSize="14dp"
                      android:textColor="@color/black_white"
                      app:layout_constraintTop_toBottomOf="@id/tvBmrText"
                      app:layout_constraintStart_toStartOf="@id/tvBmrText"/>
@@ -461,7 +464,7 @@
              android:layout_height="wrap_content"
              android:layout_marginTop="30dp"
              android:layout_marginBottom="30dp"
-            app:cardBackgroundColor="@color/light_purple"
+            app:cardBackgroundColor="#9F98FF"
              app:cardCornerRadius="35dp"
              app:layout_constraintTop_toBottomOf="@id/cv2"
              app:layout_constraintBottom_toBottomOf="parent"

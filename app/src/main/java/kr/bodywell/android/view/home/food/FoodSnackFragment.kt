@@ -14,13 +14,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
+import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.adapter.PhotoViewAdapter
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
+import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import java.util.stream.Collectors
 import kotlin.math.abs
 
 class FoodSnackFragment : Fragment() {
@@ -28,7 +32,8 @@ class FoodSnackFragment : Fragment() {
     val binding get() = _binding!!
 
     private lateinit var dataManager: DataManager
-    private var photoAdapter: PhotoViewAdapter? = null
+    private var photoAdapter: PhotoSlideAdapter2? = null
+    private var imageList = ArrayList<Image>()
     private var type = Constant.SNACK.name
 
     override fun onCreateView(
@@ -40,69 +45,32 @@ class FoodSnackFragment : Fragment() {
         dataManager = DataManager(activity)
         dataManager.open()
 
-//      imageView()
+        imageView()
         listView() // 섭취 식단
 
         return binding.root
     }
 
     private fun imageView() {
-        val imageData = dataManager.getImage(type, selectedDate.toString())
+        binding.viewPager.adapter = null
 
-        if(imageData.size > 0) {
-            photoAdapter = PhotoViewAdapter(imageData)
+        val getImage = dataManager.getImage(type, selectedDate.toString())
 
-            binding.viewPager.adapter = photoAdapter
-            binding.viewPager.offscreenPageLimit = 5
-            binding.viewPager.clipToPadding = false
-            binding.viewPager.clipChildren = false
-            binding.viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        for(i in 0 until getImage.size) imageList.add(Image(id = getImage[i].id, imageUri = getImage[i].imageUri))
 
-            val transformer = CompositePageTransformer()
-            val defaultTranslationX = 0.50f
-            val defaultTranslationFactor = 1.17f
-            val scaleFactor = 0.14f
-            val defaultScale = 1f
+        if(imageList.size > 0) {
+            val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+            binding.viewPager.adapter = adapter
+            binding.viewPager.setPadding(0, 0, 0, 0)
 
-            transformer.addTransformer{ view: View, position: Float ->
-                view.apply {
-                    ViewCompat.setElevation(view, -abs(position))
-                    val scaleFactor1 = scaleFactor * position + defaultScale
-                    val scaleFactor2 = -scaleFactor * position + defaultScale
-                    when {
-                        position < -2 -> {
-                            translationX = width * position
-                        }
-                        position < 0f -> {
-                            scaleX = scaleFactor1
-                            scaleY = scaleFactor1
-                            translationX = -(width / defaultTranslationFactor) * position
-                        }
-                        position == 0f -> {
-                            translationX = defaultTranslationX
-                            scaleX = defaultScale
-                            scaleY = defaultScale
-                        }
-                        position > 0 && position <= 2 -> {
-                            scaleX = scaleFactor2
-                            scaleY = scaleFactor2
-                            translationX = -(width / defaultTranslationFactor) * position
-                        }
-                        position > 2 -> {
-                            translationX = 0f
-                        }
-                    }
-                }
+            binding.clLeft.setOnClickListener {
+                val current = binding.viewPager.currentItem
+                if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
             }
 
-            binding.viewPager.setPageTransformer(transformer)
-
-            binding.cvLeft.setOnClickListener {
-                binding.viewPager.setCurrentItem(binding.viewPager.currentItem - 1, true)
-            }
-
-            binding.cvRight.setOnClickListener {
-                binding.viewPager.setCurrentItem(binding.viewPager.currentItem + 1, true)
+            binding.clRight.setOnClickListener {
+                val current = binding.viewPager.currentItem
+                binding.viewPager.setCurrentItem(current+1, true)
             }
         }
     }
@@ -123,16 +91,15 @@ class FoodSnackFragment : Fragment() {
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             dataManager.deleteItem(DAILY_FOOD, "id", dataList[pos].id)
-                            /*dataManager.deleteItem(TABLE_IMAGE, "dataId", dataList[pos].id)
+                            dataManager.deleteItem(IMAGE, "dataId", dataList[pos].id)
 
-                            if (imageData.size > 0) {
-                                imageData.stream().filter {
-                                        x -> x.dataId == dataList[pos].id
+                            if (imageList.size > 0) {
+                                imageList.stream().filter { x -> x.dataId == dataList[pos].id
                                 }.collect(Collectors.toList()).forEach { x ->
-                                    imageData.remove(x)
+                                    imageList.remove(x)
                                 }
                                 photoAdapter!!.notifyDataSetChanged()
-                            }*/
+                            }
 
                             if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_FOOD, value = dataList[pos].uid, createdAt = selectedDate.toString()))
                             dataList.removeAt(pos)

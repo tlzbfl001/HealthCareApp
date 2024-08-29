@@ -3,8 +3,8 @@ package kr.bodywell.android.api.response
 import com.google.gson.annotations.SerializedName
 
 data class DeviceResponse(
-	@SerializedName("uid")
-	var uid: String = "",
+	@SerializedName("id")
+	var id: String = "",
 
 	@SerializedName("label")
 	var label: String = "",
