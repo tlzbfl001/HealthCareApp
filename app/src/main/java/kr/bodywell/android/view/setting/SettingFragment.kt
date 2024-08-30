@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +52,7 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -190,7 +192,7 @@ class SettingFragment : Fragment() {
                            Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            gsc.revokeAccess().addOnCompleteListener {
-                              if(it.isSuccessful) deleteData() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              if(it.isSuccessful) resignProcess() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
                            }
                         }
                      }
@@ -203,7 +205,7 @@ class SettingFragment : Fragment() {
                            lifecycleScope.launch {
                               NidOAuthLogin().callDeleteTokenApi(requireActivity(), object : OAuthLoginCallback {
                                  override fun onSuccess() {
-                                    deleteData()
+                                    resignProcess()
                                  }
 
                                  override fun onFailure(httpStatus: Int, message: String) {
@@ -224,7 +226,7 @@ class SettingFragment : Fragment() {
                            }else if (token != null) {
                               UserApiClient.instance.unlink { err ->
                                  lifecycleScope.launch{
-                                    if(err == null) deleteData() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                                    if(err == null) resignProcess() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
                                  }
                               }
                            }
@@ -250,7 +252,7 @@ class SettingFragment : Fragment() {
          binding.ivUser.setImageBitmap(bm)
       }
 
-      if(getUser.birthday != "") {
+      /*if(getUser.birthday != "") {
          val current = Calendar.getInstance()
          val currentYear = current.get(Calendar.YEAR)
          val currentMonth = current.get(Calendar.MONTH) + 1
@@ -262,7 +264,7 @@ class SettingFragment : Fragment() {
          val gender = if(getUser.gender == Constant.Male.name) "남" else "여"
 
          binding.tvAge.text = "만${age}세 / $gender"
-      }
+      }*/
 
       var height = "0"
       var weight = "0"

@@ -96,13 +96,13 @@ class GalleryFragment : Fragment() {
 
 				clCamera.setOnClickListener {
 					val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE) // 카메라 사용을위한 Intent 생성
-					startActivityForResult(intent, PermissionUtil.CAMERA_REQUEST_CODE)
+					startActivityForResult(intent, CAMERA_REQUEST_CODE)
 				}
 
 				clPhoto.setOnClickListener {
 					val intent = Intent(Intent.ACTION_PICK) // 갤러리에서 이미지를 선택하는 Intent 생성
 					intent.type = "image/*"
-					startActivityForResult(intent, PermissionUtil.STORAGE_REQUEST_CODE)
+					startActivityForResult(intent, STORAGE_REQUEST_CODE)
 				}
 
 				dialog!!.setContentView(bottomSheetView)

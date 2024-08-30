@@ -165,7 +165,7 @@ object RegisterUtil {
 
 	private suspend fun getData(context: LoginActivity, dataManager: DataManager, user: User, token: Token) {
 		val getUserUid = RetrofitAPI.api.getUser("Bearer ${token.access}")
-		val getProfile = RetrofitAPI.api.getProfile("Bearer ${token.access}")
+//		val getProfile = RetrofitAPI.api.getProfile("Bearer ${token.access}")
 		val getAllFood = RetrofitAPI.api.getAllFood("Bearer ${token.access}")
 		val getAllDiet = RetrofitAPI.api.getAllDiet("Bearer ${token.access}")
 		val getAllWater = RetrofitAPI.api.getAllWater("Bearer ${token.access}")
@@ -177,7 +177,7 @@ object RegisterUtil {
 		val getAllGoal = RetrofitAPI.api.getAllGoal("Bearer ${token.access}")
 
 		Log.d(TAG, "getUserUid: ${getUserUid.isSuccessful} / ${getUserUid.body()}")
-		Log.d(TAG, "getProfile: ${getProfile.isSuccessful} / ${getProfile.body()}")
+//		Log.d(TAG, "getProfile: ${getProfile.isSuccessful} / ${getProfile.body()}")
 		Log.d(TAG, "getAllFood: ${getAllFood.isSuccessful} / ${getAllFood.body()}")
 		Log.d(TAG, "getAllDiet: ${getAllDiet.isSuccessful} / ${getAllDiet.body()}")
 		Log.d(TAG, "getAllWater: ${getAllWater.isSuccessful} / ${getAllWater.body()}")
@@ -188,23 +188,23 @@ object RegisterUtil {
 		Log.d(TAG, "getMedicine: ${getMedicine.isSuccessful} / ${getMedicine.body()}")
 		Log.d(TAG, "getAllGoal: ${getAllGoal.isSuccessful} / ${getAllGoal.body()}")
 
-		if(getUserUid.isSuccessful && getProfile.isSuccessful && getAllFood.isSuccessful && getAllDiet.isSuccessful && getAllWater.isSuccessful && getAllActivity.isSuccessful &&
+		if(getUserUid.isSuccessful && getAllFood.isSuccessful && getAllDiet.isSuccessful && getAllWater.isSuccessful && getAllActivity.isSuccessful &&
 			getAllWorkout.isSuccessful && getAllBody.isSuccessful && getAllSleep.isSuccessful && getMedicine.isSuccessful && getAllGoal.isSuccessful) {
 
 			var getUser = dataManager.getUser(user.type, user.email)
 			val getToken = dataManager.getToken()
-			val gender = if(getProfile.body()!!.gender == null) Constant.Female.name else getProfile.body()!!.gender
-			val birthday = if(getProfile.body()!!.birth == null) LocalDate.now().toString() else getProfile.body()!!.birth
-			val height = if(getProfile.body()!!.height == null) 0.0 else getProfile.body()!!.height!!.toDouble()
-			val weight = if(getProfile.body()!!.weight == null) 0.0 else getProfile.body()!!.weight!!.toDouble()
+//			val gender = if(getProfile.body()!!.gender == null) Constant.Female.name else getProfile.body()!!.gender
+//			val birthday = if(getProfile.body()!!.birth == null) LocalDate.now().toString() else getProfile.body()!!.birth
+//			val height = if(getProfile.body()!!.height == null) 0.0 else getProfile.body()!!.height!!.toDouble()
+//			val weight = if(getProfile.body()!!.weight == null) 0.0 else getProfile.body()!!.weight!!.toDouble()
 
 			// 사용자 정보 저장
-			if(getUser.createdAt == "") {
-				dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getUserUid.body()!!.uid,
-					name = getProfile.body()!!.name, gender = gender, birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
+			if(getUser.email == "") {
+				dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getUserUid.body()!!.id,
+					name = "", gender = "", birthday = LocalDate.now().toString(), profileImage = "", height = 0.0, weight = 0.0))
 			}else {
-				dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getUserUid.body()!!.uid,
-					name = getProfile.body()!!.name,	gender = gender, birthday = birthday, height = height, weight = weight, createdAt = getProfile.body()!!.createdAt.substring(0, 10)))
+				dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getUserUid.body()!!.id,
+					name = "", gender = "", birthday = LocalDate.now().toString(), profileImage = "", height = 0.0, weight = 0.0))
 			}
 
 			getUser = dataManager.getUser(user.type, user.email)
@@ -234,7 +234,7 @@ object RegisterUtil {
 			}
 
 			for(i in 0 until getAllDiet.body()!!.size) {
-				dataManager.insertDailyFood(Food(uid = getAllDiet.body()!![i].uid, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].name,
+				dataManager.insertDailyFood(Food(uid = getAllDiet.body()!![i].id, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].name,
 					unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, kcal = getAllDiet.body()!![i].calorie,
 					carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein, fat = getAllDiet.body()!![i].fat,
 					count = getAllDiet.body()!![i].quantity, createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
@@ -291,9 +291,8 @@ object RegisterUtil {
 				val endDate = LocalDate.parse(getMedicine.body()!![i].ends.substring(0, 10))
 				val count = startDate.until(endDate, ChronoUnit.DAYS) + 1
 
-				val drug = Drug(uid = getMedicine.body()!![i].id, type = getMedicine.body()!![i].category, name = getMedicine.body()!![i].name,
-					amount = getMedicine.body()!![i].amount, unit = getMedicine.body()!![i].unit, count = count.toInt(),
-					startDate = startDate.toString(), endDate = endDate.toString())
+				val drug = Drug(uid = getMedicine.body()!![i].id, type = getMedicine.body()!![i].category, name = getMedicine.body()!![i].name,amount = getMedicine.body()!![i].amount,
+					unit = getMedicine.body()!![i].unit, count = count.toInt(),startDate = startDate.toString(), endDate = endDate.toString())
 
 				val getMedicineTime = RetrofitAPI.api.getAllMedicineTime("Bearer ${token.access}", drug.uid)
 				if(getMedicineTime.isSuccessful) {
@@ -313,7 +312,7 @@ object RegisterUtil {
 			}
 
 			for(i in 0 until getAllGoal.body()!!.size) {
-				dataManager.insertGoal(Goal(uid = getAllGoal.body()!![i].uid, food = getAllGoal.body()!![i].kcalOfDiet, waterVolume=getAllGoal.body()!![i].waterAmountOfCup,
+				dataManager.insertGoal(Goal(uid = getAllGoal.body()!![i].id, food = getAllGoal.body()!![i].kcalOfDiet, waterVolume=getAllGoal.body()!![i].waterAmountOfCup,
 					water=getAllGoal.body()!![i].waterIntake, exercise=getAllGoal.body()!![i].kcalOfWorkout, body=getAllGoal.body()!![i].weight,
 					sleep=getAllGoal.body()!![i].sleep, drug=getAllGoal.body()!![i].medicineIntake, createdAt = getAllGoal.body()!![i].date.substring(0, 10)))
 			}
@@ -333,10 +332,10 @@ object RegisterUtil {
 		var getUser = dataManager.getUser(user.type, user.email)
 
 		// 사용자 정보 저장
-		if(getUser.createdAt == "") {
-			dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, createdAt = LocalDate.now().toString(), isUpdated = 1))
+		if(getUser.email == "") {
+			dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, isUpdated = 1))
 		}else {
-			dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, createdAt = LocalDate.now().toString(), isUpdated = 1))
+			dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, isUpdated = 1))
 		}
 
 		getUser = dataManager.getUser(user.type, user.email)
@@ -375,18 +374,17 @@ object RegisterUtil {
 				for(i in 0 until getAllFood.body()!!.size) {
 					dataManager.insertFood(Food(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
 						amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
-						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
-						createdAt = LocalDate.now().toString())
+						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
+						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(), createdAt = LocalDate.now().toString())
 					)
 				}
 
 				for(i in 0 until getAllActivity.body()!!.size) {
 					dataManager.insertExercise(Exercise(registerType = TYPE_ADMIN, uid = getAllActivity.body()!![i].id, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
-						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(),
-						createdAt = LocalDate.now().toString()))
+						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(), createdAt = LocalDate.now().toString()))
 				}
 
-				dataManager.updateUserStr(USER, "uid", getUserUid.body()!!.uid, "id")
+				dataManager.updateUserStr(USER, "uid", getUserUid.body()!!.id, "id")
 
 				val getSync = dataManager.getSynced()
 				if(getSync == "") dataManager.insertSync(LocalDateTime.now().toString()) else dataManager.updateSync(LocalDateTime.now().toString())
@@ -412,18 +410,18 @@ object RegisterUtil {
 	}
 
 	fun registerTest(ctx: SignupActivity, dataManager: DataManager, user: User) {
-		val getUser = dataManager.getUser(user.type, user.email)
+		var getUser = dataManager.getUser(user.type, user.email)
 
 		// 사용자 정보 저장
-		if(getUser.createdAt == "") {
-			dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString()))
+		if(getUser.email == "") {
+			dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken))
 		}else {
-			dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken, createdAt = LocalDate.now().toString()))
+			dataManager.updateUser(User(type = user.type, email = user.email, idToken = user.idToken))
 		}
 
-		val getUser2 = dataManager.getUser(user.type, user.email)
+		getUser = dataManager.getUser(user.type, user.email)
 
-		MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser2.id) // 사용자 Id 저장
+		MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id) // 사용자 Id 저장
 
 		val dialog = Dialog(ctx)
 		dialog.setContentView(R.layout.dialog_signup)

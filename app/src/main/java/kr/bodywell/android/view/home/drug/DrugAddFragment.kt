@@ -259,7 +259,6 @@ class DrugAddFragment : Fragment() {
                val time = String.format("%02d", h)+":"+String.format("%02d", m)
 
                for(i in 0 until drugTimeList.size) {
-                  Log.d(CustomUtil.TAG, "drugTimeList: ${drugTimeList[i].time}")
                   if(drugTimeList[i].time == time) check = true
                }
 

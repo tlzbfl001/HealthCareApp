@@ -50,8 +50,8 @@ data class FoodResponse (
 )
 
 data class Usages (
-	@SerializedName("uid")
-	var uid: String = "",
+	@SerializedName("id")
+	var id: String = "",
 
 	@SerializedName("usageCount")
 	var usageCount: Int = 0,

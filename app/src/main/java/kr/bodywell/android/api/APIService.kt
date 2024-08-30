@@ -78,7 +78,7 @@ interface APIService {
 
 	@GET("users/check-email/{email}")
 	suspend fun getUserEmail(
-		@Path("email") uid: String
+		@Path("email") email: String
 	): Response<CheckResponse>
 
 	@GET("user")
@@ -91,18 +91,18 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<Void>
 
-	@GET("user/profile")
+	@GET("profiles/{id}")
 	suspend fun getProfile(
 		@Header("Authorization") token: String
 	): Response<ProfileResponse>
 
-	@PATCH("user/profile")
+	@PATCH("profiles/{id}")
 	suspend fun updateProfile(
 		@Header("Authorization") token: String,
 		@Body dto: ProfileDTO
 	): Response<ProfileResponse>
 
-	@POST("user/profile/sync")
+	@POST("profiles/sync")
 	suspend fun syncProfile(
 		@Header("Authorization") token: String,
 		@Body dto: SyncDTO
@@ -124,10 +124,10 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<FoodResponse>>
 
-	@GET("foods/{uid}")
+	@GET("foods/{id}")
 	suspend fun getFood(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String
+		@Path("id") id: String
 	): Response<FoodResponse>
 
 	@POST("foods")
@@ -142,17 +142,17 @@ interface APIService {
 		@Body dto: SyncDTO
 	): Response<SyncFoodResponse>
 
-	@PATCH("foods/{uid}")
+	@PATCH("foods/{id}")
 	suspend fun updateFood(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
+		@Path("id") id: String,
 		@Body dto: FoodUpdateDTO
 	): Response<FoodResponse>
 
-	@DELETE("foods/{uid}")
+	@DELETE("foods/{id}")
 	suspend fun deleteFood(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String
+		@Path("id") id: String
 	): Response<FoodResponse>
 
 	@GET("diets")
@@ -160,10 +160,10 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<DietResponse>>
 
-	@GET("diets/{uid}")
+	@GET("diets/{id}")
 	suspend fun getDiet(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String
+		@Path("id") id: String
 	): Response<DietResponse>
 
 	@POST("diets")
@@ -178,17 +178,17 @@ interface APIService {
 		@Body dto: SyncDTO
 	): Response<SyncDietsResponse>
 
-	@PATCH("diets/{uid}")
+	@PATCH("diets/{id}")
 	suspend fun updateDiets(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
+		@Path("id") id: String,
 		@Body dto: DietUpdateDTO
 	): Response<DietResponse>
 
-	@DELETE("diets/{uid}")
+	@DELETE("diets/{id}")
 	suspend fun deleteDiets(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String
+		@Path("id") id: String
 	): Response<DietResponse>
 
 	@GET("waters")
@@ -433,10 +433,10 @@ interface APIService {
 		@Body dto: SyncDTO
 	): Response<SyncGoalResponse>
 
-	@PATCH("goals/{uid}")
+	@PATCH("goals/{id}")
 	suspend fun updateGoal(
 		@Header("Authorization") token: String,
-		@Path("uid") uid: String,
+		@Path("id") id: String,
 		@Body dto: GoalUpdateDTO
 	): Response<GoalResponse>
 }

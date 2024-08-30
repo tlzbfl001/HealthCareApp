@@ -91,7 +91,7 @@ class FoodDailyEditFragment : Fragment() {
       binding.tvName.text = getDailyFood.name
       count = getDailyFood.count
 
-      val getImage = dataManager.getImage(dailyFoodId)
+      val getImage = dataManager.getImage(getDailyFood.name)
       for(i in 0 until getImage.size) imageList.add(getImage[i])
 
       binding.clBack.setOnClickListener {
@@ -154,7 +154,7 @@ class FoodDailyEditFragment : Fragment() {
          for(i in 0 until imageList.size) {
             if(imageList[i].bitmap != null) {
                val result = saveImage(requireActivity(), imageList[i].bitmap!!)
-               if(result != "") dataManager.insertImage(Image(type = type, dataId = dailyFoodId, imageUri = result, createdAt = selectedDate.toString()))
+               if(result != "") dataManager.insertImage(Image(type = type, dataName = imageList[i].dataName, imageUri = result, createdAt = selectedDate.toString()))
             }
          }
 
@@ -225,7 +225,7 @@ class FoodDailyEditFragment : Fragment() {
             CAMERA_REQUEST_CODE -> {
                if(data!!.extras?.get("data") != null){
                   val bitmap = data.extras?.get("data") as Bitmap
-                  imageList.add(Image(type = type, dataId = dailyFoodId, bitmap = bitmap, createdAt = selectedDate.toString()))
+                  imageList.add(Image(type = type, dataName = getDailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
                   photoView()
                }
                dialog!!.dismiss()
@@ -234,7 +234,7 @@ class FoodDailyEditFragment : Fragment() {
                val fileUri = data!!.data
                try{
                   val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, fileUri)
-                  imageList.add(Image(type = type, dataId = dailyFoodId, bitmap = bitmap,  createdAt = selectedDate.toString()))
+                  imageList.add(Image(type = type, dataName = getDailyFood.name, bitmap = bitmap,  createdAt = selectedDate.toString()))
                   photoView()
                }catch (e: Exception) {
                   e.printStackTrace()

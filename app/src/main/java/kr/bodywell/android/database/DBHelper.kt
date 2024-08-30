@@ -26,15 +26,15 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val UNUSED = "unused"
       const val SYNC_TIME = "syncTime"
       const val USER_ID = "userId"
-      const val TYPE_ADMIN = "Admin"
-      const val TYPE_USER = "User"
+      const val TYPE_ADMIN = "ADMIN"
+      const val TYPE_USER = "USER"
       const val CREATED_AT = "createdAt"
       const val IS_UPDATED = "isUpdated"
    }
 
    override fun onCreate(db: SQLiteDatabase) {
       val user = "create table $USER(id integer primary key autoincrement, type text, email text, idToken text, accessToken text, uid text, name text, gender text, " +
-         "birthday text, profileImage text, height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, $CREATED_AT text, $IS_UPDATED integer);"
+         "birthday text, profileImage text, height real, weight real, weightGoal real, kcalGoal real, waterGoal integer, waterUnit integer, $IS_UPDATED integer);"
       db.execSQL(user)
 
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
@@ -84,7 +84,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "exercise integer, body real, sleep integer, drug integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(goal)
 
-      val image = "create table $IMAGE(id integer primary key autoincrement, $USER_ID integer, type text, dataId integer, imageUri text, $CREATED_AT text);"
+      val image = "create table $IMAGE(id integer primary key autoincrement, $USER_ID integer, type text, dataName text, imageUri text, $CREATED_AT text);"
       db.execSQL(image)
 
       val unused = "create TABLE $UNUSED(id integer primary key autoincrement, $USER_ID integer, type text, value text, drugUid text, $CREATED_AT text);"

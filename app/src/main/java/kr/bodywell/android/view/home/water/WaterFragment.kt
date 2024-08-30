@@ -59,21 +59,18 @@ class WaterFragment : Fragment() {
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
 
       btnSave.setOnClickListener {
-         if(etGoal.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(etGoal.text.toString().toInt() < 1) {
-            Toast.makeText(requireActivity(), "1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(etGoal.text.toString().toInt() > 100) {
+         if(etGoal.text.toString() != "" && etGoal.text.toString().toInt() > 100) {
             Toast.makeText(requireActivity(), "목표 섭취물은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(etVolume.text.toString() != "") volume = etVolume.text.toString().toInt()
+            val water = if(etGoal.text.toString() != "") etGoal.text.toString().toInt() else 5
+            volume = if(etVolume.text.toString() != "") etVolume.text.toString().toInt() else 200
 
             if(dailyGoal.createdAt == "") {
-               dataManager.insertGoal(Goal(waterVolume = etVolume.text.toString().toInt(), water = etGoal.text.toString().toInt(), createdAt = selectedDate.toString()))
+               dataManager.insertGoal(Goal(waterVolume = volume, water = water, createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
-               dataManager.updateInt(GOAL, "waterVolume", etVolume.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(GOAL, WATER, etGoal.text.toString().toInt(), selectedDate.toString())
+               dataManager.updateInt(GOAL, "waterVolume", volume, selectedDate.toString())
+               dataManager.updateInt(GOAL, WATER, water, selectedDate.toString())
                dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 
@@ -126,7 +123,7 @@ class WaterFragment : Fragment() {
       }
 
       binding.ivPlus.setOnClickListener {
-         if(count < 100) {
+         if(count <= 100) {
             count += 1
 
             binding.rv.visibility = View.VISIBLE

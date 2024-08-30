@@ -97,7 +97,9 @@ class ExerciseAddFragment : Fragment() {
         }
 
         binding.cvSave.setOnClickListener {
-            if(binding.etTime.text.toString().toInt() == 0 || binding.etKcal.text.toString().toInt() == 0) {
+            if(binding.etTime.text.toString() == "" || binding.etKcal.text.toString() == "") {
+                Toast.makeText(requireActivity(), "데이터를 전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }else if(binding.etTime.text.toString().toInt() == 0 || binding.etKcal.text.toString().toInt() == 0) {
                 Toast.makeText(requireActivity(), "시간, 칼로리를 1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else {
                 dataManager.insertDailyExercise(Exercise(name = getExercise.name, intensity = intensity.name, workoutTime = binding.etTime.text.toString().toInt(),

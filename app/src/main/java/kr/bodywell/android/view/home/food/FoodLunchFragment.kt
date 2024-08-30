@@ -86,16 +86,16 @@ class FoodLunchFragment : Fragment() {
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            dataManager.deleteItem(DAILY_FOOD, "id", dataList[pos].id)
-                            dataManager.deleteItem(IMAGE, "dataId", dataList[pos].id)
-
                             if (imageList.size > 0) {
-                                imageList.stream().filter { x -> x.dataId == dataList[pos].id
-                                }.collect(Collectors.toList()).forEach { x ->
+                                imageList.stream().filter { x -> x.dataName == dataList[pos].name }
+                                    .collect(Collectors.toList()).forEach { x ->
                                     imageList.remove(x)
                                 }
                                 photoAdapter!!.notifyDataSetChanged()
                             }
+
+                            dataManager.deleteItem(DAILY_FOOD, "id", dataList[pos].id)
+                            dataManager.deleteImage(type, dataList[pos].name, selectedDate.toString())
 
                             if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_FOOD, value = dataList[pos].uid, createdAt = selectedDate.toString()))
                             dataList.removeAt(pos)

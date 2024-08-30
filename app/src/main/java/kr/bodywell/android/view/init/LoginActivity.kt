@@ -104,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
             if(it.isSuccessful) {
                val getUser = dataManager.getUser(Constant.GOOGLE.name, it.result.email.toString())
-               if(getUser.createdAt == "") { // 초기 가입
+               if(getUser.email == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      val user = User(type = Constant.GOOGLE.name, email = it.result.email!!, idToken = it.result.idToken!!)
 //                     val intent = Intent(this, SignupActivity::class.java)
@@ -136,7 +136,7 @@ class LoginActivity : AppCompatActivity() {
                override fun onSuccess(result: NidProfileResponse) {
                   val getUser = dataManager.getUser(Constant.NAVER.name, result.profile?.email.toString())
 
-                  if(getUser.createdAt == "") { // 회원 가입
+                  if(getUser.email == "") { // 회원 가입
                      if(NaverIdLoginSDK.getAccessToken() != "" && NaverIdLoginSDK.getAccessToken() != null && result.profile?.email != "" && result.profile?.email != null) {
                         val user = User(type = Constant.NAVER.name, accessToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!)
 //                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
@@ -203,7 +203,7 @@ class LoginActivity : AppCompatActivity() {
          if(error == null) {
             val getUser = dataManager.getUser(Constant.KAKAO.name, user?.kakaoAccount!!.email.toString())
 
-            if(getUser.createdAt == "") { // 회원 가입
+            if(getUser.email == "") { // 회원 가입
                if(token.idToken != "" && token.idToken != null && user.kakaoAccount?.email != "" && user.kakaoAccount?.email != null) {
                   val data = User(type = Constant.KAKAO.name, idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!)
 //                  val intent = Intent(this, SignupActivity::class.java)

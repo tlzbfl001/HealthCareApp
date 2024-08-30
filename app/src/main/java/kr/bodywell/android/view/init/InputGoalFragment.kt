@@ -78,7 +78,7 @@ class InputGoalFragment : Fragment() {
          if(binding.etWeightGoal.text.toString() != "") weightGoal = binding.etWeightGoal.text.toString().toDouble()
          if(binding.etKcalGoal.text.toString() != "") kcalGoal = binding.etKcalGoal.text.toString().toInt()
          val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else binding.etWaterUnit.text.toString().toInt()
-         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 6 else binding.etWaterGoal.text.toString().toInt()
+         val waterGoal = if(binding.etWaterGoal.text.toString() == "") 5 else binding.etWaterGoal.text.toString().toInt()
 
          dataManager.updateUserDouble("weightGoal", weightGoal)
          dataManager.updateUserInt("kcalGoal", kcalGoal)

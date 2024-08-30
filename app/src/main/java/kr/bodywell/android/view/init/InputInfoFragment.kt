@@ -8,7 +8,9 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,15 +18,23 @@ import android.widget.DatePicker
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputInfoBinding
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.deleteFile
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.saveImage
+import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.saveFile
@@ -37,9 +47,10 @@ class InputInfoFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var dataManager: DataManager
+   private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var dialog: Dialog? = null
    private var pressedTime: Long = 0
-   private var image: String? = ""
+   private var bitmap: Bitmap? = null
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -71,6 +82,12 @@ class InputInfoFragment : Fragment() {
    ): View {
       _binding = FragmentInputInfoBinding.inflate(layoutInflater)
 
+      pLauncher = registerForActivityResult(
+         ActivityResultContracts.RequestMultiplePermissions()
+      ){
+
+      }
+
       dataManager = DataManager(activity)
       dataManager.open()
 
@@ -79,29 +96,35 @@ class InputInfoFragment : Fragment() {
          true
       }
 
-//      binding.ivProfile.setOnClickListener {
-//         if(cameraRequest(requireActivity())) {
-//            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-//            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
-//
-//            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-//            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
-//
-//            clCamera.setOnClickListener {
-//               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//               startActivityForResult(intent, CAMERA_REQUEST_CODE)
-//            }
-//
-//            clPhoto.setOnClickListener {
-//               val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-//               intent.type = "image/*"
-//               startActivityForResult(intent, STORAGE_REQUEST_CODE)
-//            }
-//
-//            dialog!!.setContentView(bottomSheetView)
-//            dialog!!.show()
-//         }
-//      }
+      binding.ivProfile.setOnClickListener {
+         if(PermissionUtil.checkCameraPermission(requireActivity())) {
+            dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
+            val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
+
+            val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
+            val clPhoto = bottomSheetView.findViewById<ConstraintLayout>(R.id.clPhoto)
+
+            clCamera.setOnClickListener {
+               val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+               startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            }
+
+            clPhoto.setOnClickListener {
+               val intent = Intent(Intent.ACTION_PICK) // 갤러리에서 이미지를 선택하는 Intent 생성
+               intent.type = "image/*"
+               startActivityForResult(intent, STORAGE_REQUEST_CODE)
+            }
+
+            dialog!!.setContentView(bottomSheetView)
+            dialog!!.show()
+         }else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+               pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_2)
+            }else {
+               pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_1)
+            }
+         }
+      }
 
       binding.tvBirthday.setOnClickListener {
          val dialog = Dialog(requireActivity())
@@ -129,7 +152,6 @@ class InputInfoFragment : Fragment() {
       binding.cvContinue.setOnClickListener {
          val name = if(binding.etName.text.toString() == "") "바디웰" else binding.etName.text.toString()
          val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
-         val image = if(image == "") null else image
 
          if(binding.etName.text.length in 1..1) {
             Toast.makeText(context, "이름은 최소 2자 ~ 최대 15자 이내로 입력하여야합니다.", Toast.LENGTH_SHORT).show()
@@ -138,7 +160,13 @@ class InputInfoFragment : Fragment() {
          }else {
             dataManager.updateUserStr(USER, "name", name, "id")
             dataManager.updateUserStr(USER, "birthday", birthday, "id")
-            dataManager.updateUserStr(USER, "profileImage", image!!, "id")
+
+            if(bitmap != null) {
+               val data = dataManager.getUser().profileImage
+               deleteFile(requireActivity(), data!!)
+               val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
+               if(result != "") dataManager.updateUserStr(USER, "profileImage", result, "id")
+            }
 
             requireActivity().supportFragmentManager.beginTransaction().apply {
                replace(R.id.inputFrame, InputBodyFragment())
@@ -152,31 +180,23 @@ class InputInfoFragment : Fragment() {
 
    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
       super.onActivityResult(requestCode, resultCode, data)
-
       if(resultCode == Activity.RESULT_OK){
          when(requestCode){
             CAMERA_REQUEST_CODE -> {
                if(data!!.extras?.get("data") != null){
-                  val img = data.extras?.get("data") as Bitmap
-                  val uri = saveFile(requireActivity(), "image/jpeg", img)
-
-                  image = uri.toString()
-
-                  binding.ivProfile.setImageURI(Uri.parse(image))
-
-                  dialog!!.dismiss()
+                  bitmap = data.extras?.get("data") as Bitmap
+                  binding.ivProfile.setImageBitmap(bitmap)
                }
+               dialog!!.dismiss()
             }
             STORAGE_REQUEST_CODE -> {
-               val uri = data!!.data
-
-               val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-               requireActivity().contentResolver.takePersistableUriPermission(uri!!, takeFlags) // 영구 권한 얻기
-
-               image = uri.toString()
-
-               binding.ivProfile.setImageURI(Uri.parse(image))
-
+               val fileUri = data!!.data
+               try{
+                  bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, fileUri)
+                  binding.ivProfile.setImageBitmap(bitmap)
+               }catch (e: Exception) {
+                  e.printStackTrace()
+               }
                dialog!!.dismiss()
             }
          }

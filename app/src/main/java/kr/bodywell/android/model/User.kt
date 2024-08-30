@@ -10,11 +10,11 @@ data class User(
     var email: String = "",
     var idToken: String = "",
     var accessToken: String = "",
-    var uid: String? = "",
-    var name: String? = "",
+    var uid: String = "",
+    var name: String = "",
     var gender: String? = "",
     var birthday: String? = "",
-    var profileImage: String? = "",
+    var profileImage: String = "",
     var height: Double? = 0.0,
     var weight: Double? = 0.0,
     var weightGoal: Double = 0.0,
@@ -22,6 +22,5 @@ data class User(
     var waterGoal: Int = 0,
     var waterUnit: Int = 0,
     var measureHeight: Int = 0,
-    var createdAt: String = "",
     var isUpdated: Int = 0
 ) : Parcelable

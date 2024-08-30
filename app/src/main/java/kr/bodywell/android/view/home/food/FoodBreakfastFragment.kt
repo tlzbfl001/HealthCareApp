@@ -3,6 +3,7 @@ package kr.bodywell.android.view.home.food
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,9 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.deleteFile
+import kr.bodywell.android.util.ViewModelUtil
 import java.util.stream.Collectors
 
 class FoodBreakfastFragment : Fragment() {
@@ -52,7 +56,7 @@ class FoodBreakfastFragment : Fragment() {
 
       val getImage = dataManager.getImage(type, selectedDate.toString())
 
-      for(i in 0 until getImage.size) imageList.add(Image(id = getImage[i].id, imageUri = getImage[i].imageUri))
+      for(i in 0 until getImage.size) imageList.add(Image(id = getImage[i].id, dataName = getImage[i].dataName, imageUri = getImage[i].imageUri))
 
       if(imageList.size > 0) {
          photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
@@ -86,15 +90,16 @@ class FoodBreakfastFragment : Fragment() {
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
                      if(imageList.size > 0) {
-                        imageList.stream().filter { x -> x.dataId == dataList[pos].id }
+                        imageList.stream().filter { x -> x.dataName == dataList[pos].name }
                            .collect(Collectors.toList()).forEach { x ->
                               imageList.remove(x)
+                              deleteFile(requireActivity(), x.imageUri)
                            }
                         photoAdapter!!.notifyDataSetChanged()
                      }
 
                      dataManager.deleteItem(DAILY_FOOD, "id", dataList[pos].id)
-                     dataManager.deleteItem(IMAGE, "dataId", dataList[pos].id, "type", type)
+                     dataManager.deleteImage(type, dataList[pos].name, selectedDate.toString())
 
                      if(dataList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_FOOD, value = dataList[pos].uid, createdAt = selectedDate.toString()))
 
