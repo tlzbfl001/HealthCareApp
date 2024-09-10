@@ -1,0 +1,24 @@
+package kr.bodywell.test.service
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kr.bodywell.test.util.CustomUtil.resetAlarm
+
+class RestartAlarmReceiver : BroadcastReceiver() {
+    private val coroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
+    private lateinit var alarmReceiver: AlarmReceiver
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action.equals("android.intent.action.BOOT_COMPLETED")) {
+            alarmReceiver = AlarmReceiver()
+
+            coroutineScope.launch {
+                resetAlarm(context)
+            }
+        }
+    }
+}

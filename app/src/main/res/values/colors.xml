@@ -10,7 +10,7 @@
    <color name="black_white">#000000</color>
    <color name="light_grey_dark_grey">#F1F1F1</color>
    <color name="light_grey_grey">#D5D5D5</color>
-   <color name="light_grey_black">#F1F1F1</color>
+   <color name="light_grey_black">#B3F1F1F1</color>
    <color name="grey_white">#8F8686</color>
    <color name="grey_dark_grey">#7E7E7E</color>
    <color name="logo">#595858</color>
@@ -26,15 +26,15 @@
 
    <color name="food_grey">#FFF8F8</color>
    <color name="food_black">#FFF8F8</color>
-   <color name="water_grey">#EBF8FF</color>
+   <color name="water_grey">#F2FBFF</color>
    <color name="exercise_grey">#FFFBF3</color>
    <color name="exercise_black">#FFFBF3</color>
    <color name="exercise_button_grey">#FFE9BE</color>
    <color name="exercise_bar">#EE9700</color>
-   <color name="body_grey">#F9FFF3</color>
+   <color name="body_grey">#94ECFADD</color>
    <color name="body_black">#FAFFF5</color>
-   <color name="sleep_grey">#DA426698</color>
-   <color name="drug_grey">#F2EAFF</color>
+   <color name="sleep_grey">#B3426698</color>
+   <color name="drug_grey">#99F2EAFF</color>
    <color name="drug_black">#F2EAFF</color>
    <color name="drug_list">#ffffff</color>
    <color name="drug_add">#516AC3</color>

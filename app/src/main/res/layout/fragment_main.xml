@@ -251,8 +251,8 @@
          app:layout_constraintBottom_toTopOf="@id/clRow2">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clFood"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="127dp"
+            android:layout_height="127dp"
             android:layout_marginRight="20dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -266,7 +266,7 @@
                app:progress_stroke_cap="round"
                app:progress_background_color="@color/progress_base"
                app:progress_style="solid_line"
-               app:progress_stroke_width="12.4dp"
+               app:progress_stroke_width="12.2dp"
                app:progress_start_color="@color/food"
                app:progress_end_color="@color/food"
                app:progress_start_degree="90"
@@ -287,7 +287,7 @@
                   android:id="@+id/tvFoodTitle"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="식단"
+                  android:text="음식"
                   android:textColor="@color/black_white"
                   android:textSize="17dp"
                   app:layout_constraintTop_toTopOf="parent"
@@ -311,8 +311,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clWater"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="127dp"
+            android:layout_height="127dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clFood"
@@ -325,7 +325,7 @@
                app:progress_stroke_cap="round"
                app:progress_background_color="@color/progress_base"
                app:progress_style="solid_line"
-               app:progress_stroke_width="12.4dp"
+               app:progress_stroke_width="12.2dp"
                app:progress_start_color="@color/water"
                app:progress_end_color="@color/water"
                app:progress_start_degree="90"
@@ -380,8 +380,8 @@
          app:layout_constraintBottom_toTopOf="@id/clRow3">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clExercise"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="127dp"
+            android:layout_height="127dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -394,7 +394,7 @@
                app:progress_stroke_cap="round"
                app:progress_background_color="@color/progress_base"
                app:progress_style="solid_line"
-               app:progress_stroke_width="12.4dp"
+               app:progress_stroke_width="12.2dp"
                app:progress_start_color="@color/exercise"
                app:progress_end_color="@color/exercise"
                app:progress_start_degree="90"
@@ -440,8 +440,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clBody"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="127dp"
+            android:layout_height="127dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clExercise"
@@ -454,7 +454,7 @@
                app:progress_stroke_cap="round"
                app:progress_background_color="@color/progress_base"
                app:progress_style="solid_line"
-               app:progress_stroke_width="12.4dp"
+               app:progress_stroke_width="12.2dp"
                app:progress_start_color="@color/body"
                app:progress_end_color="@color/body"
                app:progress_start_degree="90"
@@ -509,8 +509,8 @@
          app:layout_constraintBottom_toBottomOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clSleep"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="127dp"
+            android:layout_height="127dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -523,7 +523,7 @@
                app:progress_stroke_cap="round"
                app:progress_background_color="@color/progress_base"
                app:progress_style="solid_line"
-               app:progress_stroke_width="12.4dp"
+               app:progress_stroke_width="12.2dp"
                app:progress_start_color="@color/sleep"
                app:progress_end_color="@color/sleep"
                app:progress_start_degree="90"
@@ -569,8 +569,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clDrug"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
+            android:layout_width="127dp"
+            android:layout_height="127dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/clSleep"
@@ -583,7 +583,7 @@
                app:progress_stroke_cap="round"
                app:progress_background_color="@color/progress_base"
                app:progress_style="solid_line"
-               app:progress_stroke_width="12.4dp"
+               app:progress_stroke_width="12.2dp"
                app:progress_start_color="@color/drug"
                app:progress_end_color="@color/drug"
                app:progress_start_degree="90"

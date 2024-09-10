@@ -4,7 +4,7 @@
    android:layout_width="match_parent"
    android:layout_height="match_parent"
    android:id="@+id/mainLayout"
-   android:background="@color/white_black">
+   android:background="@color/light_grey_black">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/clBack"
       android:layout_width="wrap_content"
@@ -38,64 +38,85 @@
       app:layout_constraintStart_toStartOf="@id/clBack"
       app:layout_constraintEnd_toEndOf="parent"/>
    <androidx.cardview.widget.CardView
-      android:id="@+id/cvPerm1"
-      android:layout_width="152dp"
+      android:id="@+id/cv1"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="40dp"
+      android:layout_marginTop="30dp"
       android:layout_marginLeft="25dp"
-      app:cardCornerRadius="9dp"
-      app:cardBackgroundColor="@color/light_grey_dark_grey"
+      android:layout_marginRight="25dp"
+      app:cardCornerRadius="15dp"
+      app:cardElevation="3dp"
+      app:cardBackgroundColor="@color/white_grey"
       app:layout_constraintTop_toBottomOf="@id/tvTitle"
-      app:layout_constraintStart_toStartOf="parent">
-      <TextView
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+      <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:text="앱 알림 설정"
-         android:textSize="15dp"
-         android:textAlignment="center"
-         android:textColor="@color/black_white"
-         android:layout_marginTop="8dp"
-         android:layout_marginBottom="8dp"/>
+         android:paddingTop="20dp"
+         android:paddingBottom="20dp"
+         android:paddingLeft="15dp"
+         android:paddingRight="15dp">
+         <TextView
+            android:id="@+id/tvAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="앱 알림 설정"
+            android:textSize="16dp"
+            android:textColor="@color/black_white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+         <TextView
+            android:id="@+id/tvPerm1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="꺼짐"
+            android:textSize="15dp"
+            android:textColor="@color/grey_white"
+            app:layout_constraintTop_toTopOf="@+id/tvAlarm"
+            app:layout_constraintBottom_toBottomOf="@id/tvAlarm"
+            app:layout_constraintEnd_toEndOf="parent"/>
+      </androidx.constraintlayout.widget.ConstraintLayout>
    </androidx.cardview.widget.CardView>
-   <TextView
-      android:id="@+id/tvPerm1"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginRight="25dp"
-      android:text="꺼짐"
-      android:textSize="15dp"
-      android:textColor="@color/black_white"
-      app:layout_constraintTop_toTopOf="@+id/cvPerm1"
-      app:layout_constraintBottom_toBottomOf="@id/cvPerm1"
-      app:layout_constraintEnd_toEndOf="parent"/>
    <androidx.cardview.widget.CardView
-      android:id="@+id/cvPerm2"
-      android:layout_width="152dp"
+      android:id="@+id/cv2"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="15dp"
-      app:cardCornerRadius="9dp"
-      app:cardBackgroundColor="@color/light_grey_dark_grey"
-      app:layout_constraintTop_toBottomOf="@id/cvPerm1"
-      app:layout_constraintStart_toStartOf="@id/cvPerm1">
-      <TextView
+      android:layout_marginLeft="25dp"
+      android:layout_marginRight="25dp"
+      app:cardCornerRadius="15dp"
+      app:cardElevation="3dp"
+      app:cardBackgroundColor="@color/white_grey"
+      app:layout_constraintTop_toBottomOf="@id/cv1"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+      <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:text="알람 및 리마인더 설정"
-         android:textSize="15dp"
-         android:textAlignment="center"
-         android:textColor="@color/black_white"
-         android:layout_marginTop="9dp"
-         android:layout_marginBottom="9dp"/>
+         android:paddingTop="20dp"
+         android:paddingBottom="20dp"
+         android:paddingLeft="15dp"
+         android:paddingRight="15dp">
+         <TextView
+            android:id="@+id/tvReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="알람 및 리마인더 설정"
+            android:textSize="16dp"
+            android:textColor="@color/black_white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+         <TextView
+            android:id="@+id/tvPerm2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="꺼짐"
+            android:textSize="15dp"
+            android:textColor="@color/grey_white"
+            app:layout_constraintTop_toTopOf="@+id/tvReminder"
+            app:layout_constraintBottom_toBottomOf="@id/tvReminder"
+            app:layout_constraintEnd_toEndOf="parent"/>
+      </androidx.constraintlayout.widget.ConstraintLayout>
    </androidx.cardview.widget.CardView>
-   <TextView
-      android:id="@+id/tvPerm2"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginRight="25dp"
-      android:text="꺼짐"
-      android:textSize="16dp"
-      android:textColor="@color/black_white"
-      app:layout_constraintTop_toTopOf="@+id/cvPerm2"
-      app:layout_constraintBottom_toBottomOf="@id/cvPerm2"
-      app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace 'kr.bodywell.android'
+    namespace 'kr.bodywell.test'
     compileSdk 34
 
     defaultConfig {
-        applicationId "kr.bodywell.android"
+        applicationId "kr.bodywell.test"
         minSdk 29
         targetSdk 34
-        versionCode 5
-        versionName "1.0.2"
+        versionCode 29
+        versionName "1.0.18"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -81,6 +81,5 @@ dependencies {
 
     implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
 
-    implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
 }

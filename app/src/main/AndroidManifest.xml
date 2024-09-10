@@ -65,10 +65,10 @@
       <activity
          android:name=".view.init.StartActivity"
          android:exported="true"
-         android:noHistory="true">
+         android:noHistory="true"
+         android:theme="@style/AppTheme.SplashScreen">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
-
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
@@ -88,7 +88,6 @@
          <intent-filter>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
          </intent-filter>
-
          <meta-data
             android:name="health_permissions"
             android:resource="@array/health_permissions" />
@@ -98,16 +97,13 @@
          android:exported="true">
          <intent-filter>
             <action android:name="android.intent.action.VIEW" />
-
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-
             <data
                android:host="oauth"
                android:scheme="@string/kakaoOauthHost" />
          </intent-filter>
       </activity>
-
       <receiver
          android:name=".service.AlarmReceiver"
          android:exported="false" />
@@ -119,5 +115,14 @@
             <action android:name="android.intent.action.BOOT_COMPLETED" />
          </intent-filter>
       </receiver>
+      <provider
+         android:name="androidx.core.content.FileProvider"
+         android:authorities="kr.bodywell.test.file_provider"
+         android:exported="false"
+         android:grantUriPermissions="true">
+         <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths"></meta-data>
+      </provider>
    </application>
 </manifest>
