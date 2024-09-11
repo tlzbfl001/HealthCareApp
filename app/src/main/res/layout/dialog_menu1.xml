@@ -107,7 +107,7 @@
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:src="@drawable/outline_delete"
-            android:layout_marginTop="17dp"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="23dp"
             app:tint="#888888"

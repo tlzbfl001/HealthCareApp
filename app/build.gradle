@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace 'kr.bodywell.test'
+    namespace 'kr.bodywell.android'
     compileSdk 34
 
     defaultConfig {
-        applicationId "kr.bodywell.test"
+        applicationId "kr.bodywell.android"
         minSdk 29
         targetSdk 34
-        versionCode 29
-        versionName "1.0.18"
+        versionCode 11
+        versionName "1.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
