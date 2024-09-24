@@ -9,8 +9,8 @@
        android:id="@+id/clBack"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:paddingLeft="25dp"
-       android:paddingRight="10dp"
+       android:paddingLeft="20dp"
+       android:paddingRight="20dp"
        app:layout_constraintTop_toTopOf="@id/tvTitle"
        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
        app:layout_constraintStart_toStartOf="parent">
@@ -27,21 +27,22 @@
          app:layout_constraintStart_toStartOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <TextView
-       android:id="@+id/tvTitle"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_marginTop="15dp"
-       android:text="복용약 리스트"
-       android:textSize="18dp"
-       android:textColor="@color/black_white"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"/>
+      android:id="@+id/tvTitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="복용약 리스트"
+      android:textSize="17dp"
+      android:textColor="@color/black_white"
+      android:fontFamily="@font/nanum"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"/>
    <androidx.cardview.widget.CardView
       android:id="@+id/cvAdd"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginRight="25dp"
+      android:layout_marginRight="20dp"
       app:cardBackgroundColor="#ACACAC"
       app:cardCornerRadius="8dp"
       app:cardElevation="0dp"
@@ -51,13 +52,14 @@
          android:id="@+id/tvAdd"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="4dp"
-         android:layout_marginBottom="4dp"
+         android:layout_marginTop="6dp"
+         android:layout_marginBottom="5dp"
          android:layout_marginLeft="14dp"
          android:layout_marginRight="14dp"
          android:text="추가"
          android:textSize="16dp"
-         android:textColor="@color/white"/>
+         android:textColor="@color/white"
+         android:fontFamily="@font/nanum"/>
    </androidx.cardview.widget.CardView>
    <ScrollView
        android:layout_width="match_parent"
@@ -72,13 +74,13 @@
           android:layout_height="match_parent"
           android:paddingBottom="20dp">
          <androidx.recyclerview.widget.RecyclerView
-             android:id="@+id/recyclerView"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintBottom_toBottomOf="parent"/>
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

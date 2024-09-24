@@ -51,8 +51,8 @@
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="9dp"
-            android:paddingBottom="9dp"
+            android:paddingTop="11dp"
+            android:paddingBottom="10dp"
             android:paddingRight="20dp">
             <TextView
                android:id="@+id/tvStart"
@@ -63,6 +63,7 @@
                android:text="시작"
                android:textColor="@color/white"
                android:textSize="16dp"
+               android:fontFamily="@font/nanum"
                app:layout_constraintBottom_toBottomOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent"

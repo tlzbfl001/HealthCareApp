@@ -6,9 +6,9 @@
     android:background="@color/transparent">
    <ImageView
        android:id="@+id/ivWater"
-       android:layout_width="40dp"
-       android:layout_height="53dp"
-       android:src="@drawable/water2"
+       android:layout_width="37dp"
+       android:layout_height="51dp"
+       android:src="@drawable/water"
        android:layout_marginTop="10dp"
        app:layout_constraintTop_toTopOf="parent"
        app:layout_constraintStart_toStartOf="parent"

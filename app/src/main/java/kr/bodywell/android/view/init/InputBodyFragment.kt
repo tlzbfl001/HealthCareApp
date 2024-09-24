@@ -26,7 +26,7 @@ class InputBodyFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var height = 163
    private var weight = 58
-   private var gender = Constant.Female.name
+   private var gender = Constant.FEMALE.name
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -72,7 +72,7 @@ class InputBodyFragment : Fragment() {
       binding.cvWoman.setOnClickListener {
          height = 163
          weight = 58
-         gender = Constant.Female.name
+         gender = Constant.FEMALE.name
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.parseColor("#aaaaaa"))
          binding.tvMan.setTextColor(Color.BLACK)
@@ -86,7 +86,7 @@ class InputBodyFragment : Fragment() {
       binding.cvMan.setOnClickListener {
          height = 173
          weight = 68
-         gender = Constant.Male.name
+         gender = Constant.MALE.name
          binding.cvMan.setCardBackgroundColor(Color.parseColor("#9F98FF"))
          binding.ivMan.imageTintList = ColorStateList.valueOf(Color.WHITE)
          binding.tvMan.setTextColor(Color.WHITE)

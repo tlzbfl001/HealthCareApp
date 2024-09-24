@@ -6,10 +6,10 @@
    <androidx.cardview.widget.CardView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="2dp"
-      android:layout_marginLeft="25dp"
-      android:layout_marginRight="25dp"
-      android:layout_marginBottom="10dp"
+      android:layout_marginTop="4dp"
+      android:layout_marginLeft="20dp"
+      android:layout_marginRight="20dp"
+      android:layout_marginBottom="8dp"
       app:cardBackgroundColor="@color/white_grey"
       app:cardElevation="3dp"
       app:cardCornerRadius="20dp"
@@ -31,6 +31,7 @@
             android:text="text"
             android:textSize="12dp"
             android:textColor="@color/black_white"
+            android:fontFamily="@font/nanum"
             app:layout_constraintTop_toTopOf="@id/cvEdit"
             app:layout_constraintBottom_toBottomOf="@id/cvEdit"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -48,13 +49,14 @@
             <TextView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_marginTop="3dp"
-               android:layout_marginBottom="3dp"
+               android:layout_marginTop="5dp"
+               android:layout_marginBottom="4dp"
                android:layout_marginLeft="11dp"
                android:layout_marginRight="11dp"
                android:text="수정"
                android:textSize="12dp"
-               android:textColor="@color/white"/>
+               android:textColor="@color/white"
+               android:fontFamily="@font/nanum"/>
          </androidx.cardview.widget.CardView>
          <ImageView
             android:id="@+id/ivAlarm"
@@ -80,13 +82,14 @@
             android:id="@+id/tvName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:text="text"
             android:textSize="17dp"
             android:textColor="@color/black_white"
             android:textStyle="bold"
             android:singleLine="true"
             android:lines="1"
+            android:fontFamily="@font/nanum_bold"
             app:layout_constraintTop_toBottomOf="@id/cvEdit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -103,11 +106,12 @@
             android:id="@+id/tvPeriod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:text="text"
             android:textSize="14dp"
             android:textColor="@color/black_white"
+            android:fontFamily="@font/nanum"
             app:layout_constraintTop_toBottomOf="@id/tvName"
             app:layout_constraintStart_toEndOf="@id/ivOval1"/>
          <ImageView
@@ -128,13 +132,14 @@
             android:text="text"
             android:textSize="14dp"
             android:textColor="@color/black_white"
+            android:fontFamily="@font/nanum"
             app:layout_constraintTop_toBottomOf="@id/tvPeriod"
             app:layout_constraintStart_toEndOf="@id/ivOval2"/>
          <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="7dp"
             app:layout_constraintTop_toBottomOf="@id/tvCount"
             app:layout_constraintStart_toStartOf="parent"/>
          <ImageView

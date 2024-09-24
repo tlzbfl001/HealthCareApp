@@ -428,13 +428,13 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun chartCommon(chart: CombinedChart, xVal: Array<String>) {
+      chart.setExtraOffsets(8f, 12f, 15f, 10f)
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
       chart.isClickable = false
       chart.isHighlightPerDragEnabled = false
       chart.isHighlightPerTapEnabled = false
-      chart.setExtraOffsets(12f, 15f, 15f, 10f)
       chart.setVisibleXRangeMaximum(7f)
       chart.animateY(1000)
       chart.notifyDataSetChanged()

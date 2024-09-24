@@ -91,41 +91,4 @@ object PermissionUtil {
 
         return result
     }
-
-    @SuppressLint("SimpleDateFormat")
-    fun randomFileName(): String {
-        return SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis())
-    }
-
-    fun saveFile(context: Context, mimeType:String, bitmap: Bitmap): Uri?{
-        // MediaStore 에 파일명, mimeType 을 지정
-        val cv = ContentValues()
-        cv.put(MediaStore.Images.Media.DISPLAY_NAME, randomFileName())
-        cv.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
-        cv.put(MediaStore.Images.Media.IS_PENDING, 1)
-
-        // MediaStore 에 파일을 저장
-        val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
-        try {
-            if(uri != null){
-                val descriptor = context.contentResolver.openFileDescriptor(uri, "w")
-                val fos = FileOutputStream(descriptor?.fileDescriptor)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-
-                fos.close()
-                cv.clear()
-
-                cv.put(MediaStore.Images.Media.IS_PENDING, 0)
-                context.contentResolver.update(uri, cv, null, null)
-            }
-        } catch(e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return uri
-    }
 }

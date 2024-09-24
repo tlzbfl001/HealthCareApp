@@ -157,8 +157,8 @@ object CustomUtil {
          file.createNewFile() // 새 파일 생성
          val fos = FileOutputStream(file)
 
-         if(bitmap.width > 500) {
-            uploadBitmap = Bitmap.createScaledBitmap(bitmap, 500, bitmap.height*500/bitmap.width, true)
+         if(bitmap.width > 800) {
+            uploadBitmap = Bitmap.createScaledBitmap(bitmap, 800, bitmap.height*800/bitmap.width, true)
             uploadBitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos)
          }else {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos)

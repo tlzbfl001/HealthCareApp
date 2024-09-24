@@ -62,15 +62,15 @@ class WaterFragment : Fragment() {
          if(etGoal.text.toString() != "" && etGoal.text.toString().toInt() > 100) {
             Toast.makeText(requireActivity(), "목표 섭취물은 100을 넘을 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            val water = if(etGoal.text.toString() != "") etGoal.text.toString().toInt() else 5
+            val goal = if(etGoal.text.toString() != "") etGoal.text.toString().toInt() else 5
             volume = if(etVolume.text.toString() != "") etVolume.text.toString().toInt() else 200
 
             if(dailyGoal.createdAt == "") {
-               dataManager.insertGoal(Goal(waterVolume = volume, water = water, createdAt = selectedDate.toString()))
+               dataManager.insertGoal(Goal(waterVolume = volume, water = goal, createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateInt(GOAL, "waterVolume", volume, selectedDate.toString())
-               dataManager.updateInt(GOAL, WATER, water, selectedDate.toString())
+               dataManager.updateInt(GOAL, WATER, goal, selectedDate.toString())
                dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
             }
 

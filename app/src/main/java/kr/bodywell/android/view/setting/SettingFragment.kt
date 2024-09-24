@@ -240,7 +240,7 @@ class SettingFragment : Fragment() {
 
    private fun userProfile() {
       if(getUser.name != "") binding.tvName.text = getUser.name
-      if(getUser.profileImage != "") {
+      if(getUser.profileImage != null && getUser.profileImage != "") {
          val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부 저장소에 저장되어 있는 이미지 경로
          val bm = BitmapFactory.decodeFile(imgPath)
          binding.ivUser.setImageBitmap(bm)
@@ -255,7 +255,7 @@ class SettingFragment : Fragment() {
          var age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
          if(getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
 
-         val gender = if(getUser.gender == Constant.Male.name) "남" else "여"
+         val gender = if(getUser.gender == Constant.MALE.name) "남" else "여"
 
          binding.tvAge.text = "만${age}세 / $gender"
       }
@@ -277,11 +277,6 @@ class SettingFragment : Fragment() {
    }
 
    private fun logoutProcess() {
-      val alarmReceiver = AlarmReceiver()
-      val getDrugId = dataManager.getDrugId()
-
-      for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
-
       MyApp.prefs.removePrefs()
 
       requireActivity().runOnUiThread {
@@ -326,7 +321,21 @@ class SettingFragment : Fragment() {
       dataManager.deleteTable(GOAL, USER_ID)
       dataManager.deleteTable(IMAGE, USER_ID)
       dataManager.deleteTable(UNUSED, USER_ID)
-      logoutProcess()
+
+      val alarmReceiver = AlarmReceiver()
+      val getDrugId = dataManager.getDrugId()
+
+      for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
+
+      MyApp.prefs.removePrefs()
+
+      requireActivity().runOnUiThread {
+         Toast.makeText(context, "탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+      }
+
+      finishAffinity(requireActivity())
+      startActivity(Intent(requireActivity(), LoginActivity::class.java))
+      exitProcess(0)
    }
 
    override fun onDetach() {

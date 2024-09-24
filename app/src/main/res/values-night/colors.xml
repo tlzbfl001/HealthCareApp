@@ -5,6 +5,7 @@
    <color name="white_grey30">#4DB5B5B5</color>
    <color name="white_trans5">#0DFFFFFF</color>
    <color name="white_grey">#515151</color>
+   <color name="white_dark_grey">#373737</color>
    <color name="white_light_grey">#AAAAAA</color>
    <color name="white_transparent">#00FFFFFF</color>
    <color name="black_white">#ffffff</color>

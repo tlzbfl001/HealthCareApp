@@ -40,7 +40,9 @@ class StartActivity : AppCompatActivity() {
       val dataManager = DataManager(this)
       dataManager.open()
 
-      if(MyApp.prefs.getUserId() < 1) {
+      val getUser = dataManager.getUser()
+
+      if(MyApp.prefs.getUserId() < 1 || getUser.email == "") {
          startActivity(Intent(this, InitActivity::class.java))
       }else {
          startActivity(Intent(this, MainActivity::class.java))

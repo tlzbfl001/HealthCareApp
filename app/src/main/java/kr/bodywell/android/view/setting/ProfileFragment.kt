@@ -60,7 +60,7 @@ class ProfileFragment : Fragment() {
 	private var bitmap: Bitmap? = null
 	private var pictureFlag = 0
 	private var dialog: BottomSheetDialog? = null
-	private var gender = Constant.Female.name
+	private var gender = Constant.FEMALE.name
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -91,14 +91,14 @@ class ProfileFragment : Fragment() {
 
 		if(getUser.name != "") binding.etName.setText(getUser.name)
 
-		if(getUser.profileImage != "") {
+		if(getUser.profileImage != null && getUser.profileImage != "") {
 			val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부저장소에 저장되어있는 이미지 경로
 			val bm = BitmapFactory.decodeFile(imgPath)
 			binding.ivProfile.setImageBitmap(bm)
 		}
 
 		when(getUser.gender) {
-			Constant.Male.name -> unit2()
+			Constant.MALE.name -> unit2()
 			else -> unit1()
 		}
 
@@ -312,7 +312,7 @@ class ProfileFragment : Fragment() {
 
 				if(bitmap != null) {
 					val data = dataManager.getUser().profileImage
-					File(requireActivity().filesDir, data).delete()
+					if(data != null && data != "") File(requireActivity().filesDir, data).delete()
 					val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
 					if(result != "") dataManager.updateUserStr(USER, "profileImage", result, "id")
 				}
@@ -330,7 +330,7 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setTextColor(Color.WHITE)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMan.setTextColor(Color.BLACK)
-		gender = Constant.Female.name
+		gender = Constant.FEMALE.name
 	}
 
 	private fun unit2() {
@@ -338,7 +338,7 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setTextColor(Color.BLACK)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
 		binding.tvMan.setTextColor(Color.WHITE)
-		gender = Constant.Male.name
+		gender = Constant.MALE.name
 	}
 
 	override fun onDetach() {

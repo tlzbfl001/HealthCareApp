@@ -15,13 +15,16 @@ import kr.bodywell.android.api.dto.GoalUpdateDTO
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
+import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
+import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SyncDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.BODY
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
@@ -84,6 +87,7 @@ object ViewModelUtil {
 		val getSleepUpdated = dataManager.getSleepUpdated()
 		val getDrugUid = dataManager.getDrugUid()
 		val getDrugUpdated = dataManager.getDrugUpdated()
+		val getDrugCheckUid = dataManager.getDrugCheckUid()
 		val getGoalUid = dataManager.getGoalUid()
 		val getGoalUpdated = dataManager.getGoalUpdated()
 
@@ -169,8 +173,9 @@ object ViewModelUtil {
 			}
 		}
 
-		/*if(getUserUpdated.email != "") {
-			val data = ProfileDTO(getUserUpdated.name, getUserUpdated.birthday!!, getUserUpdated.gender!!, getUserUpdated.height!!, getUserUpdated.weight!!, "Asia/Seoul")
+		if(getUserUpdated.id > 0) {
+			val data = ProfileDTO(getUserUpdated.name!!, getUserUpdated.birthday!!, getUserUpdated.gender!!, getUserUpdated.height!!, getUserUpdated.weight!!, "Asia/Seoul")
+			Log.d(TAG, "data: $data")
 			val response = RetrofitAPI.api.updateProfile("Bearer ${getToken.access}", data)
 			if(response.isSuccessful) {
 				Log.d(TAG, "updateProfile: ${response.body()}")
@@ -179,7 +184,7 @@ object ViewModelUtil {
 				Log.e(TAG, "updateProfile: $response")
 				requestStatus = false
 			}
-		}*/
+		}
 
 		requestFood(dataManager, getFoodUid, 1)
 
@@ -189,9 +194,9 @@ object ViewModelUtil {
 
 		requestDiet(dataManager, getDailyFoodUpdated, 2)
 
-		requestWater(dataManager, getWaterUid, 1)
+		requestWater(dataManager, getWaterUid)
 
-		requestWater(dataManager, getWaterUpdated, 2)
+		requestWater(dataManager, getWaterUpdated)
 
 		requestActivity(dataManager, getExUid, 1)
 
@@ -231,6 +236,26 @@ object ViewModelUtil {
 		requestMedicine(dataManager, getDrugUid, 1)
 
 		requestMedicine(dataManager, getDrugUpdated, 2)
+
+		/*for(i in 0 until getDrugCheckUid.size) {
+			val getDrug = dataManager.getUid(DRUG, getDrugCheckUid[i].drugId)
+			val getDrugTime = dataManager.getUid(DRUG_TIME, getDrugCheckUid[i].drugTimeId)
+			val getIntake = RetrofitAPI.api.getMedicineIntake("Bearer ${getToken.access}", getDrug.uid, getDrugTime.uid)
+
+			if(getIntake.isSuccessful) {
+				dataManager.updateStr(DRUG_CHECK, "uid", getIntake.body()!!.id, "id", getDrugCheckUid[i].id)
+			}else {
+				if(getIntake.code() == 404) {
+					val dateToIso = dateToIso(getDrugCheckUid[i].createdAt)
+					val dto = MedicineIntakeDTO(dateToIso, getUser.deviceUid)
+					val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", getDrug.uid, getDrugTime.uid, dto)
+
+					if(response.isSuccessful) {
+						dataManager.updateStr(DRUG_CHECK, "uid", getIntake.body()!!.id, "id", getDrugCheckUid[i].id)
+					}else requestStatus = false
+				}else requestStatus = false
+			}
+		}*/
 
 		requestGoal(dataManager, getGoalUid, 1)
 
@@ -306,18 +331,11 @@ object ViewModelUtil {
 		}
 	}
 
-	private suspend fun requestWater(dataManager: DataManager, data: ArrayList<Water>, type: Int) {
+	private suspend fun requestWater(dataManager: DataManager, data: ArrayList<Water>) {
 		for(i in 0 until data.size) {
-			if(type == 1) {
-				val response = RetrofitAPI.api.createWater("Bearer ${getToken.access}", WaterDTO(data[i].volume, data[i].count, data[i].createdAt))
-				if(response.isSuccessful) {
-					Log.d(TAG, "createWater: ${response.body()}")
-					dataManager.updateStr(WATER, "uid", response.body()!!.id, "id", data[i].id)
-				}else {
-					Log.e(TAG, "createWater: $response")
-					requestStatus = false
-				}
-			}else {
+			val getExistWater = RetrofitAPI.api.getExistWater("Bearer ${getToken.access}", data[i].createdAt)
+			if(getExistWater.body()!!.exists) {
+				// data[i].uid 대신 getExistWater에서 받은 id도 한다.
 				val response = RetrofitAPI.api.updateWater("Bearer ${getToken.access}", data[i].uid!!, WaterDTO(data[i].volume, data[i].count, data[i].createdAt))
 				if(response.isSuccessful) {
 					Log.d(TAG, "updateWater: ${response.body()}")
@@ -325,6 +343,15 @@ object ViewModelUtil {
 					dataManager.updateInt(WATER, IS_UPDATED, 0, "id", data[i].id)
 				}else {
 					Log.e(TAG, "updateWater: $response")
+					requestStatus = false
+				}
+			}else {
+				val response = RetrofitAPI.api.createWater("Bearer ${getToken.access}", WaterDTO(data[i].volume, data[i].count, data[i].createdAt))
+				if(response.isSuccessful) {
+					Log.d(TAG, "createWater: ${response.body()}")
+					dataManager.updateStr(WATER, "uid", response.body()!!.id, "id", data[i].id)
+				}else {
+					Log.e(TAG, "createWater: $response")
 					requestStatus = false
 				}
 			}
@@ -531,7 +558,7 @@ object ViewModelUtil {
 		val syncedAt = dateTimeToIso(LocalDateTime.parse(dataManager.getSynced()))
 		Log.d(TAG, "syncedAt: $syncedAt / ${dataManager.getSynced()}")
 
-		/*val syncProfile = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		val syncProfile = RetrofitAPI.api.syncProfile("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncProfile.isSuccessful) {
 			Log.d(TAG, "syncProfile: ${syncProfile.body()}")
 			if(syncProfile.body()?.data != null) {
@@ -540,7 +567,7 @@ object ViewModelUtil {
 			}
 		}else {
 			Log.e(TAG, "syncProfile: $syncProfile")
-		}*/
+		}
 
 		val syncFood = RetrofitAPI.api.syncFood("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncFood.isSuccessful) {

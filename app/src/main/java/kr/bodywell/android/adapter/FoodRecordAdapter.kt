@@ -49,11 +49,8 @@ class FoodRecordAdapter (
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
          val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu1, null)
 
-         val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
          val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
-
-         clX.setOnClickListener { dialog.dismiss() }
 
          clEdit.setOnClickListener {
             bundle.putString("id", itemList[position].id.toString())

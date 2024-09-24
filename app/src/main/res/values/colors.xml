@@ -5,24 +5,24 @@
    <color name="white_trans5">#ffffff</color>
    <color name="white_grey30">#ffffff</color>
    <color name="white_grey">#ffffff</color>
+   <color name="white_dark_grey">#ffffff</color>
    <color name="white_light_grey">#ffffff</color>
    <color name="white_transparent">#ffffff</color>
    <color name="black_white">#000000</color>
    <color name="light_grey_dark_grey">#F1F1F1</color>
    <color name="light_grey_grey">#D5D5D5</color>
-   <color name="light_grey_black">#B3F1F1F1</color>
+   <color name="light_grey_black">#D0F3F3F3</color>
    <color name="grey_white">#8F8686</color>
    <color name="grey_dark_grey">#7E7E7E</color>
    <color name="logo">#595858</color>
    <color name="main_top">#cfccfe</color>
-   <color name="progress_base">#26CCCCCC</color>
 
    <color name="food">#CCE24F5C</color>
-   <color name="water">#CC4AC0F2</color>
-   <color name="exercise">#CCF6BD4B</color>
+   <color name="water">#AD4AC0F2</color>
+   <color name="exercise">#BFF6BD4B</color>
    <color name="body">#CCAED77D</color>
    <color name="sleep">#CC667D99</color>
-   <color name="drug">#A282EC</color>
+   <color name="drug">#9D7CEA</color>
 
    <color name="food_grey">#FFF8F8</color>
    <color name="food_black">#FFF8F8</color>

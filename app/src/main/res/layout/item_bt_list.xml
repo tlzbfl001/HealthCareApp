@@ -12,8 +12,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:src="@drawable/baseline_devices"
-      android:layout_marginLeft="25dp"
-      android:layout_marginRight="25dp"
+      android:layout_marginLeft="20dp"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"/>
    <TextView
@@ -23,6 +22,7 @@
       android:text="text"
       android:textSize="16dp"
       android:textColor="@color/black_white"
+      android:fontFamily="@font/nanum"
       android:layout_marginLeft="10dp"
       app:layout_constraintStart_toEndOf="@id/ivDevice"
       app:layout_constraintTop_toTopOf="@id/ivDevice"

@@ -3,7 +3,6 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +26,6 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatusCheck
 import kr.bodywell.android.util.CustomUtil.resetAlarm
 import kr.bodywell.android.util.MyApp
@@ -108,7 +106,6 @@ class LoginActivity : AppCompatActivity() {
                if(getUser.email == "") { // 초기 가입
                   if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
                      val user = User(type = Constant.GOOGLE.name, email = it.result.email!!, idToken = it.result.idToken!!)
-                     Log.d(TAG, "idToken: ${it.result.idToken!!}")
 //                     val intent = Intent(this, SignupActivity::class.java)
 //                     intent.putExtra("user", user)
 //                     startActivity(intent)
@@ -149,7 +146,7 @@ class LoginActivity : AppCompatActivity() {
                            naverLoginRequest(this@LoginActivity, dataManager, user)
                         }
                      }else {
-                        Toast.makeText(this@LoginActivity, "회원가입 실패11", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
                      }
                   }else { // 로그인
                      MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)

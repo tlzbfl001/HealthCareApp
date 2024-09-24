@@ -20,15 +20,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
-import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.MainViewModel
@@ -93,38 +92,38 @@ class MainFragment : Fragment() {
 
       if(getUser.name != "") binding.tvName.text = getUser.name + " 님"
 
-      if(getUser.profileImage != "") {
+      if(getUser.profileImage != null && getUser.profileImage != "") {
          val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부 저장소에 저장되어 있는 이미지 경로
          val bm = BitmapFactory.decodeFile(imgPath)
          binding.ivUser.setImageBitmap(bm)
       }
 
-      binding.clFood.setOnClickListener {
+      binding.cvFood.setOnClickListener {
          layoutType = 1
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
-      binding.clWater.setOnClickListener {
+      binding.cvWater.setOnClickListener {
          layoutType = 2
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
-      binding.clExercise.setOnClickListener {
+      binding.cvExercise.setOnClickListener {
          layoutType = 3
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
-      binding.clBody.setOnClickListener {
+      binding.cvBody.setOnClickListener {
          layoutType = 4
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
-      binding.clSleep.setOnClickListener {
+      binding.cvSleep.setOnClickListener {
          layoutType = 5
          replaceFragment1(requireActivity(), DetailFragment())
       }
 
-      binding.clDrug.setOnClickListener {
+      binding.cvDrug.setOnClickListener {
          layoutType = 6
          replaceFragment1(requireActivity(), DetailFragment())
       }
@@ -135,8 +134,7 @@ class MainFragment : Fragment() {
          calendarDialog.window?.setGravity(Gravity.TOP)
 
          calendarDialog.setOnDismissListener {
-            setWeekView()
-            recordView()
+            dailyView()
          }
 
          calendarDialog.show()
@@ -155,26 +153,13 @@ class MainFragment : Fragment() {
       binding.recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireActivity(), object : RecyclerItemClickListener.OnItemClickListener {
          override fun onItemClick(view: View, position: Int) {
             selectedDate = days[position]!!
-            setWeekView()
-            recordView()
+            dailyView()
          }
       }))
 
-      setWeekView()
-      recordView()
+      dailyView()
 
       return binding.root
-   }
-
-   fun setWeekView() {
-      days = weekArray(selectedDate)
-      adapter = CalendarAdapter1(days, 1)
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
-      binding.recyclerView.layoutManager = layoutManager
-      binding.recyclerView.adapter = adapter
-
-      binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
-      binding.tvMonth.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -210,12 +195,10 @@ class MainFragment : Fragment() {
                if (abs(diffX) > 100 && abs(velocityX) > 100) {
                   if (diffX > 0) {
                      selectedDate = selectedDate.minusWeeks(1)
-                     setWeekView()
-                     recordView()
+                     dailyView()
                   } else {
                      selectedDate = selectedDate.plusWeeks(1)
-                     setWeekView()
-                     recordView()
+                     dailyView()
                   }
                }
             }
@@ -255,20 +238,29 @@ class MainFragment : Fragment() {
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
    }
 
-   fun recordView() {
-      // 프로그래스바 초기화
-      binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
-      binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
-      binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
-      binding.pbBody.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbBody.setProgressEndColor(Color.TRANSPARENT)
-      binding.pbSleep.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbSleep.setProgressEndColor(Color.TRANSPARENT)
-      binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
-      binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
+   fun dailyView() {
+      // 목표설정 설정
+      days = weekArray(selectedDate)
+      adapter = CalendarAdapter1(days, 1)
+      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
+      binding.recyclerView.layoutManager = layoutManager
+      binding.recyclerView.adapter = adapter
+      binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
+      binding.tvMonth.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
+
+      // 데이터 초기화
+      binding.pbFood.progress = 0
+      binding.pbWater.progress = 0
+      binding.pbExercise.progress = 0
+      binding.pbBody.progress = 0
+      binding.pbSleep.progress = 0
+      binding.pbDrug.progress = 0
+      binding.tvFoodPt.text = "0%"
+      binding.tvWaterPt.text = "0%"
+      binding.tvExercisePt.text = "0%"
+      binding.tvBodyPt.text = "0%"
+      binding.tvSleepPt.text = "0%"
+      binding.tvDrugPt.text = "0%"
 
       // 데이터 설정
       val getDailyGoal = dataManager.getGoal(selectedDate.toString())
@@ -280,34 +272,21 @@ class MainFragment : Fragment() {
       val getDrugCheckCount = dataManager.getDrugCheckCount(selectedDate.toString())
 
       if(foodSum > 0) {
-         binding.pbFood.setProgressStartColor(resources.getColor(R.color.food))
-         binding.pbFood.setProgressEndColor(resources.getColor(R.color.food))
-         binding.pbFood.max = getDailyGoal.food
+         binding.tvFoodPt.text = if(getDailyGoal.food > 0) "${((foodSum * 100) / getDailyGoal.food)}%" else "100%"
+         binding.pbFood.max = if(getDailyGoal.food > 0) getDailyGoal.food else foodSum
          binding.pbFood.progress = foodSum
       }
 
       if(getWater.count > 0) {
-         binding.pbWater.setProgressStartColor(resources.getColor(R.color.water))
-         binding.pbWater.setProgressEndColor(resources.getColor(R.color.water))
-         if(getDailyGoal.water > 0) {
-            binding.pbWater.max = getDailyGoal.water
-            binding.pbWater.progress = getWater.count
-         }else if(getDailyGoal.water == 0) {
-            binding.pbWater.max = getWater.count
-            binding.pbWater.progress = getWater.count
-         }
+         binding.tvWaterPt.text = if(getDailyGoal.water > 0) "${(getWater.count * 100) / getDailyGoal.water}%" else "100%"
+         binding.pbWater.max = if(getDailyGoal.water > 0) getDailyGoal.water else getWater.count
+         binding.pbWater.progress = getWater.count
       }
 
       if(exerciseSum > 0) {
-         binding.pbExercise.setProgressStartColor(resources.getColor(R.color.exercise))
-         binding.pbExercise.setProgressEndColor(resources.getColor(R.color.exercise))
-         if(getDailyGoal.exercise > 0) {
-            binding.pbExercise.max = getDailyGoal.exercise
-            binding.pbExercise.progress = exerciseSum
-         }else if(getDailyGoal.exercise == 0) {
-            binding.pbExercise.max = exerciseSum
-            binding.pbExercise.progress = exerciseSum
-         }
+         binding.tvExercisePt.text = if(getDailyGoal.exercise > 0) "${(exerciseSum * 100) / getDailyGoal.exercise}%" else "100%"
+         binding.pbExercise.max = if(getDailyGoal.exercise > 0) getDailyGoal.exercise else exerciseSum
+         binding.pbExercise.progress = exerciseSum
       }
 
       val weightGoalSplit = getDailyGoal.body.toString().split(".")
@@ -320,15 +299,9 @@ class MainFragment : Fragment() {
       }
 
       if(getBody.weight != null && getBody.weight!! > 0) {
-         binding.pbBody.setProgressStartColor(resources.getColor(R.color.body))
-         binding.pbBody.setProgressEndColor(resources.getColor(R.color.body))
-         if(getDailyGoal.body > 0) {
-            binding.pbBody.max = getDailyGoal.body.roundToInt()
-            binding.pbBody.progress = getBody.weight!!.toInt()
-         }else if(getDailyGoal.body == 0.0) {
-            binding.pbBody.max = getBody.weight!!.toInt()
-            binding.pbBody.progress = getBody.weight!!.toInt()
-         }
+         binding.tvBodyPt.text =if(getDailyGoal.body > 0)  "${(getBody.weight!!.toInt() * 100) / getDailyGoal.body.roundToInt()}%" else "100%"
+         binding.pbBody.max = if(getDailyGoal.body > 0) getDailyGoal.body.roundToInt() else getBody.weight!!.toInt()
+         binding.pbBody.progress = getBody.weight!!.toInt()
       }
 
       val sleep = if(getDailyGoal.sleep % 60 == 0) "${getDailyGoal.sleep / 60}h" else "${getDailyGoal.sleep / 60}h${getDailyGoal.sleep % 60}m"
@@ -342,27 +315,15 @@ class MainFragment : Fragment() {
       }
 
       if(total > 0) {
-         binding.pbSleep.setProgressStartColor(resources.getColor(R.color.sleep))
-         binding.pbSleep.setProgressEndColor(resources.getColor(R.color.sleep))
-         if(getDailyGoal.sleep > 0) {
-            binding.pbSleep.max = getDailyGoal.sleep
-            binding.pbSleep.progress = total
-         }else if(getDailyGoal.sleep == 0) {
-            binding.pbSleep.max = total
-            binding.pbSleep.progress = total
-         }
+         binding.tvSleepPt.text = if(getDailyGoal.sleep > 0) "${(total * 100) / getDailyGoal.sleep}%" else "100%"
+         binding.pbSleep.max = if(getDailyGoal.sleep > 0) getDailyGoal.sleep else total
+         binding.pbSleep.progress = total
       }
 
       if(getDrugCheckCount > 0) {
-         binding.pbDrug.setProgressStartColor(resources.getColor(R.color.drug))
-         binding.pbDrug.setProgressEndColor(resources.getColor(R.color.drug))
-         if(getDailyGoal.drug > 0) {
-            binding.pbDrug.max = getDailyGoal.drug
-            binding.pbDrug.progress = getDrugCheckCount
-         }else if(getDailyGoal.drug == 0) {
-            binding.pbDrug.max = getDrugCheckCount
-            binding.pbDrug.progress = getDrugCheckCount
-         }
+         binding.tvDrugPt.text = if(getDailyGoal.drug > 0) "${(getDrugCheckCount * 100) / getDailyGoal.drug}%" else "100%"
+         binding.pbDrug.max = if(getDailyGoal.drug > 0) getDailyGoal.drug else getDrugCheckCount
+         binding.pbDrug.progress = getDrugCheckCount
       }
 
       binding.tvFood.text = "$foodSum/${getDailyGoal.food} kcal"

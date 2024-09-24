@@ -287,7 +287,7 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            val bmr = if(getUser.gender == Constant.Male.name) {
+            val bmr = if(getUser.gender == Constant.MALE.name) {
                88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * age)
             }else {
                66 + (13.7 * binding.etWeight.text.toString().toDouble()) + (5 * binding.etHeight.text.toString().toDouble()) - (6.8 * age) * step

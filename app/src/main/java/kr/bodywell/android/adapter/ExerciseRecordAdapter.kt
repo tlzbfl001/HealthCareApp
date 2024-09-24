@@ -44,11 +44,7 @@ class ExerciseRecordAdapter (
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
          val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu2, null)
-
-         val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
-
-         clX.setOnClickListener { dialog.dismiss() }
 
          clDelete.setOnClickListener {
             AlertDialog.Builder(context, R.style.AlertDialogStyle)

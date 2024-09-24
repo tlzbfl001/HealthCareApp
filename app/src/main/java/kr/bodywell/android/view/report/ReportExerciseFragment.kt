@@ -377,6 +377,7 @@ class ReportExerciseFragment : Fragment() {
       leftAxis.enableGridDashedLine(10f, 15f, 0f)
       leftAxis.axisMinimum = 0f
 
+      chart.setExtraOffsets(8f, 12f, 15f, 10f)
       chart.description.isEnabled = false
       chart.legend.isEnabled = false
       chart.setScaleEnabled(false)
