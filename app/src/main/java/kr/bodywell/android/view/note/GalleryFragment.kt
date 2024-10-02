@@ -164,11 +164,11 @@ class GalleryFragment : Fragment() {
 			for(i in 0 until getImage.size) {
 				var check = false
 				for(j in 0 until imageList.size) {
-					if(getImage[i].imageUri == imageList[j].imageUri) check = true
+					if(getImage[i].imageName == imageList[j].imageName) check = true
 				}
 
 				if(!check) {
-					File(requireActivity().filesDir, getImage[i].imageUri).delete()
+					File(requireActivity().filesDir, getImage[i].imageName).delete()
 					dataManager.deleteItem(IMAGE, "id", getImage[i].id)
 				}
 			}
@@ -176,7 +176,7 @@ class GalleryFragment : Fragment() {
 			for(i in 0 until imageList.size) {
 				if(imageList[i].bitmap != null) {
 					val result = saveImage(requireActivity(), imageList[i].bitmap!!)
-					if(result != "") dataManager.insertImage(Image(type = type, imageUri = result, createdAt = selectedDate.toString()))
+					if(result != "") dataManager.insertImage(Image(type = type, imageName = result, createdAt = selectedDate.toString()))
 				}
 			}
 

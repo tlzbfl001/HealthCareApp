@@ -51,7 +51,7 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
@@ -125,7 +125,7 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvLogout.setOnClickListener {
-         if(!networkStatusCheck(requireActivity())){
+         if(!networkStatus(requireActivity())){
             Toast.makeText(context, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
             val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
@@ -165,7 +165,7 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvResign.setOnClickListener {
-         if(!networkStatusCheck(requireActivity())){
+         if(!networkStatus(requireActivity())){
             Toast.makeText(context, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
          }else {
             val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)

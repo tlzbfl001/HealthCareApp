@@ -1143,28 +1143,10 @@ class DataManager(private var context: Context?) {
       while(cursor.moveToNext()) {
          val values = Image()
          values.id = cursor.getInt(0)
-         values.type = cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.imageUri = cursor.getString(4)
-         values.createdAt = cursor.getString(5)
-         list.add(values)
-      }
-      cursor.close()
-      return list
-   }
-
-   fun getImage(data: String) : ArrayList<Image> {
-      val db = dbHelper!!.readableDatabase
-      val list: ArrayList<Image> = ArrayList()
-      val sql = "select * from $IMAGE where $USER_ID = ${MyApp.prefs.getUserId()} and name = '$data'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val values = Image()
-         values.id = cursor.getInt(0)
-         values.type = cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.imageUri = cursor.getString(4)
-         values.createdAt = cursor.getString(5)
+         values.type = cursor.getString(3)
+         values.dataName = cursor.getString(4)
+         values.imageName = cursor.getString(5)
+         values.createdAt = cursor.getString(6)
          list.add(values)
       }
       cursor.close()
@@ -1174,15 +1156,30 @@ class DataManager(private var context: Context?) {
    fun getImage(type: String, name: String, date: String) : ArrayList<Image> {
       val db = dbHelper!!.readableDatabase
       val list: ArrayList<Image> = ArrayList()
-      val sql = "select * from $IMAGE where $USER_ID = ${MyApp.prefs.getUserId()} and type = '$type' and name = '$name' and $CREATED_AT = '$date'"
+      val sql = "select * from $IMAGE where $USER_ID = ${MyApp.prefs.getUserId()} and type = '$type' and dataName = '$name' and $CREATED_AT = '$date'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val values = Image()
          values.id = cursor.getInt(0)
-         values.type = cursor.getString(2)
-         values.name = cursor.getString(3)
-         values.imageUri = cursor.getString(4)
-         values.createdAt = cursor.getString(5)
+         values.type = cursor.getString(3)
+         values.dataName = cursor.getString(4)
+         values.imageName = cursor.getString(5)
+         values.createdAt = cursor.getString(6)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
+   fun getImageUid() : ArrayList<Image> {
+      val db = dbHelper!!.readableDatabase
+      val list: ArrayList<Image> = ArrayList()
+      val sql = "select id, imageName from $IMAGE where $USER_ID = ${MyApp.prefs.getUserId()} and uid is '' limit 5"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Image()
+         values.id = cursor.getInt(0)
+         values.imageName = cursor.getString(1)
          list.add(values)
       }
       cursor.close()
@@ -1441,9 +1438,10 @@ class DataManager(private var context: Context?) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getUserId())
+      values.put("uid", data.uid)
       values.put("type", data.type)
-      values.put("name", data.name)
-      values.put("imageUri", data.imageUri)
+      values.put("dataName", data.dataName)
+      values.put("imageName", data.imageName)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(IMAGE, null, values)
    }
@@ -1660,7 +1658,7 @@ class DataManager(private var context: Context?) {
 
    fun deleteImage(type: String, name: String, createdAt: String): Int {
       val db = dbHelper!!.writableDatabase
-      val result = db.delete(IMAGE, "$USER_ID=${MyApp.prefs.getUserId()} and type='$type' and name='$name' and createdAt='$createdAt'", null)
+      val result = db.delete(IMAGE, "$USER_ID=${MyApp.prefs.getUserId()} and type='$type' and dataName='$name' and createdAt='$createdAt'", null)
       db.close()
       return result
    }

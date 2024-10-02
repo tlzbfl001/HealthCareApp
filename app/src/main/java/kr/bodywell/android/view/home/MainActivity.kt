@@ -1,5 +1,6 @@
 package kr.bodywell.android.view.home
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -81,6 +82,13 @@ class MainActivity : AppCompatActivity() {
                }
             }
          }
+      }
+   }
+
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+      super.onActivityResult(requestCode, resultCode, data)
+      if(requestCode == UPDATE_REQUEST_CODE) {
+         if(resultCode != RESULT_OK) requestUpdate()
       }
    }
 

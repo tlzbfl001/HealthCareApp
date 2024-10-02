@@ -105,7 +105,7 @@ object CustomUtil {
       return match.find()
    }
 
-   fun networkStatusCheck(context: Context): Boolean {
+   fun networkStatus(context: Context): Boolean {
       val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
       val networkCapabilities = connectivityManager.activeNetwork ?: return false
       val activeNetwork = connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false

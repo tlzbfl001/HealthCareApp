@@ -31,7 +31,7 @@
       android:id="@+id/tvTitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="18dp"
       android:text="직접 추가 기록"
       android:textColor="@color/black_white"
       android:textSize="17dp"
@@ -83,7 +83,7 @@
                   app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                    android:id="@+id/cv1"
-                   android:layout_width="80dp"
+                  android:layout_width="85dp"
                    android:layout_height="wrap_content"
                    android:layout_marginTop="22dp"
                    android:text="음식이름"
@@ -111,7 +111,7 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <TextView
                   android:id="@+id/tv2"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="22dp"
                   android:text="단위"
@@ -211,7 +211,7 @@
                </androidx.constraintlayout.widget.ConstraintLayout>
                <TextView
                   android:id="@+id/cv3"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="18dp"
                   android:text="섭취량"
@@ -283,7 +283,7 @@
                   app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                   android:id="@+id/cv4"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="22dp"
                   android:text="칼로리"
@@ -323,7 +323,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etKcal"/>
                <TextView
                   android:id="@+id/cv5"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="18dp"
                   android:text="탄수화물"
@@ -363,7 +363,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etCar"/>
                <TextView
                   android:id="@+id/cv6"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="18dp"
                   android:text="단백질"
@@ -403,7 +403,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etProtein"/>
                <TextView
                   android:id="@+id/cv7"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="18dp"
                   android:text="지방"
@@ -443,7 +443,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etFat"/>
                <TextView
                   android:id="@+id/cv8"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="18dp"
                   android:text="나트륨"
@@ -483,7 +483,7 @@
                   app:layout_constraintBottom_toBottomOf="@id/etSalt"/>
                <TextView
                   android:id="@+id/cv9"
-                  android:layout_width="80dp"
+                  android:layout_width="85dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="18dp"
                   android:text="당류"

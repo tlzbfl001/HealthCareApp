@@ -29,7 +29,6 @@ import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
-import kr.bodywell.android.model.Image
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
@@ -48,17 +47,44 @@ import java.time.temporal.ChronoUnit
 object RegisterUtil {
 	suspend fun googleLoginRequest(context: LoginActivity, dataManager: DataManager, user: User) {
 		CoroutineScope(Dispatchers.IO).launch {
+			/*val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
+			if(getUserEmail.isSuccessful) {
+				if(getUserEmail.body()!!) {
+					context.runOnUiThread {
+						AlertDialog.Builder(context, R.style.AlertDialogStyle)
+							.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
+							.setPositiveButton("확인") { _, _ ->
+								CoroutineScope(Dispatchers.IO).launch {
+									val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
+									if(response.isSuccessful) {
+										getData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
+									}else {
+										Log.e(TAG, "loginWithGoogle: $response")
+									}
+								}
+							}.setNegativeButton("취소", null).create().show()
+					}
+				}else {
+					val intent = Intent(context, SignupActivity::class.java)
+					intent.putExtra("user", user)
+					context.startActivity(intent)
+				}
+			}*/
+
+			// 서버미완성 상태이므로 아랫것씀.
 			val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
 			if(response.isSuccessful) {
-				getData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken)) // 서버데이터 가져오기
-			}else Log.e(TAG, "loginWithGoogle: $response")
+				getData(context, dataManager, user, Token(access = response.body()!!.accessToken, refresh = response.body()!!.refreshToken))
+			}else {
+				Log.e(TAG, "loginWithGoogle: $response")
+			}
 		}
 	}
 
 	suspend fun naverLoginRequest(context: LoginActivity, dataManager: DataManager, user: User) {
 		val getUserEmail = RetrofitAPI.api.getUserEmail(user.email)
 		if(getUserEmail.isSuccessful) {
-			if (getUserEmail.body()!!) {
+			if(getUserEmail.body()!!) {
 				context.runOnUiThread {
 					AlertDialog.Builder(context, R.style.AlertDialogStyle)
 						.setTitle("회원가입").setMessage("이미 존재하는 회원입니다. 기존 데이터를 가져오시겠습니까?")
@@ -208,11 +234,6 @@ object RegisterUtil {
 					unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, kcal = getAllDiet.body()!![i].calorie,
 					carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein, fat = getAllDiet.body()!![i].fat,
 					count = getAllDiet.body()!![i].quantity, createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
-
-				for(j in 0 until getAllDiet.body()!![i].photos.size) {
-					dataManager.insertImage(Image(type = getAllDiet.body()!![i].mealTime, imageUri = getAllDiet.body()!![i].photos[j],
-						createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
-				}
 			}
 
 			for(i in 0 until getAllWater.body()!!.size) {

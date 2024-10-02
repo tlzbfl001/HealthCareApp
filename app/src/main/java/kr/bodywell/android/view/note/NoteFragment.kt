@@ -162,7 +162,7 @@ class NoteFragment : Fragment() {
 
       // 섭취 칼로리 계산
       val foodKcal = getFoodCalories(requireActivity(), selectedDate.toString())
-      binding.tvKcal1.text = "${foodKcal.int5} kcal"
+      binding.tvKcal1.text = "${foodKcal.int5}kcal"
 
       // 소비 칼로리 계산
       var total = 0
@@ -170,7 +170,7 @@ class NoteFragment : Fragment() {
 
       for(i in 0 until getDailyExercise.size) total += getDailyExercise[i].kcal
 
-      binding.tvKcal2.text = "$total kcal"
+      binding.tvKcal2.text = "${total}kcal"
 
       setImageView()
    }

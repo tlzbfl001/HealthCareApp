@@ -1,6 +1,5 @@
 package kr.bodywell.android.view.home.food
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
@@ -40,8 +39,6 @@ import kr.bodywell.android.util.CustomUtil.saveImage
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
 import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import java.io.File
 import java.text.SimpleDateFormat
@@ -159,14 +156,14 @@ class FoodDailyEditFragment : Fragment() {
             val file = File(fileAbsolutePath)
             val decode = ImageDecoder.createSource(requireActivity().contentResolver, Uri.fromFile(file.absoluteFile)) // 카메라에서 찍은 사진을 디코딩
             bitmap = ImageDecoder.decodeBitmap(decode) // 디코딩한 사진을 비트맵으로 변환
-            imageList.add(Image(type = type, name = getDailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
+            imageList.add(Image(type = type, dataName = getDailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
             photoView()
             file.delete()
          }else if(pictureFlag == 2) { // 갤러리
             val uri = it.data?.data // 선택한 이미지의 주소
             if(uri != null) { // 이미지파일 읽어와서 설정하기
                bitmap = CustomUtil.getRotatedBitmap(requireActivity(), it.data?.data!!) // 이미지 회전하기
-               imageList.add(Image(type = type, name = getDailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
+               imageList.add(Image(type = type, dataName = getDailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
                photoView()
             }
          }
@@ -187,11 +184,11 @@ class FoodDailyEditFragment : Fragment() {
          for(i in 0 until getImage.size) {
             var check = false
             for(j in 0 until imageList.size) {
-               if(getImage[i].imageUri == imageList[j].imageUri) check = true
+               if(getImage[i].imageName == imageList[j].imageName) check = true
             }
 
             if(!check) {
-               File(requireActivity().filesDir, getImage[i].imageUri).delete()
+               File(requireActivity().filesDir, getImage[i].imageName).delete()
                dataManager.deleteItem(IMAGE, "id", getImage[i].id)
             }
          }
@@ -199,7 +196,7 @@ class FoodDailyEditFragment : Fragment() {
          for(i in 0 until imageList.size) {
             if(imageList[i].bitmap != null) {
                val result = saveImage(requireActivity(), imageList[i].bitmap!!)
-               if(result != "") dataManager.insertImage(Image(type = type, name = imageList[i].name, imageUri = result, createdAt = selectedDate.toString()))
+               if(result != "") dataManager.insertImage(Image(type = type, dataName = imageList[i].dataName, imageName = result, createdAt = selectedDate.toString()))
             }
          }
 
@@ -260,33 +257,6 @@ class FoodDailyEditFragment : Fragment() {
          })
 
          binding.viewPager.adapter = adapter
-      }
-   }
-
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-      super.onActivityResult(requestCode, resultCode, data)
-      if(resultCode == Activity.RESULT_OK){
-         when(requestCode){
-            CAMERA_REQUEST_CODE -> {
-               if(data!!.extras?.get("data") != null){
-                  val bitmap = data.extras?.get("data") as Bitmap
-                  imageList.add(Image(type = type, name = getDailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
-                  photoView()
-               }
-               dialog!!.dismiss()
-            }
-            STORAGE_REQUEST_CODE -> {
-               val fileUri = data!!.data
-               try{
-                  val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, fileUri)
-                  imageList.add(Image(type = type, name = getDailyFood.name, bitmap = bitmap,  createdAt = selectedDate.toString()))
-                  photoView()
-               }catch (e: Exception) {
-                  e.printStackTrace()
-               }
-               dialog!!.dismiss()
-            }
-         }
       }
    }
 }

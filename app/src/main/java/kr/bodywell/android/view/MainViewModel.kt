@@ -10,14 +10,11 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.networkStatusCheck
-import kr.bodywell.android.util.ViewModelUtil.createApiRequest
-import kr.bodywell.android.util.ViewModelUtil.createSync
+import kr.bodywell.android.util.CustomUtil.networkStatus
+import kr.bodywell.android.util.ViewModelUtil.createRequest
 import kr.bodywell.android.util.ViewModelUtil.getToken
 import kr.bodywell.android.util.ViewModelUtil.getUser
-import kr.bodywell.android.util.ViewModelUtil.refreshToken
 import kr.bodywell.android.util.ViewModelUtil.requestStatus
-import kr.bodywell.android.util.ViewModelUtil.syncCheck
 import java.time.LocalDate
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -37,14 +34,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
    private fun updateData() = viewModelScope.launch {
       while(requestStatus) {
-         if(networkStatusCheck(context)) {
-            refreshToken(dataManager)
-            if(!syncCheck) {
-               syncCheck = createSync(context, dataManager)
-            }else {
-               createApiRequest(dataManager)
-            }
-         }else delay(10000)
+         if(networkStatus(context)) {
+            createRequest(context, dataManager)
+         }else {
+            delay(15000)
+         }
       }
    }
 

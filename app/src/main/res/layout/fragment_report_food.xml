@@ -38,7 +38,7 @@
          android:id="@+id/tvCalTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="16dp"
+         android:layout_marginTop="18dp"
          android:text="2023년 7월 23일"
          android:gravity="center_vertical"
          android:textColor="@color/black_white"
@@ -251,7 +251,7 @@
             android:layout_marginTop="14dp"
             android:layout_marginLeft="20dp"
             android:text="섭취 칼로리(kcal)"
-            android:textSize="14.5dp"
+            android:textSize="15dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/nanum_bold"
             app:layout_constraintTop_toTopOf="parent"
@@ -372,8 +372,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
-            android:textSize="14dp"
-            android:textColor="#EEEEEE"
+            android:textSize="14.5dp"
+            android:textColor="@color/light_grey_grey"
             android:fontFamily="@font/nanum"/>
       </androidx.cardview.widget.CardView>
       <androidx.constraintlayout.widget.ConstraintLayout
@@ -391,7 +391,7 @@
             android:layout_marginTop="14dp"
             android:layout_marginLeft="20dp"
             android:text="영양 성분(g)"
-            android:textSize="14.5dp"
+            android:textSize="15dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/nanum_bold"
             app:layout_constraintTop_toTopOf="parent"
@@ -512,8 +512,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
-            android:textSize="14dp"
-            android:textColor="#EEEEEE"
+            android:textSize="14.5dp"
+            android:textColor="@color/light_grey_grey"
             android:fontFamily="@font/nanum"/>
       </androidx.cardview.widget.CardView>
       <TextView
@@ -523,7 +523,7 @@
          android:layout_marginTop="14dp"
          android:layout_marginLeft="20dp"
          android:text="물섭취(ml)"
-         android:textSize="14.5dp"
+         android:textSize="15dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/nanum_bold"
          app:layout_constraintTop_toBottomOf="@id/cv2"
@@ -555,8 +555,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="데이터가 없습니다."
-            android:textSize="14dp"
-            android:textColor="#EEEEEE"
+            android:textSize="14.5dp"
+            android:textColor="@color/light_grey_grey"
             android:fontFamily="@font/nanum"/>
       </androidx.cardview.widget.CardView>
    </androidx.constraintlayout.widget.ConstraintLayout>

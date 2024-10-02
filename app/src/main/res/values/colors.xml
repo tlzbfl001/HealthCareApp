@@ -9,8 +9,8 @@
    <color name="white_light_grey">#ffffff</color>
    <color name="white_transparent">#ffffff</color>
    <color name="black_white">#000000</color>
-   <color name="light_grey_dark_grey">#F1F1F1</color>
-   <color name="light_grey_grey">#D5D5D5</color>
+   <color name="light_grey_grey">#EEEEEE</color>
+   <color name="light_grey_dark_grey">#D5D5D5</color>
    <color name="light_grey_black">#D0F3F3F3</color>
    <color name="grey_white">#8F8686</color>
    <color name="grey_dark_grey">#7E7E7E</color>
@@ -22,7 +22,7 @@
    <color name="exercise">#BFF6BD4B</color>
    <color name="body">#CCAED77D</color>
    <color name="sleep">#CC667D99</color>
-   <color name="drug">#9D7CEA</color>
+   <color name="drug">#A483F3</color>
 
    <color name="food_grey">#FFF8F8</color>
    <color name="food_black">#FFF8F8</color>

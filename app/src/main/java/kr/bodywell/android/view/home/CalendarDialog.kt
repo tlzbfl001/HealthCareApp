@@ -15,6 +15,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.monthArray
 import kr.bodywell.android.util.CalendarUtil.selectedDate
@@ -172,23 +173,24 @@ class CalendarDialog(context: Context) : Dialog(context) {
       val itemList = ArrayList<Image>()
 
       // 데이터 가져오기
-      val getImage1 = dataManager!!.getImage("1", selectedDate.toString())
-      val getImage2 = dataManager!!.getImage("2", selectedDate.toString())
-      val getImage3 = dataManager!!.getImage("3", selectedDate.toString())
-      val getImage4 = dataManager!!.getImage("4", selectedDate.toString())
+
+      val getData1 = dataManager!!.getImage(Constant.BREAKFAST.name, selectedDate.toString())
+      val getData2 = dataManager!!.getImage(Constant.LUNCH.name, selectedDate.toString())
+      val getData3 = dataManager!!.getImage(Constant.DINNER.name, selectedDate.toString())
+      val getData4 = dataManager!!.getImage(Constant.SNACK.name, selectedDate.toString())
 
       // 리스트에 데이터 저장
-      for (i in 0 until getImage1.size) {
-         itemList.add(Image(id = getImage1[i].id, imageUri = getImage1[i].imageUri, createdAt = selectedDate.toString()))
+      for (i in 0 until getData1.size) {
+         itemList.add(Image(id = getData1[i].id, imageName = getData1[i].imageName, createdAt = selectedDate.toString()))
       }
-      for (i in 0 until getImage2.size) {
-         itemList.add(Image(id = getImage2[i].id, imageUri = getImage2[i].imageUri, createdAt = selectedDate.toString()))
+      for (i in 0 until getData2.size) {
+         itemList.add(Image(id = getData2[i].id, imageName = getData2[i].imageName, createdAt = selectedDate.toString()))
       }
-      for (i in 0 until getImage3.size) {
-         itemList.add(Image(id = getImage3[i].id, imageUri = getImage3[i].imageUri, createdAt = selectedDate.toString()))
+      for (i in 0 until getData3.size) {
+         itemList.add(Image(id = getData3[i].id, imageName = getData3[i].imageName, createdAt = selectedDate.toString()))
       }
-      for (i in 0 until getImage4.size) {
-         itemList.add(Image(id = getImage4[i].id, imageUri = getImage4[i].imageUri, createdAt = selectedDate.toString()))
+      for (i in 0 until getData4.size) {
+         itemList.add(Image(id = getData4[i].id, imageName = getData4[i].imageName, createdAt = selectedDate.toString()))
       }
 
       if (itemList.size > 0) {

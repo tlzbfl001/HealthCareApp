@@ -17,7 +17,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoSignupRequest
 import kr.bodywell.android.util.RegisterUtil.naverSignupRequest
@@ -118,7 +118,7 @@ class SignupActivity : AppCompatActivity() {
          if(isClickable) {
             isClickable = false
 
-            if(networkStatusCheck(this)) {
+            if(networkStatus(this)) {
                if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
 //                  registerTest(this@SignupActivity, dataManager, user)
                   when(user.type) {

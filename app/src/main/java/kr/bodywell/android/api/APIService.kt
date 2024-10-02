@@ -26,6 +26,7 @@ import kr.bodywell.android.api.response.BodyResponse
 import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DietResponse
 import kr.bodywell.android.api.response.ExistResponse
+import kr.bodywell.android.api.response.FileResponse
 import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.api.response.GoalResponse
 import kr.bodywell.android.api.response.MedicineResponse
@@ -46,13 +47,16 @@ import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
 import kr.bodywell.android.api.response.WorkoutResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -187,7 +191,7 @@ interface APIService {
 	): Response<DietResponse>
 
 	@DELETE("v1/diets/{id}")
-	suspend fun deleteDiets(
+	suspend fun deleteDiet(
 		@Header("Authorization") token: String,
 		@Path("id") id: String
 	): Response<DietResponse>
@@ -470,4 +474,11 @@ interface APIService {
 		@Path("id") id: String,
 		@Body dto: GoalUpdateDTO
 	): Response<GoalResponse>
+
+	@Multipart
+	@POST("v1/files/upload")
+	suspend fun uploadFile(
+		@Header("Authorization") token: String,
+		@Part file : MultipartBody.Part
+	): Response<FileResponse>
 }

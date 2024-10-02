@@ -26,7 +26,7 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.networkStatusCheck
+import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.CustomUtil.resetAlarm
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
 
       // 구글 로그인
       binding.clGoogle.setOnClickListener {
-         if(networkStatusCheck(this)) {
+         if(networkStatus(this)) {
             googleLogin()
          }else {
             Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
@@ -69,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
 
       // 네이버 로그인
       binding.clNaver.setOnClickListener {
-         if(networkStatusCheck(this)) {
+         if(networkStatus(this)) {
             naverLogin()
          }else {
             Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()
@@ -78,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
 
       // 카카오 로그인
       binding.clKakao.setOnClickListener {
-         if(networkStatusCheck(this)) {
+         if(networkStatus(this)) {
             kakaoLogin()
          }else {
             Toast.makeText(this, "네트워크에 연결되어있지 않습니다.", Toast.LENGTH_SHORT).show()

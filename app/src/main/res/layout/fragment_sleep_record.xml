@@ -7,11 +7,10 @@
    <androidx.constraintlayout.widget.ConstraintLayout
        android:id="@+id/constraint"
        android:layout_width="match_parent"
-       android:layout_height="0dp"
+       android:layout_height="wrap_content"
        android:background="@drawable/sleep_background"
        app:layout_constraintTop_toTopOf="parent"
        app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/cl2"
        app:layout_constraintEnd_toEndOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
           android:id="@+id/clBack"
@@ -38,7 +37,7 @@
          android:id="@+id/tvTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="16dp"
+         android:layout_marginTop="18dp"
          android:text="나의 기상/취침 시간 기록"
          android:textSize="17dp"
          android:textColor="@color/white"
@@ -92,16 +91,16 @@
       <TextView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="35dp"
-         android:layout_marginBottom="20dp"
+         android:layout_marginTop="40dp"
+         android:layout_marginBottom="15dp"
          android:text="수면 시간을 알려주세요."
          android:textSize="17dp"
-         android:textColor="@color/white"
+         android:textColor="#FFFFFF"
          android:fontFamily="@font/nanum_bold"
-         app:layout_constraintTop_toBottomOf="@id/cl"
          app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toBottomOf="parent"/>
+         app:layout_constraintTop_toBottomOf="@id/cl"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/cl2"
@@ -153,7 +152,7 @@
             android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bedtime"
+            android:text="BedTime"
             android:textSize="17dp"
             android:textColor="@color/white"
             android:fontFamily="@font/nanum"
@@ -191,8 +190,8 @@
             android:id="@+id/tv2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Waketime"
-            android:textSize="17dp"
+            android:text="WakeUpTime"
+            android:textSize="15dp"
             android:textColor="@color/black"
             android:fontFamily="@font/nanum"
             app:layout_constraintTop_toTopOf="parent"
@@ -219,7 +218,7 @@
          android:layout_width="220dp"
          android:layout_height="wrap_content"
          android:layout_gravity="center"
-         android:layout_marginBottom="35dp"
+         android:layout_marginBottom="30dp"
          app:cardBackgroundColor="#9F98FF"
          app:cardCornerRadius="35dp"
          app:layout_constraintEnd_toEndOf="parent"

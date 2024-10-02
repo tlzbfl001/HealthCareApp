@@ -160,7 +160,8 @@ class DrugFragment : Fragment() {
                for(j in 0 until getDrugTime.size) {
                   val getDrugCheck = dataManager.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
                   itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = getDrugDaily[i].startDate,
-                     name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time, initCheck = check, checked = getDrugCheck.id)
+                     name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time,
+                     initCheck = check, checked = getDrugCheck.id)
                   )
                }
             }

@@ -24,7 +24,7 @@ class PhotoViewAdapter (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      val imgPath = context.filesDir.toString() + "/" + itemList[position].imageUri // 내부 저장소에 저장되어 있는 이미지 경로
+      val imgPath = context.filesDir.toString() + "/" + itemList[position].imageName // 내부 저장소에 저장되어 있는 이미지 경로
       val bm = BitmapFactory.decodeFile(imgPath)
       holder.imageView.setImageBitmap(bm)
    }

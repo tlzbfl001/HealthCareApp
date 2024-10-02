@@ -84,7 +84,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "exercise integer, body real, sleep integer, drug integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(goal)
 
-      val image = "create table $IMAGE(id integer primary key autoincrement, $USER_ID integer, type text, name text, imageUri text, $CREATED_AT text);"
+      val image = "create table $IMAGE(id integer primary key autoincrement, $USER_ID integer, uid text, type text, dataName text, imageName text, $CREATED_AT text);"
       db.execSQL(image)
 
       val unused = "create TABLE $UNUSED(id integer primary key autoincrement, $USER_ID integer, type text, value text, drugUid text, $CREATED_AT text);"

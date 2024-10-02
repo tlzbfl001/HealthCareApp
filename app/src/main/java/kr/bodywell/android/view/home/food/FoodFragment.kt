@@ -201,10 +201,10 @@ class FoodFragment : Fragment() {
       val getData3 = dataManager.getImage(Constant.DINNER.name, selectedDate.toString())
       val getData4 = dataManager.getImage(Constant.SNACK.name, selectedDate.toString())
 
-      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageUri = getData1[i].imageUri))
-      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageUri = getData2[i].imageUri))
-      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageUri = getData3[i].imageUri))
-      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageUri = getData4[i].imageUri))
+      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageName = getData1[i].imageName))
+      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageName = getData2[i].imageName))
+      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageName = getData3[i].imageName))
+      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageName = getData4[i].imageName))
 
       if(imageList.size > 0) {
          val adapter = PhotoSlideAdapter2(requireActivity(), imageList)

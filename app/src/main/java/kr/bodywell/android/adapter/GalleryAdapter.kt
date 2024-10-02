@@ -23,7 +23,7 @@ class GalleryAdapter (
 
 	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 		if(itemList[position].bitmap == null) {
-			val imgPath = context.filesDir.toString() + "/" + itemList[position].imageUri
+			val imgPath = context.filesDir.toString() + "/" + itemList[position].imageName
 			val bm = BitmapFactory.decodeFile(imgPath)
 			holder.imageView.setImageBitmap(bm)
 		}else {

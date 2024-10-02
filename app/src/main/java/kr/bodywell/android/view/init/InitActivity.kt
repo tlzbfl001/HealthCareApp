@@ -107,6 +107,13 @@ class InitActivity : AppCompatActivity() {
       }
    }
 
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+      super.onActivityResult(requestCode, resultCode, data)
+      if(requestCode == UPDATE_REQUEST_CODE) {
+         if(resultCode != RESULT_OK) requestUpdate()
+      }
+   }
+
    override fun onBackPressed() {
       pressedTime = if(pressedTime == 0L) {
          Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()

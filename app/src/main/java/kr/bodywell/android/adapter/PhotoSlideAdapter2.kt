@@ -26,7 +26,7 @@ class PhotoSlideAdapter2 (
         val imageView: ImageView = view.findViewById(R.id.imageView)
 
         if(itemList[position].bitmap == null) {
-            val imgPath = context.filesDir.toString() + "/" + itemList[position].imageUri
+            val imgPath = context.filesDir.toString() + "/" + itemList[position].imageName
             val bm = BitmapFactory.decodeFile(imgPath)
             imageView.setImageBitmap(bm)
         }else {

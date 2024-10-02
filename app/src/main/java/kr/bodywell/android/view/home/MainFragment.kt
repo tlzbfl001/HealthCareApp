@@ -326,10 +326,10 @@ class MainFragment : Fragment() {
          binding.pbDrug.progress = getDrugCheckCount
       }
 
-      binding.tvFood.text = "$foodSum/${getDailyGoal.food} kcal"
+      binding.tvFood.text = "$foodSum/${getDailyGoal.food}kcal"
       binding.tvWater.text = "${getWater.count}/${getDailyGoal.water}잔"
-      binding.tvExercise.text = "$exerciseSum/${getDailyGoal.exercise} kcal"
-      binding.tvBody.text = "$weight/$weightGoal kg"
+      binding.tvExercise.text = "$exerciseSum/${getDailyGoal.exercise}kcal"
+      binding.tvBody.text = "${weight}/${weightGoal}kg"
       binding.tvSleep.text = "${total / 60}h${total % 60}m/$sleep"
       binding.tvDrug.text = "$getDrugCheckCount/${getDailyGoal.drug}회"
    }

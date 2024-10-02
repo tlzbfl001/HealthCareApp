@@ -30,7 +30,7 @@
       android:id="@+id/tvTitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
+      android:layout_marginTop="18dp"
       android:text="운동 수정하기"
       android:textColor="@color/black_white"
       android:textSize="17dp"

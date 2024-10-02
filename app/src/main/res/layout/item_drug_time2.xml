@@ -28,13 +28,13 @@
         app:layout_constraintBottom_toBottomOf="@id/cvTimeArea"/>
     <androidx.cardview.widget.CardView
         android:id="@+id/cvTimeArea"
-        android:layout_width="150dp"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="18dp"
         app:cardElevation="0dp"
         app:layout_constraintStart_toEndOf="@id/tv"
         app:layout_constraintTop_toTopOf="parent"
@@ -43,7 +43,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
-           android:paddingTop="7dp"
+           android:paddingTop="6dp"
            android:paddingBottom="6dp"
            android:paddingLeft="5dp"
            android:paddingRight="5dp">
@@ -51,7 +51,8 @@
                android:id="@+id/tvTime"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_gravity="center"
+               android:layout_marginLeft="8dp"
+               android:paddingTop="1dp"
                android:text="10:00"
                android:textColor="@color/black"
                android:textSize="16dp"
@@ -59,11 +60,11 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintEnd_toEndOf="parent"/>
+               app:layout_constraintEnd_toStartOf="@id/ivDelete"/>
             <ImageView
                android:id="@+id/ivDelete"
-               android:layout_width="21dp"
-               android:layout_height="21dp"
+               android:layout_width="22dp"
+               android:layout_height="22dp"
                android:background="@drawable/oval"
                android:backgroundTint="#EEEEEE"
                android:src="@drawable/x"

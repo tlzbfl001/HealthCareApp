@@ -49,8 +49,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl2"
-            android:layout_width="176dp"
-            android:layout_height="176dp"
+            android:layout_width="172dp"
+            android:layout_height="172dp"
             android:layout_marginTop="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +78,7 @@
                   android:layout_height="wrap_content"
                   android:text="수면 시간"
                   android:textColor="@color/black_white"
-                  android:textSize="15.5dp"
+                  android:textSize="16dp"
                   android:fontFamily="@font/nanum_bold"
                   app:layout_constraintBottom_toTopOf="@id/tvSleep"
                   app:layout_constraintEnd_toEndOf="parent"
@@ -92,7 +92,7 @@
                   android:layout_marginTop="2dp"
                   android:text="0h 0m"
                   android:textColor="@color/black_white"
-                  android:textSize="15.5dp"
+                  android:textSize="16dp"
                   android:fontFamily="@font/nanum"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="0h 0m"
-            android:textSize="15.5dp"
+            android:textSize="16dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/nanum"
             app:layout_constraintTop_toBottomOf="@id/tv1"
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="남은 수면 시간"
-            android:textSize="15.5dp"
+            android:textSize="16dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/nanum_bold"
             app:layout_constraintTop_toTopOf="@id/tv1"
@@ -152,7 +152,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:text="0h 0m"
-            android:textSize="15.5dp"
+            android:textSize="16dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/nanum"
             app:layout_constraintTop_toBottomOf="@id/tv3"
@@ -177,7 +177,7 @@
             android:layout_marginLeft="20dp"
             android:text="하루 수면 관리"
             android:textColor="@color/white"
-            android:textSize="15.5dp"
+            android:textSize="16dp"
             android:fontFamily="@font/nanum_bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -222,37 +222,46 @@
             app:layout_constraintTop_toBottomOf="@id/tv4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-            <ImageView
-               android:id="@+id/ivBedtime"
-               android:layout_width="72dp"
-               android:layout_height="65dp"
-               android:src="@drawable/bedtime"
-               android:layout_marginTop="20dp"
-               android:layout_marginBottom="20dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+               android:id="@+id/clBed1"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintEnd_toStartOf="@id/cl4"/>
+               app:layout_constraintEnd_toStartOf="@id/clBed2"
+               app:layout_constraintHorizontal_weight="1">
+               <ImageView
+                  android:id="@+id/ivBedtime"
+                  android:layout_width="72dp"
+                  android:layout_height="65dp"
+                  android:src="@drawable/bedtime"
+                  android:layout_marginTop="20dp"
+                  android:layout_marginBottom="20dp"
+                  app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:id="@+id/cl4"
-               android:layout_width="wrap_content"
+               android:id="@+id/clBed2"
+               android:layout_width="0dp"
                android:layout_height="wrap_content"
-               android:layout_marginLeft="30dp"
-               android:layout_marginRight="30dp"
-               app:layout_constraintStart_toEndOf="@id/ivBedtime"
-               app:layout_constraintTop_toTopOf="@id/ivBedtime"
-               app:layout_constraintBottom_toBottomOf="@id/ivBedtime"
-               app:layout_constraintEnd_toEndOf="parent">
+               app:layout_constraintStart_toEndOf="@id/clBed1"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintHorizontal_weight="2">
                <TextView
                   android:id="@+id/tvBedtimeTitle"
-                  android:layout_width="wrap_content"
+                  android:layout_width="105dp"
                   android:layout_height="wrap_content"
-                  android:text="Bedtime"
+                  android:text="BedTime"
                   android:textSize="17dp"
                   android:textColor="@color/white"
                   android:fontFamily="@font/nanum"
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintBottom_toTopOf="@id/tvBedtime"
                   app:layout_constraintVertical_chainStyle="packed" />
                <TextView
@@ -280,37 +289,45 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/clBottom1">
-            <ImageView
-               android:id="@+id/ivWakeup"
-               android:layout_width="72dp"
-               android:layout_height="65dp"
-               android:src="@drawable/wakeup"
-               android:layout_marginTop="20dp"
-               android:layout_marginBottom="20dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+               android:id="@+id/clWake1"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintEnd_toStartOf="@id/cl5"/>
+               app:layout_constraintEnd_toStartOf="@id/clWake2"
+               app:layout_constraintHorizontal_weight="1">
+               <ImageView
+                  android:layout_width="72dp"
+                  android:layout_height="65dp"
+                  android:src="@drawable/wakeup"
+                  android:layout_marginTop="20dp"
+                  android:layout_marginBottom="20dp"
+                  app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <androidx.constraintlayout.widget.ConstraintLayout
-               android:id="@+id/cl5"
-               android:layout_width="wrap_content"
+               android:id="@+id/clWake2"
+               android:layout_width="0dp"
                android:layout_height="wrap_content"
-               android:layout_marginLeft="30dp"
-               android:layout_marginRight="30dp"
-               app:layout_constraintStart_toEndOf="@id/ivWakeup"
-               app:layout_constraintTop_toTopOf="@id/ivWakeup"
-               app:layout_constraintBottom_toBottomOf="@id/ivWakeup"
-               app:layout_constraintEnd_toEndOf="parent">
+               app:layout_constraintStart_toEndOf="@id/clWake1"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintHorizontal_weight="2">
                <TextView
                   android:id="@+id/tvWakeupTitle"
-                  android:layout_width="wrap_content"
+                  android:layout_width="105dp"
                   android:layout_height="wrap_content"
-                  android:text="Wake up"
-                  android:textSize="17dp"
+                  android:text="WakeUpTime"
+                  android:textSize="15dp"
                   android:textColor="@color/black"
                   android:fontFamily="@font/nanum"
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintBottom_toTopOf="@id/tvWakeTime"
                   app:layout_constraintVertical_chainStyle="packed" />
                <TextView

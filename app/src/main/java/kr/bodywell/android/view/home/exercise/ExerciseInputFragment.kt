@@ -11,7 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseInputBinding
 import kr.bodywell.android.model.Exercise
-import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -59,7 +59,7 @@ class ExerciseInputFragment : Fragment() {
 
          if(binding.etName.text.toString().trim().isEmpty()) {
             Toast.makeText(context, "운동이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(!CustomUtil.filterText(binding.etName.text.toString().trim())) {
+         }else if(!filterText(binding.etName.text.toString().trim())) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else if(getExercise.name != "") {
             Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()

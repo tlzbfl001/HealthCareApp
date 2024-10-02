@@ -1,6 +1,5 @@
 package kr.bodywell.android.view.init
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -35,8 +34,6 @@ import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.saveImage
 import kr.bodywell.android.util.PermissionUtil
-import kr.bodywell.android.util.PermissionUtil.CAMERA_REQUEST_CODE
-import kr.bodywell.android.util.PermissionUtil.STORAGE_REQUEST_CODE
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -212,30 +209,5 @@ class InputInfoFragment : Fragment() {
       }
 
       return binding.root
-   }
-
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-      super.onActivityResult(requestCode, resultCode, data)
-      if(resultCode == Activity.RESULT_OK){
-         when(requestCode){
-            CAMERA_REQUEST_CODE -> {
-               if(data!!.extras?.get("data") != null){
-                  bitmap = data.extras?.get("data") as Bitmap
-                  binding.ivProfile.setImageBitmap(bitmap)
-               }
-               dialog!!.dismiss()
-            }
-            STORAGE_REQUEST_CODE -> {
-               val fileUri = data!!.data
-               try{
-                  bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, fileUri)
-                  binding.ivProfile.setImageBitmap(bitmap)
-               }catch (e: Exception) {
-                  e.printStackTrace()
-               }
-               dialog!!.dismiss()
-            }
-         }
-      }
    }
 }

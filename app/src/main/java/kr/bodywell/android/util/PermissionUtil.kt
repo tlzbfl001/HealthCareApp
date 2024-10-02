@@ -1,28 +1,15 @@
 package kr.bodywell.android.util
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
-import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
 
 object PermissionUtil {
-    const val REQUEST_CODE = 1
-    const val CAMERA_REQUEST_CODE = 2
-    const val STORAGE_REQUEST_CODE = 3
-
     val BT_PERMISSION_1 = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION
     )

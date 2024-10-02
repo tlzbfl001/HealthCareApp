@@ -51,7 +51,7 @@ class FoodLunchFragment : Fragment() {
 
         val getImage = dataManager.getImage(type, selectedDate.toString())
 
-        for(i in 0 until getImage.size) imageList.add(Image(id = getImage[i].id, name = getImage[i].name, imageUri = getImage[i].imageUri))
+        for(i in 0 until getImage.size) imageList.add(Image(id = getImage[i].id, dataName = getImage[i].dataName, imageName = getImage[i].imageName))
 
         if(imageList.size > 0) {
             photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
@@ -85,10 +85,10 @@ class FoodLunchFragment : Fragment() {
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             if(imageList.size > 0) {
-                                imageList.stream().filter { x -> x.name == dataList[pos].name }
+                                imageList.stream().filter { x -> x.dataName == dataList[pos].name }
                                     .collect(Collectors.toList()).forEach { x ->
                                         imageList.remove(x)
-                                        File(requireActivity().filesDir, x.imageUri).delete()
+                                        File(requireActivity().filesDir, x.imageName).delete()
                                 }
                             }
 
