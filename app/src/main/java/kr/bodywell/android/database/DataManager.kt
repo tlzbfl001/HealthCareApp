@@ -153,6 +153,20 @@ class DataManager(private var context: Context?) {
       return value
    }
 
+   fun get() : ArrayList<Food>  {
+      val db = dbHelper!!.readableDatabase
+      val list = ArrayList<Food>()
+      val sql = "select uid from $FOOD where $USER_ID = ${MyApp.prefs.getUserId()} and registerType = 'USER'"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         val values = Food()
+         values.uid=cursor.getString(0)
+         list.add(values)
+      }
+      cursor.close()
+      return list
+   }
+
    fun getFood(column: String, data: Int) : Food {
       val db = dbHelper!!.readableDatabase
       val values = Food()

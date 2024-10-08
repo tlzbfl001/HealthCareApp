@@ -1,21 +1,31 @@
 package kr.bodywell.android.view
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.api.dto.FoodDTO
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.model.Food
+import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
+import kr.bodywell.android.util.ViewModelUtil
 import kr.bodywell.android.util.ViewModelUtil.createRequest
 import kr.bodywell.android.util.ViewModelUtil.getToken
 import kr.bodywell.android.util.ViewModelUtil.getUser
 import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
    private val context = application.applicationContext
@@ -27,6 +37,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
+
       updateData()
 
       Log.d(TAG, "access: ${getToken.access}")
