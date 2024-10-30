@@ -56,7 +56,7 @@ class FoodEditFragment : Fragment() {
 
 		binding.tvName.text = getFood.name
 		binding.etAmount.setText(getFood.amount.toString())
-		binding.etKcal.setText(getFood.kcal.toString())
+		binding.etKcal.setText(getFood.calorie.toString())
 		binding.etCar.setText(getFood.carbohydrate.toString())
 		binding.etProtein.setText(getFood.protein.toString())
 		binding.etFat.setText(getFood.fat.toString())
@@ -310,7 +310,7 @@ class FoodEditFragment : Fragment() {
 
 		binding.cvEdit.setOnClickListener {
 			dataManager.updateFood(Food(id = id, unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
-				kcal = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
+				calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
 				protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
 				salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1))
 

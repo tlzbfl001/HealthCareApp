@@ -75,8 +75,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="11dp"
-          android:layout_marginBottom="11dp">
+          android:layout_marginTop="12dp"
+          android:layout_marginBottom="12dp">
          <ImageView
              android:id="@+id/ivWoman"
              android:layout_width="34dp"
@@ -117,8 +117,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="11dp"
-          android:layout_marginBottom="11dp">
+         android:layout_marginTop="12dp"
+         android:layout_marginBottom="12dp">
          <ImageView
              android:id="@+id/ivMan"
              android:layout_width="34dp"

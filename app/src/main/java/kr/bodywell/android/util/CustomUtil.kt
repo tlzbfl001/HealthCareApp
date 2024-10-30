@@ -209,20 +209,20 @@ object CustomUtil {
       val getDailyFood4 = dataManager.getDailyFood(Constant.SNACK.name, date)
 
       for(i in 0 until getDailyFood1.size) {
-         sum += getDailyFood1[i].kcal * getDailyFood1[i].count
-         item.int1 += getDailyFood1[i].kcal * getDailyFood1[i].count
+         sum += getDailyFood1[i].calorie * getDailyFood1[i].count
+         item.int1 += getDailyFood1[i].calorie * getDailyFood1[i].count
       }
       for(i in 0 until getDailyFood2.size) {
-         sum += getDailyFood2[i].kcal * getDailyFood2[i].count
-         item.int2 += getDailyFood2[i].kcal * getDailyFood2[i].count
+         sum += getDailyFood2[i].calorie * getDailyFood2[i].count
+         item.int2 += getDailyFood2[i].calorie * getDailyFood2[i].count
       }
       for(i in 0 until getDailyFood3.size) {
-         sum += getDailyFood3[i].kcal * getDailyFood3[i].count
-         item.int3 += getDailyFood3[i].kcal * getDailyFood3[i].count
+         sum += getDailyFood3[i].calorie * getDailyFood3[i].count
+         item.int3 += getDailyFood3[i].calorie * getDailyFood3[i].count
       }
       for(i in 0 until getDailyFood4.size) {
-         sum += getDailyFood4[i].kcal * getDailyFood4[i].count
-         item.int4 += getDailyFood4[i].kcal * getDailyFood4[i].count
+         sum += getDailyFood4[i].calorie * getDailyFood4[i].count
+         item.int4 += getDailyFood4[i].calorie * getDailyFood4[i].count
       }
 
       item.int5 = sum

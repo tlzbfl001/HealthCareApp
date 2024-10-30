@@ -11,12 +11,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import com.powersync.DatabaseDriverFactory
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
+import kr.bodywell.android.api.PowerSync
+import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
@@ -28,6 +31,8 @@ class FoodInputFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
+   private val driverFactory = DatabaseDriverFactory(requireActivity())
+   private val powerSync = PowerSync(driverFactory)
    private var bundle = Bundle()
    private var type = Constant.BREAKFAST.name
    private var unit = "mg"
@@ -296,7 +301,7 @@ class FoodInputFragment : Fragment() {
       binding.cvSave.setOnClickListener {
          var name = ""
          var amount = 0
-         var kcal = 0
+         var calorie = 0
          var carbohydrate = 0.0
          var protein = 0.0
          var fat = 0.0
@@ -308,7 +313,7 @@ class FoodInputFragment : Fragment() {
             binding.etSalt.text.toString().trim() == "" && binding.etSugar.text.toString().trim() == "") {
             name = "사과"
             amount = 100
-            kcal = 52
+            calorie = 52
             carbohydrate = 13.81
             protein = 0.26
             fat = 0.17
@@ -317,7 +322,7 @@ class FoodInputFragment : Fragment() {
          }else {
             if(binding.etName.text.toString() != "") name = binding.etName.text.toString().trim()
             if(binding.etAmount.text.toString() != "") amount = binding.etAmount.text.toString().trim().toInt()
-            if(binding.etKcal.text.toString() != "") kcal = binding.etKcal.text.toString().trim().toInt()
+            if(binding.etKcal.text.toString() != "") calorie = binding.etKcal.text.toString().trim().toInt()
             if(binding.etCar.text.toString() != "") carbohydrate = binding.etCar.text.toString().trim().toDouble()
             if(binding.etProtein.text.toString() != "") protein = binding.etProtein.text.toString().trim().toDouble()
             if(binding.etFat.text.toString() != "") fat = binding.etFat.text.toString().trim().toDouble()
@@ -333,12 +338,19 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else if(getFood.name != "") {
             Toast.makeText(context, "음식이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
-         }else if(amount == 0 || kcal == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0 || salt == 0.0 || sugar == 0.0) {
+         }else if(amount == 0 || calorie == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0 || salt == 0.0 || sugar == 0.0) {
             Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            // 음식데이터 저장
-            dataManager.insertFood(Food(name = name, unit = unit, amount = amount, kcal = kcal, carbohydrate = carbohydrate, protein = protein,
-               fat = fat, salt = salt, sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), createdAt = selectedDate.toString()))
+            val food = Food(name = name, unit = unit, amount = amount, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt,
+               sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), createdAt = LocalDateTime.now().toString())
+
+            dataManager.insertFood(food)
+            val dataId = dataManager.getFood("name", name).id
+
+            runBlocking {
+               val result = powerSync.insertFood(food)
+               dataManager.updateStr(FOOD, "uid", result, "id", dataId)
+            }
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             replaceFragment()

@@ -87,8 +87,8 @@
                   app:layout_constraintEnd_toEndOf="parent"/>
                <ImageView
                   android:id="@+id/ivProfile2"
-                  android:layout_width="21dp"
-                  android:layout_height="21dp"
+                  android:layout_width="22dp"
+                  android:layout_height="22dp"
                   android:src="@drawable/camera"
                   android:background="@drawable/oval_cal_selected"
                   android:backgroundTint="@color/white"
@@ -143,12 +143,12 @@
                   app:layout_constraintStart_toStartOf="parent"/>
                <TextView
                   android:id="@+id/tvWoman"
-                  android:layout_width="85dp"
+                  android:layout_width="74dp"
                   android:layout_height="wrap_content"
                   android:background="@drawable/rec_25_gray"
                   android:layout_marginTop="6dp"
                   android:paddingTop="9dp"
-                  android:paddingBottom="8dp"
+                  android:paddingBottom="7dp"
                   android:text="여성"
                   android:textColor="@color/white"
                   android:textSize="15dp"
@@ -158,12 +158,12 @@
                   app:layout_constraintStart_toStartOf="@id/tv"/>
                <TextView
                   android:id="@+id/tvMan"
-                  android:layout_width="85dp"
+                  android:layout_width="74dp"
                   android:layout_height="wrap_content"
                   android:background="@drawable/rec_25_border_gray"
                   android:layout_marginLeft="10dp"
                   android:paddingTop="9dp"
-                  android:paddingBottom="8dp"
+                  android:paddingBottom="7dp"
                   android:text="남성"
                   android:textColor="@color/black"
                   android:textSize="15dp"

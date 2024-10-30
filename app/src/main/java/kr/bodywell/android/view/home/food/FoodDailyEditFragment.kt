@@ -216,7 +216,7 @@ class FoodDailyEditFragment : Fragment() {
    private fun settingData() {
       binding.tvCount.text = count.toString()
       binding.tvAmount.text = (getDailyFood.amount * count).toString()
-      binding.tvKcal.text = (getDailyFood.kcal * count).toString()
+      binding.tvKcal.text = (getDailyFood.calorie * count).toString()
       binding.tvCar.text = String.format("%.1f", (getDailyFood.carbohydrate * count))
       binding.tvProtein.text = String.format("%.1f", (getDailyFood.protein * count))
       binding.tvFat.text = String.format("%.1f", (getDailyFood.fat * count))

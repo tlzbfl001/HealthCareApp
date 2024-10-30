@@ -203,10 +203,10 @@ object RegisterUtil {
 			// 사용자 정보 저장
 			if(getUser.email == "") {
 				dataManager.insertUser(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getProfile.body()!!.userId,
-					deviceUid=getDevice.body()!![0].id, name = name, gender = gender, birthday = birthday, profileImage = getProfile.body()!!.pictureUrl, height = height, weight = weight))
+					deviceUid="", name = name, gender = gender, birthday = birthday, profileImage = getProfile.body()!!.pictureUrl, height = height, weight = weight))
 			}else {
 				dataManager.updateUser2(User(type = user.type, email = user.email, idToken = user.idToken, accessToken = user.accessToken, uid=getProfile.body()!!.userId,
-					deviceUid=getDevice.body()!![0].id, name = name, gender = gender, birthday = birthday, profileImage = getProfile.body()!!.pictureUrl, height = height, weight = weight))
+					deviceUid="", name = name, gender = gender, birthday = birthday, profileImage = getProfile.body()!!.pictureUrl, height = height, weight = weight))
 			}
 
 			getUser = dataManager.getUser(user.type, user.email)
@@ -225,13 +225,13 @@ object RegisterUtil {
 				val useDate = if(getAllFood.body()!![i].usages == null) "" else isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 
 				dataManager.insertFood(Food(registerType = getAllFood.body()!![i].registerType, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name,
-					unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, kcal = getAllFood.body()!![i].calorie,
+					unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, calorie = getAllFood.body()!![i].calorie,
 					carbohydrate = getAllFood.body()!![i].carbohydrate, protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
 			}
 
 			for(i in 0 until getAllDiet.body()!!.size) {
 				dataManager.insertDailyFood(Food(uid = getAllDiet.body()!![i].id, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].name,
-					unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, kcal = getAllDiet.body()!![i].calorie,
+					unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, calorie = getAllDiet.body()!![i].calorie,
 					carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein, fat = getAllDiet.body()!![i].fat,
 					count = getAllDiet.body()!![i].quantity, createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
 			}
@@ -356,7 +356,7 @@ object RegisterUtil {
 				// 서버 데이터 저장
 				for(i in 0 until getAllFood.body()!!.size) {
 					dataManager.insertFood(Food(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
-						amount = getAllFood.body()!![i].volume, kcal = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
+						amount = getAllFood.body()!![i].volume, calorie = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(), createdAt = LocalDate.now().toString())
 					)

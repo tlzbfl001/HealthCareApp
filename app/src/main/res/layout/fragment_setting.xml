@@ -442,7 +442,7 @@
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_marginLeft="10dp"
-               android:text="버정정보"
+               android:text="버전정보"
                android:textSize="16dp"
                android:textColor="@color/black_white"
                android:fontFamily="@font/nanum"

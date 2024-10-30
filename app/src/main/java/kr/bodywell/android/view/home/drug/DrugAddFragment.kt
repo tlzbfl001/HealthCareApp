@@ -219,7 +219,7 @@ class DrugAddFragment : Fragment() {
                val drugId = dataManager.getData(DRUG, "startDate", selectedDate.toString())
                for(i in 0 until drugTimeList.size) dataManager.insertDrugTime(DrugTime(drugId = drugId.id, time = drugTimeList[i].time))
 
-               alarmReceiver!!.setAlarm(requireActivity(), drugId.id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit")
+               alarmReceiver!!.setAlarm(requireActivity(), drugId.id, selectedDate.toString(), endDate, drugTimeList, "$name $amount$unit 복용")
 
                Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
             }

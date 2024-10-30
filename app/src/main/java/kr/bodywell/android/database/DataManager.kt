@@ -153,20 +153,6 @@ class DataManager(private var context: Context?) {
       return value
    }
 
-   fun get() : ArrayList<Food>  {
-      val db = dbHelper!!.readableDatabase
-      val list = ArrayList<Food>()
-      val sql = "select uid from $FOOD where $USER_ID = ${MyApp.prefs.getUserId()} and registerType = 'USER'"
-      val cursor = db!!.rawQuery(sql, null)
-      while(cursor.moveToNext()) {
-         val values = Food()
-         values.uid=cursor.getString(0)
-         list.add(values)
-      }
-      cursor.close()
-      return list
-   }
-
    fun getFood(column: String, data: Int) : Food {
       val db = dbHelper!!.readableDatabase
       val values = Food()
@@ -177,7 +163,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -201,7 +187,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -226,7 +212,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -252,7 +238,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -279,7 +265,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -304,7 +290,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -330,7 +316,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -355,7 +341,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -380,7 +366,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -407,7 +393,7 @@ class DataManager(private var context: Context?) {
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
-         values.kcal= cursor.getInt(7)
+         values.calorie= cursor.getInt(7)
          values.carbohydrate= cursor.getDouble(8)
          values.protein= cursor.getDouble(9)
          values.fat= cursor.getDouble(10)
@@ -1290,7 +1276,7 @@ class DataManager(private var context: Context?) {
       values.put("name", data.name)
       values.put("unit", data.unit)
       values.put("amount", data.amount)
-      values.put("kcal", data.kcal)
+      values.put("calorie", data.calorie)
       values.put("carbohydrate", data.carbohydrate)
       values.put("protein", data.protein)
       values.put("fat", data.fat)
@@ -1310,7 +1296,7 @@ class DataManager(private var context: Context?) {
       values.put("name", data.name)
       values.put("unit", data.unit)
       values.put("amount", data.amount)
-      values.put("kcal", data.kcal)
+      values.put("calorie", data.calorie)
       values.put("carbohydrate", data.carbohydrate)
       values.put("protein", data.protein)
       values.put("fat", data.fat)
@@ -1500,7 +1486,7 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateStr(table: String, column1: String, data: String, column2: String, id: Int){
+   fun updateStr(table: String, column1: String, data: String?, column2: String, id: Int){
       val db = dbHelper!!.writableDatabase
       val sql = "update $table set $column1='$data' where $USER_ID = ${MyApp.prefs.getUserId()} and $column2=$id"
       db.execSQL(sql)
@@ -1589,7 +1575,7 @@ class DataManager(private var context: Context?) {
 
    fun updateFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, " +
+      val sql = "update $FOOD set unit='${data.unit}', amount=${data.amount}, calorie=${data.calorie}, carbohydrate=${data.carbohydrate}, " +
          "protein=${data.protein}, fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, $IS_UPDATED=${data.isUpdated} where id=${data.id}"
       db.execSQL(sql)
       db.close()
@@ -1597,7 +1583,7 @@ class DataManager(private var context: Context?) {
 
    fun updateDailyFood(data: Food){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $DAILY_FOOD set unit='${data.unit}', amount=${data.amount}, kcal=${data.kcal}, carbohydrate=${data.carbohydrate}, protein=${data.protein}, " +
+      val sql = "update $DAILY_FOOD set unit='${data.unit}', amount=${data.amount}, calorie=${data.calorie}, carbohydrate=${data.carbohydrate}, protein=${data.protein}, " +
          "fat=${data.fat}, salt=${data.salt}, sugar=${data.sugar}, count=${data.count}, $IS_UPDATED=${data.isUpdated} where id=${data.id}"
       db.execSQL(sql)
       db.close()

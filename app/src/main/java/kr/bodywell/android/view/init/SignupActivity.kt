@@ -21,6 +21,7 @@ import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoSignupRequest
 import kr.bodywell.android.util.RegisterUtil.naverSignupRequest
+import kr.bodywell.android.util.RegisterUtil.registerTest
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null

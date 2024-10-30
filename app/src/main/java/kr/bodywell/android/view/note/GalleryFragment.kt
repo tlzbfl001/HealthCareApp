@@ -196,7 +196,7 @@ class GalleryFragment : Fragment() {
 
 	private fun viewPhotos() {
 		if(imageList.size > 0) {
-			val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
+			val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
 			binding.recyclerView.layoutManager = layoutManager
 			val adapter = GalleryAdapter(requireActivity(), imageList)
 

@@ -4,9 +4,10 @@
    android:layout_height="wrap_content"
    android:id="@android:id/text1"
    android:gravity="center"
-   android:paddingStart="21dp"
-   android:paddingEnd="21dp"
-   android:paddingTop="6.2dp"
-   android:paddingBottom="6.2dp"
+   android:paddingStart="16dp"
+   android:paddingEnd="16dp"
+   android:paddingTop="8dp"
+   android:paddingBottom="6dp"
+   android:fontFamily="@font/nanum"
    android:textColor="@drawable/tab_text_selector"
-   android:textSize="16.8sp"/>
+   android:textSize="16dp"/>

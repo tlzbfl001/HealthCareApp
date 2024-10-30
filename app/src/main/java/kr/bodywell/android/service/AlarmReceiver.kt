@@ -43,8 +43,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.logo2)
-            .setContentTitle("약복용")
-            .setContentText(message)
+            .setContentTitle(message)
+            .setContentText("약복용 시간이에요. 잊지말고 복용해주세요~")
             .setColor(ContextCompat.getColor(context, R.color.transparent))
 
         val notificationChannel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)

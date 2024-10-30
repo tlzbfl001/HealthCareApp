@@ -61,7 +61,7 @@ class FoodAddFragment : Fragment() {
 		binding.tvName.text = getFood.name
 		binding.tvAmount.text = getFood.amount.toString()
 		binding.tvUnit.text = getFood.unit
-		binding.etKcal.text = getFood.kcal.toString()
+		binding.etKcal.text = getFood.calorie.toString()
 		binding.tvCar.text = String.format("%.1f", getFood.carbohydrate) + "g"
 		binding.tvProtein.text = String.format("%.1f", getFood.protein) + "g"
 		binding.tvFat.text = String.format("%.1f", getFood.fat) + "g"
@@ -81,11 +81,11 @@ class FoodAddFragment : Fragment() {
 			val getDailyFood = dataManager.getDailyFood(type = type, name = getFood.name, selectedDate.toString())
 
 			if(getDailyFood.createdAt == "") {
-				dataManager.insertDailyFood(Food(type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal,
+				dataManager.insertDailyFood(Food(type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, calorie = getFood.calorie,
 					carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
 					createdAt = selectedDate.toString()))
 			}else {
-				dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, kcal = getFood.kcal, carbohydrate = getFood.carbohydrate,
+				dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, calorie = getFood.calorie, carbohydrate = getFood.carbohydrate,
 					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1, isUpdated = 1))
 			}
 

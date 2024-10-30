@@ -55,14 +55,14 @@ import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.dateToIso
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
+import kr.bodywell.android.util.MyApp.Companion.getToken
+import kr.bodywell.android.util.MyApp.Companion.getUser
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 object ViewModelUtil {
-	var getUser = User()
-	var getToken = Token()
 	var requestStatus = true
 
 	suspend fun createRequest(context: Context, dataManager: DataManager) {
@@ -103,6 +103,8 @@ object ViewModelUtil {
 						if(deleteFood.isSuccessful) {
 							dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 						}
+
+
 					}else {
 						if(response.code() == 404) dataManager.deleteItem(UNUSED, "id", getUnused[i].id)
 					}
@@ -200,7 +202,7 @@ object ViewModelUtil {
 		}
 
 		for(i in 0 until getFoodUid.size) {
-			val response = RetrofitAPI.api.createFood("Bearer ${getToken.access}", FoodDTO(getFoodUid[i].name, getFoodUid[i].kcal, getFoodUid[i].carbohydrate,
+			val response = RetrofitAPI.api.createFood("Bearer ${getToken.access}", FoodDTO(getFoodUid[i].name, getFoodUid[i].calorie, getFoodUid[i].carbohydrate,
 				getFoodUid[i].protein, getFoodUid[i].fat, getFoodUid[i].count, "개", getFoodUid[i].amount, getFoodUid[i].unit))
 			if(response.isSuccessful) {
 				Log.d(TAG, "createFood: ${response.body()}")
@@ -211,7 +213,7 @@ object ViewModelUtil {
 		}
 
 		for(i in 0 until getFoodUpdated.size) {
-			val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", getFoodUpdated[i].uid, FoodUpdateDTO(getFoodUpdated[i].kcal, getFoodUpdated[i].carbohydrate,
+			val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", getFoodUpdated[i].uid, FoodUpdateDTO(getFoodUpdated[i].calorie, getFoodUpdated[i].carbohydrate,
 				getFoodUpdated[i].protein, getFoodUpdated[i].fat,getFoodUpdated[i].count, "개", getFoodUpdated[i].amount, getFoodUpdated[i].unit))
 			if(response.isSuccessful) {
 				Log.d(TAG, "updateFood: ${response.body()}")
@@ -227,7 +229,7 @@ object ViewModelUtil {
 			val getData = dataManager.getData(FOOD, "name", getDailyFoodUid[i].name)
 			val foodId = if(getData.uid != "") getData.uid else null
 			val dateToIso = dateToIso(getDailyFoodUid[i].createdAt)
-			val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", DietDTO(getDailyFoodUid[i].type, getDailyFoodUid[i].name, getDailyFoodUid[i].kcal, getDailyFoodUid[i].carbohydrate,
+			val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", DietDTO(getDailyFoodUid[i].type, getDailyFoodUid[i].name, getDailyFoodUid[i].calorie, getDailyFoodUid[i].carbohydrate,
 				getDailyFoodUid[i].protein, getDailyFoodUid[i].fat, getDailyFoodUid[i].count, "개", getDailyFoodUid[i].amount, getDailyFoodUid[i].unit, photos, dateToIso, foodId))
 
 			if(response.isSuccessful) {
@@ -243,7 +245,7 @@ object ViewModelUtil {
 			photos.add("https://example.com/picture.jpg")
 			val dateToIso = dateToIso(getDailyFoodUpdated[i].createdAt)
 			val response = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", getDailyFoodUpdated[i].uid, DietUpdateDTO(getDailyFoodUpdated[i].type,
-				getDailyFoodUpdated[i].name, getDailyFoodUpdated[i].kcal, getDailyFoodUpdated[i].carbohydrate, getDailyFoodUpdated[i].protein, getDailyFoodUpdated[i].fat,
+				getDailyFoodUpdated[i].name, getDailyFoodUpdated[i].calorie, getDailyFoodUpdated[i].carbohydrate, getDailyFoodUpdated[i].protein, getDailyFoodUpdated[i].fat,
 				getDailyFoodUpdated[i].count, "개", getDailyFoodUpdated[i].amount, getDailyFoodUpdated[i].unit, photos, dateToIso))
 
 			if(response.isSuccessful) {
@@ -513,7 +515,7 @@ object ViewModelUtil {
 						dataManager.deleteItem(DAILY_FOOD, "id", getDailyFood.id)
 					}else {
 						dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume,
-							kcal = syncDiets.body()?.data!![i].calorie, carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein,
+							calorie = syncDiets.body()?.data!![i].calorie, carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein,
 							fat = syncDiets.body()?.data!![i].fat, count = syncDiets.body()?.data!![i].quantity))
 						dataManager.updateStr(DAILY_FOOD, "uid", syncDiets.body()?.data!![i].id, "id", getDailyFood.id)
 
@@ -521,7 +523,7 @@ object ViewModelUtil {
 					}
 				}else if(syncDiets.body()?.data!![i].createdAt != null && syncDiets.body()?.data!![i].deletedAt == null) {
 					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].id, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].name,
-						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, kcal = syncDiets.body()?.data!![i].calorie,
+						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, calorie = syncDiets.body()?.data!![i].calorie,
 						carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
 						count = syncDiets.body()?.data!![i].quantity, createdAt = date))
 
@@ -762,7 +764,7 @@ object ViewModelUtil {
 		if(requestStatus) dataManager.updateUserStr(SYNC_TIME, "syncedAt", now, "id")
 	}
 
-	private suspend fun updateFoodData(dataManager: DataManager, name: String) {
+	private suspend fun updateFoodData(dataManager: DataManager, name: String) { // food usecount, usedate 수정시 isupdate 1로하면 이함수 필요없음.
 		val getData = dataManager.getData(FOOD, "name", name)
 		if(getData.uid != "") {
 			val response = RetrofitAPI.api.getFood("Bearer ${getToken.access}", getData.uid)

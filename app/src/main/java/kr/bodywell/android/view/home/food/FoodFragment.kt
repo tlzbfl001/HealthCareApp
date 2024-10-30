@@ -247,13 +247,13 @@ class FoodFragment : Fragment() {
       var protein1 = 0.0
       var fat1 = 0.0
       for(i in 0 until getDailyFood1.size) {
-         kcal1 += getDailyFood1[i].kcal * getDailyFood1[i].count
+         kcal1 += getDailyFood1[i].calorie * getDailyFood1[i].count
          carbohydrate1 += getDailyFood1[i].carbohydrate * getDailyFood1[i].count
          protein1 += getDailyFood1[i].protein * getDailyFood1[i].count
          fat1 += getDailyFood1[i].fat * getDailyFood1[i].count
 
          itemList1.add(Food(id = getDailyFood1[i].id, name = getDailyFood1[i].name, unit = getDailyFood1[i].unit, amount = getDailyFood1[i].amount,
-            count = getDailyFood1[i].count, kcal = getDailyFood1[i].kcal, carbohydrate = getDailyFood1[i].carbohydrate, protein = getDailyFood1[i].protein,
+            count = getDailyFood1[i].count, calorie = getDailyFood1[i].calorie, carbohydrate = getDailyFood1[i].carbohydrate, protein = getDailyFood1[i].protein,
             fat = getDailyFood1[i].fat, salt = getDailyFood1[i].salt, sugar = getDailyFood1[i].sugar, type = getDailyFood1[i].type, createdAt = getDailyFood1[i].createdAt)
          )
       }
@@ -263,13 +263,13 @@ class FoodFragment : Fragment() {
       var protein2 = 0.0
       var fat2 = 0.0
       for(i in 0 until getDailyFood2.size) {
-         kcal2 += getDailyFood2[i].kcal * getDailyFood2[i].count
+         kcal2 += getDailyFood2[i].calorie * getDailyFood2[i].count
          carbohydrate2 += getDailyFood2[i].carbohydrate * getDailyFood2[i].count
          protein2 += getDailyFood2[i].protein * getDailyFood2[i].count
          fat2 += getDailyFood2[i].fat * getDailyFood2[i].count
 
          itemList2.add(Food(id = getDailyFood2[i].id, name = getDailyFood2[i].name, unit = getDailyFood2[i].unit, amount = getDailyFood2[i].amount,
-            count = getDailyFood2[i].count, kcal = getDailyFood2[i].kcal, carbohydrate = getDailyFood2[i].carbohydrate, protein = getDailyFood2[i].protein,
+            count = getDailyFood2[i].count, calorie = getDailyFood2[i].calorie, carbohydrate = getDailyFood2[i].carbohydrate, protein = getDailyFood2[i].protein,
             fat = getDailyFood2[i].fat, salt = getDailyFood2[i].salt, sugar = getDailyFood2[i].sugar, type = getDailyFood2[i].type, createdAt = getDailyFood2[i].createdAt)
          )
       }
@@ -279,13 +279,13 @@ class FoodFragment : Fragment() {
       var protein3 = 0.0
       var fat3 = 0.0
       for(i in 0 until getDailyFood3.size) {
-         kcal3 += getDailyFood3[i].kcal * getDailyFood3[i].count
+         kcal3 += getDailyFood3[i].calorie * getDailyFood3[i].count
          carbohydrate3 += getDailyFood3[i].carbohydrate * getDailyFood3[i].count
          protein3 += getDailyFood3[i].protein * getDailyFood3[i].count
          fat3 += getDailyFood3[i].fat * getDailyFood3[i].count
 
          itemList3.add(Food(id = getDailyFood3[i].id, name = getDailyFood3[i].name, unit = getDailyFood3[i].unit, amount = getDailyFood3[i].amount,
-            count = getDailyFood3[i].count, kcal = getDailyFood3[i].kcal, carbohydrate = getDailyFood3[i].carbohydrate, protein = getDailyFood3[i].protein,
+            count = getDailyFood3[i].count, calorie = getDailyFood3[i].calorie, carbohydrate = getDailyFood3[i].carbohydrate, protein = getDailyFood3[i].protein,
             fat = getDailyFood3[i].fat, salt = getDailyFood3[i].salt, sugar = getDailyFood3[i].sugar, type = getDailyFood3[i].type, createdAt = getDailyFood3[i].createdAt)
          )
       }
@@ -295,13 +295,13 @@ class FoodFragment : Fragment() {
       var protein4 = 0.0
       var fat4 = 0.0
       for(i in 0 until getDailyFood4.size) {
-         kcal4 += getDailyFood4[i].kcal * getDailyFood4[i].count
+         kcal4 += getDailyFood4[i].calorie * getDailyFood4[i].count
          carbohydrate4 += getDailyFood4[i].carbohydrate * getDailyFood4[i].count
          protein4 += getDailyFood4[i].protein * getDailyFood4[i].count
          fat4 += getDailyFood4[i].fat * getDailyFood4[i].count
 
          itemList4.add(Food(id = getDailyFood4[i].id, name = getDailyFood4[i].name, unit = getDailyFood4[i].unit, amount = getDailyFood4[i].amount,
-            count = getDailyFood4[i].count, kcal = getDailyFood4[i].kcal, carbohydrate = getDailyFood4[i].carbohydrate, protein = getDailyFood4[i].protein,
+            count = getDailyFood4[i].count, calorie = getDailyFood4[i].calorie, carbohydrate = getDailyFood4[i].carbohydrate, protein = getDailyFood4[i].protein,
             fat = getDailyFood4[i].fat, salt = getDailyFood4[i].salt, sugar = getDailyFood4[i].sugar, type = getDailyFood4[i].type, createdAt = getDailyFood4[i].createdAt)
          )
       }

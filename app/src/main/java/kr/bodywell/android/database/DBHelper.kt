@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 3
+      const val DATABASE_VERSION = 4
       const val USER = "user"
       const val TOKEN = "token"
       const val FOOD = "food"
@@ -40,12 +40,12 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
       db.execSQL(token)
 
-      val food = "create table $FOOD(id integer primary key autoincrement, $USER_ID integer, registerType text, uid text, name text, unit text, amount integer, kcal integer, " +
-         "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, $IS_UPDATED integer);"
+      val food = "create table $FOOD(id integer primary key autoincrement, $USER_ID integer, registerType text, uid text, name text, unit text, amount integer, calorie integer, " +
+         "carbohydrate real, protein real, fat real, salt real, sugar real, useCount integer, useDate text, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(food)
 
       val dailyFood = "create table $DAILY_FOOD(id integer primary key autoincrement, $USER_ID integer, uid text, type text, name text, unit text, amount integer, " +
-         "kcal integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, $CREATED_AT text, $IS_UPDATED integer);"
+         "calorie integer, carbohydrate real, protein real, fat real, salt real, sugar real, count integer, $CREATED_AT text, $IS_UPDATED integer);"
       db.execSQL(dailyFood)
 
       val water = "create table $WATER(id integer primary key autoincrement, $USER_ID integer, uid text, count integer, volume integer, $CREATED_AT text, $IS_UPDATED integer);"

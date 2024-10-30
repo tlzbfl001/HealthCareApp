@@ -36,7 +36,7 @@ class FoodIntakeAdapter (
         val count = itemList[position].count
 
         holder.tvName.text = itemList[position].name
-        holder.tvKcal.text = "${itemList[position].kcal * count} kcal"
+        holder.tvKcal.text = "${itemList[position].calorie * count} kcal"
         holder.tvDesc.text = "${count}개/${itemList[position].amount * count}${itemList[position].unit}"
 
         holder.cl.setOnClickListener {
