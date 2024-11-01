@@ -19,23 +19,18 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.powersync.DatabaseDriverFactory
-import com.powersync.PowerSyncDatabase
-import com.powersync.connectors.PowerSyncBackendConnector
-import com.powersync.connectors.PowerSyncCredentials
-import com.powersync.db.schema.Column
-import com.powersync.db.schema.Schema
-import com.powersync.db.schema.Table
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
+import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
-import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.layoutType
@@ -98,6 +93,13 @@ class MainFragment : Fragment() {
 
       selectedDate = LocalDate.now()
       viewModel.setDate()
+
+      runBlocking {
+         val watchFood = CustomUtil.powerSync.watchFood()
+         watchFood.collect(FlowCollector {
+            Log.d(CustomUtil.TAG, "watchFood: $it")
+         })
+      }
 
       val getUser = dataManager.getUser()
 

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodAddBinding
@@ -89,8 +90,7 @@ class FoodAddFragment : Fragment() {
 					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1, isUpdated = 1))
 			}
 
-			dataManager.updateInt(FOOD, "useCount", getFood.useCount + 1, "id", id)
-			dataManager.updateStr(FOOD, "useDate", LocalDateTime.now().toString(), "id", id)
+			dataManager.updateData2(FOOD, getFood.useCount + 1, LocalDateTime.now().toString(), 1, id)
 
 			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 			replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)

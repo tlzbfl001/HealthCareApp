@@ -5,7 +5,7 @@ import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 data class Food(
     var id: Int = 0,
     var userId: Int = 0,
-    var uid: String? = "",
+    var uid: String = "",
     var registerType: String = TYPE_USER,
     var type: String = "",
     var name: String = "",

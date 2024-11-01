@@ -5,23 +5,25 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import com.powersync.DatabaseDriverFactory
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.api.PowerSync
 import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.time.LocalDateTime
@@ -31,8 +33,6 @@ class FoodInputFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private val driverFactory = DatabaseDriverFactory(requireActivity())
-   private val powerSync = PowerSync(driverFactory)
    private var bundle = Bundle()
    private var type = Constant.BREAKFAST.name
    private var unit = "mg"
@@ -342,14 +342,12 @@ class FoodInputFragment : Fragment() {
             Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
          }else {
             val food = Food(name = name, unit = unit, amount = amount, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt,
-               sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString(), createdAt = LocalDateTime.now().toString())
+               sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString())
 
             dataManager.insertFood(food)
-            val dataId = dataManager.getFood("name", name).id
 
             runBlocking {
-               val result = powerSync.insertFood(food)
-               dataManager.updateStr(FOOD, "uid", result, "id", dataId)
+               powerSync.insertFood(food)
             }
 
             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()

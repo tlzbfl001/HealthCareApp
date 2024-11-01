@@ -90,6 +90,7 @@ class DataManager(private var context: Context?) {
          values.waterUnit = cursor.getInt(16)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -108,6 +109,7 @@ class DataManager(private var context: Context?) {
          values.weight = cursor.getDouble(6)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -125,6 +127,7 @@ class DataManager(private var context: Context?) {
          values.refreshCreated = cursor.getString(5)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -138,6 +141,7 @@ class DataManager(private var context: Context?) {
          values.uid = cursor.getString(1)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -150,6 +154,7 @@ class DataManager(private var context: Context?) {
          value.uid = cursor.getString(0)
       }
       cursor.close()
+      db.close()
       return value
    }
 
@@ -160,6 +165,7 @@ class DataManager(private var context: Context?) {
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          values.id=cursor.getInt(0)
+         values.uid=cursor.getString(3)
          values.name=cursor.getString(4)
          values.unit=cursor.getString(5)
          values.amount= cursor.getInt(6)
@@ -173,6 +179,7 @@ class DataManager(private var context: Context?) {
          values.useDate = cursor.getString(14)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -197,6 +204,7 @@ class DataManager(private var context: Context?) {
          values.useDate = cursor.getString(14)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -223,6 +231,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -249,6 +258,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -276,6 +286,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -300,6 +311,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(14)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -327,6 +339,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -351,6 +364,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(14)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -377,6 +391,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -404,6 +419,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -421,6 +437,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -438,6 +455,7 @@ class DataManager(private var context: Context?) {
          values.isUpdated = cursor.getInt(6)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -456,6 +474,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -474,6 +493,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -490,6 +510,7 @@ class DataManager(private var context: Context?) {
          values.useDate = cursor.getString(6)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -506,6 +527,7 @@ class DataManager(private var context: Context?) {
          values.useDate = cursor.getString(6)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -524,6 +546,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -542,6 +565,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -559,6 +583,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(7)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -579,6 +604,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -599,6 +625,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -619,6 +646,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -636,6 +664,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -657,6 +686,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(10)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -674,6 +704,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -697,6 +728,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -720,6 +752,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -735,6 +768,7 @@ class DataManager(private var context: Context?) {
          values.endTime = cursor.getString(4)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -751,6 +785,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -768,6 +803,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -791,6 +827,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -812,6 +849,7 @@ class DataManager(private var context: Context?) {
          values.isSet = cursor.getInt(10)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -824,6 +862,7 @@ class DataManager(private var context: Context?) {
          list.add(cursor.getInt(0))
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -841,6 +880,7 @@ class DataManager(private var context: Context?) {
          values.isSet = cursor.getInt(5)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -853,6 +893,7 @@ class DataManager(private var context: Context?) {
          list.add(cursor.getInt(0))
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -875,6 +916,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -898,6 +940,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -914,6 +957,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -929,6 +973,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -941,6 +986,7 @@ class DataManager(private var context: Context?) {
          count = cursor.getInt(0)
       }
       cursor.close()
+      db.close()
       return count
    }
 
@@ -955,6 +1001,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(2)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -972,6 +1019,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -988,6 +1036,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1004,6 +1053,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1020,6 +1070,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1036,6 +1087,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1048,6 +1100,7 @@ class DataManager(private var context: Context?) {
          list.add(cursor.getString(0))
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1064,6 +1117,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(5)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -1085,6 +1139,7 @@ class DataManager(private var context: Context?) {
          values.createdAt = cursor.getString(10)
       }
       cursor.close()
+      db.close()
       return values
    }
 
@@ -1108,6 +1163,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1132,6 +1188,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1150,6 +1207,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1168,6 +1226,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1183,6 +1242,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1201,6 +1261,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1218,6 +1279,7 @@ class DataManager(private var context: Context?) {
          list.add(values)
       }
       cursor.close()
+      db.close()
       return list
    }
 
@@ -1230,6 +1292,7 @@ class DataManager(private var context: Context?) {
          value = cursor.getString(0)
       }
       cursor.close()
+      db.close()
       return value
    }
 
@@ -1254,6 +1317,7 @@ class DataManager(private var context: Context?) {
       values.put("waterUnit", data.waterUnit)
       values.put(IS_UPDATED, data.isUpdated)
       db!!.insert(USER, null, values)
+      db.close()
    }
 
    fun insertToken(data: Token) {
@@ -1265,6 +1329,7 @@ class DataManager(private var context: Context?) {
       values.put("accessCreated", data.accessCreated)
       values.put("refreshCreated", data.refreshCreated)
       db!!.insert(TOKEN, null, values)
+      db.close()
    }
 
    fun insertFood(data: Food) {
@@ -1285,6 +1350,7 @@ class DataManager(private var context: Context?) {
       values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
       db!!.insert(FOOD, null, values)
+      db.close()
    }
 
    fun insertDailyFood(data: Food) {
@@ -1305,6 +1371,7 @@ class DataManager(private var context: Context?) {
       values.put("count", data.count)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(DAILY_FOOD, null, values)
+      db.close()
    }
 
    fun insertWater(data: Water) {
@@ -1316,6 +1383,7 @@ class DataManager(private var context: Context?) {
       values.put("volume", data.volume)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(WATER, null, values)
+      db.close()
    }
 
    fun insertExercise(data: Exercise) {
@@ -1328,6 +1396,7 @@ class DataManager(private var context: Context?) {
       values.put("useCount", data.useCount)
       values.put("useDate", data.useDate)
       db.insert(EXERCISE, null, values)
+      db.close()
    }
 
    fun insertDailyExercise(data: Exercise) {
@@ -1341,6 +1410,7 @@ class DataManager(private var context: Context?) {
       values.put("kcal", data.kcal)
       values.put(CREATED_AT, data.createdAt)
       db.insert(DAILY_EXERCISE, null, values)
+      db.close()
    }
 
    fun insertBody(data: Body) {
@@ -1357,6 +1427,7 @@ class DataManager(private var context: Context?) {
       values.put("bmr", data.bmr)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(BODY, null, values)
+      db.close()
    }
 
    fun insertSleep(data: Sleep) {
@@ -1367,6 +1438,7 @@ class DataManager(private var context: Context?) {
       values.put("startTime", data.startTime)
       values.put("endTime", data.endTime)
       db!!.insert(SLEEP, null, values)
+      db.close()
    }
 
    fun insertDrug(data: Drug) {
@@ -1383,6 +1455,7 @@ class DataManager(private var context: Context?) {
       values.put("endDate", data.endDate)
       values.put("isSet", 1)
       db!!.insert(DRUG, null, values)
+      db.close()
    }
 
    fun insertDrugTime(data: DrugTime) {
@@ -1393,6 +1466,7 @@ class DataManager(private var context: Context?) {
       values.put("drugId", data.drugId)
       values.put("time", data.time)
       db!!.insert(DRUG_TIME, null, values)
+      db.close()
    }
 
    fun insertDrugCheck(data: DrugCheck) {
@@ -1405,6 +1479,7 @@ class DataManager(private var context: Context?) {
       values.put("time", data.time)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(DRUG_CHECK, null, values)
+      db.close()
    }
 
    fun insertGoal(data: Goal) {
@@ -1421,6 +1496,7 @@ class DataManager(private var context: Context?) {
       values.put("drug", data.drug)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(GOAL, null, values)
+      db.close()
    }
 
    fun insertNote(data: Note) {
@@ -1432,6 +1508,7 @@ class DataManager(private var context: Context?) {
       values.put("status", data.status)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(NOTE, null, values)
+      db.close()
    }
 
    fun insertImage(data: Image) {
@@ -1444,6 +1521,7 @@ class DataManager(private var context: Context?) {
       values.put("imageName", data.imageName)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(IMAGE, null, values)
+      db.close()
    }
 
    fun insertUnused(data: Unused) {
@@ -1455,6 +1533,7 @@ class DataManager(private var context: Context?) {
       values.put("drugUid", data.drugUid)
       values.put(CREATED_AT, data.createdAt)
       db!!.insert(UNUSED, null, values)
+      db.close()
    }
 
    fun insertSync(data: String) {
@@ -1463,6 +1542,7 @@ class DataManager(private var context: Context?) {
       values.put(USER_ID, MyApp.prefs.getUserId())
       values.put("syncedAt", data)
       db!!.insert(SYNC_TIME, null, values)
+      db.close()
    }
 
    fun updateUserStr(table: String, column1: String, data: String, column2: String){
@@ -1489,6 +1569,13 @@ class DataManager(private var context: Context?) {
    fun updateStr(table: String, column1: String, data: String?, column2: String, id: Int){
       val db = dbHelper!!.writableDatabase
       val sql = "update $table set $column1='$data' where $USER_ID = ${MyApp.prefs.getUserId()} and $column2=$id"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateStrByStr(table: String, column1: String, data1: String?, column2: String, data2: String){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $table set $column1='$data1' where $USER_ID = ${MyApp.prefs.getUserId()} and $column2='$data2'"
       db.execSQL(sql)
       db.close()
    }
@@ -1566,9 +1653,9 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateData2(table: String, data1: Int, data2: String, data3: Int){
+   fun updateData2(table: String, data1: Int, data2: String, data3: Int, data4: Int){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $table set useCount=$data1, useDate='$data2' where id=$data3"
+      val sql = "update $table set useCount=$data1, useDate='$data2', $IS_UPDATED=$data3 where id=$data4"
       db.execSQL(sql)
       db.close()
    }

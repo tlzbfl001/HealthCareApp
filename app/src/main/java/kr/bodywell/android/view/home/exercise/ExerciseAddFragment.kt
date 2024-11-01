@@ -105,8 +105,7 @@ class ExerciseAddFragment : Fragment() {
                 dataManager.insertDailyExercise(Exercise(name = getExercise.name, intensity = intensity.name, workoutTime = binding.etTime.text.toString().toInt(),
                     kcal = binding.etKcal.text.toString().toInt(), createdAt = selectedDate.toString()))
 
-                dataManager.updateInt(EXERCISE, "useCount", getExercise.useCount + 1, "id", id)
-                dataManager.updateStr(EXERCISE, "useDate", LocalDateTime.now().toString(), "id", id)
+                dataManager.updateData2(EXERCISE, getExercise.useCount + 1, LocalDateTime.now().toString(), 1, id)
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 replaceFragment3(requireActivity(), ExerciseListFragment())

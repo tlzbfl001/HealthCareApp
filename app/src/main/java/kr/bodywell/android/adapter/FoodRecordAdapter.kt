@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
@@ -18,20 +20,24 @@ import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Unused
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class FoodRecordAdapter (
    private val context: Activity,
-   private var itemList: ArrayList<Food> = ArrayList<Food>(),
+   private var itemList: ArrayList<Food> = ArrayList(),
    private val back: String,
    private val type: String
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
-   private var bundle = Bundle()
    private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
+   private var bundle = Bundle()
 
-   init { dataManager.open() }
+   init {
+      dataManager.open()
+   }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -70,6 +76,11 @@ class FoodRecordAdapter (
                   }
 
                   dataManager.deleteItem(FOOD, "id", itemList[position].id)
+
+                  runBlocking {
+                     val getFood1 = powerSync.deleteFood(itemList[position].uid)
+                     Log.d(CustomUtil.TAG, "deleteFood: $getFood1")
+                  }
 
                   itemList.removeAt(position)
                   notifyDataSetChanged()

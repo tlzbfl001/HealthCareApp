@@ -70,7 +70,6 @@ object RegisterUtil {
 					context.startActivity(intent)
 				}
 			}*/
-
 			// 서버미완성 상태이므로 아랫것씀.
 			val response = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
 			if(response.isSuccessful) {

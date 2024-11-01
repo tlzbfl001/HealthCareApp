@@ -14,12 +14,15 @@ import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
+import kr.bodywell.android.api.powerSync.AppService
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.model.Token
+import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.view.home.MainActivity
 import java.io.File
@@ -36,8 +39,11 @@ import java.util.regex.Pattern
 
 object CustomUtil {
    const val TAG = "logTAG"
-   var layoutType = 1
+   lateinit var powerSync: AppService
+   var getUser = User()
+   var getToken = Token()
    var drugTimeList = ArrayList<DrugTime>()
+   var layoutType = 1
 
    fun replaceFragment1(activity: Activity, fragment: Fragment?) {
       (activity as MainActivity).supportFragmentManager.beginTransaction().apply {

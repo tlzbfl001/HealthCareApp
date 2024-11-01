@@ -1,4 +1,4 @@
-package kr.bodywell.android.api
+package kr.bodywell.android.api.powerSync
 
 import com.powersync.db.schema.Column
 import com.powersync.db.schema.Schema
@@ -11,7 +11,7 @@ val AppSchema: Schema = Schema(
 			name = "foods",
 			columns = listOf(
 				Column.text("name"),
-				Column.real("calorie"),
+				Column.integer("calorie"),
 				Column.real("carbohydrate"),
 				Column.real("protein"),
 				Column.real("fat"),
@@ -47,21 +47,6 @@ val AppSchema: Schema = Schema(
 				Column.text("deleted_at"),
 				Column.text("user_id"),
 				Column.text("food_id")
-			)
-		),
-		Table(
-			localOnly = false,
-			name = "sleep",
-			columns = listOf(
-				Column.text("starts"),
-				Column.text("ends"),
-				Column.text("is_daily"),
-				Column.text("is_monthly"),
-				Column.text("is_yearly"),
-				Column.text("created_at"),
-				Column.text("updated_at"),
-				Column.text("deleted_at"),
-				Column.text("user_id")
 			)
 		)
 	)

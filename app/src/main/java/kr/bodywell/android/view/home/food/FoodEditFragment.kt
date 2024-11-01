@@ -5,17 +5,21 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodEditBinding
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 
@@ -309,10 +313,16 @@ class FoodEditFragment : Fragment() {
 		})
 
 		binding.cvEdit.setOnClickListener {
-			dataManager.updateFood(Food(id = id, unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
+			val food = Food(id = id, uid = getFood.uid, unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
 				calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
 				protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
-				salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1))
+				salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1)
+
+			dataManager.updateFood(food)
+
+			runBlocking {
+				powerSync.updateFood(food)
+			}
 
 			Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
 			replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)

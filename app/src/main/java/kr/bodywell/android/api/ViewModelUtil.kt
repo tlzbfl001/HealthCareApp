@@ -1,9 +1,8 @@
-package kr.bodywell.android.util
+package kr.bodywell.android.api
 
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.delay
-import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.ActivityDTO
 import kr.bodywell.android.api.dto.BodyDTO
 import kr.bodywell.android.api.dto.DietDTO
@@ -54,9 +53,9 @@ import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.dateToIso
+import kr.bodywell.android.util.CustomUtil.getToken
+import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
-import kr.bodywell.android.util.MyApp.Companion.getToken
-import kr.bodywell.android.util.MyApp.Companion.getUser
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -518,16 +517,12 @@ object ViewModelUtil {
 							calorie = syncDiets.body()?.data!![i].calorie, carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein,
 							fat = syncDiets.body()?.data!![i].fat, count = syncDiets.body()?.data!![i].quantity))
 						dataManager.updateStr(DAILY_FOOD, "uid", syncDiets.body()?.data!![i].id, "id", getDailyFood.id)
-
-						updateFoodData(dataManager, syncDiets.body()?.data!![i].name) // 식품데이터 사용횟수, 사용날짜 업데이트
 					}
 				}else if(syncDiets.body()?.data!![i].createdAt != null && syncDiets.body()?.data!![i].deletedAt == null) {
 					dataManager.insertDailyFood(Food(uid = syncDiets.body()?.data!![i].id, type = syncDiets.body()?.data!![i].mealTime, name = syncDiets.body()?.data!![i].name,
 						unit = syncDiets.body()?.data!![i].volumeUnit, amount = syncDiets.body()?.data!![i].volume, calorie = syncDiets.body()?.data!![i].calorie,
 						carbohydrate = syncDiets.body()?.data!![i].carbohydrate, protein = syncDiets.body()?.data!![i].protein, fat = syncDiets.body()?.data!![i].fat,
 						count = syncDiets.body()?.data!![i].quantity, createdAt = date))
-
-					updateFoodData(dataManager, syncDiets.body()?.data!![i].name)
 				}
 			}
 		}else {
@@ -571,7 +566,7 @@ object ViewModelUtil {
 						dataManager.updateData1(EXERCISE, syncActivity.body()?.data!![i].registerType, syncActivity.body()?.data!![i].id, getData.id)
 						if(syncActivity.body()?.data!![i].usages != null) {
 							val updatedAt = isoToDateTime(syncActivity.body()?.data!![i].usages!![0].updatedAt).toString()
-							dataManager.updateData2(EXERCISE, syncActivity.body()?.data!![i].usages!![0].usageCount, updatedAt, getData.id)
+							dataManager.updateData2(EXERCISE, syncActivity.body()?.data!![i].usages!![0].usageCount, updatedAt, 0, getData.id)
 						}
 					}
 				}else if(syncActivity.body()?.data!![i].createdAt != null && syncActivity.body()?.data!![i].deletedAt == null) {
@@ -605,15 +600,11 @@ object ViewModelUtil {
 						dataManager.updateDailyExercise(Exercise(id = getData.id, intensity = syncWorkout.body()?.data!![i].intensity,
 							workoutTime = syncWorkout.body()?.data!![i].time, kcal = syncWorkout.body()?.data!![i].calorie))
 						dataManager.updateStr(DAILY_EXERCISE, "uid", syncWorkout.body()?.data!![i].id, "id", getData.id)
-
-						updateExerciseData(dataManager, syncWorkout.body()?.data!![i].name) // 운동데이터 사용횟수, 사용날짜 업데이트
 					}
 				}else if(syncWorkout.body()?.data!![i].createdAt != null && syncWorkout.body()?.data!![i].deletedAt == null) {
 					dataManager.insertDailyExercise(Exercise(uid = syncWorkout.body()?.data!![i].id, name = syncWorkout.body()?.data!![i].name,
 						intensity = syncWorkout.body()?.data!![i].intensity, workoutTime = syncWorkout.body()?.data!![i].time,
 						kcal = syncWorkout.body()?.data!![i].calorie, createdAt = syncWorkout.body()?.data!![i].date.substring(0, 10)))
-
-					updateExerciseData(dataManager, syncWorkout.body()?.data!![i].name)
 				}
 			}
 		}else {
@@ -764,39 +755,7 @@ object ViewModelUtil {
 		if(requestStatus) dataManager.updateUserStr(SYNC_TIME, "syncedAt", now, "id")
 	}
 
-	private suspend fun updateFoodData(dataManager: DataManager, name: String) { // food usecount, usedate 수정시 isupdate 1로하면 이함수 필요없음.
-		val getData = dataManager.getData(FOOD, "name", name)
-		if(getData.uid != "") {
-			val response = RetrofitAPI.api.getFood("Bearer ${getToken.access}", getData.uid)
-			if(response.isSuccessful) {
-				if(response.body()?.usages != null) {
-					val useDate = isoToDateTime(response.body()?.usages!![0].updatedAt).toString()
-					dataManager.updateInt(FOOD, "useCount", response.body()?.usages!![0].usageCount, "id", getData.id)
-					dataManager.updateStr(FOOD, "useDate", useDate, "id", getData.id)
-				}
-			}else {
-				Log.e(TAG, "getFood: $response")
-			}
-		}
-	}
-
-	private suspend fun updateExerciseData(dataManager: DataManager, name: String) {
-		val getExercise = dataManager.getData(EXERCISE, "name", name)
-		if(getExercise.uid != "") {
-			val getActivity = RetrofitAPI.api.getActivity("Bearer ${getToken.access}", getExercise.uid)
-			if(getActivity.isSuccessful) {
-				if(getActivity.body()?.usages != null) {
-					val useDate = isoToDateTime(getActivity.body()?.usages!![0].updatedAt).toString()
-					dataManager.updateInt(EXERCISE, "useCount", getActivity.body()?.usages!![0].usageCount, "id", getExercise.id)
-					dataManager.updateStr(EXERCISE, "useDate", useDate, "id", getExercise.id)
-				}
-			}else {
-				Log.e(TAG, "getActivity: $getActivity")
-			}
-		}
-	}
-
-	private suspend fun refreshToken(dataManager: DataManager) {
+	suspend fun refreshToken(dataManager: DataManager) {
 		val accessDiff = Duration.between(LocalDateTime.parse(getToken.accessCreated), LocalDateTime.now())
 		val refreshDiff = Duration.between(LocalDateTime.parse(getToken.refreshCreated), LocalDateTime.now())
 
@@ -848,5 +807,7 @@ object ViewModelUtil {
 				}
 			}
 		}
+
+		delay(15000)
 	}
 }
