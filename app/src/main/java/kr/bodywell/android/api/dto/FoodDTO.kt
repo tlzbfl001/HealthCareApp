@@ -3,6 +3,13 @@ package kr.bodywell.android.api.dto
 import com.google.gson.annotations.SerializedName
 
 data class FoodDTO(
+	var data: List<FoodDTOData>
+)
+
+data class FoodDTOData(
+	@SerializedName("id")
+	var id: String = "",
+
 	@SerializedName("name")
 	var name: String = "",
 
@@ -28,7 +35,13 @@ data class FoodDTO(
 	var volume: Int = 0,
 
 	@SerializedName("volumeUnit")
-	var volumeUnit: String = ""
+	var volumeUnit: String = "",
+
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
 )
 
 data class FoodUpdateDTO(
@@ -43,12 +56,6 @@ data class FoodUpdateDTO(
 
 	@SerializedName("fat")
 	var fat: Double = 0.0,
-
-	@SerializedName("quantity")
-	var quantity: Int = 0,
-
-	@SerializedName("quantityUnit")
-	var quantityUnit: String = "",
 
 	@SerializedName("volume")
 	var volume: Int = 0,

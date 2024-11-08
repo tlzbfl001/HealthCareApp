@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.model.DrugTime
+import kr.bodywell.android.model.Item
+import kr.bodywell.android.model.MedicineTime
 
 class DrugAdapter3 (
-    private val itemList: ArrayList<DrugTime>
+    private val itemList: ArrayList<Item>
 ) : RecyclerView.Adapter<DrugAdapter3.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -18,8 +19,8 @@ class DrugAdapter3 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.tvCount.text = "${itemList[position].drugId}회"
-        holder.tvTime.text = itemList[position].time
+        holder.tvCount.text = "${itemList[position].int1}회"
+        holder.tvTime.text = itemList[position].string1
     }
 
     override fun getItemCount(): Int {

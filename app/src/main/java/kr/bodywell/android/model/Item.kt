@@ -1,5 +1,9 @@
 package kr.bodywell.android.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Item(
    var string1: String = "",
    var int1: Int = 0,
@@ -14,4 +18,4 @@ data class Item(
    var int4: Int = 0,
    var unit4: String = "",
    var int5: Int = 0
-)
+) : Parcelable

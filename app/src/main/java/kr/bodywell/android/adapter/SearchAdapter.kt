@@ -17,8 +17,6 @@ import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
@@ -42,27 +40,23 @@ class SearchAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textView.text = itemList[position].string3
+        holder.textView.text = itemList[position].string2
 
         holder.textView.setOnClickListener {
             itemClickListener?.onClick(it, holder.adapterPosition)
         }
 
-        if(itemList[position].string1 == TYPE_ADMIN) holder.cl.visibility = View.GONE else holder.cl.visibility = View.VISIBLE
+        if(itemList[position].string3 == TYPE_ADMIN) holder.cl.visibility = View.GONE else holder.cl.visibility = View.VISIBLE
 
         holder.cl.setOnClickListener {
             if(type != "") {
                 val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
                 val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu1, null)
-
-                val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
                 val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
                 val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
-                clX.setOnClickListener { dialog.dismiss() }
-
                 clEdit.setOnClickListener {
-                    bundle.putString("id", itemList[position].int1.toString())
+                    bundle.putString("id", itemList[position].string1)
                     bundle.putString("type", type)
                     bundle.putString("back", back)
                     replaceFragment2(context, FoodEditFragment(), bundle)
@@ -74,13 +68,9 @@ class SearchAdapter(
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            val result = dataManager.deleteItem(FOOD, "id", itemList[position].int1)
+                            val result = dataManager.deleteItem(FOOD, "id", itemList[position].string1)
 
                             if(result > 0) {
-                                if(itemList[position].string1 != "") {
-                                    dataManager.insertUnused(Unused(type = FOOD, value = itemList[position].string2, createdAt = selectedDate.toString()))
-                                }
-
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()
 
@@ -95,24 +85,16 @@ class SearchAdapter(
             }else {
                 val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
                 val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu2, null)
-
-                val clX = bottomSheetView.findViewById<ConstraintLayout>(R.id.clX)
                 val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
-
-                clX.setOnClickListener { dialog.dismiss() }
 
                 clDelete.setOnClickListener {
                     AlertDialog.Builder(context, R.style.AlertDialogStyle)
                         .setTitle("운동 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            val result = dataManager.deleteItem(EXERCISE, "id", itemList[position].int1)
+                            val result = dataManager.deleteItem(EXERCISE, "id", itemList[position].string1)
 
                             if(result > 0) {
-                                if(itemList[position].string2 != "") {
-                                    dataManager.insertUnused(Unused(type = EXERCISE, value = itemList[position].string2, createdAt = selectedDate.toString()))
-                                }
-
                                 itemList.removeAt(position)
                                 notifyDataSetChanged()
 

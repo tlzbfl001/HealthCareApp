@@ -5,15 +5,19 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.powersync.DatabaseDriverFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kr.bodywell.android.api.powerSync.AppService
+import kr.bodywell.android.api.powerSync.SyncService
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.api.ViewModelUtil.refreshToken
 import kr.bodywell.android.api.ViewModelUtil.requestStatus
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil.getToken
+import kr.bodywell.android.util.CustomUtil.getUser
+import kr.bodywell.android.util.CustomUtil.powerSync
 import java.time.LocalDate
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -24,15 +28,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
    init {
       dataManager.open()
+      getUser = dataManager.getUser()
+      getToken = dataManager.getToken()
+      Log.d(TAG, "userId: ${getUser.uid}")
+      Log.d(TAG, "access: ${getToken.access}")
 
-      CustomUtil.getUser = dataManager.getUser()
-      CustomUtil.getToken = dataManager.getToken()
-      Log.d(CustomUtil.TAG, "userId: ${CustomUtil.getUser.uid}")
-      Log.d(CustomUtil.TAG, "access: ${CustomUtil.getToken.access}")
+      val driverFactory = DatabaseDriverFactory(context)
+      powerSync = SyncService(context,driverFactory)
 
       updateData()
-
-      CustomUtil.powerSync = AppService(context)
    }
 
    private fun updateData() = viewModelScope.launch {

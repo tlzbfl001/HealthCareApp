@@ -14,12 +14,11 @@ import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
-import kr.bodywell.android.api.powerSync.AppService
+import kr.bodywell.android.api.powerSync.SyncService
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.model.Food
+import kr.bodywell.android.model.FoodInit
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
@@ -27,6 +26,7 @@ import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.view.home.MainActivity
 import java.io.File
 import java.io.FileOutputStream
+import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -39,10 +39,10 @@ import java.util.regex.Pattern
 
 object CustomUtil {
    const val TAG = "logTAG"
-   lateinit var powerSync: AppService
+   lateinit var powerSync: SyncService
    var getUser = User()
    var getToken = Token()
-   var drugTimeList = ArrayList<DrugTime>()
+   var drugTimeList = ArrayList<Item>()
    var layoutType = 1
 
    fun replaceFragment1(activity: Activity, fragment: Fragment?) {
@@ -104,13 +104,6 @@ object CustomUtil {
       }
    }
 
-   fun filterText(text: String): Boolean {
-      val pattern = "^[0-9a-zA-Zㄱ-ㅎ가-힣 ]*\$" // 한글, 영문, 숫자 패턴
-      val compile = Pattern.compile(pattern)
-      val match = compile.matcher(text)
-      return match.find()
-   }
-
    fun networkStatus(context: Context): Boolean {
       val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
       val networkCapabilities = connectivityManager.activeNetwork ?: return false
@@ -121,6 +114,38 @@ object CustomUtil {
          activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
          else -> false
       }
+   }
+
+   fun filterText(text: String): Boolean {
+      val pattern = "^[0-9a-zA-Zㄱ-ㅎ가-힣 ]*\$" // 한글, 영문, 숫자 패턴
+      val compile = Pattern.compile(pattern)
+      val match = compile.matcher(text)
+      return match.find()
+   }
+
+   fun uuidv7Generator(): ByteArray {
+      val random = SecureRandom()
+
+      // random bytes
+      val value = ByteArray(16)
+      random.nextBytes(value)
+
+      // current timestamp in ms
+      val timestamp = Instant.now().toEpochMilli()
+
+      // timestamp
+      value[0] = ((timestamp shr 40) and 0xFF).toByte()
+      value[1] = ((timestamp shr 32) and 0xFF).toByte()
+      value[2] = ((timestamp shr 24) and 0xFF).toByte()
+      value[3] = ((timestamp shr 16) and 0xFF).toByte()
+      value[4] = ((timestamp shr 8) and 0xFF).toByte()
+      value[5] = (timestamp and 0xFF).toByte()
+
+      // version and variant
+      value[6] = (value[6].toInt() and 0x0F or 0x70).toByte()
+      value[8] = (value[8].toInt() and 0x3F or 0x80).toByte()
+
+      return value
    }
 
    fun getRotatedBitmap(context: Context, data: Uri): Bitmap? {
@@ -190,11 +215,11 @@ object CustomUtil {
          val getDrug = dataManager.getDrugData(getData[i])
 
          if(getDrug.isSet == 1) {
-            val timeList = ArrayList<DrugTime>()
+            val timeList = ArrayList<Item>()
             val getDrugTime = dataManager.getDrugTime(getData[i])
 
             for(j in 0 until getDrugTime.size) {
-               timeList.add(DrugTime(time = getDrugTime[j].time))
+               timeList.add(Item(string1 = getDrugTime[j].time))
             }
 
             val message = getDrug.name + " " + getDrug.amount + getDrug.unit
@@ -236,7 +261,7 @@ object CustomUtil {
       return item
    }
 
-   fun getNutrition(context: Context, date:String) : Food {
+   fun getNutrition(context: Context, date:String) : FoodInit {
       val dataManager = DataManager(context)
       dataManager.open()
 
@@ -275,7 +300,7 @@ object CustomUtil {
          sugar += getFood4[i].sugar * getFood4[i].count
       }
 
-      return Food(carbohydrate = carbohydrate, protein = protein, fat = fat, sugar = sugar, salt = carbohydrate+protein+fat+sugar)
+      return FoodInit(carbohydrate = carbohydrate, protein = protein, fat = fat, sugar = sugar, salt = carbohydrate+protein+fat+sugar)
    }
 
    fun getExerciseCalories(context: Context, date:String) : Int {
@@ -295,6 +320,6 @@ object CustomUtil {
    }
 
    fun setDrugTimeList(data: String) {
-      drugTimeList.add(DrugTime(time = data))
+      drugTimeList.add(Item(string1 = data))
    }
 }

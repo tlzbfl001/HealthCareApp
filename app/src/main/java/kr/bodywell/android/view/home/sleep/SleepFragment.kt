@@ -18,7 +18,7 @@ import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DBHelper.Companion.SLEEP
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSleepBinding
-import kr.bodywell.android.model.Goal
+import kr.bodywell.android.model.GoalInit
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -33,7 +33,7 @@ class SleepFragment : Fragment() {
 
    private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
-   private var dailyGoal = Goal()
+   private var dailyGoal = GoalInit()
    private var getSleep = Sleep()
 
    override fun onCreateView(
@@ -59,7 +59,7 @@ class SleepFragment : Fragment() {
          val total = hour * 60 + minute
 
          if(dailyGoal.createdAt == "") {
-            dataManager.insertGoal(Goal(sleep = total, createdAt = selectedDate.toString()))
+            dataManager.insertGoal(GoalInit(sleep = total, createdAt = selectedDate.toString()))
             dailyGoal = dataManager.getGoal(selectedDate.toString())
          }else {
             dataManager.updateInt(GOAL, SLEEP, total, selectedDate.toString())

@@ -17,8 +17,8 @@ class FoodTextAdapter (
     }
 
     override fun onBindViewHolder(holder: FoodTextAdapter.ViewHolder, pos: Int) {
-        holder.tvName.text = "${item[pos].name}(${item[pos].amount * item[pos].count}${item[pos].unit})"
-        holder.tvKcal.text = "${item[pos].calorie * item[pos].count} kcal"
+        holder.tvName.text = "${item[pos].name}(${item[pos].volume!! * item[pos].quantity!!}${item[pos].volumeUnit})"
+        holder.tvKcal.text = "${item[pos].calorie!! * item[pos].quantity!!} kcal"
     }
 
     override fun getItemCount(): Int {

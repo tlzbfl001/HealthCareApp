@@ -26,7 +26,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
-import kr.bodywell.android.model.Water
+import kr.bodywell.android.model.InitWater
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
@@ -166,7 +166,7 @@ class ReportFoodFragment : Fragment() {
          settingChart2(binding.chart2, getDates)
       }
 
-      val getWater = ArrayList<Water>()
+      val getWater = ArrayList<InitWater>()
       val data = dataManager.getWater(selectedDate.toString())
 
       if(data.count > 0) {
@@ -376,7 +376,7 @@ class ReportFoodFragment : Fragment() {
       }
    }
 
-   private fun settingChart3(chart: CombinedChart, getData: ArrayList<Water>) {
+   private fun settingChart3(chart: CombinedChart, getData: ArrayList<InitWater>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null

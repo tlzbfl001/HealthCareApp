@@ -44,12 +44,6 @@ data class DietDTO(
 )
 
 data class DietUpdateDTO(
-	@SerializedName("mealTime")
-	var mealTime: String = "",
-
-	@SerializedName("name")
-	var name: String = "",
-
 	@SerializedName("calorie")
 	var calories: Int = 0,
 
@@ -65,18 +59,6 @@ data class DietUpdateDTO(
 	@SerializedName("quantity")
 	var quantity: Int = 0,
 
-	@SerializedName("quantityUnit")
-	var quantityUnit: String = "",
-
 	@SerializedName("volume")
-	var volume: Int = 0,
-
-	@SerializedName("volumeUnit")
-	var volumeUnit: String = "",
-
-	@SerializedName("photos")
-	var photos: ArrayList<String> = ArrayList(),
-
-	@SerializedName("date")
-	var date: String = ""
+	var volume: Int = 0
 )

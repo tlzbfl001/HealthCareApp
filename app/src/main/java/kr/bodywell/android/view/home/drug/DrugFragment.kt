@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,17 +16,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.DrugAdapter1
-import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.DRUG
-import kr.bodywell.android.database.DBHelper.Companion.GOAL
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentDrugBinding
-import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.DrugList
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
@@ -38,10 +40,10 @@ class DrugFragment : Fragment() {
    val binding get() = _binding!!
 
    private val viewModel: MainViewModel by activityViewModels()
-   private lateinit var dataManager: DataManager
+//   private lateinit var dataManager: DataManager
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var adapter: DrugAdapter1? = null
-   private var dailyGoal = Goal()
+   private var getGoal = Goal()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -55,8 +57,8 @@ class DrugFragment : Fragment() {
 
       }
 
-      dataManager = DataManager(activity)
-      dataManager.open()
+//      dataManager = DataManager(activity)
+//      dataManager.open()
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -73,16 +75,17 @@ class DrugFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal.createdAt == "") {
-               dataManager.insertGoal(Goal(drug = et.text.toString().toInt(), createdAt = selectedDate.toString()))
-               dailyGoal = dataManager.getGoal(selectedDate.toString())
-            }else {
-               dataManager.updateInt(GOAL, DRUG, et.text.toString().toInt(), selectedDate.toString())
-               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
-            }
+            runBlocking {
+               if(getGoal.date == "") {
+                  powerSync.insertGoal(Goal(medicineIntake = et.text.toString().toInt(), date = selectedDate.toString()))
+                  getGoal = powerSync.getGoal(selectedDate.toString())
+               }else {
+                  powerSync.updateStr("goals", "medicine_intake", et.text.toString(), getGoal.id)
+               }
 
-            dailyView()
-            dialog.dismiss()
+               dailyView()
+               dialog.dismiss()
+            }
          }
       }
 
@@ -114,7 +117,7 @@ class DrugFragment : Fragment() {
 
          binding.tvDrugCount.text = "${item}회"
 
-         val result = dailyGoal.drug - item
+         val result = getGoal.medicineIntake - item
          if(result > -1) binding.tvRemain.text = "${result}회"
       })
 
@@ -131,47 +134,53 @@ class DrugFragment : Fragment() {
       binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
       binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
 
-      dailyGoal = dataManager.getGoal(selectedDate.toString())
-      val check = dataManager.getDrugCheckCount(selectedDate.toString())
+      lifecycleScope.launch {
+         getGoal = powerSync.getGoal(selectedDate.toString())
+         val check = powerSync.getMedicineIntakeCount(selectedDate.toString())
 
-      binding.tvGoal.text = "${dailyGoal.drug}회"
-      binding.pbDrug.max = dailyGoal.drug
-      binding.pbDrug.progress = check
+         binding.tvGoal.text = "${getGoal.medicineIntake}회"
+         binding.pbDrug.max = getGoal.medicineIntake
+         binding.pbDrug.progress = check
 
-      if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
-         binding.clPerm.visibility = View.VISIBLE
-         binding.cl1.visibility = View.GONE
-         binding.cv.visibility = View.GONE
-         binding.btnPerm.setOnClickListener {
-            replaceFragment1(requireActivity(), AlarmFragment())
-         }
-      }else {
-         binding.clPerm.visibility = View.GONE
-         binding.cl1.visibility = View.VISIBLE
-
-         // 약복용 리스트 생성
-         val getDrugDaily = dataManager.getDrug(selectedDate.toString())
-
-         if(getDrugDaily.size > 0) {
-            binding.cv.visibility = View.VISIBLE
-
-            for(i in 0 until getDrugDaily.size) {
-               val getDrugTime = dataManager.getDrugTime(getDrugDaily[i].id)
-               for(j in 0 until getDrugTime.size) {
-                  val getDrugCheck = dataManager.getDrugCheck(getDrugTime[j].id, selectedDate.toString())
-                  itemList.add(DrugList(uid = getDrugCheck.uid, drugId = getDrugDaily[i].id, drugTimeId = getDrugTime[j].id, date = getDrugDaily[i].startDate,
-                     name = getDrugDaily[i].name, amount = getDrugDaily[i].amount, unit = getDrugDaily[i].unit, time = getDrugTime[j].time,
-                     initCheck = check, checked = getDrugCheck.id)
-                  )
-               }
-            }
-
-            adapter = DrugAdapter1(requireActivity(), itemList, viewModel)
-            binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            binding.recyclerView.adapter = adapter
-            binding.recyclerView.requestLayout()
-         }else {
+         if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
+            binding.clPerm.visibility = View.VISIBLE
+            binding.cl1.visibility = View.GONE
             binding.cv.visibility = View.GONE
+            binding.btnPerm.setOnClickListener {
+               replaceFragment1(requireActivity(), AlarmFragment())
+            }
+         }else {
+            binding.clPerm.visibility = View.GONE
+            binding.cl1.visibility = View.VISIBLE
+
+            // 약복용 리스트 생성
+//            val getDrugDaily = dataManager.getDrug(selectedDate.toString())
+            val getMedicine = powerSync.getMedicine(selectedDate.toString())
+            Log.d(CustomUtil.TAG, "getMedicine: $getMedicine")
+
+            if(getMedicine.isNotEmpty()) {
+               binding.cv.visibility = View.VISIBLE
+
+               for(i in getMedicine.indices) {
+                  val getMedicineTime = powerSync.getMedicineTime("medicine_id", getMedicine[i].id)
+                  Log.d(CustomUtil.TAG, "getMedicineTime: $getMedicineTime")
+
+                  for(j in getMedicineTime.indices) {
+                     val getMedicineIntake = powerSync.getMedicineIntake(selectedDate.toString(), getMedicineTime[j].id)
+                     Log.d(CustomUtil.TAG, "getMedicineIntake: $getMedicineIntake")
+                     itemList.add(DrugList(drugId = getMedicine[i].id, drugTimeId = getMedicineTime[j].id, date = getMedicine[i].starts,
+                        name = getMedicine[i].name, amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
+                        initCheck = check, checked = getMedicineIntake.id))
+                  }
+               }
+
+               adapter = DrugAdapter1(requireActivity(), itemList, viewModel)
+               binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+               binding.recyclerView.adapter = adapter
+               binding.recyclerView.requestLayout()
+            }else {
+               binding.cv.visibility = View.GONE
+            }
          }
       }
    }

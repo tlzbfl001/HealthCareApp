@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 3
+      const val DATABASE_VERSION = 4
       const val USER = "user"
       const val TOKEN = "token"
       const val FOOD = "food"
@@ -18,7 +18,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       const val BODY = "body"
       const val SLEEP = "sleep"
       const val DRUG = "drug"
-      const val DRUG_TIME = "drugTime"
+      const val MEDICINE_TIME = "drugTime"
       const val DRUG_CHECK = "drugCheck"
       const val NOTE = "note"
       const val GOAL = "goal"
@@ -70,7 +70,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
          "count integer, startDate text, endDate text, isSet integer, $IS_UPDATED integer);"
       db.execSQL(drug)
 
-      val drugTime = "create table $DRUG_TIME(id integer primary key autoincrement, $USER_ID integer, uid text, drugId integer, time text);"
+      val drugTime = "create table $MEDICINE_TIME(id integer primary key autoincrement, $USER_ID integer, uid text, drugId integer, time text);"
       db.execSQL(drugTime)
 
       val drugCheck = "create table $DRUG_CHECK(id integer primary key autoincrement, $USER_ID integer, uid text, drugId integer, drugTimeId integer, " +
@@ -104,7 +104,7 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       db.execSQL("drop table if exists $DAILY_EXERCISE")
       db.execSQL("drop table if exists $BODY")
       db.execSQL("drop table if exists $DRUG")
-      db.execSQL("drop table if exists $DRUG_TIME")
+      db.execSQL("drop table if exists $MEDICINE_TIME")
       db.execSQL("drop table if exists $DRUG_CHECK")
       db.execSQL("drop table if exists $NOTE")
       db.execSQL("drop table if exists $SLEEP")

@@ -59,7 +59,7 @@
                app:progress_start_color="@color/water"
                app:progress_start_degree="90"
                app:progress_stroke_cap="round"
-               app:progress_stroke_width="14dp"
+               app:progress_stroke_width="15dp"
                app:progress_style="solid_line" />
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"

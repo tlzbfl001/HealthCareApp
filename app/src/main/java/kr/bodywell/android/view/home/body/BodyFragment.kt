@@ -22,7 +22,7 @@ import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.Goal
+import kr.bodywell.android.model.GoalInit
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
@@ -35,7 +35,7 @@ class BodyFragment : Fragment() {
 
    private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
-   private var dailyGoal = Goal()
+   private var dailyGoal = GoalInit()
    private var getBody = Body()
    private var isExpand = false
 
@@ -65,7 +65,7 @@ class BodyFragment : Fragment() {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.createdAt == "") {
-               dataManager.insertGoal(Goal(body = et.text.toString().toDouble(), createdAt = selectedDate.toString()))
+               dataManager.insertGoal(GoalInit(body = et.text.toString().toDouble(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateDouble(GOAL, BODY, et.text.toString().toDouble(), selectedDate.toString())

@@ -14,30 +14,28 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.DRUG
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
-import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Drug
-import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.model.Unused
+import kr.bodywell.android.model.Item
+import kr.bodywell.android.model.Medicine
+import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.drug.DrugAddFragment
 
 class DrugAdapter2 (
    private val context: Activity,
-   private val itemList: ArrayList<Drug> = ArrayList()
+   private val itemList: ArrayList<Medicine> = ArrayList()
 ) : RecyclerView.Adapter<DrugAdapter2.ViewHolder>() {
    private var bundle = Bundle()
-   private var dataManager: DataManager = DataManager(context)
-   private var alarmReceiver: AlarmReceiver
-   private val timeList: ArrayList<DrugTime> = ArrayList()
+//   private var dataManager: DataManager = DataManager(context)
+   private var alarmReceiver: AlarmReceiver = AlarmReceiver()
+   private var getMedicineTime = ArrayList<MedicineTime>()
+   private val timeList = ArrayList<Item>()
 
    init {
-      dataManager.open()
-      alarmReceiver = AlarmReceiver()
+//      dataManager.open()
    }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,19 +44,22 @@ class DrugAdapter2 (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-      holder.tvType.text = itemList[pos].type
+      val split = itemList[pos].category.split("/", limit=4)
+
+      holder.tvType.text = split[0]
       holder.tvName.text = itemList[pos].name
       holder.tvCount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
-      val getDrugTime = dataManager.getDrugTime(itemList[pos].id)
+      runBlocking {
+         getMedicineTime = powerSync.getMedicineTime("medicine_id", itemList[pos].id) as ArrayList<MedicineTime>
+      }
 
-      holder.tvPeriod.text = "${itemList[pos].count}일동안 ${getDrugTime.size}회 복용"
+      holder.tvPeriod.text = "${split[2]}일동안 ${getMedicineTime.size}회 복용"
 
-      if(getDrugTime.isNotEmpty()) {
-         timeList.clear()
-
-         for(i in 0 until getDrugTime.size) {
-            timeList.add(DrugTime(id = getDrugTime[i].id, time = getDrugTime[i].time, drugId = i+1))
+      if(getMedicineTime.isNotEmpty()) {
+         for(i in 0 until getMedicineTime.size) {
+//            timeList.add(DrugTime(id = getDrugTime[i].id, time = getDrugTime[i].time, drugId = i+1))
+            timeList.add(Item(string1 = getMedicineTime[i].time, int1 = i+1))
          }
 
          val adapter = DrugAdapter3(timeList)
@@ -66,7 +67,7 @@ class DrugAdapter2 (
          holder.recyclerView.adapter = adapter
       }
 
-      if(itemList[pos].isSet == 1) {
+      if(split[3].toInt() == 1) {
          holder.switchOnOff.isChecked = true
          holder.ivAlarm.setColorFilter(Color.parseColor("#A47AE8"))
       }
@@ -74,16 +75,20 @@ class DrugAdapter2 (
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
             val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
-            alarmReceiver.setAlarm(context, itemList[pos].id, itemList[pos].startDate, itemList[pos].endDate, timeList, message)
-            dataManager.updateInt(DRUG, "isSet", 1, "id", itemList[pos].id)
+            alarmReceiver.setAlarm(context, split[1].toInt(), itemList[pos].starts, itemList[pos].ends, timeList, message)
+            runBlocking {
+               powerSync.updateStr("medicine", "category", "${split[0]}${split[1]}${split[2]}1", itemList[pos].id)
+            }
          }else {
-            alarmReceiver.cancelAlarm(context, itemList[pos].id)
-            dataManager.updateInt(DRUG, "isSet", 0, "id", itemList[pos].id)
+            alarmReceiver.cancelAlarm(context, split[1].toInt())
+            runBlocking {
+               powerSync.updateStr("medicine", "category", "${split[0]}${split[1]}${split[2]}0", itemList[pos].id)
+            }
          }
       }
 
       holder.cvEdit.setOnClickListener {
-         bundle.putString("id", itemList[pos].id.toString())
+         bundle.putParcelable("medicine", itemList[pos])
          replaceFragment2(context, DrugAddFragment(), bundle)
       }
 
@@ -92,12 +97,13 @@ class DrugAdapter2 (
             .setTitle("복용약 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = DRUG, value = itemList[pos].uid, createdAt = itemList[pos].startDate))
+               runBlocking {
+                  powerSync.deleteItem("medicine_intakes", "source_id", itemList[pos].id)
+                  powerSync.deleteItem("medicine_times", "medicine_id", itemList[pos].id)
+                  powerSync.deleteItem("medicines", "id", itemList[pos].id)
+               }
 
-               dataManager.deleteItem(DRUG_CHECK, "drugId", itemList[pos].id)
-               dataManager.deleteItem(DRUG_TIME, "drugId", itemList[pos].id)
-               dataManager.deleteItem(DRUG, "id", itemList[pos].id)
-               alarmReceiver.cancelAlarm(context, itemList[pos].id)
+               alarmReceiver.cancelAlarm(context, split[1].toInt())
                itemList.removeAt(pos)
                notifyDataSetChanged()
 

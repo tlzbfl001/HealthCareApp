@@ -12,21 +12,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.runBlocking
+import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.FOOD
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.filterText
-import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import java.time.LocalDateTime
+import kr.bodywell.android.util.CustomUtil.uuidv7Generator
+import java.time.LocalDate
+import java.util.UUID
 
 class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
@@ -54,9 +56,6 @@ class FoodInputFragment : Fragment() {
       _binding = FragmentFoodInputBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      val dataManager = DataManager(requireActivity())
-      dataManager.open()
 
       type = arguments?.getString("type")!!
       bundle.putString("type", type)
@@ -212,92 +211,6 @@ class FoodInputFragment : Fragment() {
          override fun afterTextChanged(p0: Editable?) {}
       })
 
-      binding.etSalt.addTextChangedListener(object : TextWatcher {
-         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if(s.toString() != "") {
-               val text = s.toString().replace(".","")
-
-               if(s.length == 1 && s[0].toString() == ".") {
-                  binding.etSalt.setText("")
-               }
-
-               if(text.length == 2) {
-                  val format = text[0].toString() + "." + text[1].toString()
-                  binding.etSalt.removeTextChangedListener(this)
-                  binding.etSalt.setText(format)
-                  binding.etSalt.setSelection(format.length)
-                  binding.etSalt.addTextChangedListener(this)
-               }
-
-               if(text.length == 3) {
-                  val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
-                  binding.etSalt.removeTextChangedListener(this)
-                  binding.etSalt.setText(format)
-                  binding.etSalt.setSelection(format.length)
-                  binding.etSalt.addTextChangedListener(this)
-               }
-
-               if(text.length == 4) {
-                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-                  binding.etSalt.removeTextChangedListener(this)
-                  binding.etSalt.setText(format)
-                  binding.etSalt.setSelection(format.length)
-                  binding.etSalt.addTextChangedListener(this)
-               }
-
-               if(text.length == 5) {
-                  val format = text[0].toString() + text[1].toString() + text[2].toString() + text[3].toString() + "." + text[4].toString()
-                  binding.etSalt.removeTextChangedListener(this)
-                  binding.etSalt.setText(format)
-                  binding.etSalt.setSelection(format.length)
-                  binding.etSalt.addTextChangedListener(this)
-               }
-            }
-         }
-
-         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-         override fun afterTextChanged(p0: Editable?) {}
-      })
-
-      binding.etSugar.addTextChangedListener(object : TextWatcher {
-         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            if(s.toString() != "") {
-               val text = s.toString().replace(".","")
-
-               if(s.length == 1 && s[0].toString() == ".") {
-                  binding.etSugar.setText("")
-               }
-
-               if(text.length == 2) {
-                  val format = text[0].toString() + "." + text[1].toString()
-                  binding.etSugar.removeTextChangedListener(this)
-                  binding.etSugar.setText(format)
-                  binding.etSugar.setSelection(format.length)
-                  binding.etSugar.addTextChangedListener(this)
-               }
-
-               if(text.length == 3) {
-                  val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
-                  binding.etSugar.removeTextChangedListener(this)
-                  binding.etSugar.setText(format)
-                  binding.etSugar.setSelection(format.length)
-                  binding.etSugar.addTextChangedListener(this)
-               }
-
-               if(text.length == 4) {
-                  val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-                  binding.etSugar.removeTextChangedListener(this)
-                  binding.etSugar.setText(format)
-                  binding.etSugar.setSelection(format.length)
-                  binding.etSugar.addTextChangedListener(this)
-               }
-            }
-         }
-
-         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-         override fun afterTextChanged(p0: Editable?) {}
-      })
-
       binding.cvSave.setOnClickListener {
          var name = ""
          var amount = 0
@@ -305,20 +218,15 @@ class FoodInputFragment : Fragment() {
          var carbohydrate = 0.0
          var protein = 0.0
          var fat = 0.0
-         var salt = 0.0
-         var sugar = 0.0
 
          if(binding.etName.text.toString().trim() == "" && binding.etAmount.text.toString().trim() == "" && binding.etKcal.text.toString().trim() == "" &&
-            binding.etCar.text.toString().trim() == "" && binding.etProtein.text.toString().trim() == "" && binding.etFat.text.toString().trim() == "" &&
-            binding.etSalt.text.toString().trim() == "" && binding.etSugar.text.toString().trim() == "") {
+            binding.etCar.text.toString().trim() == "" && binding.etProtein.text.toString().trim() == "" && binding.etFat.text.toString().trim() == "") {
             name = "사과"
             amount = 100
             calorie = 52
             carbohydrate = 13.81
             protein = 0.26
             fat = 0.17
-            salt = 1.0
-            sugar = 10.8
          }else {
             if(binding.etName.text.toString() != "") name = binding.etName.text.toString().trim()
             if(binding.etAmount.text.toString() != "") amount = binding.etAmount.text.toString().trim().toInt()
@@ -326,32 +234,27 @@ class FoodInputFragment : Fragment() {
             if(binding.etCar.text.toString() != "") carbohydrate = binding.etCar.text.toString().trim().toDouble()
             if(binding.etProtein.text.toString() != "") protein = binding.etProtein.text.toString().trim().toDouble()
             if(binding.etFat.text.toString() != "") fat = binding.etFat.text.toString().trim().toDouble()
-            if(binding.etSalt.text.toString() != "") salt = binding.etSalt.text.toString().trim().toDouble()
-            if(binding.etSugar.text.toString() != "") sugar = binding.etSugar.text.toString().trim().toDouble()
          }
 
-         val getFood = dataManager.getFood("name", name)
+         lifecycleScope.launch {
+            val getFood = powerSync.getData("foods", "name", name)
 
-         if(name.trim().isEmpty()) {
-            Toast.makeText(context, "음식이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(!filterText(name)) {
-            Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
-         }else if(getFood.name != "") {
-            Toast.makeText(context, "음식이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
-         }else if(amount == 0 || calorie == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0 || salt == 0.0 || sugar == 0.0) {
-            Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
-         }else {
-            val food = Food(name = name, unit = unit, amount = amount, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat, salt = salt,
-               sugar = sugar, useCount = 1, useDate = LocalDateTime.now().toString())
+            if(name.trim().isEmpty()) {
+               Toast.makeText(context, "음식이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }else if(!filterText(name)) {
+               Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
+            }else if(getFood.name != "") {
+               Toast.makeText(context, "음식이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
+            }else if(amount == 0 || calorie == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0) {
+               Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+               powerSync.insertFood(Food(id=uuid.toString(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat,
+                  volume = amount, volumeUnit = unit, createdAt = LocalDate.now().toString(), updatedAt = LocalDate.now().toString()))
 
-            dataManager.insertFood(food)
-
-            runBlocking {
-               powerSync.insertFood(food)
+               Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment()
             }
-
-            Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment()
          }
       }
 

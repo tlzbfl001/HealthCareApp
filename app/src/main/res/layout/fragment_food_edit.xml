@@ -215,7 +215,7 @@
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintTop_toBottomOf="@id/cl"/>
                <EditText
-                  android:id="@+id/etAmount"
+                  android:id="@+id/etVolume"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:backgroundTint="@color/grey_white"
@@ -226,7 +226,7 @@
                   android:textColorHint="#cccccc"
                   android:fontFamily="@font/nanum"
                   android:inputType="number"
-                  android:maxLength="5"
+                  android:maxLength="3"
                   app:layout_constraintBottom_toBottomOf="@+id/cv3"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintStart_toEndOf="@+id/cv3"
@@ -243,8 +243,8 @@
                   android:textAlignment="textEnd"
                   android:fontFamily="@font/nanum"
                   app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintTop_toTopOf="@id/etAmount"
-                  app:layout_constraintBottom_toBottomOf="@id/etAmount"/>
+                  app:layout_constraintTop_toTopOf="@id/etVolume"
+                  app:layout_constraintBottom_toBottomOf="@id/etVolume"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.cardview.widget.CardView>
          <androidx.cardview.widget.CardView
@@ -440,88 +440,6 @@
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintTop_toTopOf="@id/etFat"
                   app:layout_constraintBottom_toBottomOf="@id/etFat"/>
-               <TextView
-                  android:id="@+id/cv8"
-                  android:layout_width="85dp"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="18dp"
-                  android:text="나트륨"
-                  android:textSize="16dp"
-                  android:textColor="@color/black_white"
-                  android:fontFamily="@font/nanum"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintTop_toBottomOf="@id/cv7"/>
-               <EditText
-                  android:id="@+id/etSalt"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:backgroundTint="@color/grey_white"
-                  android:singleLine="true"
-                  android:lines="1"
-                  android:textSize="16dp"
-                  android:textColor="@color/black_white"
-                  android:textColorHint="#cccccc"
-                  android:inputType="numberDecimal"
-                  android:maxLength="6"
-                  android:fontFamily="@font/nanum"
-                  app:layout_constraintBottom_toBottomOf="@+id/cv8"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toEndOf="@+id/cv8"
-                  app:layout_constraintTop_toTopOf="@+id/cv8" />
-               <TextView
-                  android:id="@+id/tvUnit7"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_marginBottom="3dp"
-                  android:text="mg"
-                  android:textSize="14dp"
-                  android:textColor="@color/black_white"
-                  android:textAlignment="textEnd"
-                  android:fontFamily="@font/nanum"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintTop_toTopOf="@id/etSalt"
-                  app:layout_constraintBottom_toBottomOf="@id/etSalt"/>
-               <TextView
-                  android:id="@+id/cv9"
-                  android:layout_width="85dp"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="18dp"
-                  android:text="당류"
-                  android:textSize="16dp"
-                  android:textColor="@color/black_white"
-                  android:fontFamily="@font/nanum"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintTop_toBottomOf="@id/cv8"/>
-               <EditText
-                  android:id="@+id/etSugar"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:backgroundTint="@color/grey_white"
-                  android:singleLine="true"
-                  android:lines="1"
-                  android:textSize="16dp"
-                  android:textColor="@color/black_white"
-                  android:textColorHint="#cccccc"
-                  android:inputType="numberDecimal"
-                  android:maxLength="5"
-                  android:fontFamily="@font/nanum"
-                  app:layout_constraintBottom_toBottomOf="@+id/cv9"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toEndOf="@+id/cv9"
-                  app:layout_constraintTop_toTopOf="@+id/cv9" />
-               <TextView
-                  android:id="@+id/tvUnit8"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_marginBottom="3dp"
-                  android:text="g"
-                  android:textSize="14dp"
-                  android:textColor="@color/black_white"
-                  android:textAlignment="textEnd"
-                  android:fontFamily="@font/nanum"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintTop_toTopOf="@id/etSugar"
-                  app:layout_constraintBottom_toBottomOf="@id/etSugar"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.cardview.widget.CardView>
          <androidx.cardview.widget.CardView

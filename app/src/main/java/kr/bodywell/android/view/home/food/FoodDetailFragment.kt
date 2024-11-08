@@ -11,7 +11,6 @@ import androidx.activity.OnBackPressedCallback
 import com.google.android.material.tabs.TabLayout
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PagerAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDetailBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -24,7 +23,6 @@ class FoodDetailFragment : Fragment() {
    val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private val bundle = Bundle()
    private var type = Constant.BREAKFAST.name
 
@@ -45,9 +43,6 @@ class FoodDetailFragment : Fragment() {
       _binding = FragmentFoodDetailBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       if(arguments?.getString("type") != null) type = arguments?.getString("type").toString()
 

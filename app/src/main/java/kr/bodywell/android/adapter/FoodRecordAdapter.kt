@@ -3,7 +3,6 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,20 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
-class FoodRecordAdapter (
+class FoodRecordAdapter(
    private val context: Activity,
-   private var itemList: ArrayList<Food> = ArrayList(),
+   private var itemList: ArrayList<Food> = ArrayList<Food>(),
    private val back: String,
    private val type: String
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
@@ -49,7 +44,7 @@ class FoodRecordAdapter (
 
       holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
 
-      if(itemList[position].registerType == TYPE_USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+      if (itemList[position].registerType == TYPE_USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
@@ -59,7 +54,7 @@ class FoodRecordAdapter (
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
          clEdit.setOnClickListener {
-            bundle.putString("id", itemList[position].id.toString())
+            bundle.putParcelable("food", itemList[position])
             bundle.putString("type", type)
             bundle.putString("back", back)
             replaceFragment2(context, FoodEditFragment(), bundle)
@@ -71,15 +66,8 @@ class FoodRecordAdapter (
                .setTitle("음식 삭제")
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  if(itemList[position].uid != "") {
-                     dataManager.insertUnused(Unused(type = FOOD, value = itemList[position].uid, createdAt = selectedDate.toString()))
-                  }
-
-                  dataManager.deleteItem(FOOD, "id", itemList[position].id)
-
                   runBlocking {
-                     val getFood1 = powerSync.deleteFood(itemList[position].uid)
-                     Log.d(CustomUtil.TAG, "deleteFood: $getFood1")
+                     powerSync.deleteItem("foods", "id", itemList[position].id)
                   }
 
                   itemList.removeAt(position)

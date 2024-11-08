@@ -5,19 +5,18 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodEditBinding
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -49,25 +48,18 @@ class FoodEditFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		val dataManager = DataManager(requireActivity())
-		dataManager.open()
-
-		val id = arguments?.getString("id").toString().toInt()
+		val food = arguments?.getParcelable<Food>("food")!!
 		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
-		val getFood = dataManager.getFood("id", id)
+		binding.tvName.text = food.name
+		binding.etVolume.setText(food.volume.toString())
+		binding.etKcal.setText(food.calorie.toString())
+		binding.etCar.setText(food.carbohydrate.toString())
+		binding.etProtein.setText(food.protein.toString())
+		binding.etFat.setText(food.fat.toString())
 
-		binding.tvName.text = getFood.name
-		binding.etAmount.setText(getFood.amount.toString())
-		binding.etKcal.setText(getFood.calorie.toString())
-		binding.etCar.setText(getFood.carbohydrate.toString())
-		binding.etProtein.setText(getFood.protein.toString())
-		binding.etFat.setText(getFood.fat.toString())
-		binding.etSalt.setText(getFood.salt.toString())
-		binding.etSugar.setText(getFood.sugar.toString())
-
-		when(getFood.unit) {
+		when(food.volumeUnit) {
 			"mg" -> unit1()
 			"g" -> unit2()
 			"kg" -> unit3()
@@ -226,102 +218,11 @@ class FoodEditFragment : Fragment() {
 			override fun afterTextChanged(p0: Editable?) {}
 		})
 
-		binding.etSalt.addTextChangedListener(object : TextWatcher {
-			override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-				if(s.toString() != "") {
-					val text = s.toString().replace(".","")
-
-					if(s.length == 1 && s[0].toString() == ".") {
-						binding.etSalt.setText("")
-					}
-
-					if(text.length == 2) {
-						val format = text[0].toString() + "." + text[1].toString()
-						binding.etSalt.removeTextChangedListener(this)
-						binding.etSalt.setText(format)
-						binding.etSalt.setSelection(format.length)
-						binding.etSalt.addTextChangedListener(this)
-					}
-
-					if(text.length == 3) {
-						val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
-						binding.etSalt.removeTextChangedListener(this)
-						binding.etSalt.setText(format)
-						binding.etSalt.setSelection(format.length)
-						binding.etSalt.addTextChangedListener(this)
-					}
-
-					if(text.length == 4) {
-						val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-						binding.etSalt.removeTextChangedListener(this)
-						binding.etSalt.setText(format)
-						binding.etSalt.setSelection(format.length)
-						binding.etSalt.addTextChangedListener(this)
-					}
-
-					if(text.length == 5) {
-						val format = text[0].toString() + text[1].toString() + text[2].toString() + text[3].toString() + "." + text[4].toString()
-						binding.etSalt.removeTextChangedListener(this)
-						binding.etSalt.setText(format)
-						binding.etSalt.setSelection(format.length)
-						binding.etSalt.addTextChangedListener(this)
-					}
-				}
-			}
-
-			override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-			override fun afterTextChanged(p0: Editable?) {}
-		})
-
-		binding.etSugar.addTextChangedListener(object : TextWatcher {
-			override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-				if(s.toString() != "") {
-					val text = s.toString().replace(".","")
-
-					if(s.length == 1 && s[0].toString() == ".") {
-						binding.etSugar.setText("")
-					}
-
-					if(text.length == 2) {
-						val format = text[0].toString() + "." + text[1].toString()
-						binding.etSugar.removeTextChangedListener(this)
-						binding.etSugar.setText(format)
-						binding.etSugar.setSelection(format.length)
-						binding.etSugar.addTextChangedListener(this)
-					}
-
-					if(text.length == 3) {
-						val format = text[0].toString() + text[1].toString() + "." + text[2].toString()
-						binding.etSugar.removeTextChangedListener(this)
-						binding.etSugar.setText(format)
-						binding.etSugar.setSelection(format.length)
-						binding.etSugar.addTextChangedListener(this)
-					}
-
-					if(text.length == 4) {
-						val format = text[0].toString() + text[1].toString() + text[2].toString() + "." + text[3].toString()
-						binding.etSugar.removeTextChangedListener(this)
-						binding.etSugar.setText(format)
-						binding.etSugar.setSelection(format.length)
-						binding.etSugar.addTextChangedListener(this)
-					}
-				}
-			}
-
-			override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-			override fun afterTextChanged(p0: Editable?) {}
-		})
-
 		binding.cvEdit.setOnClickListener {
-			val food = Food(id = id, uid = getFood.uid, unit = unit, amount = binding.etAmount.text.toString().trim().toInt(),
-				calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
-				protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
-				salt = binding.etSalt.text.toString().trim().toDouble(), sugar = binding.etSugar.text.toString().trim().toDouble(), isUpdated = 1)
-
-			dataManager.updateFood(food)
-
-			runBlocking {
-				powerSync.updateFood(food)
+			lifecycleScope.launch {
+				powerSync.updateFood(Food(id = food.id, calorie = binding.etKcal.text.toString().trim().toInt(),
+					carbohydrate = binding.etCar.text.toString().trim().toDouble(), protein = binding.etProtein.text.toString().trim().toDouble(),
+					fat = binding.etFat.text.toString().trim().toDouble(), volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
 			}
 
 			Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()

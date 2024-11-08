@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -21,16 +20,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
-import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.layoutType
@@ -93,13 +87,6 @@ class MainFragment : Fragment() {
 
       selectedDate = LocalDate.now()
       viewModel.setDate()
-
-      runBlocking {
-         val watchFood = CustomUtil.powerSync.watchFood()
-         watchFood.collect(FlowCollector {
-            Log.d(CustomUtil.TAG, "watchFood: $it")
-         })
-      }
 
       val getUser = dataManager.getUser()
 

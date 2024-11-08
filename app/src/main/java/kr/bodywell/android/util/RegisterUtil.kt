@@ -18,22 +18,18 @@ import kr.bodywell.android.api.dto.DeviceDTO
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
-import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.Drug
-import kr.bodywell.android.model.DrugTime
 import kr.bodywell.android.model.Exercise
-import kr.bodywell.android.model.Food
-import kr.bodywell.android.model.Goal
+import kr.bodywell.android.model.FoodInit
+import kr.bodywell.android.model.GoalInit
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.model.Water
-import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.model.InitWater
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.view.home.MainActivity
@@ -42,7 +38,6 @@ import kr.bodywell.android.view.init.LoginActivity
 import kr.bodywell.android.view.init.SignupActivity
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 object RegisterUtil {
 	suspend fun googleLoginRequest(context: LoginActivity, dataManager: DataManager, user: User) {
@@ -223,20 +218,20 @@ object RegisterUtil {
 				val useCount = if(getAllFood.body()!![i].usages == null) 0 else getAllFood.body()!![i].usages!![0].usageCount
 				val useDate = if(getAllFood.body()!![i].usages == null) "" else isoToDateTime(getAllFood.body()!![i].usages!![0].updatedAt).toString()
 
-				dataManager.insertFood(Food(registerType = getAllFood.body()!![i].registerType, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name,
+				dataManager.insertFood(FoodInit(registerType = getAllFood.body()!![i].registerType, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name,
 					unit = getAllFood.body()!![i].quantityUnit, amount = getAllFood.body()!![i].quantity, calorie = getAllFood.body()!![i].calorie,
 					carbohydrate = getAllFood.body()!![i].carbohydrate, protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat, useCount = useCount, useDate = useDate))
 			}
 
 			for(i in 0 until getAllDiet.body()!!.size) {
-				dataManager.insertDailyFood(Food(uid = getAllDiet.body()!![i].id, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].name,
+				dataManager.insertDailyFood(FoodInit(uid = getAllDiet.body()!![i].id, type = getAllDiet.body()!![i].mealTime, name = getAllDiet.body()!![i].name,
 					unit = getAllDiet.body()!![i].volumeUnit, amount = getAllDiet.body()!![i].volume, calorie = getAllDiet.body()!![i].calorie,
 					carbohydrate = getAllDiet.body()!![i].carbohydrate, protein = getAllDiet.body()!![i].protein, fat = getAllDiet.body()!![i].fat,
 					count = getAllDiet.body()!![i].quantity, createdAt = getAllDiet.body()!![i].date.substring(0, 10)))
 			}
 
 			for(i in 0 until getAllWater.body()!!.size) {
-				dataManager.insertWater(Water(uid = getAllWater.body()!![i].id, count = getAllWater.body()!![i].count, volume = getAllWater.body()!![i].mL,
+				dataManager.insertWater(InitWater(uid = getAllWater.body()!![i].id, count = getAllWater.body()!![i].count, volume = getAllWater.body()!![i].mL,
 					createdAt = getAllWater.body()!![i].date))
 			}
 
@@ -265,7 +260,7 @@ object RegisterUtil {
 				dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].id, startTime = isoToStartTime.toString(), endTime = isoToEndTime.toString()))
 			}
 
-			val alarmReceiver = AlarmReceiver()
+			/*val alarmReceiver = AlarmReceiver()
 			val timeList = ArrayList<DrugTime>()
 
 			for(i in 0 until getMedicine.body()!!.size) {
@@ -289,10 +284,10 @@ object RegisterUtil {
 
 					alarmReceiver.setAlarm(context, drugId.id, drug.startDate, drug.endDate, timeList, "${drug.name} ${drug.amount}${drug.unit}")
 				}else Log.e(TAG, "getMedicineTime: $getMedicineTime")
-			}
+			}*/
 
 			for(i in 0 until getAllGoal.body()!!.size) {
-				dataManager.insertGoal(Goal(uid = getAllGoal.body()!![i].id, food = getAllGoal.body()!![i].kcalOfDiet, waterVolume=getAllGoal.body()!![i].waterAmountOfCup,
+				dataManager.insertGoal(GoalInit(uid = getAllGoal.body()!![i].id, food = getAllGoal.body()!![i].kcalOfDiet, waterVolume=getAllGoal.body()!![i].waterAmountOfCup,
 					water=getAllGoal.body()!![i].waterIntake, exercise=getAllGoal.body()!![i].kcalOfWorkout, body=getAllGoal.body()!![i].weight,
 					sleep=getAllGoal.body()!![i].sleep, drug=getAllGoal.body()!![i].medicineIntake, createdAt = getAllGoal.body()!![i].date.substring(0, 10)))
 			}
@@ -354,7 +349,7 @@ object RegisterUtil {
 
 				// 서버 데이터 저장
 				for(i in 0 until getAllFood.body()!!.size) {
-					dataManager.insertFood(Food(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
+					dataManager.insertFood(FoodInit(registerType = TYPE_ADMIN, uid = getAllFood.body()!![i].id, name = getAllFood.body()!![i].name, unit = getAllFood.body()!![i].volumeUnit,
 						amount = getAllFood.body()!![i].volume, calorie = getAllFood.body()!![i].calorie, carbohydrate = getAllFood.body()!![i].carbohydrate,
 						protein = getAllFood.body()!![i].protein, fat = getAllFood.body()!![i].fat,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(), createdAt = LocalDate.now().toString())

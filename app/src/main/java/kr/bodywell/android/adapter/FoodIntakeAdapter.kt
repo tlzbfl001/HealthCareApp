@@ -16,7 +16,7 @@ import kr.bodywell.android.view.home.food.FoodDailyEditFragment
 
 class FoodIntakeAdapter (
     private val context: Activity,
-    private var itemList: ArrayList<Food> = ArrayList(),
+    private var itemList: ArrayList<Food> = ArrayList<Food>(),
     private val type: String
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var bundle = Bundle()
@@ -33,19 +33,21 @@ class FoodIntakeAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val count = itemList[position].count
+        val count = itemList[position].quantity!!
 
         holder.tvName.text = itemList[position].name
-        holder.tvKcal.text = "${itemList[position].calorie * count} kcal"
-        holder.tvDesc.text = "${count}개/${itemList[position].amount * count}${itemList[position].unit}"
+        holder.tvKcal.text = "${itemList[position].calorie!! * count} kcal"
+        holder.tvDesc.text = "${count}개/${itemList[position].volume!! * count}${itemList[position].volumeUnit}"
 
         holder.cl.setOnClickListener {
-            bundle.putString("dailyFoodId", itemList[position].id.toString())
+            bundle.putParcelable("dailyFood", itemList[position])
             bundle.putString("type", type)
             replaceFragment2(context, FoodDailyEditFragment(), bundle)
         }
 
-        holder.clX.setOnClickListener { onItemClickListener!!.onItemClick(position) }
+        holder.clX.setOnClickListener {
+            onItemClickListener!!.onItemClick(position)
+        }
     }
 
     override fun getItemCount(): Int {

@@ -19,6 +19,7 @@ import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SyncDTO
 import kr.bodywell.android.api.dto.WaterDTO
+import kr.bodywell.android.api.dto.WaterUpdateDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
 import kr.bodywell.android.api.response.ActivityResponse
@@ -56,6 +57,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -135,17 +137,11 @@ interface APIService {
 		@Path("id") id: String
 	): Response<FoodResponse>
 
-	@POST("v1/foods")
+	@PUT("v1/foods")
 	suspend fun createFood(
 		@Header("Authorization") token: String,
 		@Body dto: FoodDTO
 	): Response<FoodResponse>
-
-	@POST("v1/foods/sync")
-	suspend fun syncFood(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncFoodResponse>
 
 	@PATCH("v1/foods/{id}")
 	suspend fun updateFood(
@@ -171,7 +167,7 @@ interface APIService {
 		@Path("id") id: String
 	): Response<DietResponse>
 
-	@POST("v1/diets")
+	@PUT("v1/diets")
 	suspend fun createDiets(
 		@Header("Authorization") token: String,
 		@Body dto: DietDTO
@@ -213,7 +209,7 @@ interface APIService {
 		@Query("date") date: String
 	): Response<ExistResponse>
 
-	@POST("v1/waters")
+	@PUT("v1/waters")
 	suspend fun createWater(
 		@Header("Authorization") token: String,
 		@Body dto: WaterDTO
@@ -229,7 +225,7 @@ interface APIService {
 	suspend fun updateWater(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
-		@Body dto: WaterDTO
+		@Body dto: WaterUpdateDTO
 	): Response<WaterResponse>
 
 	@DELETE("v1/waters/{id}")
@@ -249,7 +245,7 @@ interface APIService {
 		@Path("id") id: String
 	): Response<ActivityResponse>
 
-	@POST("v1/activities")
+	@PUT("v1/activities")
 	suspend fun createActivity(
 		@Header("Authorization") token: String,
 		@Body dto: ActivityDTO
@@ -285,7 +281,7 @@ interface APIService {
 		@Path("id") id: String
 	): Response<WorkoutResponse>
 
-	@POST("v1/workouts")
+	@PUT("v1/workouts")
 	suspend fun createWorkout(
 		@Header("Authorization") token: String,
 		@Body dto: WorkoutDTO
@@ -315,7 +311,7 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<BodyResponse>>
 
-	@POST("v1/body-measurements")
+	@PUT("v1/body-measurements")
 	suspend fun createBody(
 		@Header("Authorization") token: String,
 		@Body dto: BodyDTO
@@ -339,7 +335,7 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<SleepResponse>>
 
-	@POST("v1/sleeps")
+	@PUT("v1/sleeps")
 	suspend fun createSleep(
 		@Header("Authorization") token: String,
 		@Body dto: SleepDTO
@@ -369,7 +365,7 @@ interface APIService {
 		@Path("id") id: String
 	): Response<MedicineResponse>
 
-	@POST("v1/medicines")
+	@PUT("v1/medicines")
 	suspend fun createMedicine(
 		@Header("Authorization") token: String,
 		@Body dto: MedicineDTO
@@ -407,7 +403,7 @@ interface APIService {
 		@Path("timeId") timeId: String
 	): Response<MedicineTimeResponse>
 
-	@POST("v1/medicines/{id}/times")
+	@PUT("v1/medicines/{id}/times")
 	suspend fun createMedicineTime(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
@@ -428,7 +424,7 @@ interface APIService {
 		@Path("timeId") timeId: String
 	): Response<MedicineTimeResponse>
 
-	@POST("v1/medicines/{id}/times/{timeId}/intakes")
+	@PUT("v1/medicines/{id}/times/{timeId}/intakes")
 	suspend fun createMedicineIntake(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
@@ -456,7 +452,7 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<GoalResponse>>
 
-	@POST("v1/goals")
+	@PUT("v1/goals")
 	suspend fun createGoal(
 		@Header("Authorization") token: String,
 		@Body dto: GoalDTO

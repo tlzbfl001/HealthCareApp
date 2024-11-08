@@ -33,7 +33,7 @@ import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
 import kr.bodywell.android.database.DBHelper.Companion.DRUG
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_TIME
+import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
 import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.GOAL
@@ -314,7 +314,7 @@ class SettingFragment : Fragment() {
       dataManager.deleteTable(DAILY_EXERCISE, USER_ID)
       dataManager.deleteTable(BODY, USER_ID)
       dataManager.deleteTable(DRUG, USER_ID)
-      dataManager.deleteTable(DRUG_TIME, USER_ID)
+      dataManager.deleteTable(MEDICINE_TIME, USER_ID)
       dataManager.deleteTable(DRUG_CHECK, USER_ID)
       dataManager.deleteTable(NOTE, USER_ID)
       dataManager.deleteTable(SLEEP, USER_ID)

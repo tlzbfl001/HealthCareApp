@@ -41,14 +41,52 @@ data class DrugCheck(
 
 data class DrugList(
    var id: Int = 0,
-   var uid: String = "",
-   var drugId: Int = 0,
-   var drugTimeId: Int = 0,
+   var drugId: String = "",
+   var drugTimeId: String = "",
+   var sourceId: String = "",
    var date: String = "",
    var name: String = "",
    var amount: Int = 0,
    var unit: String = "",
    var time: String = "",
    var initCheck: Int = 0,
-   var checked: Int = 0
+   var checked: String = ""
+)
+
+@Parcelize
+data class Medicine(
+   var id: String = "",
+   var category: String = "",
+   var name: String = "",
+   var amount: Int = 0,
+   var unit: String = "",
+   var starts: String = "",
+   var ends: String = "",
+   var createdAt: String = "",
+   var updatedAt: String = "",
+   var deletedAt: String = "",
+   var userId: String = ""
+) : Parcelable
+
+data class MedicineTime(
+   var id: String = "",
+   var time: String = "",
+   var createdAt: String = "",
+   var updatedAt: String = "",
+   var deletedAt: String = "",
+   var medicineId: String = ""
+)
+
+data class MedicineIntake(
+   var id: String = "",
+   var category: String = "",
+   var name: String = "",
+   var amount: Int = 0,
+   var unit: String = "",
+   var intakeAt: String = "",
+   var createdAt: String = "",
+   var updatedAt: String = "",
+   var deletedAt: String = "",
+   var medicineTimeId: String = "",
+   var sourceId: String = ""
 )

@@ -7,12 +7,16 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
+import kr.bodywell.android.model.MedicineIntake
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
 
 class DrugAdapter1 (
@@ -39,24 +43,26 @@ class DrugAdapter1 (
 
         check = itemList[pos].initCheck
         viewModel.setInt(check)
-        if(itemList[pos].checked > 0) holder.tvCheck.isChecked = true
+        if(itemList[pos].checked != "") holder.tvCheck.isChecked = true
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
-            val getDrugCheck = dataManager.getDrugCheck(itemList[pos].drugTimeId, selectedDate.toString())
+            runBlocking {
+                val getData = powerSync.getMedicineIntake(selectedDate.toString(), itemList[pos].drugTimeId)
 
-            if(holder.tvCheck.isChecked) {
-                check += 1
-                if(getDrugCheck.createdAt == "") {
-                    dataManager.insertDrugCheck(DrugCheck(drugId = itemList[pos].drugId, drugTimeId = itemList[pos].drugTimeId, time = itemList[pos].time,
-                        createdAt = selectedDate.toString()))
+                if(holder.tvCheck.isChecked) {
+                    check += 1
+                    if(getData.intakeAt == "") {
+                        powerSync.insertMedicineIntake(MedicineIntake(name = itemList[pos].time, intakeAt = selectedDate.toString(),
+                            medicineTimeId = itemList[pos].drugTimeId, sourceId = itemList[pos].sourceId))
+                    }
+                }else {
+                    if(check > 0) check -= 1
+                    if(getData.intakeAt != "") powerSync.deleteItem("medicine_intakes", "id", getData.id)
                 }
-            }else {
-                if(check > 0) check -= 1
-                if(getDrugCheck.createdAt != "") dataManager.deleteItem(DRUG_CHECK, "id", getDrugCheck.id)
-            }
 
-            viewModel.setInt(check)
+                viewModel.setInt(check)
+            }
         }
     }
 

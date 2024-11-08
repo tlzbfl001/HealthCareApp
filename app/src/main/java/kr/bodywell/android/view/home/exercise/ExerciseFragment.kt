@@ -22,7 +22,7 @@ import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseBinding
-import kr.bodywell.android.model.Goal
+import kr.bodywell.android.model.GoalInit
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -36,7 +36,7 @@ class ExerciseFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private val viewModel: MainViewModel by activityViewModels()
    private var adapter: ExerciseAdapter? = null
-   private var dailyGoal = Goal()
+   private var dailyGoal = GoalInit()
    private var sum = 0
 
    override fun onCreateView(
@@ -62,7 +62,7 @@ class ExerciseFragment : Fragment() {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             if(dailyGoal.createdAt == "") {
-               dataManager.insertGoal(Goal(exercise = et.text.toString().toInt(), createdAt = selectedDate.toString()))
+               dataManager.insertGoal(GoalInit(exercise = et.text.toString().toInt(), createdAt = selectedDate.toString()))
                dailyGoal = dataManager.getGoal(selectedDate.toString())
             }else {
                dataManager.updateInt(GOAL, EXERCISE, et.text.toString().toInt(), selectedDate.toString())

@@ -2,33 +2,33 @@ package kr.bodywell.android.view.home.food
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import kr.bodywell.android.database.DBHelper
-import kr.bodywell.android.database.DBHelper.Companion.FOOD
-import kr.bodywell.android.database.DataManager
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.databinding.FragmentFoodAddBinding
-import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import java.time.LocalDateTime
 
 class FoodAddFragment : Fragment() {
 	private var _binding: FragmentFoodAddBinding? = null
 	val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private lateinit var dataManager: DataManager
 	private var bundle = Bundle()
-	private var getFood = Food()
-	private var type = Constant.BREAKFAST.name
+	private var dietId = ""
 	private var unit = "mg"
 
 	override fun onAttach(context: Context) {
@@ -49,25 +49,18 @@ class FoodAddFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		dataManager = DataManager(activity)
-		dataManager.open()
-
-		val id = arguments?.getString("id").toString().toInt()
-		type = arguments?.getString("type").toString()
+		val food = arguments?.getParcelable<Food>("food")!!
+		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
-		getFood = dataManager.getFood("id", id)
-
-		unit = getFood.unit
-		binding.tvName.text = getFood.name
-		binding.tvAmount.text = getFood.amount.toString()
-		binding.tvUnit.text = getFood.unit
-		binding.etKcal.text = getFood.calorie.toString()
-		binding.tvCar.text = String.format("%.1f", getFood.carbohydrate) + "g"
-		binding.tvProtein.text = String.format("%.1f", getFood.protein) + "g"
-		binding.tvFat.text = String.format("%.1f", getFood.fat) + "g"
-		binding.tvSalt.text = String.format("%.1f", getFood.salt) + "g"
-		binding.tvSugar.text = String.format("%.1f", getFood.sugar) + "g"
+		unit = food.volumeUnit
+		binding.tvName.text = food.name
+		binding.tvAmount.text = food.volume.toString()
+		binding.tvUnit.text = unit
+		binding.etKcal.text = food.calorie.toString()
+		binding.tvCar.text = String.format("%.1f", food.carbohydrate) + "g"
+		binding.tvProtein.text = String.format("%.1f", food.protein) + "g"
+		binding.tvFat.text = String.format("%.1f", food.fat) + "g"
 
 		binding.cl1.setOnTouchListener { _, _ ->
 			hideKeyboard(requireActivity())
@@ -79,18 +72,17 @@ class FoodAddFragment : Fragment() {
 		}
 
 		binding.cvSave.setOnClickListener {
-			val getDailyFood = dataManager.getDailyFood(type = type, name = getFood.name, selectedDate.toString())
+			lifecycleScope.launch {
+				dietId = powerSync.getData("foods", "name", food.name).id
 
-			if(getDailyFood.createdAt == "") {
-				dataManager.insertDailyFood(Food(type = type, name = getFood.name, unit = getFood.unit, amount = getFood.amount, calorie = getFood.calorie,
-					carbohydrate = getFood.carbohydrate, protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = 1,
-					createdAt = selectedDate.toString()))
-			}else {
-				dataManager.updateDailyFood(Food(id = getDailyFood.id, unit = getFood.unit, amount = getFood.amount, calorie = getFood.calorie, carbohydrate = getFood.carbohydrate,
-					protein = getFood.protein, fat = getFood.fat, salt = getFood.salt, sugar = getFood.sugar, count = getDailyFood.count + 1, isUpdated = 1))
+				if(dietId == "") {
+					powerSync.insertDiet(Food(mealTime = type, name = food.name, calorie = food.calorie, carbohydrate = food.carbohydrate,
+						protein = food.protein, fat = food.fat, volume = food.volume, volumeUnit = food.volumeUnit, date = selectedDate.toString()))
+				}else {
+					powerSync.updateDiet(Food(id = dietId, calorie = food.calorie, carbohydrate = food.carbohydrate, protein = food.protein,
+						fat = food.fat, quantity = food.quantity, volume = food.volume))
+				}
 			}
-
-			dataManager.updateData2(FOOD, getFood.useCount + 1, LocalDateTime.now().toString(), 1, id)
 
 			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
 			replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
