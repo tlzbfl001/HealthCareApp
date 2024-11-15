@@ -239,10 +239,10 @@ class FoodFragment : Fragment() {
       binding.ivExpand4.setImageResource(R.drawable.arrow_down)
 
       lifecycleScope.launch {
-         val dietList1 = powerSync.getDiets(Constant.BREAKFAST.name, selectedDate.toString())
-         val dietList2 = powerSync.getDiets(Constant.LUNCH.name, selectedDate.toString())
-         val dietList3 = powerSync.getDiets(Constant.DINNER.name, selectedDate.toString())
-         val dietList4 = powerSync.getDiets(Constant.SNACK.name, selectedDate.toString())
+         val dietList1 = powerSync.getAllDiet(Constant.BREAKFAST.name, selectedDate.toString())
+         val dietList2 = powerSync.getAllDiet(Constant.LUNCH.name, selectedDate.toString())
+         val dietList3 = powerSync.getAllDiet(Constant.DINNER.name, selectedDate.toString())
+         val dietList4 = powerSync.getAllDiet(Constant.SNACK.name, selectedDate.toString())
 
          var kcal1 = 0
          var carbohydrate1 = 0.0

@@ -1,20 +1,18 @@
 package kr.bodywell.android.model
 
-data class InitWater(
+data class InitSleep(
     var id: Int = 0,
     var userId: Int = 0,
-    var uid: String? = "",
-    var count: Int = 0,
-    var volume: Int = 200,
-    var createdAt: String = "",
+    var uid: String = "",
+    var startTime: String = "",
+    var endTime: String = "",
     var isUpdated: Int = 0
 )
 
-data class Water(
+data class Sleep(
     var id: String = "",
-    var mL: Int = 0,
-    var count: Int = 0,
-    var date: String = "",
+    var starts: String = "",
+    var ends: String = "",
     var createdAt: String = "",
     var updatedAt: String = "",
     var deletedAt: String = ""

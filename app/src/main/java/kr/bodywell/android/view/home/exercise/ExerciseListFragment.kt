@@ -7,12 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.launch
+import kr.bodywell.android.adapter.ExerciseAdapter
 import kr.bodywell.android.adapter.ExerciseListAdapter
 import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
+import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -54,11 +60,13 @@ class ExerciseListFragment : Fragment() {
          replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
       }
 
-      val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
+      lifecycleScope.launch {
+         val getAllWorkout = powerSync.getAllWorkout(selectedDate.toString()) as ArrayList<Workout>
 
-      val adapter = ExerciseListAdapter(requireActivity(), getDailyExercise)
-      binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-      binding.recyclerView.adapter = adapter
+         val adapter = ExerciseListAdapter(requireActivity(), getAllWorkout)
+         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+         binding.recyclerView.adapter = adapter
+      }
 
       return binding.root
    }

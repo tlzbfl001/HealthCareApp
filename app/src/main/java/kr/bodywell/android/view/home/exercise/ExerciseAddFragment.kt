@@ -3,31 +3,39 @@ package kr.bodywell.android.view.home.exercise
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseAddBinding
+import kr.bodywell.android.model.Activities
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.InitExercise
+import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.time.LocalDateTime
+import java.util.UUID
 
 class ExerciseAddFragment : Fragment() {
     private var _binding: FragmentExerciseAddBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var callback: OnBackPressedCallback
-    private lateinit var dataManager: DataManager
-    private var getExercise = Exercise()
+//    private lateinit var dataManager: DataManager
+    private var getActivity = Activities()
     private var intensity = Constant.HIGH
 
     override fun onAttach(context: Context) {
@@ -48,14 +56,17 @@ class ExerciseAddFragment : Fragment() {
 
         setStatusBar(requireActivity(), binding.mainLayout)
 
-        dataManager = DataManager(activity)
-        dataManager.open()
+//        dataManager = DataManager(activity)
+//        dataManager.open()
 
-        val id = arguments?.getString("id")!!.toInt()
+        val id = arguments?.getString("id")!!
 
-        getExercise = dataManager.getExercise(id)
+        lifecycleScope.launch {
+            getActivity = powerSync.getActivity(id)
+        }
+//        getExercise = dataManager.getExercise(id)
 
-        binding.tvName.text = getExercise.name
+        binding.tvName.text = getActivity.name
 
         binding.mainLayout.setOnTouchListener { _, _ ->
             hideKeyboard(requireActivity())
@@ -98,14 +109,23 @@ class ExerciseAddFragment : Fragment() {
 
         binding.cvSave.setOnClickListener {
             if(binding.etTime.text.toString() == "" || binding.etKcal.text.toString() == "") {
-                Toast.makeText(requireActivity(), "데이터를 전부 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "데이터를 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else if(binding.etTime.text.toString().toInt() == 0 || binding.etKcal.text.toString().toInt() == 0) {
                 Toast.makeText(requireActivity(), "시간, 칼로리를 1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else {
-                dataManager.insertDailyExercise(Exercise(name = getExercise.name, intensity = intensity.name, workoutTime = binding.etTime.text.toString().toInt(),
-                    kcal = binding.etKcal.text.toString().toInt(), createdAt = selectedDate.toString()))
+//                dataManager.insertDailyExercise(InitExercise(name = getExercise.name, intensity = intensity.name, workoutTime = binding.etTime.text.toString().toInt(),
+//                    kcal = binding.etKcal.text.toString().toInt(), createdAt = selectedDate.toString()))
+//
+//                dataManager.updateData2(EXERCISE, getExercise.useCount + 1, LocalDateTime.now().toString(), 1, id)
 
-                dataManager.updateData2(EXERCISE, getExercise.useCount + 1, LocalDateTime.now().toString(), 1, id)
+                val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+
+                lifecycleScope.launch {
+                    val dateTimeFormat = dateTimeToIso(LocalDateTime.now())
+                    powerSync.insertWorkout(Workout(id = uuid.toString(), name = getActivity.name, calorie = binding.etKcal.text.toString().toInt(),
+                        intensity = intensity.name, time = binding.etTime.text.toString().toInt(), date = selectedDate.toString(),
+                        createdAt = dateTimeFormat, updatedAt = dateTimeFormat, activityId = id))
+                }
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 replaceFragment3(requireActivity(), ExerciseListFragment())

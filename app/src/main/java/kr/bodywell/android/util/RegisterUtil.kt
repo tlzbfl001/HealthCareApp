@@ -21,12 +21,12 @@ import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.InitBody
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.Exercise
 import kr.bodywell.android.model.FoodInit
 import kr.bodywell.android.model.GoalInit
-import kr.bodywell.android.model.Sleep
+import kr.bodywell.android.model.InitExercise
+import kr.bodywell.android.model.InitSleep
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.model.InitWater
@@ -239,17 +239,19 @@ object RegisterUtil {
 				val useCount = if(getAllActivity.body()!![i].usages == null) 0 else getAllActivity.body()!![i].usages!![0].usageCount
 				val useDate = if(getAllActivity.body()!![i].usages == null) "" else isoToDateTime(getAllActivity.body()!![i].usages!![0].updatedAt).toString()
 
-				dataManager.insertExercise(Exercise(registerType = getAllActivity.body()!![i].registerType, uid = getAllActivity.body()!![i].id,
-					name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate))
+				dataManager.insertExercise(
+					InitExercise(registerType = getAllActivity.body()!![i].registerType, uid = getAllActivity.body()!![i].id,
+					name = getAllActivity.body()!![i].name, useCount = useCount, useDate = useDate)
+				)
 			}
 
 			for(i in 0 until getAllWorkout.body()!!.size) {
-				dataManager.insertDailyExercise(Exercise(uid = getAllWorkout.body()!![i].id, name = getAllWorkout.body()!![i].name, intensity = getAllWorkout.body()!![i].intensity,
+				dataManager.insertDailyExercise(InitExercise(uid = getAllWorkout.body()!![i].id, name = getAllWorkout.body()!![i].name, intensity = getAllWorkout.body()!![i].intensity,
 					workoutTime = getAllWorkout.body()!![i].time, kcal = getAllWorkout.body()!![i].calorie, createdAt = getAllWorkout.body()!![i].date.substring(0, 10)))
 			}
 
 			for(i in 0 until getAllBody.body()!!.size) {
-				dataManager.insertBody(Body(uid = getAllBody.body()!![i].id, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
+				dataManager.insertBody(InitBody(uid = getAllBody.body()!![i].id, height = getAllBody.body()!![i].height, weight = getAllBody.body()!![i].weight,
 					intensity = getAllBody.body()!![i].workoutIntensity, fat = getAllBody.body()!![i].bodyFatPercentage, muscle = getAllBody.body()!![i].skeletalMuscleMass,
 					bmi = getAllBody.body()!![i].bodyMassIndex, bmr = getAllBody.body()!![i].basalMetabolicRate, createdAt = getAllBody.body()!![i].time.substring(0, 10)))
 			}
@@ -257,7 +259,7 @@ object RegisterUtil {
 			for(i in 0 until getAllSleep.body()!!.size) {
 				val isoToStartTime = isoToDateTime(getAllSleep.body()!![i].starts)
 				val isoToEndTime = isoToDateTime(getAllSleep.body()!![i].ends)
-				dataManager.insertSleep(Sleep(uid = getAllSleep.body()!![i].id, startTime = isoToStartTime.toString(), endTime = isoToEndTime.toString()))
+				dataManager.insertSleep(InitSleep(uid = getAllSleep.body()!![i].id, startTime = isoToStartTime.toString(), endTime = isoToEndTime.toString()))
 			}
 
 			/*val alarmReceiver = AlarmReceiver()
@@ -357,7 +359,7 @@ object RegisterUtil {
 				}
 
 				for(i in 0 until getAllActivity.body()!!.size) {
-					dataManager.insertExercise(Exercise(registerType = TYPE_ADMIN, uid = getAllActivity.body()!![i].id, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
+					dataManager.insertExercise(InitExercise(registerType = TYPE_ADMIN, uid = getAllActivity.body()!![i].id, name = getAllActivity.body()!![i].name, intensity = Constant.HIGH.name,
 						useDate = LocalDateTime.of(LocalDate.now().year, LocalDate.now().month, LocalDate.now().dayOfMonth, 0, 0, 0).toString(), createdAt = LocalDate.now().toString()))
 				}
 

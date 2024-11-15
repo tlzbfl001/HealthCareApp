@@ -3,13 +3,6 @@ package kr.bodywell.android.api.dto
 import com.google.gson.annotations.SerializedName
 
 data class FoodDTO(
-	var data: List<FoodDTOData>
-)
-
-data class FoodDTOData(
-	@SerializedName("id")
-	var id: String = "",
-
 	@SerializedName("name")
 	var name: String = "",
 

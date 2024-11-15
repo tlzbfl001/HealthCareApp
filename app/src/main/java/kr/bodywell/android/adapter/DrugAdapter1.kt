@@ -9,13 +9,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.DrugCheck
 import kr.bodywell.android.model.DrugList
 import kr.bodywell.android.model.MedicineIntake
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
 

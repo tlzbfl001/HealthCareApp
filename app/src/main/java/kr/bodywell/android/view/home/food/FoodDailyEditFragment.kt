@@ -7,10 +7,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,18 +17,10 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.IMAGE
-import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDailyEditBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
@@ -39,14 +29,8 @@ import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
-import kr.bodywell.android.util.CustomUtil.saveImage
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class FoodDailyEditFragment : Fragment() {
    private var _binding: FragmentFoodDailyEditBinding? = null
@@ -56,7 +40,7 @@ class FoodDailyEditFragment : Fragment() {
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private lateinit var cLauncher: ActivityResultLauncher<Intent>
    private var bundle = Bundle()
-   private var dailyFood = Food()
+   private var getDiets = Food()
    private var imageList = ArrayList<Image>()
    private var dialog: Dialog? = null
    private var fileAbsolutePath: String? = null
@@ -87,12 +71,12 @@ class FoodDailyEditFragment : Fragment() {
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
 
-      dailyFood = arguments?.getParcelable("dailyFood")!!
+      getDiets = arguments?.getParcelable("diets")!!
       type = arguments?.getString("type").toString()
       bundle.putString("type", type)
 
-      binding.tvName.text = dailyFood.name
-      count = dailyFood.quantity
+      count = getDiets.quantity
+      binding.tvName.text = getDiets.name
 
 //      val getImage = dataManager.getImage(type, dailyFood.name, selectedDate.toString())
 //      for(i in 0 until getImage.size) imageList.add(getImage[i])
@@ -153,14 +137,14 @@ class FoodDailyEditFragment : Fragment() {
             val file = File(fileAbsolutePath)
             val decode = ImageDecoder.createSource(requireActivity().contentResolver, Uri.fromFile(file.absoluteFile)) // 카메라에서 찍은 사진을 디코딩
             bitmap = ImageDecoder.decodeBitmap(decode) // 디코딩한 사진을 비트맵으로 변환
-            imageList.add(Image(type = type, dataName = dailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
+            imageList.add(Image(type = type, dataName = getDiets.name, bitmap = bitmap, createdAt = selectedDate.toString()))
             photoView()
             file.delete()
          }else if(pictureFlag == 2) { // 갤러리
             val uri = it.data?.data // 선택한 이미지의 주소
             if(uri != null) { // 이미지파일 읽어와서 설정하기
                bitmap = CustomUtil.getRotatedBitmap(requireActivity(), it.data?.data!!) // 이미지 회전하기
-               imageList.add(Image(type = type, dataName = dailyFood.name, bitmap = bitmap, createdAt = selectedDate.toString()))
+               imageList.add(Image(type = type, dataName = getDiets.name, bitmap = bitmap, createdAt = selectedDate.toString()))
                photoView()
             }
          }
@@ -198,8 +182,7 @@ class FoodDailyEditFragment : Fragment() {
          }*/
 
          lifecycleScope.launch {
-            powerSync.updateDiet(Food(id = dailyFood.id, calorie = dailyFood.calorie * count, carbohydrate = dailyFood.carbohydrate * count,
-               protein = dailyFood.protein * count, fat = dailyFood.fat * count, quantity = count, volume = dailyFood.quantity * count))
+            powerSync.updateDiet(Food(id = getDiets.id, name = getDiets.name, quantity = count, date = selectedDate.toString()))
          }
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
@@ -214,11 +197,11 @@ class FoodDailyEditFragment : Fragment() {
 
    private fun settingData() {
       binding.tvCount.text = count.toString()
-      binding.tvAmount.text = (dailyFood.quantity * count).toString()
-      binding.tvKcal.text = (dailyFood.calorie * count).toString()
-      binding.tvCar.text = String.format("%.1f", (dailyFood.carbohydrate * count))
-      binding.tvProtein.text = String.format("%.1f", (dailyFood.protein * count))
-      binding.tvFat.text = String.format("%.1f", (dailyFood.fat * count))
+      binding.tvAmount.text = (getDiets.volume * count).toString()
+      binding.tvKcal.text = (getDiets.calorie * count).toString()
+      binding.tvCar.text = String.format("%.1f", (getDiets.carbohydrate * count))
+      binding.tvProtein.text = String.format("%.1f", (getDiets.protein * count))
+      binding.tvFat.text = String.format("%.1f", (getDiets.fat * count))
    }
 
    private fun photoView() {

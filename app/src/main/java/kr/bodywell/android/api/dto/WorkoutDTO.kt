@@ -18,8 +18,14 @@ data class WorkoutDTO(
 	@SerializedName("date")
 	var date: String = "",
 
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = "",
+
 	@SerializedName("activityId")
-	var activityId: String?
+	var activityId: String? = ""
 )
 
 data class WorkoutUpdateDTO(

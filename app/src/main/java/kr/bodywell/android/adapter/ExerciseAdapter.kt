@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Activities
+import kr.bodywell.android.model.Workout
 
 class ExerciseAdapter (
-   private val itemList: ArrayList<Exercise>
+   private val itemList: ArrayList<Workout>
 ) : RecyclerView.Adapter<ExerciseAdapter.ViewHolder>() {
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -19,8 +20,8 @@ class ExerciseAdapter (
 
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.tvName.text = itemList[position].name
-      holder.tvTime.text = "${itemList[position].workoutTime}분"
-      holder.tvKcal.text = "${itemList[position].kcal} kcal"
+      holder.tvTime.text = "${itemList[position].time}분"
+      holder.tvKcal.text = "${itemList[position].calorie} kcal"
    }
 
    override fun getItemCount(): Int {

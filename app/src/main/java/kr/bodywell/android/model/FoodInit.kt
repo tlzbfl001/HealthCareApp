@@ -47,12 +47,3 @@ data class Food(
     var userId: String = "",
     var foodId: String = ""
 ) : Parcelable
-
-data class FoodUsages(
-    var id: String = "",
-    var usageCount: Int = 0,
-    var createdAt: String = "",
-    var updatedAt: String = "",
-    var foodId: String = "",
-    var userId: String = "",
-)

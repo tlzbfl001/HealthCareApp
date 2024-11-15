@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +12,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.adapter.FoodRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.databinding.FragmentFoodRecord2Binding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -92,7 +89,9 @@ class FoodRecord2Fragment : Fragment() {
       }
 
       lifecycleScope.launch {
-         val itemList = powerSync.getFoodOrder() as ArrayList<Food>
+         val itemList = powerSync.getAllFoodOrder() as ArrayList<Food>
+
+         for(i in 0 until itemList.size) powerSync.deleteDuplicates("foods", "name", itemList[i].name, itemList[i].id)
 
          if(itemList.size > 0) {
             binding.tvEmpty.visibility = View.GONE

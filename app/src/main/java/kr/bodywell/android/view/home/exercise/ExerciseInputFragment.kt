@@ -8,21 +8,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import kr.bodywell.android.database.DataManager
+import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
+import kotlinx.coroutines.launch
 import kr.bodywell.android.databinding.FragmentExerciseInputBinding
-import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Activities
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.time.LocalDateTime
+import java.util.UUID
 
 class ExerciseInputFragment : Fragment() {
    private var _binding: FragmentExerciseInputBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
+//   private lateinit var dataManager: DataManager
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -42,8 +46,8 @@ class ExerciseInputFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      dataManager = DataManager(activity)
-      dataManager.open()
+//      dataManager = DataManager(activity)
+//      dataManager.open()
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -55,18 +59,22 @@ class ExerciseInputFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         val getExercise = dataManager.getExercise("name", binding.etName.text.toString().trim())
+         lifecycleScope.launch {
+            val getData = powerSync.getData("activities", "name", "name", binding.etName.text.trim().toString())
 
-         if(binding.etName.text.toString().trim().isEmpty()) {
-            Toast.makeText(context, "운동이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else if(!filterText(binding.etName.text.toString().trim())) {
-            Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
-         }else if(getExercise.name != "") {
-            Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
-         }else {
-            dataManager.insertExercise(Exercise(name = binding.etName.text.toString().trim(), useCount = 1, useDate = LocalDateTime.now().toString()))
-            Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment()
+            if(binding.etName.text.toString().trim().isEmpty()) {
+               Toast.makeText(context, "운동이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }else if(!filterText(binding.etName.text.toString().trim())) {
+               Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
+            }else if(getData.string2 != "") {
+               Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
+            }else {
+               val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+               powerSync.insertActivity(Activities(id = uuid.toString(), name = binding.etName.text.toString().trim(),
+                  createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+               Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               replaceFragment()
+            }
          }
       }
 

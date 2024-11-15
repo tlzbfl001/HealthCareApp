@@ -2,7 +2,6 @@ package kr.bodywell.android.view.home.food
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,17 +9,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.databinding.FragmentFoodAddBinding
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateToIso
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
 
 class FoodAddFragment : Fragment() {
 	private var _binding: FragmentFoodAddBinding? = null
@@ -28,7 +30,7 @@ class FoodAddFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private var bundle = Bundle()
-	private var dietId = ""
+	private val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
 	private var unit = "mg"
 
 	override fun onAttach(context: Context) {
@@ -73,14 +75,16 @@ class FoodAddFragment : Fragment() {
 
 		binding.cvSave.setOnClickListener {
 			lifecycleScope.launch {
-				dietId = powerSync.getData("foods", "name", food.name).id
+				val getDiet = powerSync.getDiet(food.name, selectedDate.toString())
 
-				if(dietId == "") {
-					powerSync.insertDiet(Food(mealTime = type, name = food.name, calorie = food.calorie, carbohydrate = food.carbohydrate,
-						protein = food.protein, fat = food.fat, volume = food.volume, volumeUnit = food.volumeUnit, date = selectedDate.toString()))
+				if(getDiet.id == "") {
+					val getData = powerSync.getData("foods", "name", "name", food.name)
+					val dateToIso = dateToIso(selectedDate.toString())
+					powerSync.insertDiet(Food(id = uuid.toString(), mealTime = type, name = food.name, calorie = food.calorie, carbohydrate = food.carbohydrate,
+						protein = food.protein, fat = food.fat, volume = food.volume, volumeUnit = food.volumeUnit, date = dateToIso,
+						createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString(), foodId = getData.string1))
 				}else {
-					powerSync.updateDiet(Food(id = dietId, calorie = food.calorie, carbohydrate = food.carbohydrate, protein = food.protein,
-						fat = food.fat, quantity = food.quantity, volume = food.volume))
+					powerSync.updateDiet(Food(id = getDiet.id, quantity = food.quantity + 1))
 				}
 			}
 

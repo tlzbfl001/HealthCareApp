@@ -21,7 +21,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportBodyBinding
-import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.InitBody
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
@@ -205,22 +205,22 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val itemList1 = ArrayList<Body>()
-      val itemList2 = ArrayList<Body>()
-      val itemList3 = ArrayList<Body>()
+      val itemList1 = ArrayList<InitBody>()
+      val itemList2 = ArrayList<InitBody>()
+      val itemList3 = ArrayList<InitBody>()
 
       val weekArray = weekArray(calendarDate)
       val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
 
       for(i in 0 until getData.size) {
          if(getData[i].weight != null && getData[i].weight!! > 0) {
-            itemList1.add(Body(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+            itemList1.add(InitBody(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
          if(getData[i].bmi != null && getData[i].bmi!! > 0) {
-            itemList2.add(Body(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+            itemList2.add(InitBody(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
          if(getData[i].fat != null && getData[i].fat!! > 0) {
-            itemList3.add(Body(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+            itemList3.add(InitBody(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
       }
 
@@ -280,21 +280,21 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
-      val itemList1 = ArrayList<Body>()
-      val itemList2 = ArrayList<Body>()
-      val itemList3 = ArrayList<Body>()
+      val itemList1 = ArrayList<InitBody>()
+      val itemList2 = ArrayList<InitBody>()
+      val itemList3 = ArrayList<InitBody>()
 
       val monthArray = monthArray2(calendarDate)
       val getData = dataManager.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
       for(i in 0 until getData.size) {
          if (getData[i].weight != null && getData[i].weight!! > 0) {
-            itemList1.add(Body(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+            itemList1.add(InitBody(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
          if (getData[i].bmi != null && getData[i].bmi!! > 0) {
-            itemList2.add(Body(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+            itemList2.add(InitBody(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
          if (getData[i].fat != null && getData[i].fat!! > 0) {
-            itemList3.add(Body(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+            itemList3.add(InitBody(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
          }
       }
 

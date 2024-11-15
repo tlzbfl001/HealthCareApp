@@ -50,9 +50,62 @@ val SyncSchema: Schema = Schema(
 		Table(
 			name = "water",
 			columns = listOf(
-				Column.text("mL"),
-				Column.text("count"),
-				Column.text("date")
+				Column.integer("mL"),
+				Column.integer("count"),
+				Column.text("date"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("deleted_at")
+			)
+		),
+		Table(
+			name = "activities",
+			columns = listOf(
+				Column.text("name"),
+				Column.text("register_type"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("deleted_at")
+			)
+		),
+		Table(
+			name = "workouts",
+			columns = listOf(
+				Column.text("name"),
+				Column.integer("calorie"),
+				Column.text("intensity"),
+				Column.integer("time"),
+				Column.text("date"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("deleted_at"),
+				Column.text("activity_id")
+			)
+		),
+		Table(
+			name = "body_measurements",
+			columns = listOf(
+				Column.real("height"),
+				Column.real("weight"),
+				Column.real("body_mass_index"),
+				Column.real("body_fat_percentage"),
+				Column.real("skeletal_muscle_mass"),
+				Column.real("basal_metabolic_rate"),
+				Column.integer("workout_intensity"),
+				Column.text("time"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("deleted_at")
+			)
+		),
+		Table(
+			name = "sleep",
+			columns = listOf(
+				Column.text("starts"),
+				Column.text("ends"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("deleted_at")
 			)
 		),
 		Table(
@@ -66,8 +119,7 @@ val SyncSchema: Schema = Schema(
 				Column.text("ends"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at"),
-				Column.text("user_id")
+				Column.text("deleted_at")
 			)
 		),
 		Table(

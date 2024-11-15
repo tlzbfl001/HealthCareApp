@@ -28,7 +28,6 @@ class FoodSnackFragment : Fragment() {
     val binding get() = _binding!!
 
     private var photoAdapter: PhotoSlideAdapter2? = null
-    private var itemList = ArrayList<Food>()
     private var imageList = ArrayList<Image>()
     private var type = Constant.SNACK.name
 
@@ -70,7 +69,8 @@ class FoodSnackFragment : Fragment() {
 
     private fun listView() {
         lifecycleScope.launch {
-            val itemList = powerSync.getDiets(type, selectedDate.toString()) as ArrayList<Food>
+            val itemList = powerSync.getAllDiet(type, selectedDate.toString()) as ArrayList<Food>
+            for(i in 0 until itemList.size) powerSync.deleteDuplicates("diets", "name", itemList[i].name, itemList[i].id)
 
             if(itemList.isNotEmpty()) {
                 val intakeAdapter = FoodIntakeAdapter(requireActivity(), itemList, type)

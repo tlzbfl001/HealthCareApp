@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.BODY
@@ -24,6 +27,8 @@ import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
 import kr.bodywell.android.model.GoalInit
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
@@ -159,7 +164,11 @@ class BodyFragment : Fragment() {
          }
       }
 
-      getBody = dataManager.getBody(selectedDate.toString())
+      lifecycleScope.launch {
+         getBody = powerSync.getBody(selectedDate.toString())
+         powerSync.deleteDuplicates("body_measurements", "strftime('%Y-%m-%d', time)", selectedDate.toString(), getBody.id!!)
+      }
+//      getBody = dataManager.getBody(selectedDate.toString())
 
       var remain = 0.0
       if(getBody.weight != null && getBody.weight!! > 0) {
@@ -188,15 +197,15 @@ class BodyFragment : Fragment() {
    }
 
    private fun dailyList() {
-      if(getBody.bmi != null) binding.tvBmi.text = getBody.bmi.toString() else binding.tvBmi.text = "0"
-      if(getBody.fat != null) binding.tvFat.text = "${getBody.fat} %" else binding.tvFat.text = "0 %"
-      if(getBody.muscle != null) binding.tvMuscle.text = "${getBody.muscle} kg" else binding.tvMuscle.text = "0 kg"
-      if(getBody.bmr != null) binding.tvBmr.text = "${getBody.bmr} kcal" else binding.tvBmr.text = "0 kcal"
+      if(getBody.bodyMassIndex != null) binding.tvBmi.text = getBody.bodyMassIndex.toString() else binding.tvBmi.text = "0"
+      if(getBody.bodyFatPercentage != null) binding.tvFat.text = "${getBody.bodyFatPercentage} %" else binding.tvFat.text = "0 %"
+      if(getBody.skeletalMuscleMass != null) binding.tvMuscle.text = "${getBody.skeletalMuscleMass} kg" else binding.tvMuscle.text = "0 kg"
+      if(getBody.basalMetabolicRate != null) binding.tvBmr.text = "${getBody.basalMetabolicRate} kcal" else binding.tvBmr.text = "0 kcal"
 
       // 체질량지수 범위
       var bmi = 0
-      if(getBody.bmi != null) {
-         val format1 = String.format("%.1f", getBody.bmi)
+      if(getBody.bodyMassIndex != null) {
+         val format1 = String.format("%.1f", getBody.bodyMassIndex)
          bmi = format1.replace(".", "").toInt()
       }
       when {
@@ -264,8 +273,8 @@ class BodyFragment : Fragment() {
 
       // 체지방율 범위
       var fat = 0
-      if(getBody.bmi != null) {
-         val format2 = String.format("%.1f", getBody.fat)
+      if(getBody.bodyMassIndex != null) {
+         val format2 = String.format("%.1f", getBody.bodyFatPercentage)
          fat = format2.replace(".", "").toInt()
       }
       when {
@@ -318,8 +327,8 @@ class BodyFragment : Fragment() {
 
       // 골격근량 범위
       var muscle = 0
-      if(getBody.bmi != null) {
-         val format3 = String.format("%.1f", getBody.muscle)
+      if(getBody.bodyMassIndex != null) {
+         val format3 = String.format("%.1f", getBody.skeletalMuscleMass)
          muscle = format3.replace(".", "").toInt()
       }
       when {

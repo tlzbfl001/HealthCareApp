@@ -33,14 +33,14 @@ class FoodIntakeAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val count = itemList[position].quantity!!
+        val count = itemList[position].quantity
 
         holder.tvName.text = itemList[position].name
         holder.tvKcal.text = "${itemList[position].calorie!! * count} kcal"
         holder.tvDesc.text = "${count}개/${itemList[position].volume!! * count}${itemList[position].volumeUnit}"
 
         holder.cl.setOnClickListener {
-            bundle.putParcelable("dailyFood", itemList[position])
+            bundle.putParcelable("diets", itemList[position])
             bundle.putString("type", type)
             replaceFragment2(context, FoodDailyEditFragment(), bundle)
         }

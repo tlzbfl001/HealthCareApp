@@ -10,22 +10,25 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Exercise
-import kr.bodywell.android.model.Unused
+import kr.bodywell.android.model.InitExercise
+import kr.bodywell.android.model.Workout
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
 
 class ExerciseListAdapter (
    private val context: Activity,
-   private val itemList: ArrayList<Exercise>
+   private val itemList: ArrayList<Workout>
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
    private var bundle = Bundle()
-   private var dataManager: DataManager = DataManager(context)
-
-   init { dataManager.open() }
+//   private var dataManager: DataManager = DataManager(context)
+//
+//   init { dataManager.open() }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list2, parent, false)
@@ -34,11 +37,11 @@ class ExerciseListAdapter (
 
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
       holder.tvName.text = itemList[pos].name
-      holder.tvTime.text = "${itemList[pos].workoutTime}분"
-      holder.tvKcal.text = "${itemList[pos].kcal} kcal"
+      holder.tvTime.text = "${itemList[pos].time}분"
+      holder.tvKcal.text = "${itemList[pos].calorie} kcal"
 
       holder.cl.setOnClickListener {
-         bundle.putString("id", itemList[pos].id.toString())
+         bundle.putParcelable("workouts", itemList[pos])
          replaceFragment2(context, ExerciseDailyEditFragment(), bundle)
       }
 
@@ -47,9 +50,10 @@ class ExerciseListAdapter (
             .setTitle("운동 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
-               if(itemList[pos].uid != "") dataManager.insertUnused(Unused(type = DAILY_EXERCISE, value = itemList[pos].uid, createdAt = itemList[pos].createdAt))
+               runBlocking {
+                  powerSync.deleteItem("workouts", "id", itemList[pos].id)
+               }
 
-               dataManager.deleteItem(DAILY_EXERCISE, "id", itemList[pos].id)
                itemList.removeAt(pos)
                notifyDataSetChanged()
 

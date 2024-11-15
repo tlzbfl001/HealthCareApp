@@ -8,19 +8,22 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Exercise
-import kr.bodywell.android.model.Unused
-import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.model.Activities
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.powerSync
 
 class ExerciseRecordAdapter (
    private val context: Activity,
-   private var itemList: ArrayList<Exercise> = ArrayList<Exercise>()
+   private var itemList: ArrayList<Activities> =ArrayList<Activities>()
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
    private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
@@ -37,7 +40,9 @@ class ExerciseRecordAdapter (
    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
       holder.textView.text = itemList[position].name
 
-      holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
+      holder.textView.setOnClickListener {
+         onItemClickListener!!.onItemClick(position)
+      }
 
       if(itemList[position].registerType == TYPE_USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
@@ -51,10 +56,8 @@ class ExerciseRecordAdapter (
                .setTitle("운동 삭제")
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
-                  dataManager.deleteItem(EXERCISE, "id", itemList[position].id)
-
-                  if(itemList[position].uid != "") {
-                     dataManager.insertUnused(Unused(type = EXERCISE, value = itemList[position].uid, createdAt = selectedDate.toString()))
+                  runBlocking {
+                     powerSync.deleteItem("activities", "id", itemList[position].id)
                   }
 
                   itemList.removeAt(position)

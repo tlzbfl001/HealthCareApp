@@ -9,14 +9,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.ExerciseRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseRecord1Binding
-import kr.bodywell.android.model.Exercise
+import kr.bodywell.android.model.Activities
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -26,9 +28,9 @@ class ExerciseRecord1Fragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
+//   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
-   private var itemList = ArrayList<Exercise>()
+   private var itemList = ArrayList<Activities>()
    private val searchList = ArrayList<Item>()
 
    override fun onAttach(context: Context) {
@@ -49,8 +51,8 @@ class ExerciseRecord1Fragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      dataManager = DataManager(activity)
-      dataManager.open()
+//      dataManager = DataManager(activity)
+//      dataManager.open()
 
       bundle.putString("back", "1")
 
@@ -93,9 +95,13 @@ class ExerciseRecord1Fragment : Fragment() {
    }
 
    private fun listView() {
-      itemList = dataManager.getSearchExercise("useCount")
+      lifecycleScope.launch {
+//         itemList = dataManager.getSearchExercise("useCount")
+         itemList = powerSync.getAllActivity() as ArrayList<Activities>
+         for(i in itemList.indices) powerSync.deleteDuplicates("activities", "name", itemList[i].name, itemList[i].id)
+      }
 
-      if(itemList.size > 0) {
+      if(itemList.isNotEmpty()) {
          binding.tvEmpty.visibility = View.GONE
          binding.rv1.visibility = View.VISIBLE
 
@@ -104,7 +110,7 @@ class ExerciseRecord1Fragment : Fragment() {
 
          adapter.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
-               bundle.putString("id", itemList[pos].id.toString())
+               bundle.putString("id", itemList[pos].id)
                replaceFragment2(requireActivity(), ExerciseAddFragment(), bundle)
             }
          })
@@ -130,7 +136,7 @@ class ExerciseRecord1Fragment : Fragment() {
             }else {
                for(i in 0 until itemList.size) { // 검색 단어를 포함하는지 확인
                   if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                     searchList.add(Item(int1 = itemList[i].id, string1 = itemList[i].registerType, string2 = itemList[i].uid, string3 = itemList[i].name))
+                     searchList.add(Item(string1 = itemList[i].id, string2 = itemList[i].name, string3 = itemList[i].registerType))
                   }
                   adapter.setItems(searchList)
                }

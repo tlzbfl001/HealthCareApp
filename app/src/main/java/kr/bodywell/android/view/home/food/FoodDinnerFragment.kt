@@ -29,7 +29,6 @@ class FoodDinnerFragment : Fragment() {
 
     private var photoAdapter: PhotoSlideAdapter2? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
-    private var itemList = ArrayList<Food>()
     private var imageList = ArrayList<Image>()
     private var type = Constant.DINNER.name
 
@@ -71,7 +70,8 @@ class FoodDinnerFragment : Fragment() {
 
     private fun listView() {
         lifecycleScope.launch {
-            val itemList = powerSync.getDiets(type, selectedDate.toString()) as ArrayList<Food>
+            val itemList = powerSync.getAllDiet(type, selectedDate.toString()) as ArrayList<Food>
+            for(i in 0 until itemList.size) powerSync.deleteDuplicates("diets", "name", itemList[i].name, itemList[i].id)
 
             if(itemList.isNotEmpty()) {
                 binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

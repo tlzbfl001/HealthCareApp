@@ -12,6 +12,8 @@ import android.widget.EditText
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
 import kr.bodywell.android.database.DBHelper.Companion.GOAL
@@ -21,11 +23,15 @@ import kr.bodywell.android.databinding.FragmentSleepBinding
 import kr.bodywell.android.model.GoalInit
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Date
+import java.util.TimeZone
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
@@ -96,27 +102,38 @@ class SleepFragment : Fragment() {
       binding.tvGoal.text = "0h 0m"
       binding.tvRemain.text = "0h 0m"
 
-      dailyGoal = dataManager.getGoal(selectedDate.toString())
-      getSleep = dataManager.getSleep(selectedDate.toString())
+//      dailyGoal = dataManager.getGoal(selectedDate.toString())
+//      getSleep = dataManager.getSleep(selectedDate.toString())
 
-      if(getSleep.startTime != "" && getSleep.endTime != "") {
-         val bedTime = LocalDateTime.parse(getSleep.startTime)
-         val wakeTime = LocalDateTime.parse(getSleep.endTime)
+      lifecycleScope.launch {
+         getSleep = powerSync.getSleep(selectedDate.toString())
+      }
 
-         val diff = Duration.between(bedTime, wakeTime)
+      if(getSleep.starts != "" && getSleep.ends!= "") {
+//         val bedTime = LocalDateTime.parse(getSleep.starts)
+//         val wakeTime = LocalDateTime.parse(getSleep.ends)
+//
+//         val diff = Duration.between(bedTime, wakeTime)
+//         total =diff.toMinutes().toInt()
+
+         // ISO8601문자열을 Date로 변환
+         val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+         val date1: Date = dateFormat.parse("2024-12-14T23:20:17.419+09:00")
+         val bedTime = dateFormat.parse(getSleep.starts)
+         val wakeTime = dateFormat.parse(getSleep.ends)
+         val diff = Duration.between(bedTime.toInstant(), wakeTime.toInstant())
          total =diff.toMinutes().toInt()
 
          binding.pbSleep.setProgressStartColor(resources.getColor(R.color.sleep))
          binding.pbSleep.setProgressEndColor(resources.getColor(R.color.sleep))
          binding.pbSleep.max = dailyGoal.sleep
          binding.pbSleep.progress = total
-         binding.tvBedtime.text = "${bedTime.hour}h ${bedTime.minute}m"
-         binding.tvWakeTime.text = "${wakeTime.hour}h ${wakeTime.minute}m"
+         binding.tvBedtime.text = "${bedTime.hours}h ${bedTime.minutes}m"
+         binding.tvWakeTime.text = "${wakeTime.hours}h ${wakeTime.minutes}m"
 
          val remain = (dailyGoal.sleep - total)
-         if(remain > 0) {
-            binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
-         }
+         if(remain > 0) binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
       }else {
          binding.tvBedtime.text = "0h 0m"
          binding.tvWakeTime.text = "0h 0m"

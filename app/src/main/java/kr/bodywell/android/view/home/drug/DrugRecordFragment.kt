@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.adapter.DrugAdapter2
 import kr.bodywell.android.databinding.FragmentDrugRecordBinding
@@ -59,9 +61,8 @@ class DrugRecordFragment : Fragment() {
          replaceFragment1(requireActivity(), DrugAddFragment())
       }
 
-      runBlocking {
+      lifecycleScope.launch {
          val getMedicine = powerSync.getMedicine(selectedDate.toString()) as ArrayList<Medicine>
-
          adapter = DrugAdapter2(requireActivity(), getMedicine)
          binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
          binding.recyclerView.requestLayout()

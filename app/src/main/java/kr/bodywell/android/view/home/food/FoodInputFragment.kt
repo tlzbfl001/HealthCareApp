@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
+import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
@@ -28,6 +29,7 @@ import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.CustomUtil.uuidv7Generator
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 class FoodInputFragment : Fragment() {
@@ -237,20 +239,20 @@ class FoodInputFragment : Fragment() {
          }
 
          lifecycleScope.launch {
-            val getFood = powerSync.getData("foods", "name", name)
+            val getFood = powerSync.getData("foods", "name", "name", name)
 
             if(name.trim().isEmpty()) {
                Toast.makeText(context, "음식이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else if(!filterText(name)) {
                Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
-            }else if(getFood.name != "") {
+            }else if(getFood.string2 != "") {
                Toast.makeText(context, "음식이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
             }else if(amount == 0 || calorie == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0) {
                Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
             }else {
                val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
-               powerSync.insertFood(Food(id=uuid.toString(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat,
-                  volume = amount, volumeUnit = unit, createdAt = LocalDate.now().toString(), updatedAt = LocalDate.now().toString()))
+               powerSync.insertFood(Food(id = uuid.toString(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein,
+                  fat = fat, volume = amount, volumeUnit = unit, createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
 
                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment()

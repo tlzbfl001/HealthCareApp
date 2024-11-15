@@ -17,8 +17,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.WaterAdapter
 import kr.bodywell.android.databinding.FragmentWaterBinding
@@ -29,6 +29,8 @@ import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
 
 class WaterFragment : Fragment() {
    private var _binding: FragmentWaterBinding? = null
@@ -41,6 +43,7 @@ class WaterFragment : Fragment() {
    private var getWater = Water()
    private var volume = 200
    private var count = 0
+   private val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -75,7 +78,8 @@ class WaterFragment : Fragment() {
                }
 
                if(getWater.date == "") {
-                  powerSync.insertWater(Water(count = count, date = selectedDate.toString()))
+                  powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count, date = selectedDate.toString()))
                }
@@ -104,9 +108,10 @@ class WaterFragment : Fragment() {
                getWater = powerSync.getWater(selectedDate.toString())
 
                if(getWater.date == "") {
-                  powerSync.insertWater(Water(count = count, date = selectedDate.toString()))
+                  powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                }else {
-                  powerSync.updateWater(Water(id = getWater.id, mL = getWater.mL, count = count, date = selectedDate.toString()))
+                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count, date = selectedDate.toString()))
                }
             }
 
@@ -115,7 +120,6 @@ class WaterFragment : Fragment() {
             if(count == 0 && getWater.date != "") {
                binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
                binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
-
                powerSync.deleteItem("water", "date", selectedDate.toString())
             }
 
@@ -137,9 +141,10 @@ class WaterFragment : Fragment() {
                getWater = powerSync.getWater(selectedDate.toString())
 
                if(getWater.date == "") {
-                  powerSync.insertWater(Water(count = count, date = selectedDate.toString()))
+                  powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                }else {
-                  powerSync.updateWater(Water(id = getWater.id, mL = getWater.mL, count = count, date = selectedDate.toString()))
+                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count, date = selectedDate.toString()))
                }
 
                resetData()
@@ -157,12 +162,13 @@ class WaterFragment : Fragment() {
    }
 
    private fun dailyView() {
+      resetData()
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
          getWater = powerSync.getWater(selectedDate.toString())
-         Log.d(CustomUtil.TAG, "selectedDate: $selectedDate")
-         Log.d(CustomUtil.TAG, "getWater: $getWater")
-         volume = getWater.mL
+         powerSync.deleteDuplicates("water", "date", getWater.date, getWater.id)
+
+         volume = if(getWater.mL > 0) getWater.mL else 200
          count = getWater.count
 
          if(count > 0) {
@@ -176,31 +182,21 @@ class WaterFragment : Fragment() {
             binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
             binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
          }
-
-         binding.tvIntake.text = "${count}잔/${count * volume}ml"
-         binding.tvMl.text = "${volume}ml"
-         binding.tvGoal.text = "${getGoal.waterIntake}잔/${getGoal.waterIntake * volume}ml"
-         binding.tvCount.text = "${count}잔"
-         binding.tvUnit.text = "(${count * volume}ml)"
-
-         val remain = getGoal.waterIntake - count
-         if(remain > 0) binding.tvRemain.text = "${remain}잔/${remain * volume}ml" else binding.tvRemain.text = "0잔/0ml"
-
-         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 5)
-         binding.rv.layoutManager = layoutManager
-         adapter = WaterAdapter(count)
-         binding.rv.adapter = adapter
       }
    }
 
    private fun resetData() {
+      binding.tvGoal.text = "${getGoal.waterIntake}잔/${getGoal.waterIntake * volume}ml"
       binding.tvCount.text = "${count}잔"
       binding.tvUnit.text = "(${count * volume}ml)"
+      binding.tvMl.text = "${volume}ml"
       binding.tvIntake.text = "${count}잔/${count * volume}ml"
 
       val remain = getGoal.waterIntake - count
       if(remain > 0) binding.tvRemain.text = "${remain}잔/${remain * volume}ml" else binding.tvRemain.text = "0잔/0ml"
 
+      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 5)
+      binding.rv.layoutManager = layoutManager
       adapter = WaterAdapter(count)
       binding.rv.adapter = adapter
    }

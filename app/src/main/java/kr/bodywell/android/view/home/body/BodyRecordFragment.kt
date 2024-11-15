@@ -10,27 +10,36 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.BODY
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.InitBody
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.home.DetailFragment
+import java.time.LocalDateTime
 import java.util.Calendar
+import java.util.UUID
 
 class BodyRecordFragment : Fragment() {
    private var _binding: FragmentBodyRecordBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
+//   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
+   private var getBody = Body()
    private var level = 1
 
    override fun onAttach(context: Context) {
@@ -51,21 +60,23 @@ class BodyRecordFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      dataManager = DataManager(activity)
-      dataManager.open()
+//      dataManager = DataManager(activity)
+//      dataManager.open()
 
       bundle.putString("type", BODY)
 
-      val getBody = dataManager.getBody(selectedDate.toString())
+      lifecycleScope.launch {
+         getBody = powerSync.getBody(selectedDate.toString())
+      }
 
       // 데이터가 존재하는 경우 데이터 가져와서 수정
-      if (getBody.bmi != null && getBody.bmi!! > 0) binding.etBmi.setText(getBody.bmi.toString())
-      if(getBody.fat != null && getBody.fat!! > 0) binding.etFat.setText(getBody.fat.toString())
-      if(getBody.muscle != null && getBody.muscle!! > 0) binding.etMuscle.setText(getBody.muscle.toString())
+      if (getBody.bodyMassIndex != null && getBody.bodyMassIndex!! > 0) binding.etBmi.setText(getBody.bodyMassIndex.toString())
+      if(getBody.bodyFatPercentage != null && getBody.bodyFatPercentage!! > 0) binding.etFat.setText(getBody.bodyFatPercentage.toString())
+      if(getBody.skeletalMuscleMass != null && getBody.skeletalMuscleMass!! > 0) binding.etMuscle.setText(getBody.skeletalMuscleMass.toString())
       if(getBody.height != null && getBody.height!! > 0) binding.etHeight.setText(getBody.height.toString())
       if(getBody.weight != null && getBody.weight!! > 0) binding.etWeight.setText(getBody.weight.toString())
 
-      when(getBody.intensity) {
+      when(getBody.workoutIntensity) {
          1 -> {
             binding.radioBtn1.isChecked = true
             level = 1
@@ -269,10 +280,10 @@ class BodyRecordFragment : Fragment() {
 
       // BMR 구하기
       binding.cvResult.setOnClickListener {
-         val getUser = dataManager.getUser()
+//         val getUser = dataManager.getUser()
          val current = Calendar.getInstance()
          val currentYear = current.get(Calendar.YEAR)
-         val age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
+//         val age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
 
          if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "신체 정보를 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -287,15 +298,17 @@ class BodyRecordFragment : Fragment() {
                5 -> step = 1.9
             }
 
-            val bmr = if(getUser.gender == Constant.MALE.name) {
-               88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * age)
-            }else {
-               66 + (13.7 * binding.etWeight.text.toString().toDouble()) + (5 * binding.etHeight.text.toString().toDouble()) - (6.8 * age) * step
-            }
+//            val bmr = if(getUser.gender == Constant.MALE.name) {
+//               88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * age)
+//            }else {
+//               66 + (13.7 * binding.etWeight.text.toString().toDouble()) + (5 * binding.etHeight.text.toString().toDouble()) - (6.8 * age) * step
+//            }
+
+            val bmr = 88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * 25)
 
             binding.clResult.visibility = View.VISIBLE
-            binding.tvBmr.text = String.format("%.2f", bmr)
-            binding.tvTotal.text = String.format("%.2f", bmr * step)
+            binding.tvBmr.text = if(bmr < 0) "0" else String.format("%.2f", bmr)
+            binding.tvTotal.text = if(bmr < 0) "0" else String.format("%.2f", bmr * step)
          }
       }
 
@@ -315,12 +328,18 @@ class BodyRecordFragment : Fragment() {
          }else if((fat != null && fat > 99) || (muscle != null && muscle > 99) || (bmi != null && bmi > 99)) {
             Toast.makeText(requireActivity(), "BMI, 체지방율, 골격근량은 99이하여야합니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getBody.createdAt == "") {
-               dataManager.insertBody(Body(height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, createdAt = selectedDate.toString()))
-               Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            }else {
-               dataManager.updateBody(Body(id = getBody.id, height = height, weight = weight, intensity = level, fat = fat, muscle = muscle, bmi = bmi, bmr = bmr, isUpdated = 1))
-               Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launch {
+               if(getBody.createdAt == "") {
+                  val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertBody(Body(id = uuid.toString(), height = height, weight = weight, bodyMassIndex = bmi, bodyFatPercentage = fat,
+                     skeletalMuscleMass = muscle, basalMetabolicRate = bmr, workoutIntensity = level, time = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               }else {
+                  powerSync.updateBody(Body(id = getBody.id, height = height, weight = weight, bodyMassIndex = bmi, bodyFatPercentage = fat,
+                     skeletalMuscleMass = muscle, basalMetabolicRate = bmr, workoutIntensity = level))
+                  Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
+               }
             }
 
             replaceFragment4(requireActivity(), DetailFragment(), bundle)

@@ -34,7 +34,9 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
+import java.util.TimeZone
 import java.util.regex.Pattern
 
 object CustomUtil {
@@ -83,6 +85,12 @@ object CustomUtil {
 
    fun dateTimeToIso(date: LocalDateTime): String {
       return date.atZone(ZoneId.of("Asia/Seoul")).toInstant().toString()
+   }
+
+   fun dateTimeToIso2(date: Calendar): String {
+      val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+      sdf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+      return sdf.format(date.time)
    }
 
    fun isoToDateTime(date: String): LocalDateTime {

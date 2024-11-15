@@ -2,7 +2,6 @@ package kr.bodywell.android.view.home.food
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import java.io.File
 import java.util.stream.Collectors
@@ -31,7 +29,6 @@ class FoodBreakfastFragment : Fragment() {
 
    private var photoAdapter: PhotoSlideAdapter2? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
-   private var itemList = ArrayList<Food>()
    private var imageList = ArrayList<Image>()
    private var type = Constant.BREAKFAST.name
 
@@ -73,7 +70,8 @@ class FoodBreakfastFragment : Fragment() {
 
    private fun listView() {
       lifecycleScope.launch {
-         val itemList = powerSync.getDiets(type, selectedDate.toString()) as ArrayList<Food>
+         val itemList = powerSync.getAllDiet(type, selectedDate.toString()) as ArrayList<Food>
+         for(i in 0 until itemList.size) powerSync.deleteDuplicates("diets", "name", itemList[i].name, itemList[i].id)
 
          if(itemList.isNotEmpty()) {
             binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
