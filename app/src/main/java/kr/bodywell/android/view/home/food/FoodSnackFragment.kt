@@ -69,8 +69,8 @@ class FoodSnackFragment : Fragment() {
 
     private fun listView() {
         lifecycleScope.launch {
-            val itemList = powerSync.getAllDiet(type, selectedDate.toString()) as ArrayList<Food>
-            for(i in 0 until itemList.size) powerSync.deleteDuplicates("diets", "name", itemList[i].name, itemList[i].id)
+            val itemList = powerSync!!.getAllDiet(type, selectedDate.toString()) as ArrayList<Food>
+            for(i in 0 until itemList.size) powerSync!!.deleteDuplicates("diets", "name", itemList[i].name, itemList[i].id)
 
             if(itemList.isNotEmpty()) {
                 val intakeAdapter = FoodIntakeAdapter(requireActivity(), itemList, type)
@@ -91,7 +91,7 @@ class FoodSnackFragment : Fragment() {
                                 }
 
                                 runBlocking {
-                                    powerSync.deleteItem("diets", "id", itemList[pos].id)
+                                    powerSync!!.deleteItem("diets", "id", itemList[pos].id)
                                 }
 
                                 itemList.removeAt(pos)

@@ -15,8 +15,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
@@ -31,6 +31,7 @@ import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
 class FoodFragment : Fragment() {
@@ -66,12 +67,14 @@ class FoodFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            runBlocking {
-               if(getGoal.date == "") {
-                  powerSync.insertGoal(Goal(kcalOfDiet = et.text.toString().toInt(), date = selectedDate.toString()))
+            lifecycleScope.launch {
+               if(getGoal.id == "") {
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertGoal(Goal(id = uuid.toString(), kcalOfDiet = et.text.toString().toInt(), date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateStr("goals", "kcal_of_diet", et.text.toString(), getGoal.id)
+                  powerSync.updateData("goals", "kcal_of_diet", et.text.toString(), getGoal.id)
                }
 
                binding.pbFood.max = et.text.toString().toInt()
@@ -175,11 +178,11 @@ class FoodFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-      runBlocking {
+      lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
+         sum = getFoodCalories(selectedDate.toString()).int5
       }
 
-      sum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
       binding.tvGoal.text = "${getGoal.kcalOfDiet} kcal"
       binding.tvIntake.text = "$sum kcal"
 

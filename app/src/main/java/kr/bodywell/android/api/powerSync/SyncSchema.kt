@@ -7,6 +7,20 @@ import com.powersync.db.schema.Table
 val SyncSchema: Schema = Schema(
 	listOf(
 		Table(
+			name = "profiles",
+			columns = listOf(
+				Column.text("name"),
+				Column.text("picture_url"),
+				Column.text("birth"),
+				Column.text("gender"),
+				Column.real("height"),
+				Column.real("weight"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("user_id")
+			)
+		),
+		Table(
 			name = "foods",
 			columns = listOf(
 				Column.text("name"),
@@ -150,18 +164,17 @@ val SyncSchema: Schema = Schema(
 		Table(
 			name = "goals",
 			columns = listOf(
-				Column.real("weight"),
-				Column.integer("kcal_of_diet"),
-				Column.integer("kcal_of_workout"),
-				Column.integer("water_amount_of_cup"),
-				Column.integer("water_intake"),
-				Column.integer("sleep"),
-				Column.integer("medicine_intake"),
+				Column.text("weight"),
+				Column.text("kcal_of_diet"),
+				Column.text("kcal_of_workout"),
+				Column.text("water_amount_of_cup"),
+				Column.text("water_intake"),
+				Column.text("sleep"),
+				Column.text("medicine_intake"),
 				Column.text("date"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at"),
-				Column.text("user_id")
+				Column.text("deleted_at")
 			)
 		)
 	)

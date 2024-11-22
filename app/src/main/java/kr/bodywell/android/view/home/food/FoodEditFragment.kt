@@ -220,7 +220,7 @@ class FoodEditFragment : Fragment() {
 
 		binding.cvEdit.setOnClickListener {
 			lifecycleScope.launch {
-				powerSync.updateFood(Food(id = food.id, calorie = binding.etKcal.text.toString().trim().toInt(),
+				powerSync!!.updateFood(Food(id = food.id, calorie = binding.etKcal.text.toString().trim().toInt(),
 					carbohydrate = binding.etCar.text.toString().trim().toDouble(), protein = binding.etProtein.text.toString().trim().toDouble(),
 					fat = binding.etFat.text.toString().trim().toDouble(), volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
 			}

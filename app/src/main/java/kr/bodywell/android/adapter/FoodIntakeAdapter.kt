@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodDailyEditFragment
@@ -21,11 +20,6 @@ class FoodIntakeAdapter (
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var bundle = Bundle()
     private var onItemClickListener: OnItemClickListener? = null
-    private var dataManager: DataManager = DataManager(context)
-
-    init {
-        dataManager.open()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_food_record, parent, false)

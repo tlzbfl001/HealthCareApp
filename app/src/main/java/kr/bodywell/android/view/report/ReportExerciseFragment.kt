@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
@@ -23,11 +24,9 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ReportAdapter
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportExerciseBinding
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CalendarUtil.dateFormat
@@ -35,6 +34,7 @@ import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -47,7 +47,6 @@ class ReportExerciseFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    private val format2 = SimpleDateFormat("M.dd")
    private var adapter: ReportAdapter? = null
@@ -71,9 +70,6 @@ class ReportExerciseFragment : Fragment() {
       _binding = FragmentReportExerciseBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -160,13 +156,16 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
 
       val dates = ArrayList<String>()
-      val getExercise = dataManager.getDailyExercise(CREATED_AT, calendarDate.toString())
 
-      if(getExercise.size > 0) {
-         dates.add(calendarDate.toString())
-         settingChart1(binding.chart1, dates)
-         settingChart2(binding.chart2, dates)
-         rankView(dateType, "", "")
+      lifecycleScope.launch {
+         val getWorkout = powerSync.getAllWorkout("date", calendarDate.toString())
+
+         if(getWorkout.isNotEmpty()) {
+            dates.add(calendarDate.toString())
+            settingChart1(binding.chart1, dates)
+            settingChart2(binding.chart2, dates)
+            rankView(dateType, "", "")
+         }
       }
    }
 
@@ -181,12 +180,15 @@ class ReportExerciseFragment : Fragment() {
       dateType = 2
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager.getDates(DAILY_EXERCISE, weekArray[0].toString(), weekArray[6].toString())
 
-      if(getDates.size > 0) {
-         settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
-         rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
+      lifecycleScope.launch {
+         val getDates = powerSync.getAllDate("workouts", "date", weekArray[0].toString(), weekArray[6].toString())
+
+         if(getDates.isNotEmpty()) {
+            settingChart1(binding.chart1, getDates)
+            settingChart2(binding.chart2, getDates)
+            rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
+         }
       }
    }
 
@@ -201,13 +203,15 @@ class ReportExerciseFragment : Fragment() {
       dateType = 3
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager.getDates(DAILY_EXERCISE, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
 
-      if(getDates.size > 0) {
-         settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
+      lifecycleScope.launch {
+         val getDates = powerSync.getAllDate("workouts", "date", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
 
-         rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         if(getDates.isNotEmpty()) {
+            settingChart1(binding.chart1, getDates)
+            settingChart2(binding.chart2, getDates)
+            rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         }
       }
    }
 
@@ -220,7 +224,7 @@ class ReportExerciseFragment : Fragment() {
       binding.tvEmpty2.visibility = View.VISIBLE
    }
 
-   private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
+   private fun settingChart1(chart: CombinedChart, getData: List<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -234,13 +238,15 @@ class ReportExerciseFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in 0 until getData.size){
+      for(i in getData.indices){
          var total = 0f
 
-         val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, getData[i])
-         for(j in 0 until getDailyExercise.size) {
-            if(getDailyExercise[j].workoutTime > 0) {
-               total += getDailyExercise[j].workoutTime.toFloat()
+         lifecycleScope.launch {
+            val getWorkout =powerSync.getAllWorkout("date", getData[i])
+            for(j in getWorkout.indices) {
+               if(getWorkout[j].time > 0) {
+                  total += getWorkout[j].time.toFloat()
+               }
             }
          }
 
@@ -287,7 +293,7 @@ class ReportExerciseFragment : Fragment() {
       }
    }
 
-   private fun settingChart2(chart: CombinedChart, getData: ArrayList<String>) {
+   private fun settingChart2(chart: CombinedChart, getData: List<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -301,13 +307,15 @@ class ReportExerciseFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in 0 until getData.size){
+      for(i in getData.indices){
          var total = 0f
 
-         val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, getData[i])
-         for(j in 0 until getDailyExercise.size) {
-            if(getDailyExercise[j].kcal > 0) {
-               total += getDailyExercise[j].kcal.toFloat()
+         lifecycleScope.launch {
+            val getWorkout =powerSync.getAllWorkout("date", getData[i])
+            for(j in getWorkout.indices) {
+               if(getWorkout[j].calorie > 0) {
+                  total += getWorkout[j].calorie.toFloat()
+               }
             }
          }
 
@@ -410,38 +418,40 @@ class ReportExerciseFragment : Fragment() {
    private fun rankView(type: Int, start: String, end: String) {
       val itemList = ArrayList<Item>()
 
-      val getData = when(type) {
-         1 -> dataManager.getExerciseRanking(calendarDate.toString())
-         else -> dataManager.getExerciseRanking(start, end)
-      }
-
-      if(getData.size > 0) {
-         binding.tvEmpty.visibility = View.GONE
-         binding.recyclerView.visibility = View.VISIBLE
-
-         for(i in 0 until getData.size) itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
-
-         when(getData.size) {
-            1 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
-               binding.recyclerView.layoutManager = layoutManager
-            }
-            2 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
-               binding.recyclerView.layoutManager = layoutManager
-            }
-            3 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
-               binding.recyclerView.layoutManager = layoutManager
-            }
-            4 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
-               binding.recyclerView.layoutManager = layoutManager
-            }
+      lifecycleScope.launch {
+         val getData = when(type) {
+            1 -> powerSync.getRanking("workouts", "name", "date", calendarDate.toString())
+            else -> powerSync.getRanking("workouts", "name", "date", start, end)
          }
 
-         adapter = ReportAdapter(itemList)
-         binding.recyclerView.adapter = adapter
+         if(getData.isNotEmpty()) {
+            binding.tvEmpty.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+
+            for(i in getData.indices) itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
+
+            when(getData.size) {
+               1 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+               2 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+               3 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+               4 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+            }
+
+            adapter = ReportAdapter(itemList)
+            binding.recyclerView.adapter = adapter
+         }
       }
    }
 

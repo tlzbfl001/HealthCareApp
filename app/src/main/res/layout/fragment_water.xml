@@ -36,7 +36,7 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black_white"
-               android:textSize="15dp"
+               android:textSize="15.3dp"
                android:fontFamily="@font/nanum"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent"/>
@@ -262,7 +262,7 @@
             android:layout_marginLeft="20dp"
             android:text="하루 물섭취"
             android:textColor="@color/black_white"
-            android:textSize="16dp"
+            android:textSize="16.5dp"
             android:fontFamily="@font/nanum_bold"/>
          <TextView
             android:id="@+id/tvText"

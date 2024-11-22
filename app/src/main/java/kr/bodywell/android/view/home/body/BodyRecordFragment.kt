@@ -14,14 +14,11 @@ import androidx.lifecycle.lifecycleScope
 import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.BODY
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyRecordBinding
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.InitBody
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -37,7 +34,6 @@ class BodyRecordFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-//   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var getBody = Body()
    private var level = 1
@@ -60,10 +56,7 @@ class BodyRecordFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-//      dataManager = DataManager(activity)
-//      dataManager.open()
-
-      bundle.putString("type", BODY)
+      bundle.putString("type", "body")
 
       lifecycleScope.launch {
          getBody = powerSync.getBody(selectedDate.toString())
@@ -280,35 +273,36 @@ class BodyRecordFragment : Fragment() {
 
       // BMR 구하기
       binding.cvResult.setOnClickListener {
-//         val getUser = dataManager.getUser()
-         val current = Calendar.getInstance()
-         val currentYear = current.get(Calendar.YEAR)
-//         val age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
+         lifecycleScope.launch {
+            val getProfile = powerSync.getProfile(getUser.uid)
 
-         if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "") {
-            Toast.makeText(requireActivity(), "신체 정보를 입력해주세요.", Toast.LENGTH_SHORT).show()
-         }else {
-            var step = 0.0
+            val current = Calendar.getInstance()
+            val currentYear = current.get(Calendar.YEAR)
+            val age = currentYear - getProfile.birth!!.substring(0 until 4).toInt()
 
-            when(level) {
-               1 -> step = 1.2
-               2 -> step = 1.375
-               3 -> step = 1.55
-               4 -> step = 1.725
-               5 -> step = 1.9
+            if(binding.etHeight.text.toString().trim() == "" || binding.etWeight.text.toString().trim() == "") {
+               Toast.makeText(requireActivity(), "신체 정보를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }else {
+               var step = 0.0
+
+               when(level) {
+                  1 -> step = 1.2
+                  2 -> step = 1.375
+                  3 -> step = 1.55
+                  4 -> step = 1.725
+                  5 -> step = 1.9
+               }
+
+               val bmr = if(getProfile.gender == Constant.MALE.name) {
+                  88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * age)
+               }else {
+                  66 + (13.7 * binding.etWeight.text.toString().toDouble()) + (5 * binding.etHeight.text.toString().toDouble()) - (6.8 * age) * step
+               }
+
+               binding.clResult.visibility = View.VISIBLE
+               binding.tvBmr.text = if(bmr < 0) "0" else String.format("%.2f", bmr)
+               binding.tvTotal.text = if(bmr < 0) "0" else String.format("%.2f", bmr * step)
             }
-
-//            val bmr = if(getUser.gender == Constant.MALE.name) {
-//               88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * age)
-//            }else {
-//               66 + (13.7 * binding.etWeight.text.toString().toDouble()) + (5 * binding.etHeight.text.toString().toDouble()) - (6.8 * age) * step
-//            }
-
-            val bmr = 88.362 + (13.397 * binding.etWeight.text.toString().toDouble()) + (4.799 * binding.etHeight.text.toString().toDouble()) - (5.677 * 25)
-
-            binding.clResult.visibility = View.VISIBLE
-            binding.tvBmr.text = if(bmr < 0) "0" else String.format("%.2f", bmr)
-            binding.tvTotal.text = if(bmr < 0) "0" else String.format("%.2f", bmr * step)
          }
       }
 

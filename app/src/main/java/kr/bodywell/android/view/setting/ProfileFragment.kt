@@ -27,16 +27,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.USER
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.User
+import kr.bodywell.android.model.Profile
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.getRotatedBitmap
+import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.saveImage
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -53,9 +55,9 @@ class ProfileFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private lateinit var dataManager: DataManager
 	private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 	private lateinit var cLauncher: ActivityResultLauncher<Intent>
+	private var getProfile = Profile()
 	private var fileAbsolutePath: String? = null
 	private var bitmap: Bitmap? = null
 	private var pictureFlag = 0
@@ -84,37 +86,36 @@ class ProfileFragment : Fragment() {
 			ActivityResultContracts.RequestMultiplePermissions()
 		){}
 
-		dataManager = DataManager(activity)
-		dataManager.open()
+		lifecycleScope.launch {
+			getProfile = powerSync.getProfile(getUser.uid)
+		}
 
-		val getUser = dataManager.getUser()
+		if(getProfile.name != "") binding.etName.setText(getProfile.name)
 
-		if(getUser.name != "") binding.etName.setText(getUser.name)
-
-		if(getUser.profileImage != null && getUser.profileImage != "") {
-			val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부저장소에 저장되어있는 이미지 경로
+		if(getProfile.pictureUrl != null && getProfile.pictureUrl != "") {
+			val imgPath = requireActivity().filesDir.toString() + "/" + getProfile.pictureUrl // 내부저장소에 저장되어있는 이미지 경로
 			val bm = BitmapFactory.decodeFile(imgPath)
 			binding.ivProfile.setImageBitmap(bm)
 		}
 
-		when(getUser.gender) {
+		when(getProfile.gender) {
 			Constant.MALE.name -> unit2()
 			else -> unit1()
 		}
 
-		if(getUser.height!! > 0) {
-			val hSplit = getUser.height.toString().split(".")
-			val height = if(hSplit[1] == "0") hSplit[0] else getUser.height
+		if(getProfile.height!! > 0) {
+			val hSplit = getProfile.height.toString().split(".")
+			val height = if(hSplit[1] == "0") hSplit[0] else getProfile.height
 			binding.etHeight.setText(height.toString())
 		}
 
-		if(getUser.weight!! > 0) {
-			val wSplit = getUser.weight.toString().split(".")
-			val weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight
+		if(getProfile.weight!! > 0) {
+			val wSplit = getProfile.weight.toString().split(".")
+			val weight = if(wSplit[1] == "0") wSplit[0] else getProfile.weight
 			binding.etWeight.setText(weight.toString())
 		}
 
-		if(getUser.birthday != "") binding.tvBirthday.text = getUser.birthday
+		if(getProfile.birth != "") binding.tvBirthday.text = getProfile.birth
 
 		binding.cl.setOnTouchListener { _, _ ->
 			hideKeyboard(requireActivity())
@@ -179,7 +180,7 @@ class ProfileFragment : Fragment() {
 				bitmap = ImageDecoder.decodeBitmap(decode) // 디코딩한 사진을 비트맵으로 변환
 				binding.ivProfile.setImageBitmap(bitmap)
 				file.delete()
-			}else if(pictureFlag == 2) { // 갤러리
+			}else { // 갤러리
 				val uri = it.data?.data // 선택한 이미지의 주소
 				if(uri != null) { // 이미지 파일 읽어와서 설정하기
 					bitmap = getRotatedBitmap(requireActivity(), it.data?.data!!) // 이미지 회전하기
@@ -308,13 +309,15 @@ class ProfileFragment : Fragment() {
 			}else if(!filterText(binding.etName.text.toString())) {
 				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
 			}else {
-				dataManager.updateProfile(User(name = name, gender = gender, birthday = birthday, height = height, weight = weight, isUpdated = 1))
+				lifecycleScope.launch {
+					powerSync.updateProfile(Profile(id = getUser.profileUid, name = name, birth = birthday, gender = gender, height = height, weight = weight))
+					getProfile = powerSync.getProfile(getUser.uid)
 
-				if(bitmap != null) {
-					val data = dataManager.getUser().profileImage
-					if(data != null && data != "") File(requireActivity().filesDir, data).delete()
-					val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
-					if(result != "") dataManager.updateUserStr(USER, "profileImage", result, "id")
+					if(bitmap != null) {
+						if(getProfile.pictureUrl != null && getProfile.pictureUrl != "") File(requireActivity().filesDir, getProfile.pictureUrl!!).delete()
+						val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
+						if(result != "") powerSync.updateProfile(Profile(id = getUser.profileUid, pictureUrl=result))
+					}
 				}
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()

@@ -40,7 +40,7 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black_white"
-               android:textSize="15dp"
+               android:textSize="15.3dp"
                android:fontFamily="@font/nanum"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
@@ -183,7 +183,7 @@
                android:layout_marginTop="25dp"
                android:text="하루 운동"
                android:textColor="@color/black_white"
-               android:textSize="16dp"
+               android:textSize="16.5dp"
                android:fontFamily="@font/nanum_bold"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent" />
@@ -211,7 +211,7 @@
                   android:layout_height="wrap_content"
                   android:text="운동기록"
                   android:textColor="@color/black_white"
-                  android:textSize="15dp"
+                  android:textSize="15.3dp"
                   android:fontFamily="@font/nanum"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"

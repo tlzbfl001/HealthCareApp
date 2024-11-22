@@ -16,8 +16,5 @@ data class ProfileDTO (
 	var height: Double = 0.0,
 
 	@SerializedName("weight")
-	var weight: Double = 0.0,
-
-	@SerializedName("timezone")
-	var timezone: String = ""
+	var weight: Double = 0.0
 )

@@ -3,7 +3,6 @@ package kr.bodywell.android.view.home.exercise
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +16,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentExerciseAddBinding
 import kr.bodywell.android.model.Activities
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.InitExercise
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
@@ -34,7 +31,6 @@ class ExerciseAddFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var callback: OnBackPressedCallback
-//    private lateinit var dataManager: DataManager
     private var getActivity = Activities()
     private var intensity = Constant.HIGH
 
@@ -56,15 +52,11 @@ class ExerciseAddFragment : Fragment() {
 
         setStatusBar(requireActivity(), binding.mainLayout)
 
-//        dataManager = DataManager(activity)
-//        dataManager.open()
-
         val id = arguments?.getString("id")!!
 
         lifecycleScope.launch {
             getActivity = powerSync.getActivity(id)
         }
-//        getExercise = dataManager.getExercise(id)
 
         binding.tvName.text = getActivity.name
 
@@ -113,15 +105,9 @@ class ExerciseAddFragment : Fragment() {
             }else if(binding.etTime.text.toString().toInt() == 0 || binding.etKcal.text.toString().toInt() == 0) {
                 Toast.makeText(requireActivity(), "시간, 칼로리를 1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else {
-//                dataManager.insertDailyExercise(InitExercise(name = getExercise.name, intensity = intensity.name, workoutTime = binding.etTime.text.toString().toInt(),
-//                    kcal = binding.etKcal.text.toString().toInt(), createdAt = selectedDate.toString()))
-//
-//                dataManager.updateData2(EXERCISE, getExercise.useCount + 1, LocalDateTime.now().toString(), 1, id)
-
-                val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
-
                 lifecycleScope.launch {
                     val dateTimeFormat = dateTimeToIso(LocalDateTime.now())
+                    val uuid = UuidCreator.getTimeOrderedEpoch()
                     powerSync.insertWorkout(Workout(id = uuid.toString(), name = getActivity.name, calorie = binding.etKcal.text.toString().toInt(),
                         intensity = intensity.name, time = binding.etTime.text.toString().toInt(), date = selectedDate.toString(),
                         createdAt = dateTimeFormat, updatedAt = dateTimeFormat, activityId = id))

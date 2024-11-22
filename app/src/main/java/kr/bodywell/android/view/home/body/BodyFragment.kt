@@ -17,21 +17,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.BODY
-import kr.bodywell.android.database.DBHelper.Companion.GOAL
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.GoalInit
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
 class BodyFragment : Fragment() {
@@ -39,8 +37,7 @@ class BodyFragment : Fragment() {
    private val binding get() = _binding!!
 
    private val viewModel: MainViewModel by activityViewModels()
-   private lateinit var dataManager: DataManager
-   private var dailyGoal = GoalInit()
+   private var getGoal = Goal()
    private var getBody = Body()
    private var isExpand = false
 
@@ -49,9 +46,6 @@ class BodyFragment : Fragment() {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentBodyBinding.inflate(layoutInflater)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -69,12 +63,15 @@ class BodyFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            if(dailyGoal.createdAt == "") {
-               dataManager.insertGoal(GoalInit(body = et.text.toString().toDouble(), createdAt = selectedDate.toString()))
-               dailyGoal = dataManager.getGoal(selectedDate.toString())
-            }else {
-               dataManager.updateDouble(GOAL, BODY, et.text.toString().toDouble(), selectedDate.toString())
-               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
+            lifecycleScope.launch {
+               if(getGoal.id == "") {
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertGoal(Goal(id = uuid.toString(), weight = et.text.toString().toDouble(), date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+                  getGoal = powerSync.getGoal(selectedDate.toString())
+               }else {
+                  powerSync.updateData("goals", "weight", et.text.toString(), getGoal.id)
+               }
             }
 
             dailyGoal()
@@ -152,29 +149,27 @@ class BodyFragment : Fragment() {
       binding.tvGoal.text = "0 kg"
       binding.tvRemain.text = "0 kg"
 
-      dailyGoal = dataManager.getGoal(selectedDate.toString())
-
-      if (dailyGoal.body > 0) {
-         binding.pbBody.max = dailyGoal.body.roundToInt()
-
-         val split = dailyGoal.body.toString().split(".")
-         when (split[1]) {
-            "0" -> binding.tvGoal.text = "${split[0]} kg"
-            else -> binding.tvGoal.text = "${dailyGoal.body} kg"
-         }
-      }
-
       lifecycleScope.launch {
+         getGoal = powerSync.getGoal(selectedDate.toString())
          getBody = powerSync.getBody(selectedDate.toString())
          powerSync.deleteDuplicates("body_measurements", "strftime('%Y-%m-%d', time)", selectedDate.toString(), getBody.id!!)
       }
-//      getBody = dataManager.getBody(selectedDate.toString())
+
+      if (getGoal.weight > 0) {
+         binding.pbBody.max = getGoal.weight.roundToInt()
+
+         val split = getGoal.weight.toString().split(".")
+         when (split[1]) {
+            "0" -> binding.tvGoal.text = "${split[0]} kg"
+            else -> binding.tvGoal.text = "${getGoal.weight} kg"
+         }
+      }
 
       var remain = 0.0
       if(getBody.weight != null && getBody.weight!! > 0) {
          binding.pbBody.setProgressStartColor(resources.getColor(R.color.body))
          binding.pbBody.setProgressEndColor(resources.getColor(R.color.body))
-         binding.pbBody.max = dailyGoal.body.roundToInt()
+         binding.pbBody.max = getGoal.weight.roundToInt()
          binding.pbBody.progress = getBody.weight.toString().toDouble().roundToInt()
 
          val split = getBody.weight.toString().split(".")
@@ -183,7 +178,7 @@ class BodyFragment : Fragment() {
             else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
          }
 
-         remain = dailyGoal.body - getBody.weight!!.toString().toDouble()
+         remain = getGoal.weight - getBody.weight!!.toString().toDouble()
       }
 
       if(remain > 0) {

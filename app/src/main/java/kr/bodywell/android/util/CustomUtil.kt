@@ -13,20 +13,19 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.powersync.DatabaseDriverFactory
 import kr.bodywell.android.R
 import kr.bodywell.android.api.powerSync.SyncService
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.FoodInit
+import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.view.home.MainActivity
 import java.io.File
 import java.io.FileOutputStream
-import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -44,7 +43,7 @@ object CustomUtil {
    lateinit var powerSync: SyncService
    var getUser = User()
    var getToken = Token()
-   var drugTimeList = ArrayList<Item>()
+   var drugTimeList = ArrayList<MedicineTime>()
    var layoutType = 1
 
    fun replaceFragment1(activity: Activity, fragment: Fragment?) {
@@ -79,8 +78,8 @@ object CustomUtil {
       }
    }
 
-   fun dateToIso(date: String): String {
-      return LocalDate.parse(date).atStartOfDay().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
+   fun dateToIso(date: LocalDate): String {
+      return date.atStartOfDay().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
    }
 
    fun dateTimeToIso(date: LocalDateTime): String {
@@ -129,31 +128,6 @@ object CustomUtil {
       val compile = Pattern.compile(pattern)
       val match = compile.matcher(text)
       return match.find()
-   }
-
-   fun uuidv7Generator(): ByteArray {
-      val random = SecureRandom()
-
-      // random bytes
-      val value = ByteArray(16)
-      random.nextBytes(value)
-
-      // current timestamp in ms
-      val timestamp = Instant.now().toEpochMilli()
-
-      // timestamp
-      value[0] = ((timestamp shr 40) and 0xFF).toByte()
-      value[1] = ((timestamp shr 32) and 0xFF).toByte()
-      value[2] = ((timestamp shr 24) and 0xFF).toByte()
-      value[3] = ((timestamp shr 16) and 0xFF).toByte()
-      value[4] = ((timestamp shr 8) and 0xFF).toByte()
-      value[5] = (timestamp and 0xFF).toByte()
-
-      // version and variant
-      value[6] = (value[6].toInt() and 0x0F or 0x70).toByte()
-      value[8] = (value[8].toInt() and 0x3F or 0x80).toByte()
-
-      return value
    }
 
    fun getRotatedBitmap(context: Context, data: Uri): Bitmap? {
@@ -212,56 +186,52 @@ object CustomUtil {
       return ""
    }
 
-   fun resetAlarm(context: Context) {
+   suspend fun resetAlarm(context: Context) {
       val alarmReceiver = AlarmReceiver()
-      val dataManager = DataManager(context)
-      dataManager.open()
 
-      val getData = dataManager.getDrugDate(LocalDate.now().toString())
+      val driverFactory = DatabaseDriverFactory(context)
+      powerSync = SyncService(context,driverFactory)
 
-      for(i in 0 until getData.size) {
-         val getDrug = dataManager.getDrugData(getData[i])
+      val getMedicineId = powerSync.getAllMedicineDate(LocalDate.now().toString())
 
-         if(getDrug.isSet == 1) {
-            val timeList = ArrayList<Item>()
-            val getDrugTime = dataManager.getDrugTime(getData[i])
+      for(i in getMedicineId.indices) {
+         val getMedicine = powerSync.getMedicineData(getMedicineId[i])
+         val split = getMedicine.name.split("/", limit=4)
 
-            for(j in 0 until getDrugTime.size) {
-               timeList.add(Item(string1 = getDrugTime[j].time))
-            }
+         if(split[3] == "1") {
+            val timeList = ArrayList<MedicineTime>()
+            val getDrugTime = powerSync.getAllMedicineTime("medicine_id", getMedicineId[i])
+            for(element in getDrugTime) timeList.add(MedicineTime(time = element.time))
 
-            val message = getDrug.name + " " + getDrug.amount + getDrug.unit
-            alarmReceiver.setAlarm(context, getData[i], getDrug.startDate, getDrug.endDate, timeList, message)
+            val message = split[1] + " " + getMedicine.amount + getMedicine.unit
+            alarmReceiver.setAlarm(context, getMedicine.category.toInt(), getMedicine.starts, getMedicine.ends, timeList, message)
          }
       }
    }
 
-   fun getFoodCalories(context: Context, date:String) : Item {
-      val dataManager = DataManager(context)
-      dataManager.open()
-
+   suspend fun getFoodCalories(date:String) : Item {
       var sum = 0
       val item = Item()
-      val getDailyFood1 = dataManager.getDailyFood(Constant.BREAKFAST.name, date)
-      val getDailyFood2 = dataManager.getDailyFood(Constant.LUNCH.name, date)
-      val getDailyFood3 = dataManager.getDailyFood(Constant.DINNER.name, date)
-      val getDailyFood4 = dataManager.getDailyFood(Constant.SNACK.name, date)
+      val getDiet1 = powerSync.getAllDiet(Constant.BREAKFAST.name, date)
+      val getDiet2 = powerSync.getAllDiet(Constant.LUNCH.name, date)
+      val getDiet3 = powerSync.getAllDiet(Constant.DINNER.name, date)
+      val getDiet4 = powerSync.getAllDiet(Constant.SNACK.name, date)
 
-      for(i in 0 until getDailyFood1.size) {
-         sum += getDailyFood1[i].calorie * getDailyFood1[i].count
-         item.int1 += getDailyFood1[i].calorie * getDailyFood1[i].count
+      for(i in getDiet1.indices) {
+         sum += getDiet1[i].calorie * getDiet1[i].quantity
+         item.int1 += getDiet1[i].calorie * getDiet1[i].quantity
       }
-      for(i in 0 until getDailyFood2.size) {
-         sum += getDailyFood2[i].calorie * getDailyFood2[i].count
-         item.int2 += getDailyFood2[i].calorie * getDailyFood2[i].count
+      for(i in getDiet2.indices) {
+         sum += getDiet2[i].calorie * getDiet2[i].quantity
+         item.int2 += getDiet2[i].calorie * getDiet2[i].quantity
       }
-      for(i in 0 until getDailyFood3.size) {
-         sum += getDailyFood3[i].calorie * getDailyFood3[i].count
-         item.int3 += getDailyFood3[i].calorie * getDailyFood3[i].count
+      for(i in getDiet3.indices) {
+         sum += getDiet3[i].calorie * getDiet3[i].quantity
+         item.int3 += getDiet3[i].calorie * getDiet3[i].quantity
       }
-      for(i in 0 until getDailyFood4.size) {
-         sum += getDailyFood4[i].calorie * getDailyFood4[i].count
-         item.int4 += getDailyFood4[i].calorie * getDailyFood4[i].count
+      for(i in getDiet4.indices) {
+         sum += getDiet4[i].calorie * getDiet4[i].quantity
+         item.int4 += getDiet4[i].calorie * getDiet4[i].quantity
       }
 
       item.int5 = sum
@@ -269,65 +239,52 @@ object CustomUtil {
       return item
    }
 
-   fun getNutrition(context: Context, date:String) : FoodInit {
-      val dataManager = DataManager(context)
-      dataManager.open()
-
-      val getFood1 = dataManager.getDailyFood(Constant.BREAKFAST.name, date)
-      val getFood2 = dataManager.getDailyFood(Constant.LUNCH.name, date)
-      val getFood3 = dataManager.getDailyFood(Constant.DINNER.name, date)
-      val getFood4 = dataManager.getDailyFood(Constant.SNACK.name, date)
+   suspend fun getNutrition(date:String) : Food {
+      val getDiet1 = powerSync.getAllDiet(Constant.BREAKFAST.name, date)
+      val getDiet2 = powerSync.getAllDiet(Constant.LUNCH.name, date)
+      val getDiet3 = powerSync.getAllDiet(Constant.DINNER.name, date)
+      val getDiet4 = powerSync.getAllDiet(Constant.SNACK.name, date)
 
       var carbohydrate = 0.0
       var protein = 0.0
       var fat = 0.0
-      var sugar = 0.0
 
-      for(i in 0 until getFood1.size) {
-         carbohydrate += getFood1[i].carbohydrate * getFood1[i].count
-         protein += getFood1[i].protein * getFood1[i].count
-         fat += getFood1[i].fat * getFood1[i].count
-         sugar += getFood1[i].sugar * getFood1[i].count
+      for(i in getDiet1.indices) {
+         carbohydrate += getDiet1[i].carbohydrate * getDiet1[i].quantity
+         protein += getDiet1[i].protein * getDiet1[i].quantity
+         fat += getDiet1[i].fat * getDiet1[i].quantity
       }
-      for(i in 0 until getFood2.size) {
-         carbohydrate += getFood2[i].carbohydrate * getFood2[i].count
-         protein += getFood2[i].protein * getFood2[i].count
-         fat += getFood2[i].fat * getFood2[i].count
-         sugar += getFood2[i].sugar * getFood2[i].count
+      for(i in getDiet2.indices) {
+         carbohydrate += getDiet2[i].carbohydrate * getDiet2[i].quantity
+         protein += getDiet2[i].protein * getDiet2[i].quantity
+         fat += getDiet2[i].fat * getDiet2[i].quantity
       }
-      for(i in 0 until getFood3.size) {
-         carbohydrate += getFood3[i].carbohydrate * getFood3[i].count
-         protein += getFood3[i].protein * getFood3[i].count
-         fat += getFood3[i].fat * getFood3[i].count
-         sugar += getFood3[i].sugar * getFood3[i].count
+      for(i in getDiet3.indices) {
+         carbohydrate += getDiet3[i].carbohydrate * getDiet3[i].quantity
+         protein += getDiet3[i].protein * getDiet3[i].quantity
+         fat += getDiet3[i].fat * getDiet3[i].quantity
       }
-      for(i in 0 until getFood4.size) {
-         carbohydrate += getFood4[i].carbohydrate * getFood4[i].count
-         protein += getFood4[i].protein * getFood4[i].count
-         fat += getFood4[i].fat * getFood4[i].count
-         sugar += getFood4[i].sugar * getFood4[i].count
+      for(i in getDiet4.indices) {
+         carbohydrate += getDiet4[i].carbohydrate * getDiet4[i].quantity
+         protein += getDiet4[i].protein * getDiet4[i].quantity
+         fat += getDiet4[i].fat * getDiet4[i].quantity
       }
 
-      return FoodInit(carbohydrate = carbohydrate, protein = protein, fat = fat, sugar = sugar, salt = carbohydrate+protein+fat+sugar)
+      return Food(carbohydrate = carbohydrate, protein = protein, fat = fat, volumeUnit = (carbohydrate+protein+fat).toString())
    }
 
-   fun getExerciseCalories(context: Context, date:String) : Int {
-      val dataManager = DataManager(context)
-      dataManager.open()
-
+   suspend fun getExerciseCalories(date:String) : Int {
       var sum = 0
-      val getExercise = dataManager.getDailyExercise(CREATED_AT, date)
+      val getExercise = powerSync.getAllWorkout(date)
 
-      if(getExercise.size > 0) {
-         for(i in 0 until getExercise.size) {
-            sum += getExercise[i].kcal
-         }
+      for(element in getExercise) {
+         sum += element.calorie
       }
 
       return sum
    }
 
    fun setDrugTimeList(data: String) {
-      drugTimeList.add(Item(string1 = data))
+      drugTimeList.add(MedicineTime(time = data))
    }
 }

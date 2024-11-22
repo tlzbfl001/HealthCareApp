@@ -9,14 +9,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
-import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.InitExercise
 import kr.bodywell.android.model.Workout
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
@@ -26,9 +24,6 @@ class ExerciseListAdapter (
    private val itemList: ArrayList<Workout>
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
    private var bundle = Bundle()
-//   private var dataManager: DataManager = DataManager(context)
-//
-//   init { dataManager.open() }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list2, parent, false)

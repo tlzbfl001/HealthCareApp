@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.CombinedChart
@@ -21,9 +22,9 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ReportAdapter
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportDrugBinding
 import kr.bodywell.android.model.Item
@@ -32,6 +33,7 @@ import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -69,7 +71,7 @@ class ReportDrugFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      dataManager = DataManager(activity)
+      dataManager = DataManager(requireActivity())
       dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
@@ -156,12 +158,13 @@ class ReportDrugFragment : Fragment() {
       dateType = 1
       resetChart()
 
-      val getDrugCheckCount = dataManager.getDrugCheckCount(calendarDate.toString())
-      if(getDrugCheckCount > 0) {
-         val getDates = ArrayList<String>()
-         getDates.add(calendarDate.toString())
-         settingChart(binding.chart, getDates)
-         rankView(dateType, "", "")
+      lifecycleScope.launch {
+         val getCheckCnt = powerSync.getIntakeCount(calendarDate.toString())
+         if(getCheckCnt > 0) {
+            val getDates = ArrayList<String>()
+            getDates.add(calendarDate.toString())
+            settingChart(binding.chart, getDates, dateType, "", "")
+         }
       }
    }
 
@@ -176,10 +179,12 @@ class ReportDrugFragment : Fragment() {
       resetChart()
 
       val weekArray = weekArray(calendarDate)
-      val getDates = dataManager.getDates(DRUG_CHECK, weekArray[0].toString(), weekArray[6].toString())
-      if(getDates.size > 0) {
-         settingChart(binding.chart, getDates)
-         rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
+
+      lifecycleScope.launch {
+         val getDates = powerSync.getAllDate("medicine_intakes", "intaked_at", weekArray[0].toString(), weekArray[6].toString())
+         if(getDates.isNotEmpty()) {
+            settingChart(binding.chart, getDates, dateType, weekArray[0].toString(), weekArray[6].toString())
+         }
       }
    }
 
@@ -194,105 +199,12 @@ class ReportDrugFragment : Fragment() {
       resetChart()
 
       val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager.getDates(DRUG_CHECK, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      if(getDates.size > 0) {
-         settingChart(binding.chart, getDates)
-         rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      }
-   }
 
-   private fun settingChart(chart: CombinedChart, getData: ArrayList<String>) {
-      chart.data = null
-      chart.fitScreen()
-      chart.xAxis.valueFormatter = null
-      chart.clear()
-
-      val data = CombinedData()
-      val lineData = LineData()
-      var xVal = arrayOf<String>()
-      var lineList = floatArrayOf()
-      val entries = ArrayList<Entry>()
-      val barEntries = ArrayList<BarEntry>()
-      var count = 0
-
-      for(i in 0 until getData.size){
-         val getDailyGoal = dataManager.getGoal(getData[i])
-         val getDrugCheckCount = dataManager.getDrugCheckCount(getData[i])
-
-         if(getDrugCheckCount > 0) {
-            val pt = if(getDailyGoal.drug == 0) 100f else (getDrugCheckCount.toFloat() / getDailyGoal.drug.toFloat()) * 100
-
-            xVal += format2.format(format1.parse(getData[i])!!)
-            lineList += pt
-            barEntries.add(BarEntry(count.toFloat(), pt))
-            count += 1
+      lifecycleScope.launch {
+         val getDates = powerSync.getAllDate("medicine_intakes", "intaked_at", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         if(getDates.isNotEmpty()) {
+            settingChart(binding.chart, getDates, dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
          }
-      }
-
-      if(barEntries.size > 0) {
-         binding.chart.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-
-         for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
-
-         val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#B499F1")
-         lineDataSet.lineWidth = 1f
-         lineDataSet.setDrawCircles(false)
-         lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 8f
-         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-
-         lineData.addDataSet(lineDataSet)
-         lineData.setValueTextColor(resources.getColor(R.color.black_white))
-         data.setData(lineData)
-
-         val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.color = Color.parseColor("#B499F1")
-         barDataSet.valueTextSize = 0f
-
-         val barData = BarData(barDataSet)
-         barData.barWidth = 0.27f
-
-         data.setData(barData)
-
-         chart.data = data
-
-         val xAxis = chart.xAxis
-         xAxis.textColor = resources.getColor(R.color.black_white)
-         xAxis.axisLineColor = resources.getColor(R.color.black_white)
-         xAxis.axisLineWidth = 0.8f
-         xAxis.position = XAxis.XAxisPosition.BOTTOM
-         xAxis.spaceMax = 0.6f
-         xAxis.spaceMin = 0.6f
-         xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
-         xAxis.setDrawGridLines(false)
-         xAxis.isGranularityEnabled = true
-
-         val rightAxis = chart.axisRight
-         rightAxis.axisMinimum = 0f
-         rightAxis.isEnabled = false
-
-         val leftAxis = chart.axisLeft
-         leftAxis.axisLineColor = resources.getColor(R.color.black_white)
-         leftAxis.textColor = resources.getColor(R.color.black_white)
-         leftAxis.axisLineWidth = 0.8f
-         leftAxis.gridColor = Color.parseColor("#bbbbbb")
-         leftAxis.enableGridDashedLine(10f, 15f, 0f)
-         leftAxis.axisMinimum = 0f
-
-         chart.setExtraOffsets(8f, 12f, 15f, 10f)
-         chart.description.isEnabled = false
-         chart.legend.isEnabled = false
-         chart.setScaleEnabled(false)
-         chart.isClickable = false
-         chart.isHighlightPerDragEnabled = false
-         chart.isHighlightPerTapEnabled = false
-         chart.setVisibleXRangeMaximum(7f)
-         chart.isDragXEnabled = true
-         chart.animateY(1000)
-         chart.invalidate()
       }
    }
 
@@ -303,48 +215,142 @@ class ReportDrugFragment : Fragment() {
       binding.tvEmpty2.visibility = View.VISIBLE
    }
 
-   private fun rankView(type: Int, start: String, end: String) {
+   private fun settingChart(chart: CombinedChart, getData: List<String>, type: Int, start: String, end: String) {
+      chart.data = null
+      chart.fitScreen()
+      chart.xAxis.valueFormatter = null
+      chart.clear()
+
       val itemList = ArrayList<Item>()
+      val data = CombinedData()
+      val lineData = LineData()
+      var xVal = arrayOf<String>()
+      var lineList = floatArrayOf()
+      val entries = ArrayList<Entry>()
+      val barEntries = ArrayList<BarEntry>()
+      var count = 0
 
-      if(type == 1) {
-         val getRanking = dataManager.getDrugRanking(calendarDate.toString())
-         for(i in 0 until getRanking.size) {
-            val getDrug = dataManager.getDrug(getRanking[i].int2)
-            itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getDrug.name))
-         }
-      }else {
-         val getRanking = dataManager.getDrugRanking(start, end)
-         for(i in 0 until getRanking.size) {
-            val getDrug = dataManager.getDrug(getRanking[i].int2)
-            itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getDrug.name))
-         }
-      }
+      lifecycleScope.launch {
+         for(i in getData.indices){
+            val getGoal = powerSync.getGoal(getData[i])
+            val getCheckCnt = powerSync.getIntakeCount(getData[i])
 
-      if(itemList.size > 0) {
-         binding.tvEmpty1.visibility = View.GONE
-         binding.recyclerView.visibility = View.VISIBLE
+            if(getCheckCnt > 0) {
+               val pt = if(getGoal.medicineIntake == 0) 100f else (getCheckCnt.toFloat() / getGoal.medicineIntake.toFloat()) * 100
 
-         when(itemList.size) {
-            1 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
-               binding.recyclerView.layoutManager = layoutManager
-            }
-            2 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
-               binding.recyclerView.layoutManager = layoutManager
-            }
-            3 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
-               binding.recyclerView.layoutManager = layoutManager
-            }
-            4 -> {
-               val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
-               binding.recyclerView.layoutManager = layoutManager
+               xVal += format2.format(format1.parse(getData[i])!!)
+               lineList += pt
+               barEntries.add(BarEntry(count.toFloat(), pt))
+               count += 1
             }
          }
 
-         adapter = ReportAdapter(itemList)
-         binding.recyclerView.adapter = adapter
+         if(barEntries.size > 0) {
+            binding.chart.visibility = View.VISIBLE
+            binding.tvEmpty2.visibility = View.GONE
+
+            for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
+
+            val lineDataSet = LineDataSet(entries, "Line DataSet")
+            lineDataSet.color = Color.parseColor("#B499F1")
+            lineDataSet.lineWidth = 1f
+            lineDataSet.setDrawCircles(false)
+            lineDataSet.setDrawValues(true)
+            lineDataSet.valueTextSize = 8f
+            lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+            lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+
+            lineData.addDataSet(lineDataSet)
+            lineData.setValueTextColor(resources.getColor(R.color.black_white))
+            data.setData(lineData)
+
+            val barDataSet = BarDataSet(barEntries, "")
+            barDataSet.color = Color.parseColor("#B499F1")
+            barDataSet.valueTextSize = 0f
+
+            val barData = BarData(barDataSet)
+            barData.barWidth = 0.27f
+
+            data.setData(barData)
+
+            chart.data = data
+
+            val xAxis = chart.xAxis
+            xAxis.textColor = resources.getColor(R.color.black_white)
+            xAxis.axisLineColor = resources.getColor(R.color.black_white)
+            xAxis.axisLineWidth = 0.8f
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.spaceMax = 0.6f
+            xAxis.spaceMin = 0.6f
+            xAxis.valueFormatter = IndexAxisValueFormatter(xVal)
+            xAxis.setDrawGridLines(false)
+            xAxis.isGranularityEnabled = true
+
+            val rightAxis = chart.axisRight
+            rightAxis.axisMinimum = 0f
+            rightAxis.isEnabled = false
+
+            val leftAxis = chart.axisLeft
+            leftAxis.axisLineColor = resources.getColor(R.color.black_white)
+            leftAxis.textColor = resources.getColor(R.color.black_white)
+            leftAxis.axisLineWidth = 0.8f
+            leftAxis.gridColor = Color.parseColor("#bbbbbb")
+            leftAxis.enableGridDashedLine(10f, 15f, 0f)
+            leftAxis.axisMinimum = 0f
+
+            chart.setExtraOffsets(8f, 12f, 15f, 10f)
+            chart.description.isEnabled = false
+            chart.legend.isEnabled = false
+            chart.setScaleEnabled(false)
+            chart.isClickable = false
+            chart.isHighlightPerDragEnabled = false
+            chart.isHighlightPerTapEnabled = false
+            chart.setVisibleXRangeMaximum(7f)
+            chart.isDragXEnabled = true
+            chart.animateY(1000)
+            chart.invalidate()
+         }
+
+         if(type == 1) {
+            val getRanking = dataManager.getMedicineRanking(calendarDate.toString())
+            for(i in getRanking.indices) {
+               val getMedicineData = powerSync.getMedicineData(getRanking[i].string1)
+               itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getMedicineData.name))
+            }
+         }else {
+            val getRanking = dataManager.getMedicineRanking(start, end)
+            for(i in getRanking.indices) {
+               val getMedicineData = powerSync.getMedicineData(getRanking[i].string1)
+               itemList.add(Item(string1 = getRanking[i].int1.toString(), string2 = getMedicineData.name))
+            }
+         }
+
+         if(itemList.size > 0) {
+            binding.tvEmpty1.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+
+            when(itemList.size) {
+               1 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 1)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+               2 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+               3 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+               4 -> {
+                  val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 4)
+                  binding.recyclerView.layoutManager = layoutManager
+               }
+            }
+
+            adapter = ReportAdapter(itemList)
+            binding.recyclerView.adapter = adapter
+         }
       }
    }
 

@@ -13,22 +13,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatus
+import kr.bodywell.android.util.RegisterUtil
 import kr.bodywell.android.util.RegisterUtil.googleSignupRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoSignupRequest
 import kr.bodywell.android.util.RegisterUtil.naverSignupRequest
-import kr.bodywell.android.util.RegisterUtil.registerTest
+import kr.bodywell.android.util.RegisterUtil.saveData
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var dataManager: DataManager
-   private var user = User()
    private var isAll = true
    private var isClickable = true
 
@@ -39,10 +38,8 @@ class SignupActivity : AppCompatActivity() {
 
       setStatusBar()
 
-      dataManager = DataManager(this)
-      dataManager.open()
-
-      user = intent.getParcelableExtra("user")!!
+      val user = intent.getParcelableExtra<User>("user")!!
+      val token = intent.getParcelableExtra<Token>("token")!!
 
       binding.ivBack.setOnClickListener {
          startActivity(Intent(this, LoginActivity::class.java))
@@ -125,19 +122,19 @@ class SignupActivity : AppCompatActivity() {
                   when(user.type) {
                      Constant.GOOGLE.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
-                           googleSignupRequest(this@SignupActivity, dataManager, user)
+                           saveData(this@SignupActivity, user, token)
                            isClickable = true
                         }
                      }
                      Constant.NAVER.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
-                           naverSignupRequest(this@SignupActivity, dataManager, user)
+                           naverSignupRequest(this@SignupActivity, user)
                            isClickable = true
                         }
                      }
                      Constant.KAKAO.name -> {
                         CoroutineScope(Dispatchers.IO).launch {
-                           kakaoSignupRequest(this@SignupActivity, dataManager, user)
+                           kakaoSignupRequest(this@SignupActivity, user)
                            isClickable = true
                         }
                      }

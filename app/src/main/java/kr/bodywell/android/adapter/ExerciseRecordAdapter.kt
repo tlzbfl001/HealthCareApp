@@ -8,29 +8,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Activities
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 
 class ExerciseRecordAdapter (
    private val context: Activity,
    private var itemList: ArrayList<Activities> =ArrayList<Activities>()
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
-   private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
-
-   init {
-      dataManager.open()
-   }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)

@@ -6,12 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.MedicineTime
 
-class DrugAdapter3 (
-    private val itemList: ArrayList<Item>
-) : RecyclerView.Adapter<DrugAdapter3.ViewHolder>() {
+class MedicineAdapter3 (
+    private val itemList: ArrayList<MedicineTime>
+) : RecyclerView.Adapter<MedicineAdapter3.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_time1, parent, false)
@@ -19,8 +18,8 @@ class DrugAdapter3 (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.tvCount.text = "${itemList[position].int1}회"
-        holder.tvTime.text = itemList[position].string1
+        holder.tvCount.text = "${itemList[position].userId}회"
+        holder.tvTime.text = itemList[position].time
     }
 
     override fun getItemCount(): Int {

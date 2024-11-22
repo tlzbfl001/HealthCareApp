@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,16 +19,27 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.CalendarAdapter1
+import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
+import kr.bodywell.android.model.MedicineIntake
+import kr.bodywell.android.model.MedicineTime
+import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.getUser
+import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.layoutType
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.MainViewModel
@@ -82,20 +94,49 @@ class MainFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.cl1)
 
-      dataManager = DataManager(activity)
+      dataManager = DataManager(requireActivity())
       dataManager.open()
 
       selectedDate = LocalDate.now()
       viewModel.setDate()
 
-      val getUser = dataManager.getUser()
+      val alarmReceiver = AlarmReceiver()
 
-      if(getUser.name != "") binding.tvName.text = getUser.name + " 님"
+      lifecycleScope.launch {
+         val getProfile = powerSync.getProfile(getUser.uid)
+         if(getProfile.name != "") binding.tvName.text = getProfile.name + " 님"
+         if(getProfile.pictureUrl != null && getProfile.pictureUrl != "") {
+            val imgPath = requireActivity().filesDir.toString() + "/" + getProfile.pictureUrl // 내부 저장소에 저장되어 있는 이미지 경로
+            val bm = BitmapFactory.decodeFile(imgPath)
+            binding.ivUser.setImageBitmap(bm)
+         }
 
-      if(getUser.profileImage != null && getUser.profileImage != "") {
-         val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부 저장소에 저장되어 있는 이미지 경로
-         val bm = BitmapFactory.decodeFile(imgPath)
-         binding.ivUser.setImageBitmap(bm)
+         val alarmId = dataManager.getAlarmId()
+         val watchMedicine = powerSync.watchMedicine(alarmId)
+         val timeList = ArrayList<MedicineTime>()
+
+         // 실시간 약복용 정보 업데이트
+         watchMedicine.collect {
+            Log.d(TAG, "$it")
+            for(i in it.indices) {
+               dataManager.insertMedicine(it[i].id, it[i].category.toInt())
+
+               val getTime = powerSync.getAllMedicineTime("medicine_id", it[i].id)
+               for(j in getTime.indices) {
+                  timeList.add(MedicineTime(time = getTime[j].time))
+                  dataManager.insertMedicineTime(MedicineTime(id = getTime[j].id, medicineId = it[i].id))
+
+                  val getData = powerSync.getData("medicine_intakes", "id", "medicine_time_id", getTime[j].id)
+                  if(getData != "") {
+                     dataManager.insertMedicineIntake(MedicineIntake(id = getData, medicineId = it[i].id, medicineTimeId = getTime[j].id))
+                  }
+               }
+
+               if(timeList.isNotEmpty()) {
+                  alarmReceiver.setAlarm(requireActivity(), it[i].category.toInt(), it[i].starts, it[i].ends, timeList, "${it[i].name} ${it[i].amount}${it[i].unit} 복용")
+               }
+            }
+         }
       }
 
       binding.cvFood.setOnClickListener {
@@ -239,7 +280,7 @@ class MainFragment : Fragment() {
    }
 
    fun dailyView() {
-      // 목표설정 설정
+      // 달력 설정
       days = weekArray(selectedDate)
       adapter = CalendarAdapter1(days, 1)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
@@ -262,76 +303,90 @@ class MainFragment : Fragment() {
       binding.tvSleepPt.text = "0%"
       binding.tvDrugPt.text = "0%"
 
-      // 데이터 설정
-      val getDailyGoal = dataManager.getGoal(selectedDate.toString())
-      val foodSum = getFoodCalories(requireActivity(), selectedDate.toString()).int5
-      val getWater = dataManager.getWater(selectedDate.toString())
-      val exerciseSum = getExerciseCalories(requireActivity(), selectedDate.toString())
-      val getBody = dataManager.getBody(selectedDate.toString())
-      val getSleep = dataManager.getSleep(selectedDate.toString())
-      val getDrugCheckCount = dataManager.getDrugCheckCount(selectedDate.toString())
+      lifecycleScope.launch {
+         // 목표 달성 데이터 설정
+         val getGoal = powerSync.getGoal(selectedDate.toString())
+         val foodSum = getFoodCalories(selectedDate.toString()).int5
+         val getWater = powerSync.getWater(selectedDate.toString())
+         val exerciseSum = getExerciseCalories(selectedDate.toString())
+         val getBody = powerSync.getBody(selectedDate.toString())
+         val getSleep = powerSync.getSleep(selectedDate.toString())
+         val getIntakeCount = powerSync.getIntakeCount(selectedDate.toString())
 
-      if(foodSum > 0) {
-         binding.tvFoodPt.text = if(getDailyGoal.food > 0) "${((foodSum * 100) / getDailyGoal.food)}%" else "100%"
-         binding.pbFood.max = if(getDailyGoal.food > 0) getDailyGoal.food else foodSum
-         binding.pbFood.progress = foodSum
+         if(foodSum > 0) {
+            binding.tvFoodPt.text = if(getGoal.kcalOfDiet > 0) "${((foodSum * 100) / getGoal.kcalOfDiet)}%" else "100%"
+            binding.pbFood.max = if(getGoal.kcalOfDiet > 0) getGoal.kcalOfDiet else foodSum
+            binding.pbFood.progress = foodSum
+         }
+
+         if(getWater.count > 0) {
+            binding.tvWaterPt.text = if(getGoal.waterIntake > 0) "${(getWater.count * 100) / getGoal.waterIntake}%" else "100%"
+            binding.pbWater.max = if(getGoal.waterIntake > 0) getGoal.waterIntake else getWater.count
+            binding.pbWater.progress = getWater.count
+         }
+
+         if(exerciseSum > 0) {
+            binding.tvExercisePt.text = if(getGoal.kcalOfWorkout > 0) "${(exerciseSum * 100) / getGoal.kcalOfWorkout}%" else "100%"
+            binding.pbExercise.max = if(getGoal.kcalOfWorkout > 0) getGoal.kcalOfWorkout else exerciseSum
+            binding.pbExercise.progress = exerciseSum
+         }
+
+         val weightGoalSplit = getGoal.weight.toString().split(".")
+         val weightGoal = if(weightGoalSplit[1] == "0") weightGoalSplit[0] else getGoal.weight
+
+         var weight = "0"
+         if(getBody.weight != null) {
+            val weightSplit = getBody.weight.toString().split(".")
+            weight = if(weightSplit[1] == "0") weightSplit[0] else getBody.weight.toString()
+         }
+
+         if(getBody.weight != null && getBody.weight!! > 0) {
+            binding.tvBodyPt.text =if(getGoal.weight > 0)  "${(getBody.weight!!.toInt() * 100) / getGoal.weight.roundToInt()}%" else "100%"
+            binding.pbBody.max = if(getGoal.weight > 0) getGoal.weight.roundToInt() else getBody.weight!!.toInt()
+            binding.pbBody.progress = getBody.weight!!.toInt()
+         }
+
+         val sleep = if(getGoal.sleep % 60 == 0) "${getGoal.sleep / 60}h" else "${getGoal.sleep / 60}h${getGoal.sleep % 60}m"
+         var total = 0
+
+         if(getSleep.starts != "" && getSleep.ends!= "") {
+            var starts: LocalDateTime?
+            var ends: LocalDateTime?
+
+            try {
+               val starts1 = LocalDateTime.parse(getSleep.starts, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'"))
+               val ends1 = LocalDateTime.parse(getSleep.ends, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'"))
+               starts = starts1.plusHours(9)
+               ends = ends1.plusHours(9)
+            }catch(e: Exception) {
+               Log.e(TAG, "err: $e")
+               starts = isoToDateTime(getSleep.starts)
+               ends = isoToDateTime(getSleep.ends)
+            }
+
+            val diff1 = Duration.between(starts, ends)
+            total = diff1.toMinutes().toInt()
+         }
+
+         if(total > 0) {
+            binding.tvSleepPt.text = if(getGoal.sleep > 0) "${(total * 100) / getGoal.sleep}%" else "100%"
+            binding.pbSleep.max = if(getGoal.sleep > 0) getGoal.sleep else total
+            binding.pbSleep.progress = total
+         }
+
+         if(getIntakeCount > 0) {
+            binding.tvDrugPt.text = if(getGoal.medicineIntake > 0) "${(getIntakeCount * 100) / getGoal.medicineIntake}%" else "100%"
+            binding.pbDrug.max = if(getGoal.medicineIntake > 0) getGoal.medicineIntake else getIntakeCount
+            binding.pbDrug.progress = getIntakeCount
+         }
+
+         binding.tvFood.text = "$foodSum/${getGoal.kcalOfDiet}kcal"
+         binding.tvWater.text = "${getWater.count}/${getGoal.waterIntake}잔"
+         binding.tvExercise.text = "$exerciseSum/${getGoal.kcalOfWorkout}kcal"
+         binding.tvBody.text = "${weight}/${weightGoal}kg"
+         binding.tvSleep.text = "${total / 60}h${total % 60}m/$sleep"
+         binding.tvDrug.text = "$getIntakeCount/${getGoal.medicineIntake}회"
       }
-
-      if(getWater.count > 0) {
-         binding.tvWaterPt.text = if(getDailyGoal.water > 0) "${(getWater.count * 100) / getDailyGoal.water}%" else "100%"
-         binding.pbWater.max = if(getDailyGoal.water > 0) getDailyGoal.water else getWater.count
-         binding.pbWater.progress = getWater.count
-      }
-
-      if(exerciseSum > 0) {
-         binding.tvExercisePt.text = if(getDailyGoal.exercise > 0) "${(exerciseSum * 100) / getDailyGoal.exercise}%" else "100%"
-         binding.pbExercise.max = if(getDailyGoal.exercise > 0) getDailyGoal.exercise else exerciseSum
-         binding.pbExercise.progress = exerciseSum
-      }
-
-      val weightGoalSplit = getDailyGoal.body.toString().split(".")
-      val weightGoal = if(weightGoalSplit[1] == "0") weightGoalSplit[0] else getDailyGoal.body
-
-      var weight = "0"
-      if(getBody.weight != null) {
-         val weightSplit = getBody.weight.toString().split(".")
-         weight = if(weightSplit[1] == "0") weightSplit[0] else getBody.weight.toString()
-      }
-
-      if(getBody.weight != null && getBody.weight!! > 0) {
-         binding.tvBodyPt.text =if(getDailyGoal.body > 0)  "${(getBody.weight!!.toInt() * 100) / getDailyGoal.body.roundToInt()}%" else "100%"
-         binding.pbBody.max = if(getDailyGoal.body > 0) getDailyGoal.body.roundToInt() else getBody.weight!!.toInt()
-         binding.pbBody.progress = getBody.weight!!.toInt()
-      }
-
-      val sleep = if(getDailyGoal.sleep % 60 == 0) "${getDailyGoal.sleep / 60}h" else "${getDailyGoal.sleep / 60}h${getDailyGoal.sleep % 60}m"
-      var total = 0
-
-      if(getSleep.startTime != "") {
-         val bedTime = LocalDateTime.parse(getSleep.startTime)
-         val wakeTime = LocalDateTime.parse(getSleep.endTime)
-         val diff = Duration.between(bedTime, wakeTime)
-         total = diff.toMinutes().toInt()
-      }
-
-      if(total > 0) {
-         binding.tvSleepPt.text = if(getDailyGoal.sleep > 0) "${(total * 100) / getDailyGoal.sleep}%" else "100%"
-         binding.pbSleep.max = if(getDailyGoal.sleep > 0) getDailyGoal.sleep else total
-         binding.pbSleep.progress = total
-      }
-
-      if(getDrugCheckCount > 0) {
-         binding.tvDrugPt.text = if(getDailyGoal.drug > 0) "${(getDrugCheckCount * 100) / getDailyGoal.drug}%" else "100%"
-         binding.pbDrug.max = if(getDailyGoal.drug > 0) getDailyGoal.drug else getDrugCheckCount
-         binding.pbDrug.progress = getDrugCheckCount
-      }
-
-      binding.tvFood.text = "$foodSum/${getDailyGoal.food}kcal"
-      binding.tvWater.text = "${getWater.count}/${getDailyGoal.water}잔"
-      binding.tvExercise.text = "$exerciseSum/${getDailyGoal.exercise}kcal"
-      binding.tvBody.text = "${weight}/${weightGoal}kg"
-      binding.tvSleep.text = "${total / 60}h${total % 60}m/$sleep"
-      binding.tvDrug.text = "$getDrugCheckCount/${getDailyGoal.drug}회"
    }
 
    override fun onDetach() {

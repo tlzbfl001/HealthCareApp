@@ -4,7 +4,16 @@ import com.google.gson.annotations.SerializedName
 
 data class UserResponse (
 	@SerializedName("id")
-	var id: String = ""
+	var id: String = "",
+
+	@SerializedName("username")
+	var username: String = "",
+
+	@SerializedName("email")
+	var email: String = "",
+
+	@SerializedName("role")
+	var role: String = ""
 )
 
 data class ProfileResponse (

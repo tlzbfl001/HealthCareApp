@@ -11,19 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.USER
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputBodyBinding
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Profile
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 
 class InputBodyFragment : Fragment() {
    private var _binding: FragmentInputBodyBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private var height = 163
    private var weight = 58
    private var gender = Constant.FEMALE.name
@@ -46,9 +47,6 @@ class InputBodyFragment : Fragment() {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentInputBodyBinding.inflate(layoutInflater)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -179,9 +177,13 @@ class InputBodyFragment : Fragment() {
          val height = if(binding.etHeight.text.toString() == "") height.toDouble() else binding.etHeight.text.toString().toDouble()
          val weight = if(binding.etWeight.text.toString() == "") weight.toDouble() else binding.etWeight.text.toString().toDouble()
 
-         dataManager.updateUserStr(USER, "gender", gender, "id")
-         dataManager.updateUserDouble("height", height)
-         dataManager.updateUserDouble("weight", weight)
+         lifecycleScope.launch {
+            powerSync.updateProfile(Profile(gender = gender, height = height, weight = weight))
+         }
+
+//         dataManager.updateUserStr(USER, "gender", gender, "id")
+//         dataManager.updateUserDouble("height", height)
+//         dataManager.updateUserDouble("weight", weight)
 
          requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.inputFrame, InputGoalFragment())

@@ -11,13 +11,11 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kr.bodywell.android.R
-import kr.bodywell.android.model.DrugTime
-import kr.bodywell.android.model.Item
+import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import java.time.LocalDate
 import java.util.Calendar
-
 
 class AlarmReceiver : BroadcastReceiver() {
     private var pendingIntent: PendingIntent? = null
@@ -29,7 +27,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationId = intent.getStringExtra("notificationId")
         val startDate = intent.getStringExtra("startDate")
         val endDate = intent.getStringExtra("endDate")
-        val timeList = intent.getParcelableArrayListExtra<Item>("timeList")
+        val timeList = intent.getParcelableArrayListExtra<MedicineTime>("timeList")
         val message = intent.getStringExtra("message")
 
         if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) {
@@ -45,7 +43,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.logo2)
             .setContentTitle(message)
-            .setContentText("약복용 시간이에요. 잊지말고 복용해주세요~")
+            .setContentText("약복용 시간이에요. 잊지말고 복용해주세요.")
             .setColor(ContextCompat.getColor(context, R.color.transparent))
 
         val notificationChannel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
@@ -56,7 +54,7 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.notify(notificationId, notification)
     }
 
-    fun setAlarm(context: Context, notificationId: Int, startDate: String, endDate: String, timeList: ArrayList<Item>, message: String) {
+    fun setAlarm(context: Context, notificationId: Int, startDate: String, endDate: String, timeList: ArrayList<MedicineTime>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
 
@@ -75,7 +73,7 @@ class AlarmReceiver : BroadcastReceiver() {
             val currentTime = System.currentTimeMillis() //현재시간(밀리세컨드)
 
             for(i in 0 until timeList.size) {
-                val split1 = timeList[i].string1.split(":")
+                val split1 = timeList[i].time.split(":")
                 cal.set(Calendar.HOUR_OF_DAY, split1[0].toInt())
                 cal.set(Calendar.MINUTE, split1[1].toInt())
                 cal.set(Calendar.SECOND, 0)
@@ -92,7 +90,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     }
                     return
                 }else if(i == (timeList.size - 1)) {
-                    val split2 = timeList[0].string1.split(":")
+                    val split2 = timeList[0].time.split(":")
                     cal.add(Calendar.DATE, 1)
                     cal.set(Calendar.HOUR_OF_DAY, split2[0].toInt())
                     cal.set(Calendar.MINUTE, split2[1].toInt())
@@ -112,7 +110,7 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         if(today < LocalDate.parse(startDate)) {
-            val split = timeList[0].string1.split(":")
+            val split = timeList[0].time.split(":")
             cal.add(Calendar.DATE, 1)
             cal.set(Calendar.HOUR_OF_DAY, split[0].toInt())
             cal.set(Calendar.MINUTE, split[1].toInt())

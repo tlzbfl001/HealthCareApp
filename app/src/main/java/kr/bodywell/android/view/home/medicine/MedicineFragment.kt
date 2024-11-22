@@ -1,10 +1,9 @@
-package kr.bodywell.android.view.home.drug
+package kr.bodywell.android.view.home.medicine
 
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,15 +17,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.adapter.DrugAdapter1
-import kr.bodywell.android.databinding.FragmentDrugBinding
-import kr.bodywell.android.model.DrugList
+import kr.bodywell.android.adapter.MedicineAdapter1
+import kr.bodywell.android.databinding.FragmentMedicineBinding
+import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
@@ -34,31 +33,26 @@ import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.setting.AlarmFragment
 import java.time.LocalDate
+import java.time.LocalDateTime
 
-class DrugFragment : Fragment() {
-   private var _binding: FragmentDrugBinding? = null
+class MedicineFragment : Fragment() {
+   private var _binding: FragmentMedicineBinding? = null
    val binding get() = _binding!!
 
    private val viewModel: MainViewModel by activityViewModels()
-//   private lateinit var dataManager: DataManager
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
-   private var adapter: DrugAdapter1? = null
+   private var adapter: MedicineAdapter1? = null
    private var getGoal = Goal()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?
    ): View {
-      _binding = FragmentDrugBinding.inflate(layoutInflater)
+      _binding = FragmentMedicineBinding.inflate(layoutInflater)
 
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
-      ){
-
-      }
-
-//      dataManager = DataManager(activity)
-//      dataManager.open()
+      ){}
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -76,11 +70,13 @@ class DrugFragment : Fragment() {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             runBlocking {
-               if(getGoal.date == "") {
-                  powerSync.insertGoal(Goal(medicineIntake = et.text.toString().toInt(), date = selectedDate.toString()))
+               if(getGoal.id == "") {
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertGoal(Goal(id = uuid.toString(), medicineIntake = et.text.toString().toInt(), date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateStr("goals", "medicine_intake", et.text.toString(), getGoal.id)
+                  powerSync.updateData("goals", "medicine_intake", et.text.toString(), getGoal.id)
                }
 
                dailyView()
@@ -97,7 +93,7 @@ class DrugFragment : Fragment() {
          if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
             Toast.makeText(requireActivity(), "권한이 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            replaceFragment1(requireActivity(), DrugRecordFragment())
+            replaceFragment1(requireActivity(), MedicineRecordFragment())
          }
       }
 
@@ -127,7 +123,7 @@ class DrugFragment : Fragment() {
    }
 
    private fun dailyView() {
-      val itemList = ArrayList<DrugList>()
+      val itemList = ArrayList<MedicineList>()
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
@@ -136,7 +132,7 @@ class DrugFragment : Fragment() {
 
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
-         val check = powerSync.getMedicineIntakeCount(selectedDate.toString())
+         val check = powerSync.getIntakeCount(selectedDate.toString())
 
          binding.tvGoal.text = "${getGoal.medicineIntake}회"
          binding.pbDrug.max = getGoal.medicineIntake
@@ -154,27 +150,23 @@ class DrugFragment : Fragment() {
             binding.cl1.visibility = View.VISIBLE
 
             // 약복용 리스트 생성
-//            val getDrugDaily = dataManager.getDrug(selectedDate.toString())
-            val getMedicine = powerSync.getMedicine(selectedDate.toString())
-            Log.d(CustomUtil.TAG, "getMedicine: $getMedicine")
+            val getMedicine = powerSync.getAllMedicine(selectedDate.toString())
 
             if(getMedicine.isNotEmpty()) {
                binding.cv.visibility = View.VISIBLE
 
                for(i in getMedicine.indices) {
-                  val getMedicineTime = powerSync.getMedicineTime("medicine_id", getMedicine[i].id)
-                  Log.d(CustomUtil.TAG, "getMedicineTime: $getMedicineTime")
+                  val split = getMedicine[i].name.split("/", limit=4)
+                  val getMedicineTime = powerSync.getAllMedicineTime("medicine_id", getMedicine[i].id)
 
                   for(j in getMedicineTime.indices) {
                      val getMedicineIntake = powerSync.getMedicineIntake(selectedDate.toString(), getMedicineTime[j].id)
-                     Log.d(CustomUtil.TAG, "getMedicineIntake: $getMedicineIntake")
-                     itemList.add(DrugList(drugId = getMedicine[i].id, drugTimeId = getMedicineTime[j].id, date = getMedicine[i].starts,
-                        name = getMedicine[i].name, amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
-                        initCheck = check, checked = getMedicineIntake.id))
+                     itemList.add(MedicineList(name = split[1], amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
+                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getMedicineTime[j].id, initCheck = check, isChecked = getMedicineIntake.id))
                   }
                }
 
-               adapter = DrugAdapter1(requireActivity(), itemList, viewModel)
+               adapter = MedicineAdapter1(itemList, viewModel)
                binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
                binding.recyclerView.adapter = adapter
                binding.recyclerView.requestLayout()

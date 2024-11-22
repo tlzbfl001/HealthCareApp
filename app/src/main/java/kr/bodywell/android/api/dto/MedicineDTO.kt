@@ -28,6 +28,26 @@ data class MedicineDTO(
 	var updatedAt: String = ""
 )
 
+data class MedicineUpdateDTO(
+	@SerializedName("category")
+	var category: String = "",
+
+	@SerializedName("name")
+	var name: String = "",
+
+	@SerializedName("amount")
+	var amount: Int = 0,
+
+	@SerializedName("unit")
+	var unit: String = "",
+
+	@SerializedName("starts")
+	var starts: String = "",
+
+	@SerializedName("ends")
+	var ends: String = ""
+)
+
 data class MedicineTimeDTO(
 	@SerializedName("time")
 	var time: String = "",
@@ -40,9 +60,12 @@ data class MedicineTimeDTO(
 )
 
 data class MedicineIntakeDTO(
-	@SerializedName("intaked_at")
+	@SerializedName("intakedAt")
 	var intakedAt: String = "",
 
-	@SerializedName("source_id")
-	var sourceId: String = ""
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
 )

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -110,7 +111,7 @@ class LoginActivity : AppCompatActivity() {
 //                     intent.putExtra("user", user)
 //                     startActivity(intent)
 
-                     CoroutineScope(Dispatchers.IO).launch {
+                     lifecycleScope.launch {
                         googleLoginRequest(this@LoginActivity, dataManager, user)
                      }
                   }else {
@@ -118,7 +119,9 @@ class LoginActivity : AppCompatActivity() {
                   }
                }else { // 로그인
                   MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
-                  resetAlarm(this)
+                  lifecycleScope.launch {
+                     resetAlarm(this@LoginActivity)
+                  }
                   startActivity(Intent(this, MainActivity::class.java))
                }
             }else {
@@ -142,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
 //                        intent.putExtra("user", user)
 //                        startActivity(intent)
 
-                        CoroutineScope(Dispatchers.IO).launch {
+                        lifecycleScope.launch {
                            naverLoginRequest(this@LoginActivity, dataManager, user)
                         }
                      }else {
@@ -150,7 +153,9 @@ class LoginActivity : AppCompatActivity() {
                      }
                   }else { // 로그인
                      MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
-                     resetAlarm(this@LoginActivity)
+                     lifecycleScope.launch {
+                        resetAlarm(this@LoginActivity)
+                     }
                      startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                   }
                }
@@ -209,7 +214,7 @@ class LoginActivity : AppCompatActivity() {
 //                  intent.putExtra("user", data)
 //                  startActivity(intent)
 
-                  CoroutineScope(Dispatchers.IO).launch {
+                  lifecycleScope.launch {
                      kakaoLoginRequest(this@LoginActivity, dataManager, data)
                   }
                }else {
@@ -217,7 +222,9 @@ class LoginActivity : AppCompatActivity() {
                }
             }else { // 로그인
                MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
-               resetAlarm(this)
+               lifecycleScope.launch {
+                  resetAlarm(this@LoginActivity)
+               }
                startActivity(Intent(this, MainActivity::class.java))
             }
          }else {

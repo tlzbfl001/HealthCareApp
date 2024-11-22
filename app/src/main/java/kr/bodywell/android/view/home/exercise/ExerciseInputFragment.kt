@@ -66,7 +66,7 @@ class ExerciseInputFragment : Fragment() {
                Toast.makeText(context, "운동이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else if(!filterText(binding.etName.text.toString().trim())) {
                Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
-            }else if(getData.string2 != "") {
+            }else if(getData != "") {
                Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
             }else {
                val uuid: UUID = UuidCreator.getTimeOrderedEpoch()

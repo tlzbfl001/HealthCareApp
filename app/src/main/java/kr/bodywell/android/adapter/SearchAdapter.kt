@@ -11,12 +11,11 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.FOOD
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
@@ -26,13 +25,8 @@ class SearchAdapter(
     private val type: String
 ) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
     private var bundle = Bundle()
-    private var dataManager: DataManager = DataManager(context)
     private var itemList = ArrayList<Item>()
     private var itemClickListener : OnItemClickListener? = null
-
-    init {
-        dataManager.open()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)
@@ -68,14 +62,14 @@ class SearchAdapter(
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            val result = dataManager.deleteItem(FOOD, "id", itemList[position].string1)
+                            runBlocking {
+                                powerSync.deleteItem("foods", "id", itemList[position].string1)
+                            }
 
-                            if(result > 0) {
-                                itemList.removeAt(position)
-                                notifyDataSetChanged()
+                            itemList.removeAt(position)
+                            notifyDataSetChanged()
 
-                                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                            }else Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         }.setNegativeButton("취소", null).create().show()
                     dialog.dismiss()
                 }
@@ -92,16 +86,14 @@ class SearchAdapter(
                         .setTitle("운동 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            val result = dataManager.deleteItem(EXERCISE, "id", itemList[position].string1)
-
-                            if(result > 0) {
-                                itemList.removeAt(position)
-                                notifyDataSetChanged()
-
-                                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                            }else {
-                                Toast.makeText(context, "삭제 실패", Toast.LENGTH_SHORT).show()
+                            runBlocking {
+                                powerSync.deleteItem("activities", "id", itemList[position].string1)
                             }
+
+                            itemList.removeAt(position)
+                            notifyDataSetChanged()
+
+                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         }
                         .setNegativeButton("취소", null)
                         .create().show()

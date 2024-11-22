@@ -1,35 +1,35 @@
 package kr.bodywell.android.adapter
 
-import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.DrugList
+import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.MedicineIntake
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
+import java.time.LocalDateTime
 
-class DrugAdapter1 (
-    private val context: Context,
-    private val itemList: List<DrugList>,
+class MedicineAdapter1 (
+    private val itemList: List<MedicineList>,
     private val viewModel: MainViewModel
-) : RecyclerView.Adapter<DrugAdapter1.ViewHolder>() {
-    private var dataManager: DataManager = DataManager(context)
+) : RecyclerView.Adapter<MedicineAdapter1.ViewHolder>() {
+    private lateinit var dataManager: DataManager
     private var check = 0
-
-    init {
-        dataManager.open()
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_daily, parent, false)
+        dataManager = DataManager(parent.context)
+        dataManager.open()
         return ViewHolder(view)
     }
 
@@ -40,22 +40,26 @@ class DrugAdapter1 (
 
         check = itemList[pos].initCheck
         viewModel.setInt(check)
-        if(itemList[pos].checked != "") holder.tvCheck.isChecked = true
+        if(itemList[pos].isChecked != "") holder.tvCheck.isChecked = true
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
             runBlocking {
-                val getData = powerSync.getMedicineIntake(selectedDate.toString(), itemList[pos].drugTimeId)
+                val getData = powerSync.getMedicineIntake(selectedDate.toString(), itemList[pos].medicineTimeId)
 
                 if(holder.tvCheck.isChecked) {
                     check += 1
-                    if(getData.intakeAt == "") {
-                        powerSync.insertMedicineIntake(MedicineIntake(name = itemList[pos].time, intakeAt = selectedDate.toString(),
-                            medicineTimeId = itemList[pos].drugTimeId, sourceId = itemList[pos].sourceId))
+                    if(getData.id == "") {
+                        val uuid = UuidCreator.getTimeOrderedEpoch()
+                        powerSync.insertMedicineIntake(MedicineIntake(id = uuid.toString(), intakeAt = selectedDate.toString(), createdAt = LocalDateTime.now().toString(),
+                            updatedAt = LocalDateTime.now().toString(), medicineId = itemList[pos].medicineId, medicineTimeId = itemList[pos].medicineTimeId))
+                        Log.d(CustomUtil.TAG, "uuid: ${uuid}")
+                        dataManager.insertMedicineIntake(MedicineIntake(id = uuid.toString(), medicineId = itemList[pos].medicineId, medicineTimeId = itemList[pos].medicineTimeId,
+                            intakeAt = selectedDate.toString()))
                     }
                 }else {
                     if(check > 0) check -= 1
-                    if(getData.intakeAt != "") powerSync.deleteItem("medicine_intakes", "id", getData.id)
+                    if(getData.id != "") powerSync.deleteItem("medicine_intakes", "id", getData.id)
                 }
 
                 viewModel.setInt(check)

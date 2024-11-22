@@ -1,4 +1,4 @@
-package kr.bodywell.android.view.home.drug
+package kr.bodywell.android.view.home.medicine
 
 import android.app.Dialog
 import android.content.Context

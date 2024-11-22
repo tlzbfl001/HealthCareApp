@@ -10,7 +10,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentBluetoothBinding
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -22,7 +21,6 @@ class BluetoothFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private lateinit var dataManager: DataManager
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -41,9 +39,6 @@ class BluetoothFragment : Fragment() {
 		_binding = FragmentBluetoothBinding.inflate(layoutInflater)
 
 		setStatusBar(requireActivity(), binding.mainLayout)
-
-		dataManager = DataManager(activity)
-		dataManager.open()
 
 		binding.clBack.setOnClickListener {
 			replaceFragment3(requireActivity(), ConnectFragment())

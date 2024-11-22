@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.ExerciseRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseRecord2Binding
 import kr.bodywell.android.model.Activities
 import kr.bodywell.android.model.Item
@@ -29,7 +28,6 @@ class ExerciseRecord2Fragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var adapter1: ExerciseRecordAdapter? = null
    private var itemList = ArrayList<Activities>()
@@ -52,9 +50,6 @@ class ExerciseRecord2Fragment : Fragment() {
       _binding = FragmentExerciseRecord2Binding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       bundle.putString("back", "2")
 

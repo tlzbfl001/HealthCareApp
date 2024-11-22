@@ -1,57 +1,25 @@
 package kr.bodywell.android.api
 
-import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.delay
-import kr.bodywell.android.api.dto.FoodUpdateDTO
-import kr.bodywell.android.api.dto.GoalDTO
-import kr.bodywell.android.api.dto.GoalUpdateDTO
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
-import kr.bodywell.android.api.dto.MedicineDTO
-import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
-import kr.bodywell.android.api.dto.ProfileDTO
-import kr.bodywell.android.api.dto.SleepDTO
-import kr.bodywell.android.api.dto.SyncDTO
-import kr.bodywell.android.database.DBHelper.Companion.BODY
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.DRUG
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
-import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.FOOD
-import kr.bodywell.android.database.DBHelper.Companion.GOAL
-import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.SLEEP
-import kr.bodywell.android.database.DBHelper.Companion.SYNC_TIME
-import kr.bodywell.android.database.DBHelper.Companion.UNUSED
-import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.InitBody
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.FoodInit
-import kr.bodywell.android.model.GoalInit
-import kr.bodywell.android.model.InitSleep
 import kr.bodywell.android.model.Token
-import kr.bodywell.android.model.User
-import kr.bodywell.android.model.InitWater
 import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
-import kr.bodywell.android.util.CustomUtil.dateToIso
 import kr.bodywell.android.util.CustomUtil.getToken
 import kr.bodywell.android.util.CustomUtil.getUser
-import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import java.time.Duration
 import java.time.LocalDateTime
 
 object ViewModelUtil {
 	var requestStatus = true
 
-	suspend fun createRequest(context: Context, dataManager: DataManager) {
+	/*suspend fun createRequest(context: Context, dataManager: DataManager) {
 		refreshToken(dataManager)
-//		createSync(context, dataManager)
+		createSync(context, dataManager)
 
 		val getUnused = dataManager.getUnused()
 		val getUserUpdated = dataManager.getUserUpdated()
@@ -185,7 +153,7 @@ object ViewModelUtil {
 			}
 		}
 
-		/*for(i in 0 until getFoodUid.size) {
+		for(i in 0 until getFoodUid.size) {
 			val response = RetrofitAPI.api.createFood("Bearer ${getToken.access}", FoodDTO(getFoodUid[i].name, getFoodUid[i].calorie, getFoodUid[i].carbohydrate,
 				getFoodUid[i].protein, getFoodUid[i].fat, getFoodUid[i].count, "개", getFoodUid[i].amount, getFoodUid[i].unit))
 			if(response.isSuccessful) {
@@ -194,7 +162,7 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "createFood: $response")
 			}
-		}*/
+		}
 
 		for(i in 0 until getFoodUpdated.size) {
 			val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", getFoodUpdated[i].uid, FoodUpdateDTO(getFoodUpdated[i].calorie, getFoodUpdated[i].carbohydrate,
@@ -207,7 +175,7 @@ object ViewModelUtil {
 			}
 		}
 
-		/*for(i in 0 until getDailyFoodUid.size) {
+		for(i in 0 until getDailyFoodUid.size) {
 			val photos = ArrayList<String>()
 			photos.add("https://example.com/picture.jpg")
 			val getData = dataManager.getData(FOOD, "name", getDailyFoodUid[i].name)
@@ -222,9 +190,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "createDiets: $response")
 			}
-		}*/
+		}
 
-		/*for(i in 0 until getDailyFoodUpdated.size) {
+		for(i in 0 until getDailyFoodUpdated.size) {
 			val photos = ArrayList<String>()
 			photos.add("https://example.com/picture.jpg")
 			val dateToIso = dateToIso(getDailyFoodUpdated[i].createdAt)
@@ -238,9 +206,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "updateDiets: $response")
 			}
-		}*/
+		}
 
-		/*for(i in 0 until getWaterUid.size) {
+		for(i in 0 until getWaterUid.size) {
 			val response = RetrofitAPI.api.createWater("Bearer ${getToken.access}", WaterDTO(getWaterUid[i].volume, getWaterUid[i].count, getWaterUid[i].createdAt))
 			if(response.isSuccessful) {
 				Log.d(TAG, "createWater: ${response.body()}")
@@ -259,9 +227,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "updateWater: $response")
 			}
-		}*/
+		}
 
-		/*for(i in 0 until getExUid.size) {
+		for(i in 0 until getExUid.size) {
 			val response = RetrofitAPI.api.createActivity("Bearer ${getToken.access}", ActivityDTO(getExUid[i].name))
 			if(response.isSuccessful) {
 				Log.d(TAG, "createActivity: ${response.body()}")
@@ -305,9 +273,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "updateWorkout: $response")
 			}
-		}*/
+		}
 
-		/*for(i in 0 until getBodyUid.size) {
+		for(i in 0 until getBodyUid.size) {
 			val dateToIso = dateToIso(getBodyUid[i].createdAt)
 			val response = RetrofitAPI.api.createBody("Bearer ${getToken.access}", BodyDTO(getBodyUid[i].height, getBodyUid[i].weight, getBodyUid[i].bmi,
 				getBodyUid[i].fat, getBodyUid[i].muscle, getBodyUid[i].bmr, getBodyUid[i].intensity, dateToIso))
@@ -329,9 +297,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "updateBody: $response")
 			}
-		}*/
+		}
 
-/*		for(i in 0 until getSleepUid.size) {
+		for(i in 0 until getSleepUid.size) {
 			val startToIso = dateTimeToIso(LocalDateTime.parse(getSleepUid[i].startTime))
 			val endToIso = dateTimeToIso(LocalDateTime.parse(getSleepUid[i].endTime))
 			val response = RetrofitAPI.api.createSleep("Bearer ${getToken.access}", SleepDTO(startToIso, endToIso))
@@ -353,9 +321,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "updateSleep: $response")
 			}
-		}*/
+		}
 
-		/*for(i in 0 until getDrugUid.size) {
+		for(i in 0 until getDrugUid.size) {
 			val startDate = dateToIso(getDrugUid[i].startDate)
 			val endDate = dateToIso(getDrugUid[i].endDate)
 			val createMedicine = RetrofitAPI.api.createMedicine("Bearer ${getToken.access}", MedicineDTO(getDrugUid[i].type, getDrugUid[i].name,
@@ -421,9 +389,9 @@ object ViewModelUtil {
 			}else {
 				Log.e(TAG, "updateMedicine: $updateMedicine")
 			}
-		}*/
+		}
 
-		/*for(i in 0 until getDrugCheckUid.size) {
+		for(i in 0 until getDrugCheckUid.size) {
 			val getDrug = dataManager.getUid(DRUG, getDrugCheckUid[i].drugId)
 			val getDrugTime = dataManager.getUid(DRUG_TIME, getDrugCheckUid[i].drugTimeId)
 			val getIntake = RetrofitAPI.api.getMedicineIntake("Bearer ${getToken.access}", getDrug.uid, getDrugTime.uid)
@@ -441,7 +409,7 @@ object ViewModelUtil {
 					}
 				}
 			}
-		}*/
+		}
 
 		for(i in 0 until getGoalUid.size) {
 			val dateToIso = dateToIso(getGoalUid[i].createdAt)
@@ -466,8 +434,8 @@ object ViewModelUtil {
 			}
 		}
 
-		delay(15000)
-	}
+		delay(10000)
+	}*/
 
 	/*private suspend fun createSync(context: Context, dataManager: DataManager) {
 		val syncedAt = dateTimeToIso(LocalDateTime.parse(dataManager.getSynced()))
@@ -538,7 +506,7 @@ object ViewModelUtil {
 			requestStatus = false
 		}
 
-		*//*val syncActivity = RetrofitAPI.api.syncActivity("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		val syncActivity = RetrofitAPI.api.syncActivity("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncActivity.isSuccessful) {
 			Log.d(TAG, "syncActivity: ${syncActivity.body()}")
 
@@ -569,9 +537,9 @@ object ViewModelUtil {
 		}else {
 			Log.e(TAG, "syncActivity: $syncActivity")
 			requestStatus = false
-		}*//*
+		}
 
-		*//*val syncWorkout = RetrofitAPI.api.syncWorkout("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		val syncWorkout = RetrofitAPI.api.syncWorkout("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncWorkout.isSuccessful) {
 			Log.d(TAG, "syncWorkout: ${syncWorkout.body()}")
 
@@ -595,7 +563,7 @@ object ViewModelUtil {
 		}else {
 			Log.e(TAG, "syncWorkout: $syncWorkout")
 			requestStatus = false
-		}*//*
+		}
 
 		val syncBody = RetrofitAPI.api.syncBody("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncBody.isSuccessful) {
@@ -647,7 +615,7 @@ object ViewModelUtil {
 			requestStatus = false
 		}
 
-		*//*val syncMedicine = RetrofitAPI.api.syncMedicine("Bearer ${getToken.access}", SyncDTO(syncedAt))
+		val syncMedicine = RetrofitAPI.api.syncMedicine("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncMedicine.isSuccessful) {
 			Log.d(TAG, "syncMedicine: ${syncMedicine.body()}")
 			val alarmReceiver = AlarmReceiver()
@@ -709,7 +677,7 @@ object ViewModelUtil {
 		}else {
 			Log.e(TAG, "syncMedicine: $syncMedicine")
 			requestStatus = false
-		}*//*
+		}
 
 		val syncGoal = RetrofitAPI.api.syncGoal("Bearer ${getToken.access}", SyncDTO(syncedAt))
 		if(syncGoal.isSuccessful) {
@@ -793,6 +761,6 @@ object ViewModelUtil {
 			}
 		}
 
-		delay(15000)
+		delay(10000)
 	}
 }

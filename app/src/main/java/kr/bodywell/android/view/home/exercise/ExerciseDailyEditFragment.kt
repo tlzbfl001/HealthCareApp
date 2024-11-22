@@ -10,17 +10,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.adapter.ExerciseListAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseDailyEditBinding
 import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.InitExercise
 import kr.bodywell.android.model.Workout
-import kr.bodywell.android.util.CalendarUtil
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -31,7 +25,6 @@ class ExerciseDailyEditFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-//	private lateinit var dataManager: DataManager
 	private var intensity = Constant.HIGH
 
 	override fun onAttach(context: Context) {
@@ -51,9 +44,6 @@ class ExerciseDailyEditFragment : Fragment() {
 		_binding = FragmentExerciseDailyEditBinding.inflate(layoutInflater)
 
 		setStatusBar(requireActivity(), binding.mainLayout)
-
-//		dataManager = DataManager(activity)
-//		dataManager.open()
 
 		val getWorkout = arguments?.getParcelable<Workout>("workouts")!!
 
@@ -94,7 +84,7 @@ class ExerciseDailyEditFragment : Fragment() {
 				Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
 				lifecycleScope.launch {
-					powerSync.updateWorkout(Workout(id = getWorkout.id, calorie = binding.etKcal.text.toString().trim().toInt(),
+					powerSync!!.updateWorkout(Workout(id = getWorkout.id, calorie = binding.etKcal.text.toString().trim().toInt(),
 						intensity = intensity.name, time = binding.etTime.text.toString().trim().toInt()))
 				}
 

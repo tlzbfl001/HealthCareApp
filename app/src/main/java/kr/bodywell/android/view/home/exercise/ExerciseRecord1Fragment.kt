@@ -28,7 +28,6 @@ class ExerciseRecord1Fragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-//   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var itemList = ArrayList<Activities>()
    private val searchList = ArrayList<Item>()
@@ -50,9 +49,6 @@ class ExerciseRecord1Fragment : Fragment() {
       _binding = FragmentExerciseRecord1Binding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-//      dataManager = DataManager(activity)
-//      dataManager.open()
 
       bundle.putString("back", "1")
 
@@ -96,7 +92,6 @@ class ExerciseRecord1Fragment : Fragment() {
 
    private fun listView() {
       lifecycleScope.launch {
-//         itemList = dataManager.getSearchExercise("useCount")
          itemList = powerSync.getAllActivity() as ArrayList<Activities>
          for(i in itemList.indices) powerSync.deleteDuplicates("activities", "name", itemList[i].name, itemList[i].id)
       }

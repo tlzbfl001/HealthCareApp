@@ -182,7 +182,7 @@ class FoodDailyEditFragment : Fragment() {
          }*/
 
          lifecycleScope.launch {
-            powerSync.updateDiet(Food(id = getDiets.id, name = getDiets.name, quantity = count, date = selectedDate.toString()))
+            powerSync!!.updateDiet(Food(id = getDiets.id, name = getDiets.name, quantity = count, date = selectedDate.toString()))
          }
 
          Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()

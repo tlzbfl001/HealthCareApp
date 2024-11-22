@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -22,11 +23,10 @@ import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
-import kr.bodywell.android.model.InitWater
+import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
@@ -35,6 +35,7 @@ import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.getNutrition
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -48,7 +49,6 @@ class ReportFoodFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    private val format2 = SimpleDateFormat("M.dd")
    private var calendarDate = LocalDate.now()
@@ -71,9 +71,6 @@ class ReportFoodFragment : Fragment() {
       _binding = FragmentReportFoodBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
@@ -159,24 +156,27 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getDates = dataManager.getDates(DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
+      lifecycleScope.launch {
+//         val getDates = dataManager.getDates(DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
+         val getDates = powerSync.getAllDate("diets", "date", calendarDate.toString(), calendarDate.toString())
+         if(getDates.isNotEmpty()) {
+            settingChart1(binding.chart1, getDates)
+            settingChart2(binding.chart2, getDates)
+         }
 
-      if(getDates.size > 0) {
-         settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
-      }
+         val getWater = ArrayList<Water>()
+//         val data = dataManager.getWater(selectedDate.toString())
+         val data = powerSync.getWater(selectedDate.toString())
 
-      val getWater = ArrayList<InitWater>()
-      val data = dataManager.getWater(selectedDate.toString())
-
-      if(data.count > 0) {
-         binding.chart3.visibility = View.VISIBLE
-         binding.tvEmpty3.visibility = View.GONE
-         getWater.add(data)
-         settingChart3(binding.chart3, getWater)
-      }else {
-         binding.chart3.visibility = View.GONE
-         binding.tvEmpty3.visibility = View.VISIBLE
+         if(data.count > 0) {
+            binding.chart3.visibility = View.VISIBLE
+            binding.tvEmpty3.visibility = View.GONE
+            getWater.add(data)
+            settingChart3(binding.chart3, getWater)
+         }else {
+            binding.chart3.visibility = View.GONE
+            binding.tvEmpty3.visibility = View.VISIBLE
+         }
       }
    }
 
@@ -190,21 +190,26 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val weekArray = weekArray(calendarDate)
-      val getDates = dataManager.getDates(DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
-      if(getDates.size > 0) {
-         settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
-      }
+      lifecycleScope.launch {
+         val weekArray = weekArray(calendarDate)
 
-      val getWater = dataManager.getWater(weekArray[0].toString(), weekArray[6].toString())
-      if(getWater.size > 0) {
-         binding.chart3.visibility = View.VISIBLE
-         binding.tvEmpty3.visibility = View.GONE
-         settingChart3(binding.chart3, getWater)
-      }else {
-         binding.chart3.visibility = View.GONE
-         binding.tvEmpty3.visibility = View.VISIBLE
+//         val getDates = dataManager.getDates(DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
+         val getDates = powerSync.getAllDate("diets", "date", weekArray[0].toString(), weekArray[6].toString())
+         if(getDates.isNotEmpty()) {
+            settingChart1(binding.chart1, getDates)
+            settingChart2(binding.chart2, getDates)
+         }
+
+//         val getWater = dataManager.getWater(weekArray[0].toString(), weekArray[6].toString())
+         val getWater = powerSync.getAllWater(weekArray[0].toString(), weekArray[6].toString())
+         if(getWater.isNotEmpty()) {
+            binding.chart3.visibility = View.VISIBLE
+            binding.tvEmpty3.visibility = View.GONE
+            settingChart3(binding.chart3, getWater)
+         }else {
+            binding.chart3.visibility = View.GONE
+            binding.tvEmpty3.visibility = View.VISIBLE
+         }
       }
    }
 
@@ -218,21 +223,25 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
-      val monthArray = monthArray2(calendarDate)
-      val getDates = dataManager.getDates(DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      if(getDates.size > 0) {
-         settingChart1(binding.chart1, getDates)
-         settingChart2(binding.chart2, getDates)
-      }
+      lifecycleScope.launch {
+         val monthArray = monthArray2(calendarDate)
+//         val getDates = dataManager.getDates(DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         val getDates = powerSync.getAllDate("diets", "date", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         if(getDates.isNotEmpty()) {
+            settingChart1(binding.chart1, getDates)
+            settingChart2(binding.chart2, getDates)
+         }
 
-      val getWater = dataManager.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      if(getWater.size > 0) {
-         binding.chart3.visibility = View.VISIBLE
-         binding.tvEmpty3.visibility = View.GONE
-         settingChart3(binding.chart3, getWater)
-      }else {
-         binding.chart3.visibility = View.GONE
-         binding.tvEmpty3.visibility = View.VISIBLE
+//         val getWater = dataManager.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         val getWater = powerSync.getAllWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         if(getWater.isNotEmpty()) {
+            binding.chart3.visibility = View.VISIBLE
+            binding.tvEmpty3.visibility = View.GONE
+            settingChart3(binding.chart3, getWater)
+         }else {
+            binding.chart3.visibility = View.GONE
+            binding.tvEmpty3.visibility = View.VISIBLE
+         }
       }
    }
 
@@ -243,7 +252,7 @@ class ReportFoodFragment : Fragment() {
       binding.tvEmpty2.visibility = View.VISIBLE
    }
 
-   private fun settingChart1(chart: CombinedChart, getData: ArrayList<String>) {
+   private fun settingChart1(chart: CombinedChart, getData: List<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -257,14 +266,16 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in 0 until getData.size){
-         val foodKcal = getFoodCalories(requireActivity(), getData[i])
+      for(i in getData.indices){
+         lifecycleScope.launch {
+            val foodKcal = getFoodCalories(getData[i])
 
-         if(foodKcal.int5 > 0) {
-            xVal += format2.format(format1.parse(getData[i])!!)
-            lineList += foodKcal.int5.toFloat()
-            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(foodKcal.int4.toFloat(), foodKcal.int3.toFloat(), foodKcal.int2.toFloat(), foodKcal.int1.toFloat())))
-            count++
+            if(foodKcal.int5 > 0) {
+               xVal += format2.format(format1.parse(getData[i])!!)
+               lineList += foodKcal.int5.toFloat()
+               barEntries.add(BarEntry(count.toFloat(), floatArrayOf(foodKcal.int4.toFloat(), foodKcal.int3.toFloat(), foodKcal.int2.toFloat(), foodKcal.int1.toFloat())))
+               count++
+            }
          }
       }
 
@@ -308,7 +319,7 @@ class ReportFoodFragment : Fragment() {
       }
    }
 
-   private fun settingChart2(chart: CombinedChart, getData: ArrayList<String>) {
+   private fun settingChart2(chart: CombinedChart, getData: List<String>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -322,15 +333,17 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in 0 until getData.size){
-         val nutrition = getNutrition(requireActivity(), getData[i])
-         if(nutrition.salt > 0) {
-            xVal += format2.format(format1.parse(getData[i])!!)
-            lineList += nutrition.salt.toFloat()
-            barEntries.add(BarEntry(count.toFloat(), floatArrayOf(
-               nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat(), nutrition.sugar.toFloat()
-            )))
-            count++
+      for(i in getData.indices){
+         lifecycleScope.launch {
+            val nutrition = getNutrition(getData[i])
+            if(nutrition.volumeUnit.toDouble() > 0) {
+               xVal += format2.format(format1.parse(getData[i])!!)
+               lineList += nutrition.volumeUnit.toFloat()
+               barEntries.add(BarEntry(count.toFloat(), floatArrayOf(
+                  nutrition.carbohydrate.toFloat(), nutrition.protein.toFloat(), nutrition.fat.toFloat()
+               )))
+               count++
+            }
          }
       }
 
@@ -359,7 +372,7 @@ class ReportFoodFragment : Fragment() {
          barColor.add(Color.parseColor("#F3E1A3"))
          barColor.add(Color.parseColor("#F4D279"))
          barColor.add(Color.parseColor("#EFC75D"))
-         barColor.add(Color.parseColor("#EFB522"))
+//         barColor.add(Color.parseColor("#EFB522"))
 
          val barDataSet = BarDataSet(barEntries, "")
          barDataSet.colors = barColor
@@ -376,7 +389,7 @@ class ReportFoodFragment : Fragment() {
       }
    }
 
-   private fun settingChart3(chart: CombinedChart, getData: ArrayList<InitWater>) {
+   private fun settingChart3(chart: CombinedChart, getData: List<Water>) {
       chart.data = null
       chart.fitScreen()
       chart.xAxis.valueFormatter = null
@@ -389,10 +402,10 @@ class ReportFoodFragment : Fragment() {
       val entries = ArrayList<Entry>()
       val barEntries = ArrayList<BarEntry>()
 
-      for(i in 0 until getData.size){
+      for(i in getData.indices){
          xVal += format2.format(format1.parse(getData[i].createdAt)!!)
-         lineList += (getData[i].count * getData[i].volume).toFloat()
-         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].volume).toFloat()))
+         lineList += (getData[i].count * getData[i].mL).toFloat()
+         barEntries.add(BarEntry(i.toFloat(), (getData[i].count * getData[i].mL).toFloat()))
       }
 
       for (index in lineList.indices) {

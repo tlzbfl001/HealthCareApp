@@ -8,11 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputGoalBinding
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Profile
+import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.home.MainActivity
 
 class InputGoalFragment : Fragment() {
@@ -20,7 +24,7 @@ class InputGoalFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
+   private var getProfile = Profile()
    private var weightGoal = 55.0
    private var kcalGoal = 2000
 
@@ -43,12 +47,11 @@ class InputGoalFragment : Fragment() {
    ): View {
       _binding = FragmentInputGoalBinding.inflate(layoutInflater)
 
-      dataManager = DataManager(activity)
-      dataManager.open()
+      lifecycleScope.launch {
+         getProfile = powerSync.getProfile(getUser.uid)
+      }
 
-      val getUser = dataManager.getUser()
-
-      if(getUser.gender == Constant.MALE.name) {
+      if(getProfile.gender == Constant.MALE.name) {
          weightGoal = 65.0
          kcalGoal = 2200
          binding.etWeightGoal.hint = weightGoal.toString()
@@ -79,10 +82,10 @@ class InputGoalFragment : Fragment() {
          val waterUnit = if(binding.etWaterUnit.text.toString() == "") 200 else binding.etWaterUnit.text.toString().toInt()
          val waterGoal = if(binding.etWaterGoal.text.toString() == "") 5 else binding.etWaterGoal.text.toString().toInt()
 
-         dataManager.updateUserDouble("weightGoal", weightGoal)
-         dataManager.updateUserInt("kcalGoal", kcalGoal)
-         dataManager.updateUserInt("waterGoal", waterGoal)
-         dataManager.updateUserInt("waterUnit", waterUnit)
+//         dataManager.updateUserDouble("weightGoal", weightGoal)
+//         dataManager.updateUserInt("kcalGoal", kcalGoal)
+//         dataManager.updateUserInt("waterGoal", waterGoal)
+//         dataManager.updateUserInt("waterUnit", waterUnit)
 
          val intent = Intent(activity, MainActivity::class.java)
          intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

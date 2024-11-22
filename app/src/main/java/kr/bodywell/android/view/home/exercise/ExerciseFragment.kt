@@ -15,33 +15,28 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
-import kr.bodywell.android.database.DBHelper.Companion.IS_UPDATED
-import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.GOAL
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseBinding
-import kr.bodywell.android.model.GoalInit
+import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var dataManager: DataManager
    private val viewModel: MainViewModel by activityViewModels()
    private var adapter: ExerciseAdapter? = null
-   private var dailyGoal = GoalInit()
+   private var getGoal = Goal()
    private var sum = 0
 
    override fun onCreateView(
@@ -49,9 +44,6 @@ class ExerciseFragment : Fragment() {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentExerciseBinding.inflate(layoutInflater)
-
-//      dataManager = DataManager(activity)
-//      dataManager.open()
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_input)
@@ -66,13 +58,16 @@ class ExerciseFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-//            if(dailyGoal.createdAt == "") {
-//               dataManager.insertGoal(GoalInit(exercise = et.text.toString().toInt(), createdAt = selectedDate.toString()))
-//               dailyGoal = dataManager.getGoal(selectedDate.toString())
-//            }else {
-//               dataManager.updateInt(GOAL, EXERCISE, et.text.toString().toInt(), selectedDate.toString())
-//               dataManager.updateInt(GOAL, IS_UPDATED, 1, "id", dailyGoal.id)
-//            }
+            lifecycleScope.launch {
+               if(getGoal.id == "") {
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertGoal(Goal(id = uuid.toString(), kcalOfWorkout = et.text.toString().toInt(), date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+                  getGoal = powerSync.getGoal(selectedDate.toString())
+               }else {
+                  powerSync.updateData("goals", "kcal_of_workout", et.text.toString(), getGoal.id)
+               }
+            }
 
             binding.pbExercise.max = et.text.toString().toInt()
             binding.tvGoal.text = "${et.text} kcal"
@@ -113,28 +108,27 @@ class ExerciseFragment : Fragment() {
       binding.tvGoal.text = "0 kcal"
       binding.tvRemain.text = "0 kcal"
 
-//      dailyGoal = dataManager.getGoal(selectedDate.toString())
-      sum = getExerciseCalories(requireActivity(), selectedDate.toString())
-
-      if(sum > 0) {
-         binding.pbExercise.setProgressStartColor(resources.getColor(R.color.exercise))
-         binding.pbExercise.setProgressEndColor(resources.getColor(R.color.exercise))
-         binding.pbExercise.max = dailyGoal.exercise
-         binding.pbExercise.progress = sum
-      }
-
-      binding.tvGoal.text = "${dailyGoal.exercise} kcal"
-      binding.tvConsume.text = "$sum kcal"
-
-      val remain = dailyGoal.exercise - sum
-      if(remain > 0) {
-         binding.tvRemain.text = "$remain kcal"
-      }else {
-         binding.tvRemain.text = "0 kcal"
-      }
-
-//      val getExercise = dataManager.getAllWorkout(CREATED_AT, selectedDate.toString())
       lifecycleScope.launch {
+         getGoal = powerSync.getGoal(selectedDate.toString())
+         sum = getExerciseCalories(selectedDate.toString())
+
+         if(sum > 0) {
+            binding.pbExercise.setProgressStartColor(resources.getColor(R.color.exercise))
+            binding.pbExercise.setProgressEndColor(resources.getColor(R.color.exercise))
+            binding.pbExercise.max = getGoal.kcalOfWorkout
+            binding.pbExercise.progress = sum
+         }
+
+         binding.tvGoal.text = "${getGoal.kcalOfWorkout} kcal"
+         binding.tvConsume.text = "$sum kcal"
+
+         val remain = getGoal.kcalOfWorkout - sum
+         if(remain > 0) {
+            binding.tvRemain.text = "$remain kcal"
+         }else {
+            binding.tvRemain.text = "0 kcal"
+         }
+
          val getAllWorkout = powerSync.getAllWorkout(selectedDate.toString()) as ArrayList<Workout>
 
          adapter = ExerciseAdapter(getAllWorkout)

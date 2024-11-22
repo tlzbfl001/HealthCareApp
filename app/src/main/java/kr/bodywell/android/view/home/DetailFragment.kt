@@ -21,7 +21,7 @@ import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.home.body.BodyFragment
-import kr.bodywell.android.view.home.drug.DrugFragment
+import kr.bodywell.android.view.home.medicine.MedicineFragment
 import kr.bodywell.android.view.home.exercise.ExerciseFragment
 import kr.bodywell.android.view.home.food.FoodFragment
 import kr.bodywell.android.view.home.sleep.SleepFragment
@@ -82,7 +82,7 @@ class DetailFragment : Fragment() {
       pagerAdapter.add(ExerciseFragment(), "운동")
       pagerAdapter.add(BodyFragment(), "신체")
       pagerAdapter.add(SleepFragment(), "수면")
-      pagerAdapter.add(DrugFragment(), "약복용")
+      pagerAdapter.add(MedicineFragment(), "약복용")
       binding.viewPager.adapter = pagerAdapter
 
       binding.tabLayout.setupWithViewPager(binding.viewPager)

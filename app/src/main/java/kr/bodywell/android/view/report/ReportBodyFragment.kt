@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -18,15 +19,16 @@ import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ViewPortHandler
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentReportBodyBinding
-import kr.bodywell.android.model.InitBody
+import kr.bodywell.android.model.Body
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -39,7 +41,6 @@ class ReportBodyFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private val format1 = SimpleDateFormat("yyyy-MM-dd")
    private val format2 = SimpleDateFormat("M.dd")
    private var calendarDate = LocalDate.now()
@@ -62,9 +63,6 @@ class ReportBodyFragment : Fragment() {
       _binding = FragmentReportBodyBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       binding.tvDate.text = dateFormat(calendarDate)
 
@@ -150,48 +148,50 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
 
-      val getBody = dataManager.getBody(calendarDate.toString())
+      lifecycleScope.launch {
+         val getBody = powerSync.getBody(calendarDate.toString())
 
-      if(getBody.weight != null && getBody.weight!! > 0) {
-         binding.tvEmpty1.visibility = View.GONE
-         binding.lineChart1.visibility = View.VISIBLE
+         if(getBody.weight != null && getBody.weight!! > 0) {
+            binding.tvEmpty1.visibility = View.GONE
+            binding.lineChart1.visibility = View.VISIBLE
 
-         val entries = ArrayList<Entry>()
-         val xValue = ArrayList<String>()
+            val entries = ArrayList<Entry>()
+            val xValue = ArrayList<String>()
 
-         val date = format2.format(format1.parse(getBody.createdAt)!!)
-         entries.add(Entry(0f, getBody.weight!!.toFloat()))
-         xValue.add(date)
+            val date = format2.format(format1.parse(getBody.createdAt)!!)
+            entries.add(Entry(0f, getBody.weight!!.toFloat()))
+            xValue.add(date)
 
-         setupChart(binding.lineChart1, entries, xValue)
-      }
+            setupChart(binding.lineChart1, entries, xValue)
+         }
 
-      if (getBody.bmi != null && getBody.bmi!! > 0) {
-         binding.tvEmpty2.visibility = View.GONE
-         binding.lineChart2.visibility = View.VISIBLE
+         if (getBody.bodyMassIndex != null && getBody.bodyMassIndex!! > 0) {
+            binding.tvEmpty2.visibility = View.GONE
+            binding.lineChart2.visibility = View.VISIBLE
 
-         val entries = ArrayList<Entry>()
-         val xValue = ArrayList<String>()
+            val entries = ArrayList<Entry>()
+            val xValue = ArrayList<String>()
 
-         val date = format2.format(format1.parse(getBody.createdAt)!!)
-         entries.add(Entry(0f, getBody.bmi!!.toFloat()))
-         xValue.add(date)
+            val date = format2.format(format1.parse(getBody.createdAt)!!)
+            entries.add(Entry(0f, getBody.bodyMassIndex!!.toFloat()))
+            xValue.add(date)
 
-         setupChart(binding.lineChart2, entries, xValue)
-      }
+            setupChart(binding.lineChart2, entries, xValue)
+         }
 
-      if (getBody.fat != null && getBody.fat!! > 0) {
-         binding.tvEmpty3.visibility = View.GONE
-         binding.lineChart3.visibility = View.VISIBLE
+         if (getBody.bodyFatPercentage != null && getBody.bodyFatPercentage!! > 0) {
+            binding.tvEmpty3.visibility = View.GONE
+            binding.lineChart3.visibility = View.VISIBLE
 
-         val entries = ArrayList<Entry>()
-         val xValue = ArrayList<String>()
+            val entries = ArrayList<Entry>()
+            val xValue = ArrayList<String>()
 
-         val date = format2.format(format1.parse(getBody.createdAt)!!)
-         entries.add(Entry(0f, getBody.fat!!.toFloat()))
-         xValue.add(date)
+            val date = format2.format(format1.parse(getBody.createdAt)!!)
+            entries.add(Entry(0f, getBody.bodyFatPercentage!!.toFloat()))
+            xValue.add(date)
 
-         setupChart(binding.lineChart3, entries, xValue)
+            setupChart(binding.lineChart3, entries, xValue)
+         }
       }
    }
 
@@ -205,22 +205,25 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
 
-      val itemList1 = ArrayList<InitBody>()
-      val itemList2 = ArrayList<InitBody>()
-      val itemList3 = ArrayList<InitBody>()
+      val itemList1 = ArrayList<Body>()
+      val itemList2 = ArrayList<Body>()
+      val itemList3 = ArrayList<Body>()
 
       val weekArray = weekArray(calendarDate)
-      val getData = dataManager.getBody(weekArray[0].toString(), weekArray[6].toString())
 
-      for(i in 0 until getData.size) {
-         if(getData[i].weight != null && getData[i].weight!! > 0) {
-            itemList1.add(InitBody(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
-         }
-         if(getData[i].bmi != null && getData[i].bmi!! > 0) {
-            itemList2.add(InitBody(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
-         }
-         if(getData[i].fat != null && getData[i].fat!! > 0) {
-            itemList3.add(InitBody(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+      lifecycleScope.launch {
+         val getBody = powerSync.getAllBody(weekArray[0].toString(), weekArray[6].toString())
+
+         for(i in getBody.indices) {
+            if(getBody[i].weight != null && getBody[i].weight!! > 0) {
+               itemList1.add(Body(weight = getBody[i].weight, time = format2.format(format1.parse(getBody[i].time!!)!!)))
+            }
+            if(getBody[i].bodyMassIndex != null && getBody[i].bodyMassIndex!! > 0) {
+               itemList2.add(Body(bodyMassIndex = getBody[i].bodyMassIndex, time = format2.format(format1.parse(getBody[i].time!!)!!)))
+            }
+            if(getBody[i].bodyFatPercentage != null && getBody[i].bodyFatPercentage!! > 0) {
+               itemList3.add(Body(bodyFatPercentage = getBody[i].bodyFatPercentage, time = format2.format(format1.parse(getBody[i].time!!)!!)))
+            }
          }
       }
 
@@ -233,7 +236,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList1.size) {
             entries.add(Entry(i.toFloat(), itemList1[i].weight!!.toFloat()))
-            xValue.add(itemList1[i].createdAt)
+            xValue.add(itemList1[i].time!!)
          }
 
          setupChart(binding.lineChart1, entries, xValue)
@@ -247,8 +250,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList2.size) {
-            entries.add(Entry(i.toFloat(), itemList2[i].bmi!!.toFloat()))
-            xValue.add(itemList2[i].createdAt)
+            entries.add(Entry(i.toFloat(), itemList2[i].bodyMassIndex!!.toFloat()))
+            xValue.add(itemList2[i].time!!)
          }
 
          setupChart(binding.lineChart2, entries, xValue)
@@ -262,8 +265,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList3.size) {
-            entries.add(Entry(i.toFloat(), itemList3[i].fat!!.toFloat()))
-            xValue.add(itemList3[i].createdAt)
+            entries.add(Entry(i.toFloat(), itemList3[i].bodyFatPercentage!!.toFloat()))
+            xValue.add(itemList3[i].time!!)
          }
 
          setupChart(binding.lineChart3, entries, xValue)
@@ -280,21 +283,25 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
 
-      val itemList1 = ArrayList<InitBody>()
-      val itemList2 = ArrayList<InitBody>()
-      val itemList3 = ArrayList<InitBody>()
+      val itemList1 = ArrayList<Body>()
+      val itemList2 = ArrayList<Body>()
+      val itemList3 = ArrayList<Body>()
 
       val monthArray = monthArray2(calendarDate)
-      val getData = dataManager.getBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-      for(i in 0 until getData.size) {
-         if (getData[i].weight != null && getData[i].weight!! > 0) {
-            itemList1.add(InitBody(weight = getData[i].weight, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
-         }
-         if (getData[i].bmi != null && getData[i].bmi!! > 0) {
-            itemList2.add(InitBody(bmi = getData[i].bmi, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
-         }
-         if (getData[i].fat != null && getData[i].fat!! > 0) {
-            itemList3.add(InitBody(fat = getData[i].fat, createdAt = format2.format(format1.parse(getData[i].createdAt)!!)))
+
+      lifecycleScope.launch {
+         val getBody = powerSync.getAllBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+
+         for(i in getBody.indices) {
+            if(getBody[i].weight != null && getBody[i].weight!! > 0) {
+               itemList1.add(Body(weight = getBody[i].weight, time = format2.format(format1.parse(getBody[i].time!!)!!)))
+            }
+            if(getBody[i].bodyMassIndex != null && getBody[i].bodyMassIndex!! > 0) {
+               itemList2.add(Body(bodyMassIndex = getBody[i].bodyMassIndex, time = format2.format(format1.parse(getBody[i].time!!)!!)))
+            }
+            if(getBody[i].bodyFatPercentage != null && getBody[i].bodyFatPercentage!! > 0) {
+               itemList3.add(Body(bodyFatPercentage = getBody[i].bodyFatPercentage, time = format2.format(format1.parse(getBody[i].time!!)!!)))
+            }
          }
       }
 
@@ -307,7 +314,7 @@ class ReportBodyFragment : Fragment() {
 
          for(i in 0 until itemList1.size) {
             entries.add(Entry(i.toFloat(), itemList1[i].weight!!.toFloat()))
-            xValue.add(itemList1[i].createdAt)
+            xValue.add(itemList1[i].time!!)
          }
 
          setupChart(binding.lineChart1, entries, xValue)
@@ -321,8 +328,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList2.size) {
-            entries.add(Entry(i.toFloat(), itemList2[i].bmi!!.toFloat()))
-            xValue.add(itemList2[i].createdAt)
+            entries.add(Entry(i.toFloat(), itemList2[i].bodyMassIndex!!.toFloat()))
+            xValue.add(itemList2[i].time!!)
          }
 
          setupChart(binding.lineChart2, entries, xValue)
@@ -336,8 +343,8 @@ class ReportBodyFragment : Fragment() {
          val xValue = ArrayList<String>()
 
          for(i in 0 until itemList3.size) {
-            entries.add(Entry(i.toFloat(), itemList3[i].fat!!.toFloat()))
-            xValue.add(itemList3[i].createdAt)
+            entries.add(Entry(i.toFloat(), itemList3[i].bodyFatPercentage!!.toFloat()))
+            xValue.add(itemList3[i].time!!)
          }
 
          setupChart(binding.lineChart3, entries, xValue)

@@ -9,6 +9,7 @@ import java.util.Calendar
 
 object CalendarUtil {
    var selectedDate: LocalDate = LocalDate.now()
+   val getInstance: Calendar = Calendar.getInstance()
 
    fun dateFormat(date: LocalDate?): String? {
       val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")

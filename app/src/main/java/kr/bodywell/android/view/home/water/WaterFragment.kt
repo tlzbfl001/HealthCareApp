@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ import kr.bodywell.android.databinding.FragmentWaterBinding
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
@@ -37,7 +35,6 @@ class WaterFragment : Fragment() {
    private val binding get() = _binding!!
 
    private val viewModel: MainViewModel by activityViewModels()
-//   private lateinit var dataManager: DataManager
    private var adapter: WaterAdapter? = null
    private var getGoal = Goal()
    private var getWater = Water()
@@ -50,9 +47,6 @@ class WaterFragment : Fragment() {
       savedInstanceState: Bundle?
    ): View {
       _binding = FragmentWaterBinding.inflate(layoutInflater)
-
-//      dataManager = DataManager(activity)
-//      dataManager.open()
 
       val dialog = Dialog(requireActivity())
       dialog.setContentView(R.layout.dialog_water_input)
@@ -69,19 +63,20 @@ class WaterFragment : Fragment() {
                val goal = if(etGoal.text.toString() != "") etGoal.text.toString().toInt() else 5
                volume = if(etVolume.text.toString() != "") etVolume.text.toString().toInt() else 200
 
-               if(getGoal.createdAt == "") {
-                  powerSync.insertGoal(Goal(waterAmountOfCup = volume, waterIntake = goal, date = selectedDate.toString()))
+               if(getGoal.id == "") {
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertGoal(Goal(id = uuid.toString(), waterAmountOfCup = volume, waterIntake = goal, date = selectedDate.toString(),
+                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateInt("goals", "water_amount_of_cup", volume, getGoal.id)
-                  powerSync.updateInt("goals", "water_intake", goal, getGoal.id)
+                  powerSync.updateWaterGoal(Goal(id = getGoal.id, waterAmountOfCup = volume, waterIntake = goal))
                }
 
                if(getWater.date == "") {
                   powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
                      createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                }else {
-                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count, date = selectedDate.toString()))
+                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
 
                dailyView()
@@ -111,7 +106,7 @@ class WaterFragment : Fragment() {
                   powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
                      createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                }else {
-                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count, date = selectedDate.toString()))
+                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
             }
 
@@ -144,7 +139,7 @@ class WaterFragment : Fragment() {
                   powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
                      createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                }else {
-                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count, date = selectedDate.toString()))
+                  powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
 
                resetData()

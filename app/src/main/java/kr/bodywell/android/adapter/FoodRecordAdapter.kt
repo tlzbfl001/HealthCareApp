@@ -14,7 +14,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -26,13 +25,8 @@ class FoodRecordAdapter(
    private val back: String,
    private val type: String
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
-   private var dataManager: DataManager = DataManager(context)
    private var onItemClickListener: OnItemClickListener? = null
    private var bundle = Bundle()
-
-   init {
-      dataManager.open()
-   }
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_record, parent, false)

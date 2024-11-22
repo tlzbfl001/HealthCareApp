@@ -30,8 +30,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
-      Log.d(TAG, "userId: ${getUser.uid}")
-      Log.d(TAG, "access: ${getToken.access}")
+      Log.d(TAG, "userId: ${getUser.uid}\naccess: ${getToken.access}")
 
       val driverFactory = DatabaseDriverFactory(context)
       powerSync = SyncService(context,driverFactory)
@@ -42,10 +41,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private fun updateData() = viewModelScope.launch {
       while(requestStatus) {
          if(networkStatus(context)) {
-//            createRequest(context, dataManager)
             refreshToken(dataManager)
          }else {
-            delay(15000)
+            delay(10000)
          }
       }
    }

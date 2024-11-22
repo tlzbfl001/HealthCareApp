@@ -15,11 +15,11 @@ import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
+import kr.bodywell.android.api.dto.MedicineUpdateDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
-import kr.bodywell.android.api.dto.SyncDTO
 import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WaterUpdateDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
@@ -32,26 +32,16 @@ import kr.bodywell.android.api.response.ExistResponse
 import kr.bodywell.android.api.response.FileResponse
 import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.api.response.GoalResponse
+import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
 import kr.bodywell.android.api.response.ProfileResponse
 import kr.bodywell.android.api.response.SleepResponse
-import kr.bodywell.android.api.response.SyncActivityResponse
-import kr.bodywell.android.api.response.SyncBodyResponse
-import kr.bodywell.android.api.response.SyncDietsResponse
-import kr.bodywell.android.api.response.SyncFoodResponse
-import kr.bodywell.android.api.response.SyncGoalResponse
-import kr.bodywell.android.api.response.SyncMedicineResponse
-import kr.bodywell.android.api.response.SyncProfileResponse
-import kr.bodywell.android.api.response.SyncSleepResponse
-import kr.bodywell.android.api.response.SyncWaterResponse
-import kr.bodywell.android.api.response.SyncWorkoutResponse
 import kr.bodywell.android.api.response.TokenResponse
 import kr.bodywell.android.api.response.UserResponse
 import kr.bodywell.android.api.response.WaterResponse
 import kr.bodywell.android.api.response.WorkoutResponse
 import okhttp3.MultipartBody
-import org.json.JSONArray
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -87,7 +77,8 @@ interface APIService {
 	): Response<TokenResponse>
 
 	@GET("v1/users/check-username/{username}")
-	suspend fun getUserEmail(
+	suspend fun getUsername(
+		@Header("Authorization") token: String,
 		@Path("username") username: String
 	): Response<Boolean>
 
@@ -105,12 +96,6 @@ interface APIService {
 	suspend fun getProfile(
 		@Header("Authorization") token: String
 	): Response<ProfileResponse>
-
-	@POST("v1/user/sync")
-	suspend fun syncProfile(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncProfileResponse>
 
 	@PATCH("v1/users/profile")
 	suspend fun updateProfile(
@@ -165,24 +150,12 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<DietResponse>>
 
-	@GET("v1/diets/{id}")
-	suspend fun getDiet(
-		@Header("Authorization") token: String,
-		@Path("id") id: String
-	): Response<DietResponse>
-
 	@PUT("v1/diets/{id}")
 	suspend fun createDiets(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
 		@Body dto: DietDTO
 	): Response<DietResponse>
-
-	@POST("v1/diets/sync")
-	suspend fun syncDiets(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncDietsResponse>
 
 	@PATCH("v1/diets/{id}")
 	suspend fun updateDiets(
@@ -221,12 +194,6 @@ interface APIService {
 		@Body dto: WaterDTO
 	): Response<WaterResponse>
 
-	@POST("v1/waters/sync")
-	suspend fun syncWater(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncWaterResponse>
-
 	@PATCH("v1/waters/{id}")
 	suspend fun updateWater(
 		@Header("Authorization") token: String,
@@ -245,27 +212,8 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<List<ActivityResponse>>
 
-	@GET("v1/activities/{id}")
-	suspend fun getActivity(
-		@Header("Authorization") token: String,
-		@Path("id") id: String
-	): Response<ActivityResponse>
-
 	@PUT("v1/activities/{id}")
 	suspend fun createActivity(
-		@Header("Authorization") token: String,
-		@Path("id") id: String,
-		@Body dto: ActivityDTO
-	): Response<ActivityResponse>
-
-	@POST("v1/activities/sync")
-	suspend fun syncActivity(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncActivityResponse>
-
-	@PATCH("v1/activities/{id}")
-	suspend fun updateActivity(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
 		@Body dto: ActivityDTO
@@ -276,11 +224,6 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Path("id") id: String
 	): Response<ActivityResponse>
-
-	@GET("v1/workouts")
-	suspend fun getAllWorkout(
-		@Header("Authorization") token: String
-	): Response<List<WorkoutResponse>>
 
 	@GET("v1/workouts/{id}")
 	suspend fun getWorkout(
@@ -294,12 +237,6 @@ interface APIService {
 		@Path("id") id: String,
 		@Body dto: WorkoutDTO
 	): Response<WorkoutResponse>
-
-	@POST("v1/workouts/sync")
-	suspend fun syncWorkout(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncWorkoutResponse>
 
 	@PATCH("v1/workouts/{id}")
 	suspend fun updateWorkout(
@@ -326,12 +263,6 @@ interface APIService {
 		@Body dto: BodyDTO
 	): Response<BodyResponse>
 
-	@POST("v1/body-measurements/sync")
-	suspend fun syncBody(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncBodyResponse>
-
 	@PATCH("v1/body-measurements/{id}")
 	suspend fun updateBody(
 		@Header("Authorization") token: String,
@@ -339,29 +270,12 @@ interface APIService {
 		@Body dto: BodyUpdateDTO
 	): Response<BodyResponse>
 
-	@DELETE("v1/body-measurements/{id}")
-	suspend fun deleteBody(
-		@Header("Authorization") token: String,
-		@Path("id") id: String
-	): Response<BodyResponse>
-
-	@GET("v1/sleeps")
-	suspend fun getAllSleep(
-		@Header("Authorization") token: String
-	): Response<List<SleepResponse>>
-
 	@PUT("v1/sleeps/{id}")
 	suspend fun createSleep(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
 		@Body dto: SleepDTO
 	): Response<SleepResponse>
-
-	@POST("v1/sleeps/sync")
-	suspend fun syncSleep(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncSleepResponse>
 
 	@PATCH("v1/sleeps/{id}")
 	suspend fun updateSleep(
@@ -388,17 +302,11 @@ interface APIService {
 		@Body dto: MedicineDTO
 	): Response<MedicineResponse>
 
-	@POST("v1/medicines/sync")
-	suspend fun syncMedicine(
-		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncMedicineResponse>
-
 	@PATCH("v1/medicines/{id}")
 	suspend fun updateMedicine(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
-		@Body dto: MedicineDTO
+		@Body dto: MedicineUpdateDTO
 	): Response<MedicineResponse>
 
 	@DELETE("v1/medicines/{id}")
@@ -413,13 +321,6 @@ interface APIService {
 		@Path("id") id: String
 	): Response<List<MedicineTimeResponse>>
 
-	@GET("v1/medicines/{id}/times/{timeId}")
-	suspend fun getMedicineTime(
-		@Header("Authorization") token: String,
-		@Path("id") id: String,
-		@Path("timeId") timeId: String
-	): Response<MedicineTimeResponse>
-
 	@PUT("v1/medicines/{medicineId}/times/{id}")
 	suspend fun createMedicineTime(
 		@Header("Authorization") token: String,
@@ -428,34 +329,28 @@ interface APIService {
 		@Body dto: MedicineTimeDTO
 	): Response<MedicineTimeResponse>
 
-	@DELETE("v1/medicines/{id}/times/{timeId}")
+	@DELETE("v1/medicines/{medicineId}/times/{id}")
 	suspend fun deleteMedicineTime(
 		@Header("Authorization") token: String,
-		@Path("id") id: String,
-		@Path("timeId") timeId: String
-	): Response<MedicineTimeResponse>
+		@Path("medicineId") medicineId: String,
+		@Path("id") id: String
+	): Response<Void>
 
-	@GET("v1/medicines/{id}/times/{timeId}/intakes")
+	@GET("v1/medicines/{medicineId}/times/{medicineTimeId}/intakes")
 	suspend fun getMedicineIntake(
 		@Header("Authorization") token: String,
-		@Path("id") id: String,
-		@Path("timeId") timeId: String
-	): Response<MedicineTimeResponse>
+		@Path("medicineId") medicineId: String,
+		@Path("medicineTimeId") medicineTimeId: String
+	): Response<List<MedicineIntakeResponse>>
 
-	@POST("v1/medicines/{id}/times/{timeId}/intakes")
+	@PUT("v1/medicines/{medicineId}/times/{medicineTimeId}/intakes/{id}")
 	suspend fun createMedicineIntake(
 		@Header("Authorization") token: String,
+		@Path("medicineId") medicineId: String,
+		@Path("medicineTimeId") medicineTimeId: String,
 		@Path("id") id: String,
-		@Path("timeId") timeId: String,
 		@Body dto: MedicineIntakeDTO
-	): Response<MedicineTimeResponse>
-
-	@POST("v1/medicines/{id}/times/{timeId}/intakes/sync")
-	suspend fun syncMedicineIntake(
-		@Header("Authorization") token: String,
-		@Path("id") id: String,
-		@Path("timeId") timeId: String
-	): Response<MedicineTimeResponse>
+	): Response<MedicineIntakeResponse>
 
 	@DELETE("v1/medicines/{medicineId}/times/{medicineTimeId}/intakes/{id}")
 	suspend fun deleteMedicineIntake(
@@ -465,22 +360,18 @@ interface APIService {
 		@Path("id") id: String
 	): Response<MedicineTimeResponse>
 
-	@GET("v1/goals")
-	suspend fun getAllGoal(
-		@Header("Authorization") token: String
-	): Response<List<GoalResponse>>
-
-	@PUT("v1/goals")
-	suspend fun createGoal(
+	@GET("v1/goals/{id}")
+	suspend fun getGoal(
 		@Header("Authorization") token: String,
-		@Body dto: GoalDTO
+		@Path("id") id: String
 	): Response<GoalResponse>
 
-	@POST("v1/goals/sync")
-	suspend fun syncGoal(
+	@PUT("v1/goals/{id}")
+	suspend fun createGoal(
 		@Header("Authorization") token: String,
-		@Body dto: SyncDTO
-	): Response<SyncGoalResponse>
+		@Path("id") id: String,
+		@Body dto: GoalDTO
+	): Response<GoalResponse>
 
 	@PATCH("v1/goals/{id}")
 	suspend fun updateGoal(

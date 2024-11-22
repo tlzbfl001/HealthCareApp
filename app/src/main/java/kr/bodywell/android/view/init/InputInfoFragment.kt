@@ -24,14 +24,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.USER
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentInputInfoBinding
+import kr.bodywell.android.model.Profile
 import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.saveImage
 import kr.bodywell.android.util.PermissionUtil
 import java.io.File
@@ -45,9 +48,9 @@ class InputInfoFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private lateinit var cLauncher: ActivityResultLauncher<Intent>
+   private var getProfile = Profile()
    private var fileAbsolutePath: String? = null
    private var pictureFlag = 0
    private var dialog: Dialog? = null
@@ -88,9 +91,6 @@ class InputInfoFragment : Fragment() {
       ){
 
       }
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -191,14 +191,15 @@ class InputInfoFragment : Fragment() {
          if(binding.etName.text.length in 1..1 && !filterText(binding.etName.text.toString())) {
             Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
          }else {
-            dataManager.updateUserStr(USER, "name", name, "id")
-            dataManager.updateUserStr(USER, "birthday", birthday, "id")
+            lifecycleScope.launch {
+               powerSync.updateProfile(Profile(id = getUser.profileUid, name = name, birth = birthday))
+               getProfile = powerSync.getProfile(getUser.uid)
 
-            if(bitmap != null) {
-               val data = dataManager.getUser().profileImage
-               File(requireActivity().filesDir, data).delete()
-               val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
-               if(result != "") dataManager.updateUserStr(USER, "profileImage", result, "id")
+               if(bitmap != null) {
+                  File(requireActivity().filesDir, getProfile.pictureUrl).delete()
+                  val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
+                  if(result != "") powerSync.updateProfile(Profile(id = getUser.profileUid, pictureUrl=result))
+               }
             }
 
             requireActivity().supportFragmentManager.beginTransaction().apply {

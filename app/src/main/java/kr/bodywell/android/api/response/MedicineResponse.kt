@@ -41,3 +41,29 @@ data class MedicineTimeResponse (
 	@SerializedName("time")
 	var time: String = ""
 )
+
+data class MedicineIntakeResponse (
+	@SerializedName("id")
+	var id: String = "",
+
+	@SerializedName("category")
+	var category: String = "",
+
+	@SerializedName("name")
+	var name: String = "",
+
+	@SerializedName("amount")
+	var amount: Int = 0,
+
+	@SerializedName("unit")
+	var unit: String = "",
+
+	@SerializedName("intakedAt")
+	var intakedAt: String = "",
+
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
+)

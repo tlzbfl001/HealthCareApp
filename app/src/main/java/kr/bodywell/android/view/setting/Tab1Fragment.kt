@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentTab1Binding
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.MyApp
@@ -24,19 +23,14 @@ class Tab1Fragment : Fragment() {
 	private var _binding: FragmentTab1Binding? = null
 	private val binding get() = _binding!!
 
-	private lateinit var dataManager: DataManager
 	private var bluetoothAdapter: BluetoothAdapter? = null
 	private var gatt: BluetoothGatt? = null
-	private val bundle = Bundle()
 
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
 	): View {
 		_binding = FragmentTab1Binding.inflate(layoutInflater)
-
-		dataManager = DataManager(activity)
-		dataManager.open()
 
 		binding.btnConnect.setOnClickListener {
 			if(MyApp.prefs.getDevice().isNotEmpty()) connect(MyApp.prefs.getDevice().elementAt(1))

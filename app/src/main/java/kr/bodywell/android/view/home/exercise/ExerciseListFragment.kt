@@ -10,14 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
-import kr.bodywell.android.adapter.ExerciseAdapter
 import kr.bodywell.android.adapter.ExerciseListAdapter
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -29,7 +25,6 @@ class ExerciseListFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -48,9 +43,6 @@ class ExerciseListFragment : Fragment() {
       _binding = FragmentExerciseListBinding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      dataManager = DataManager(activity)
-      dataManager.open()
 
       binding.clBack.setOnClickListener {
          replaceFragment3(requireActivity(), DetailFragment())

@@ -15,8 +15,10 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter2
 import kr.bodywell.android.adapter.PhotoSlideAdapter
@@ -160,15 +162,17 @@ class NoteFragment : Fragment() {
       val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
 
-      // 섭취 칼로리 계산
-      val foodKcal = getFoodCalories(requireActivity(), selectedDate.toString())
-      binding.tvKcal1.text = "${foodKcal.int5}kcal"
+      lifecycleScope.launch {
+         // 섭취 칼로리 계산
+         val foodKcal = getFoodCalories(selectedDate.toString())
+         binding.tvKcal1.text = "${foodKcal.int5}kcal"
+      }
 
       // 소비 칼로리 계산
       var total = 0
-      val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
-
-      for(i in 0 until getDailyExercise.size) total += getDailyExercise[i].kcal
+//      val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
+//
+//      for(i in 0 until getDailyExercise.size) total += getDailyExercise[i].kcal
 
       binding.tvKcal2.text = "${total}kcal"
 

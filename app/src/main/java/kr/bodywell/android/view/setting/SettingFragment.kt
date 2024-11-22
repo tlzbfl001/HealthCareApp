@@ -23,35 +23,26 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.database.DBHelper.Companion.BODY
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.DAILY_FOOD
-import kr.bodywell.android.database.DBHelper.Companion.DRUG
-import kr.bodywell.android.database.DBHelper.Companion.DRUG_CHECK
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
-import kr.bodywell.android.database.DBHelper.Companion.EXERCISE
-import kr.bodywell.android.database.DBHelper.Companion.FOOD
-import kr.bodywell.android.database.DBHelper.Companion.GOAL
 import kr.bodywell.android.database.DBHelper.Companion.IMAGE
+import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
+import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_INTAKE
+import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
 import kr.bodywell.android.database.DBHelper.Companion.NOTE
-import kr.bodywell.android.database.DBHelper.Companion.SLEEP
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
-import kr.bodywell.android.database.DBHelper.Companion.UNUSED
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
-import kr.bodywell.android.database.DBHelper.Companion.WATER
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.networkStatus
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
@@ -68,8 +59,8 @@ class SettingFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
+   private lateinit var dataManager: DataManager
    private var getUser = User()
    private var getToken = Token()
 
@@ -239,41 +230,45 @@ class SettingFragment : Fragment() {
    }
 
    private fun userProfile() {
-      if(getUser.name != "") binding.tvName.text = getUser.name
-      if(getUser.profileImage != null && getUser.profileImage != "") {
-         val imgPath = requireActivity().filesDir.toString() + "/" + getUser.profileImage // 내부 저장소에 저장되어 있는 이미지 경로
-         val bm = BitmapFactory.decodeFile(imgPath)
-         binding.ivUser.setImageBitmap(bm)
+      lifecycleScope.launch {
+         val getProfile = powerSync.getProfile(CustomUtil.getUser.uid)
+
+         if(getProfile.name != "") binding.tvName.text = getProfile.name
+         if(getProfile.pictureUrl != null && getProfile.pictureUrl != "") {
+            val imgPath = requireActivity().filesDir.toString() + "/" + getProfile.pictureUrl // 내부 저장소에 저장되어 있는 이미지 경로
+            val bm = BitmapFactory.decodeFile(imgPath)
+            binding.ivUser.setImageBitmap(bm)
+         }
+
+         if(getProfile.birth != "") {
+            val current = Calendar.getInstance()
+            val currentYear = current.get(Calendar.YEAR)
+            val currentMonth = current.get(Calendar.MONTH) + 1
+            val currentDay = current.get(Calendar.DAY_OF_MONTH)
+
+            var age = currentYear - getProfile.birth!!.substring(0 until 4).toInt()
+            if(getProfile.birth!!.substring(5 until 7).toInt() * 100 + getProfile.birth!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
+
+            val gender = if(getProfile.gender == Constant.MALE.name) "남" else "여"
+
+            binding.tvAge.text = "만${age}세 / $gender"
+         }
+
+         var height = "0"
+         var weight = "0"
+
+         if(getProfile.height!! > 0) {
+            val hSplit = getProfile.height.toString().split(".")
+            height = if(hSplit[1] == "0") hSplit[0] else getProfile.height.toString()
+         }
+
+         if(getProfile.weight!! > 0) {
+            val wSplit = getProfile.weight.toString().split(".")
+            weight = if(wSplit[1] == "0") wSplit[0] else getProfile.weight.toString()
+         }
+
+         binding.tvHeight.text = "${height}cm / ${weight}kg"
       }
-
-      if(getUser.birthday != "") {
-         val current = Calendar.getInstance()
-         val currentYear = current.get(Calendar.YEAR)
-         val currentMonth = current.get(Calendar.MONTH) + 1
-         val currentDay = current.get(Calendar.DAY_OF_MONTH)
-
-         var age = currentYear - getUser.birthday!!.substring(0 until 4).toInt()
-         if(getUser.birthday!!.substring(5 until 7).toInt() * 100 + getUser.birthday!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
-
-         val gender = if(getUser.gender == Constant.MALE.name) "남" else "여"
-
-         binding.tvAge.text = "만${age}세 / $gender"
-      }
-
-      var height = "0"
-      var weight = "0"
-
-      if(getUser.height!! > 0) {
-         val hSplit = getUser.height.toString().split(".")
-         height = if(hSplit[1] == "0") hSplit[0] else getUser.height.toString()
-      }
-
-      if(getUser.weight!! > 0) {
-         val wSplit = getUser.weight.toString().split(".")
-         weight = if(wSplit[1] == "0") wSplit[0] else getUser.weight.toString()
-      }
-
-      binding.tvHeight.text = "${height}cm / ${weight}kg"
    }
 
    private fun logoutProcess() {
@@ -289,7 +284,7 @@ class SettingFragment : Fragment() {
    }
 
    private fun resignProcess() {
-      CoroutineScope(Dispatchers.IO).launch {
+      lifecycleScope.launch {
          val getUserUid = RetrofitAPI.api.getUser("Bearer ${getToken.access}")
          if(getUserUid.isSuccessful) {
             val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
@@ -307,30 +302,22 @@ class SettingFragment : Fragment() {
    private fun deleteData() {
       dataManager.deleteTable(USER, "id")
       dataManager.deleteTable(TOKEN, USER_ID)
-      dataManager.deleteTable(FOOD, USER_ID)
-      dataManager.deleteTable(DAILY_FOOD, USER_ID)
-      dataManager.deleteTable(WATER, USER_ID)
-      dataManager.deleteTable(EXERCISE, USER_ID)
-      dataManager.deleteTable(DAILY_EXERCISE, USER_ID)
-      dataManager.deleteTable(BODY, USER_ID)
-      dataManager.deleteTable(DRUG, USER_ID)
+      dataManager.deleteTable(MEDICINE, USER_ID)
       dataManager.deleteTable(MEDICINE_TIME, USER_ID)
-      dataManager.deleteTable(DRUG_CHECK, USER_ID)
+      dataManager.deleteTable(MEDICINE_INTAKE, USER_ID)
       dataManager.deleteTable(NOTE, USER_ID)
-      dataManager.deleteTable(SLEEP, USER_ID)
-      dataManager.deleteTable(GOAL, USER_ID)
       dataManager.deleteTable(IMAGE, USER_ID)
-      dataManager.deleteTable(UNUSED, USER_ID)
 
-      val alarmReceiver = AlarmReceiver()
-      val getDrugId = dataManager.getDrugId()
+      lifecycleScope.launch {
+         // 사용자 데이터 삭제
+         val alarmReceiver = AlarmReceiver()
+         val getCategories = powerSync.getAllCategory()
+         for(i in getCategories.indices) alarmReceiver.cancelAlarm(requireActivity(), getCategories[i].toInt())
+         MyApp.prefs.removePrefs()
 
-      for(i in 0 until getDrugId.size) alarmReceiver.cancelAlarm(requireActivity(), getDrugId[i])
-
-      MyApp.prefs.removePrefs()
-
-      requireActivity().runOnUiThread {
-         Toast.makeText(context, "탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+         requireActivity().runOnUiThread {
+            Toast.makeText(context, "탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+         }
       }
 
       finishAffinity(requireActivity())
