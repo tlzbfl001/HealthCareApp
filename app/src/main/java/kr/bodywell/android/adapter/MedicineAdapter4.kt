@@ -16,7 +16,7 @@ class MedicineAdapter4 (
     private val viewModel: MainViewModel
 ) : RecyclerView.Adapter<MedicineAdapter4.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_time2, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_medicine_time2, parent, false)
         return ViewHolder(view)
     }
 
@@ -32,7 +32,7 @@ class MedicineAdapter4 (
                 itemList.add(Item(string1 = drugTimeList[i].time, int1 = i + 1))
             }
 
-            viewModel.setInt(drugTimeList.size)
+            viewModel.setMedicineCheck(drugTimeList.size)
 
             notifyDataSetChanged()
         }

@@ -13,7 +13,8 @@ data class Medicine(
    var starts: String = "",
    var ends: String = "",
    var createdAt: String = "",
-   var updatedAt: String = ""
+   var updatedAt: String = "",
+   val deletedAt: String = ""
 ) : Parcelable
 
 @Parcelize
@@ -38,9 +39,8 @@ data class MedicineIntake(
    var createdAt: String = "",
    var updatedAt: String = "",
    var deletedAt: String = "",
-   var medicineId: String = "",
    var medicineTimeId: String = "",
-   var sourceId: String = ""
+   var medicineId: String = ""
 )
 
 data class MedicineList(

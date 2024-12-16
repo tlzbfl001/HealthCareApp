@@ -9,11 +9,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
+import kr.bodywell.android.model.Constants.FOODS
+import kr.bodywell.android.model.Constants.USER
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -21,8 +23,8 @@ import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class FoodRecordAdapter(
    private val context: Activity,
-   private var itemList: ArrayList<Food> = ArrayList<Food>(),
-   private val back: String,
+   private val fragmentManager: FragmentManager,
+   private var itemList: ArrayList<Food> = ArrayList(),
    private val type: String
 ) : RecyclerView.Adapter<FoodRecordAdapter.ViewHolder>() {
    private var onItemClickListener: OnItemClickListener? = null
@@ -33,25 +35,22 @@ class FoodRecordAdapter(
       return ViewHolder(view)
    }
 
-   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-      holder.textView.text = itemList[position].name
+   override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+      holder.textView.text = itemList[pos].name
+      holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(pos) }
 
-      holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(position) }
-
-      if (itemList[position].registerType == TYPE_USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+      if(itemList[pos].registerType == USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
          val bottomSheetView = context.layoutInflater.inflate(R.layout.dialog_menu1, null)
-
          val clEdit = bottomSheetView.findViewById<ConstraintLayout>(R.id.clEdit)
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
          clEdit.setOnClickListener {
-            bundle.putParcelable("food", itemList[position])
+            bundle.putParcelable(FOODS, itemList[pos])
             bundle.putString("type", type)
-            bundle.putString("back", back)
-            replaceFragment2(context, FoodEditFragment(), bundle)
+            replaceFragment2(fragmentManager, FoodEditFragment(), bundle)
             dialog.dismiss()
          }
 
@@ -61,10 +60,10 @@ class FoodRecordAdapter(
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   runBlocking {
-                     powerSync.deleteItem("foods", "id", itemList[position].id)
+                     powerSync.deleteItem(FOODS, "id", itemList[pos].id)
                   }
 
-                  itemList.removeAt(position)
+                  itemList.removeAt(pos)
                   notifyDataSetChanged()
 
                   Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()

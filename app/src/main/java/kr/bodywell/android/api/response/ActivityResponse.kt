@@ -18,9 +18,6 @@ data class ActivityResponse (
 	@SerializedName("updatedAt")
 	var updatedAt: String?,
 
-	@SerializedName("deletedAt")
-	var deletedAt: String?,
-
 	@SerializedName("usages")
 	var usages: ArrayList<ActivityUsages>?
 )

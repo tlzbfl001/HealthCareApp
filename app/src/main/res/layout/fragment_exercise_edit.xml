@@ -34,7 +34,8 @@
       android:text="운동 수정하기"
       android:textColor="@color/black_white"
       android:textSize="17dp"
-      android:fontFamily="@font/nanum"
+      android:fontFamily="@font/noto"
+      android:includeFontPadding="false"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"/>
@@ -55,7 +56,8 @@
          android:text="운동명"
          android:textSize="17dp"
          android:textColor="@color/black_white"
-         android:fontFamily="@font/nanum_bold"
+         android:fontFamily="@font/noto_bold"
+         android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"/>
       <EditText
@@ -66,7 +68,7 @@
          android:layout_marginTop="10dp"
          android:layout_marginLeft="20dp"
          android:layout_marginRight="20dp"
-         android:paddingTop="12dp"
+         android:paddingTop="11dp"
          android:paddingBottom="11dp"
          android:paddingLeft="15dp"
          android:paddingRight="15dp"
@@ -74,7 +76,8 @@
          android:textSize="16dp"
          android:textColor="@color/black"
          android:textColorHint="#ccc"
-         android:fontFamily="@font/nanum"
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"
          android:maxLength="15"
          app:layout_constraintTop_toBottomOf="@id/tv1"
          app:layout_constraintStart_toStartOf="parent"
@@ -95,8 +98,8 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:paddingTop="11dp"
-         android:paddingBottom="10dp">
+         android:paddingTop="9dp"
+         android:paddingBottom="9dp">
          <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -104,7 +107,8 @@
             android:text="수정하기"
             android:textColor="@color/white"
             android:textSize="16dp"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

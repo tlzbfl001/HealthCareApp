@@ -59,10 +59,6 @@
          android:name=".view.init.SignupActivity"
          android:exported="false" />
       <activity
-         android:name=".view.init.InputActivity"
-         android:exported="false"
-         android:windowSoftInputMode="adjustPan" />
-      <activity
          android:name=".view.init.StartActivity"
          android:exported="true"
          android:noHistory="true"

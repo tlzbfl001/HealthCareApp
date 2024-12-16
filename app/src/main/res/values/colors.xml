@@ -9,10 +9,10 @@
    <color name="white_light_grey">#ffffff</color>
    <color name="white_transparent">#ffffff</color>
    <color name="black_white">#000000</color>
-   <color name="light_grey_grey">#EEEEEE</color>
+   <color name="light_grey_grey">#DADADA</color>
    <color name="light_grey_dark_grey">#D5D5D5</color>
    <color name="light_grey_black">#D0F3F3F3</color>
-   <color name="grey_white">#8F8686</color>
+   <color name="grey_white">#A2A1A1</color>
    <color name="grey_dark_grey">#7E7E7E</color>
    <color name="logo">#595858</color>
    <color name="main_top">#cfccfe</color>

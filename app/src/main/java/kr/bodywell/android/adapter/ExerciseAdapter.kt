@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Activities
 import kr.bodywell.android.model.Workout
 
 class ExerciseAdapter (

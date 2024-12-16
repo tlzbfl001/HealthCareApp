@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,9 +24,14 @@ import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.MedicineAdapter1
 import kr.bodywell.android.databinding.FragmentMedicineBinding
+import kr.bodywell.android.model.Constants.GOALS
+import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
@@ -34,6 +40,7 @@ import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.setting.AlarmFragment
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Calendar
 
 class MedicineFragment : Fragment() {
    private var _binding: FragmentMedicineBinding? = null
@@ -42,6 +49,7 @@ class MedicineFragment : Fragment() {
    private val viewModel: MainViewModel by activityViewModels()
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var adapter: MedicineAdapter1? = null
+   private val deleteList = ArrayList<String>()
    private var getGoal = Goal()
 
    override fun onCreateView(
@@ -69,14 +77,14 @@ class MedicineFragment : Fragment() {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            runBlocking {
+            lifecycleScope.launch {
                if(getGoal.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertGoal(Goal(id = uuid.toString(), medicineIntake = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateData("goals", "medicine_intake", et.text.toString(), getGoal.id)
+                  powerSync.updateData(GOALS, MEDICINE_INTAKES, et.text.toString(), getGoal.id)
                }
 
                dailyView()
@@ -93,7 +101,7 @@ class MedicineFragment : Fragment() {
          if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
             Toast.makeText(requireActivity(), "권한이 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            replaceFragment1(requireActivity(), MedicineRecordFragment())
+            replaceFragment1(parentFragmentManager, MedicineRecordFragment())
          }
       }
 
@@ -101,7 +109,7 @@ class MedicineFragment : Fragment() {
          dailyView()
       })
 
-      viewModel.intVM.observe(viewLifecycleOwner, Observer<Int> { item ->
+      viewModel.medicineCheckVM.observe(viewLifecycleOwner, Observer<Int> { item ->
          if(item > 0) {
             binding.pbDrug.setProgressStartColor(resources.getColor(R.color.drug))
             binding.pbDrug.setProgressEndColor(resources.getColor(R.color.drug))
@@ -132,37 +140,45 @@ class MedicineFragment : Fragment() {
 
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
-         val check = powerSync.getIntakeCount(selectedDate.toString())
+         val getIntakes = powerSync.getIntakes(selectedDate.toString())
+         val getRecently = powerSync.getRecentlyIntakes(selectedDate.toString())
+
+         for(i in getIntakes.indices) {
+            var check = false
+            for(j in getRecently.indices) if(getIntakes[i] == getRecently[j]) check = true
+            if(!check) deleteList.add(getIntakes[i])
+         }
+
+         // 중복된 약복용 기록 삭제
+         for(i in deleteList.indices) powerSync.deleteItem(MEDICINE_INTAKES, "id", deleteList[i])
 
          binding.tvGoal.text = "${getGoal.medicineIntake}회"
          binding.pbDrug.max = getGoal.medicineIntake
-         binding.pbDrug.progress = check
+         binding.pbDrug.progress = getRecently.size
 
          if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
             binding.clPerm.visibility = View.VISIBLE
             binding.cl1.visibility = View.GONE
             binding.cv.visibility = View.GONE
             binding.btnPerm.setOnClickListener {
-               replaceFragment1(requireActivity(), AlarmFragment())
+               replaceFragment1(parentFragmentManager, AlarmFragment())
             }
          }else {
             binding.clPerm.visibility = View.GONE
             binding.cl1.visibility = View.VISIBLE
 
             // 약복용 리스트 생성
-            val getMedicine = powerSync.getAllMedicine(selectedDate.toString())
-
+            val getMedicine = powerSync.getMedicines(selectedDate.toString())
             if(getMedicine.isNotEmpty()) {
                binding.cv.visibility = View.VISIBLE
 
                for(i in getMedicine.indices) {
-                  val split = getMedicine[i].name.split("/", limit=4)
-                  val getMedicineTime = powerSync.getAllMedicineTime("medicine_id", getMedicine[i].id)
+                  val getMedicineTime = powerSync.getAllMedicineTime(getMedicine[i].id)
 
                   for(j in getMedicineTime.indices) {
-                     val getMedicineIntake = powerSync.getMedicineIntake(selectedDate.toString(), getMedicineTime[j].id)
-                     itemList.add(MedicineList(name = split[1], amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
-                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getMedicineTime[j].id, initCheck = check, isChecked = getMedicineIntake.id))
+                     val getMedicineIntake = powerSync.getIntake(selectedDate.toString(), getMedicineTime[j].id)
+                     itemList.add(MedicineList(name = getMedicine[i].name, amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
+                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getMedicineTime[j].id, initCheck = getRecently.size, isChecked = getMedicineIntake.id))
                   }
                }
 

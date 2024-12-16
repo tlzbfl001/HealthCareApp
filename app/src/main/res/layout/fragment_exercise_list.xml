@@ -34,7 +34,8 @@
       android:text="나의 하루 운동 기록"
       android:textSize="17dp"
       android:textColor="@color/black_white"
-      android:fontFamily="@font/nanum"
+      android:fontFamily="@font/noto"
+      android:includeFontPadding="false"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"/>
@@ -51,14 +52,15 @@
       <TextView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="6dp"
+         android:layout_marginTop="5dp"
          android:layout_marginBottom="5dp"
          android:layout_marginLeft="14dp"
          android:layout_marginRight="14dp"
          android:text="입력"
-         android:textSize="16dp"
+         android:textSize="15dp"
          android:textColor="#000000"
-         android:fontFamily="@font/nanum"/>
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"/>
    </androidx.cardview.widget.CardView>
    <androidx.core.widget.NestedScrollView
        android:id="@+id/scrollView"

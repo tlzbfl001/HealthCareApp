@@ -87,7 +87,8 @@
             android:layout_marginLeft="20dp"
             android:text="섭취 음식"
             android:textSize="16dp"
-            android:fontFamily="@font/nanum_bold"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             android:textColor="@color/black_white"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>

@@ -1,7 +1,6 @@
 package kr.bodywell.android.view.note
 
 import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -15,29 +14,32 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.GalleryAdapter
-import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentGalleryBinding
-import kr.bodywell.android.model.Image
+import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.getRotatedBitmap
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
-import kr.bodywell.android.util.CustomUtil.saveImage
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
 import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
+import kr.bodywell.android.view.MainViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,20 +49,22 @@ class GalleryFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private lateinit var dataManager: DataManager
+	val viewModel: MainViewModel by activityViewModels()
 	private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 	private lateinit var cLauncher: ActivityResultLauncher<Intent>
+	private lateinit var dataManager: DataManager
+	private var adapter: GalleryAdapter? = null
+	private var imageList = ArrayList<FileItem>()
+	private var selectionList = ArrayList<String>()
+	private var dialog: Dialog? = null
 	private var fileAbsolutePath: String? = null
 	private var pictureFlag = 0
-	private var imageList = ArrayList<Image>()
-	private var dialog: Dialog? = null
-	private var type = "NOTE"
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment1(requireActivity(), NoteFragment())
+				replaceFragment1(requireActivity().supportFragmentManager, NoteFragment())
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -74,48 +78,26 @@ class GalleryFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
+		dataManager = DataManager(activity)
+		dataManager.open()
+
 		pLauncher = registerForActivityResult(
 			ActivityResultContracts.RequestMultiplePermissions()
 		){}
 
-		val contract1 = ActivityResultContracts.StartActivityForResult()
-		cLauncher = registerForActivityResult(contract1){
-			if(it?.resultCode == RESULT_OK){
-				if(pictureFlag == 1) { // 카메라
-					val file = File(fileAbsolutePath)
-					val decode = ImageDecoder.createSource(requireActivity().contentResolver,Uri.fromFile(file.absoluteFile)) // 카메라에서 찍은 사진을 디코딩
-					val bitmap = ImageDecoder.decodeBitmap(decode) // 디코딩한 사진을 비트맵으로 변환
-					imageList.add(Image(type = type, bitmap = bitmap, createdAt = selectedDate.toString()))
-					viewPhotos()
-					file.delete()
-				}else if(pictureFlag == 2) { // 갤러리
-					val uri = it.data?.data // 선택한 이미지의 주소
-					if(uri != null) { // 이미지 파일 읽어와서 설정하기
-						val bitmap = getRotatedBitmap(requireActivity(), it.data?.data!!) // 이미지 회전하기
-						imageList.add(Image(type = type, bitmap = bitmap, createdAt = selectedDate.toString()))
-						viewPhotos()
-					}
-				}
-
-				dialog!!.dismiss()
-			}
+		lifecycleScope.launch {
+//			val getAllFile = powerSync.getAllFile(selectedDate.toString()) // getNote해서 아이디통해서 파일가져와야됨
+//			for(element in getAllFile) imageList.add(FileItem(name = element))
 		}
-
-		dataManager = DataManager(activity)
-		dataManager.open()
-
-		val getImage = dataManager.getImage(type, selectedDate.toString())
-		if(getImage.size > 0) binding.tvStart.text = "수정"
-		for(i in 0 until getImage.size) imageList.add(getImage[i])
 
 		binding.clBack.setOnClickListener {
-			replaceFragment3(requireActivity(), NoteFragment())
+			replaceFragment3(requireActivity().supportFragmentManager, NoteFragment())
 		}
 
-		binding.cvUpload.setOnClickListener {
+		binding.tvUpload.setOnClickListener {
 			if(checkCameraPermission(requireActivity())) {
 				dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_camera, null)
+				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_get_photo, null)
 
 				val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
 				val clGallery = bottomSheetView.findViewById<ConstraintLayout>(R.id.clGallery)
@@ -126,7 +108,7 @@ class GalleryFragment : Fragment() {
 					val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)	// 이미지 경로 지정
 					val file = File.createTempFile(
 						SimpleDateFormat("yyMMddhhmmSSS").format(Date()),
-						".png",
+						".jpg",
 						storageDir
 					).apply {
 						fileAbsolutePath = absolutePath // 절대경로 변수에 저장
@@ -137,7 +119,6 @@ class GalleryFragment : Fragment() {
 
 					intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri)
 					cLauncher.launch(intent)
-
 					pictureFlag = 1
 				}
 
@@ -145,7 +126,6 @@ class GalleryFragment : Fragment() {
 					val intent = Intent(Intent.ACTION_PICK) // 갤러리에서 이미지를 선택하는 Intent 생성
 					intent.type = "image/*"
 					cLauncher.launch(intent)
-
 					pictureFlag = 2
 				}
 
@@ -153,14 +133,39 @@ class GalleryFragment : Fragment() {
 				dialog!!.show()
 			}else {
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-					pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_2)
+					pLauncher.launch(CAMERA_PERMISSION_2)
 				}else {
-					pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_1)
+					pLauncher.launch(CAMERA_PERMISSION_1)
 				}
 			}
 		}
 
-		binding.cvSave.setOnClickListener {
+		val contract1 = ActivityResultContracts.StartActivityForResult()
+		cLauncher = registerForActivityResult(contract1){
+			if(it?.resultCode == RESULT_OK){
+				if(pictureFlag == 1) { // 카메라
+					val file = File(fileAbsolutePath)
+					val decode = ImageDecoder.createSource(requireActivity().contentResolver, Uri.fromFile(file.absoluteFile)) // 카메라에서 찍은 사진을 디코딩
+					val bitmap = ImageDecoder.decodeBitmap(decode) // 디코딩한 사진을 비트맵으로 변환
+					imageList.add(FileItem(bitmap = bitmap))
+					viewPhotos()
+					file.delete()
+					/** bitmap파일 저장 **/
+				}else if(pictureFlag == 2) { // 갤러리
+					val uri = it.data?.data // 선택한 이미지의 주소
+					if(uri != null) { // 이미지 파일 읽어와서 설정하기
+						val bitmap = getRotatedBitmap(requireActivity(), it.data?.data!!) // 이미지 회전하기
+						imageList.add(FileItem(bitmap = bitmap))
+						viewPhotos()
+						/** bitmap파일 저장 **/
+					}
+				}
+
+				dialog!!.dismiss()
+			}
+		}
+
+		/*binding.cvSave.setOnClickListener {
 			for(i in 0 until getImage.size) {
 				var check = false
 				for(j in 0 until imageList.size) {
@@ -187,7 +192,7 @@ class GalleryFragment : Fragment() {
 			}
 
 			replaceFragment3(requireActivity(), NoteFragment())
-		}
+		}*/
 
 		viewPhotos()
 
@@ -196,13 +201,16 @@ class GalleryFragment : Fragment() {
 
 	private fun viewPhotos() {
 		if(imageList.size > 0) {
-			val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 3)
+			val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 2)
 			binding.recyclerView.layoutManager = layoutManager
-			val adapter = GalleryAdapter(requireActivity(), imageList)
+			adapter = GalleryAdapter(viewModel, imageList)
 
-			adapter.setOnLongClickListener(object : GalleryAdapter.OnLongClickListener {
+			adapter!!.setOnLongClickListener(object : GalleryAdapter.OnLongClickListener {
 				override fun onLongClick(pos: Int) {
-					val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+					viewModel.setSelected(true)
+					adapter!!.notifyDataSetChanged()
+
+					/*val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
 						.setTitle("사진 삭제")
 						.setMessage("정말 삭제하시겠습니까?")
 						.setPositiveButton("확인") { _, _ ->
@@ -212,7 +220,14 @@ class GalleryFragment : Fragment() {
 						}
 						.setNegativeButton("취소", null)
 						.create()
-					dialog.show()
+					dialog.show()*/
+				}
+			})
+
+			adapter!!.setOnClickListener(object : GalleryAdapter.OnClickListener {
+				override fun onClick(pos: Int) {
+					selectionList.add(imageList[pos].name)
+					/** 삭제버튼 만들고 버튼누르면 selectionList 파일 전부 삭제 **/
 				}
 			})
 

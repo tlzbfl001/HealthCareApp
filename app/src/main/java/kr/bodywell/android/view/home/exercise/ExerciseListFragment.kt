@@ -30,7 +30,7 @@ class ExerciseListFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(requireActivity(), DetailFragment())
+            replaceFragment3(parentFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -45,17 +45,16 @@ class ExerciseListFragment : Fragment() {
       setStatusBar(requireActivity(), binding.mainLayout)
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(requireActivity(), DetailFragment())
+         replaceFragment3(parentFragmentManager, DetailFragment())
       }
 
       binding.cvInput.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseRecord1Fragment())
+         replaceFragment1(parentFragmentManager, ExerciseRecord1Fragment())
       }
 
       lifecycleScope.launch {
-         val getAllWorkout = powerSync.getAllWorkout(selectedDate.toString()) as ArrayList<Workout>
-
-         val adapter = ExerciseListAdapter(requireActivity(), getAllWorkout)
+         val getAllWorkout = powerSync.getWorkouts(selectedDate.toString()) as ArrayList<Workout>
+         val adapter = ExerciseListAdapter(requireActivity(), parentFragmentManager, getAllWorkout)
          binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
          binding.recyclerView.adapter = adapter
       }

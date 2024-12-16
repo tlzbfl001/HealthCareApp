@@ -2,7 +2,8 @@ package kr.bodywell.android.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.DEVICE
+import kr.bodywell.android.model.Constants.PREFERENCE
 
 class PreferenceUtil(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
@@ -12,15 +13,15 @@ class PreferenceUtil(context: Context) {
     }
 
     fun getUserId(): Int {
-        return prefs.getInt(Constant.USER_PREFERENCE.name, 0)
+        return prefs.getInt(PREFERENCE, 0)
     }
 
     fun setDevice(hashSet: HashSet<String>) {
-        prefs.edit().putStringSet(Constant.DEVICE.name, hashSet).apply()
+        prefs.edit().putStringSet(DEVICE, hashSet).apply()
     }
 
     fun getDevice(): Set<String> {
-        return prefs.getStringSet(Constant.DEVICE.name, null)!!
+        return prefs.getStringSet(DEVICE, null)!!
     }
 
     fun removePrefs() {

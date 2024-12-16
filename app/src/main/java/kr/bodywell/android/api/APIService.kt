@@ -17,6 +17,8 @@ import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.MedicineUpdateDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
+import kr.bodywell.android.api.dto.NoteDTO
+import kr.bodywell.android.api.dto.NoteUpdateDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
@@ -28,13 +30,12 @@ import kr.bodywell.android.api.response.ActivityResponse
 import kr.bodywell.android.api.response.BodyResponse
 import kr.bodywell.android.api.response.DeviceResponse
 import kr.bodywell.android.api.response.DietResponse
-import kr.bodywell.android.api.response.ExistResponse
-import kr.bodywell.android.api.response.FileResponse
 import kr.bodywell.android.api.response.FoodResponse
 import kr.bodywell.android.api.response.GoalResponse
 import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
+import kr.bodywell.android.api.response.NoteResponse
 import kr.bodywell.android.api.response.ProfileResponse
 import kr.bodywell.android.api.response.SleepResponse
 import kr.bodywell.android.api.response.TokenResponse
@@ -53,7 +54,6 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface APIService {
 	@POST("v1/auth/google/login")
@@ -76,12 +76,6 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<TokenResponse>
 
-	@GET("v1/users/check-username/{username}")
-	suspend fun getUsername(
-		@Header("Authorization") token: String,
-		@Path("username") username: String
-	): Response<Boolean>
-
 	@GET("v1/user")
 	suspend fun getUser(
 		@Header("Authorization") token: String
@@ -92,15 +86,24 @@ interface APIService {
 		@Header("Authorization") token: String
 	): Response<Void>
 
-	@GET("v1/users/profile")
+	@GET("v1/profile")
 	suspend fun getProfile(
 		@Header("Authorization") token: String
 	): Response<ProfileResponse>
 
-	@PATCH("v1/users/profile")
+	@PATCH("v1/profiles/{id}")
 	suspend fun updateProfile(
 		@Header("Authorization") token: String,
+		@Path("id") id: String,
 		@Body dto: ProfileDTO
+	): Response<ProfileResponse>
+
+	@Multipart
+	@POST("v1/profiles/{id}/picture")
+	suspend fun createProfilePicture(
+		@Header("Authorization") token: String,
+		@Path("id") id: String,
+		@Part file : MultipartBody.Part
 	): Response<ProfileResponse>
 
 	@GET("v1/devices")
@@ -113,11 +116,6 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Body dto: DeviceDTO
 	): Response<DeviceResponse>
-
-	@GET("v1/foods")
-	suspend fun getAllFood(
-		@Header("Authorization") token: String
-	): Response<List<FoodResponse>>
 
 	@GET("v1/foods/{id}")
 	suspend fun getFood(
@@ -145,16 +143,25 @@ interface APIService {
 		@Path("id") id: String
 	): Response<FoodResponse>
 
-	@GET("v1/diets")
-	suspend fun getAllDiet(
-		@Header("Authorization") token: String
-	): Response<List<DietResponse>>
+	@GET("v1/diets/{id}")
+	suspend fun getDiets(
+		@Header("Authorization") token: String,
+		@Path("id") id: String
+	): Response<DietResponse>
 
 	@PUT("v1/diets/{id}")
 	suspend fun createDiets(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
 		@Body dto: DietDTO
+	): Response<DietResponse>
+
+	@Multipart
+	@POST("v1/diets/{id}/uploads")
+	suspend fun createDietsPicture(
+		@Header("Authorization") token: String,
+		@Path("id") id: String,
+		@Part photos : MultipartBody.Part
 	): Response<DietResponse>
 
 	@PATCH("v1/diets/{id}")
@@ -170,22 +177,11 @@ interface APIService {
 		@Path("id") id: String
 	): Response<DietResponse>
 
-	@GET("v1/waters")
-	suspend fun getAllWater(
-		@Header("Authorization") token: String
-	): Response<List<WaterResponse>>
-
 	@GET("v1/waters/{id}")
 	suspend fun getWater(
 		@Header("Authorization") token: String,
 		@Path("id") id: String
 	): Response<WaterResponse>
-
-	@GET("v1/waters/check-date")
-	suspend fun getExistWater(
-		@Header("Authorization") token: String,
-		@Query("date") date: String
-	): Response<ExistResponse>
 
 	@PUT("v1/waters/{id}")
 	suspend fun createWater(
@@ -206,11 +202,6 @@ interface APIService {
 		@Header("Authorization") token: String,
 		@Path("id") id: String
 	): Response<WaterResponse>
-
-	@GET("v1/activities")
-	suspend fun getAllActivity(
-		@Header("Authorization") token: String
-	): Response<List<ActivityResponse>>
 
 	@PUT("v1/activities/{id}")
 	suspend fun createActivity(
@@ -251,11 +242,6 @@ interface APIService {
 		@Path("id") id: String
 	): Response<WorkoutResponse>
 
-	@GET("v1/body-measurements")
-	suspend fun getAllBody(
-		@Header("Authorization") token: String
-	): Response<List<BodyResponse>>
-
 	@PUT("v1/body-measurements/{id}")
 	suspend fun createBody(
 		@Header("Authorization") token: String,
@@ -263,11 +249,23 @@ interface APIService {
 		@Body dto: BodyDTO
 	): Response<BodyResponse>
 
+	@GET("v1/body-measurements/{id}")
+	suspend fun getBody(
+		@Header("Authorization") token: String,
+		@Path("id") id: String
+	): Response<BodyResponse>
+
 	@PATCH("v1/body-measurements/{id}")
 	suspend fun updateBody(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
 		@Body dto: BodyUpdateDTO
+	): Response<BodyResponse>
+
+	@DELETE("v1/body-measurements/{id}")
+	suspend fun deleteBody(
+		@Header("Authorization") token: String,
+		@Path("id") id: String
 	): Response<BodyResponse>
 
 	@PUT("v1/sleeps/{id}")
@@ -283,11 +281,6 @@ interface APIService {
 		@Path("id") id: String,
 		@Body dto: SleepUpdateDTO
 	): Response<SleepResponse>
-
-	@GET("v1/medicines")
-	suspend fun getAllMedicine(
-		@Header("Authorization") token: String
-	): Response<List<MedicineResponse>>
 
 	@GET("v1/medicines/{id}")
 	suspend fun getMedicine(
@@ -315,50 +308,51 @@ interface APIService {
 		@Path("id") id: String
 	): Response<MedicineResponse>
 
-	@GET("v1/medicines/{id}/times")
-	suspend fun getAllMedicineTime(
-		@Header("Authorization") token: String,
-		@Path("id") id: String
-	): Response<List<MedicineTimeResponse>>
-
-	@PUT("v1/medicines/{medicineId}/times/{id}")
+	@PUT("v1/medicine-times/{id}")
 	suspend fun createMedicineTime(
 		@Header("Authorization") token: String,
-		@Path("medicineId") medicineId: String,
 		@Path("id") id: String,
 		@Body dto: MedicineTimeDTO
 	): Response<MedicineTimeResponse>
 
-	@DELETE("v1/medicines/{medicineId}/times/{id}")
+	@DELETE("v1/medicine-times/{id}")
 	suspend fun deleteMedicineTime(
 		@Header("Authorization") token: String,
-		@Path("medicineId") medicineId: String,
 		@Path("id") id: String
 	): Response<Void>
 
-	@GET("v1/medicines/{medicineId}/times/{medicineTimeId}/intakes")
-	suspend fun getMedicineIntake(
-		@Header("Authorization") token: String,
-		@Path("medicineId") medicineId: String,
-		@Path("medicineTimeId") medicineTimeId: String
-	): Response<List<MedicineIntakeResponse>>
-
-	@PUT("v1/medicines/{medicineId}/times/{medicineTimeId}/intakes/{id}")
+	@PUT("v1/medicine-intakes/{id}")
 	suspend fun createMedicineIntake(
 		@Header("Authorization") token: String,
-		@Path("medicineId") medicineId: String,
-		@Path("medicineTimeId") medicineTimeId: String,
 		@Path("id") id: String,
 		@Body dto: MedicineIntakeDTO
 	): Response<MedicineIntakeResponse>
 
-	@DELETE("v1/medicines/{medicineId}/times/{medicineTimeId}/intakes/{id}")
+	@DELETE("v1/medicine-intakes/{id}")
 	suspend fun deleteMedicineIntake(
 		@Header("Authorization") token: String,
-		@Path("medicineId") medicineId: String,
-		@Path("medicineTimeId") medicineTimeId: String,
 		@Path("id") id: String
 	): Response<MedicineTimeResponse>
+
+	@GET("v1/notes/{id}")
+	suspend fun getNote(
+		@Header("Authorization") token: String,
+		@Path("id") id: String
+	): Response<NoteResponse>
+
+	@PUT("v1/notes/{id}")
+	suspend fun createNote(
+		@Header("Authorization") token: String,
+		@Path("id") id: String,
+		@Body dto: NoteDTO
+	): Response<NoteResponse>
+
+	@PATCH("v1/notes/{id}")
+	suspend fun updateNote(
+		@Header("Authorization") token: String,
+		@Path("id") id: String,
+		@Body dto: NoteUpdateDTO
+	): Response<NoteResponse>
 
 	@GET("v1/goals/{id}")
 	suspend fun getGoal(
@@ -379,11 +373,4 @@ interface APIService {
 		@Path("id") id: String,
 		@Body dto: GoalUpdateDTO
 	): Response<GoalResponse>
-
-	@Multipart
-	@POST("v1/files/upload")
-	suspend fun uploadFile(
-		@Header("Authorization") token: String,
-		@Part file : MultipartBody.Part
-	): Response<FileResponse>
 }

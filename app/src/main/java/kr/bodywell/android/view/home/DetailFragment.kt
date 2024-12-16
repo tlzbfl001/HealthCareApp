@@ -38,7 +38,7 @@ class DetailFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(requireActivity(), MainFragment())
+            replaceFragment3(parentFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -55,7 +55,7 @@ class DetailFragment : Fragment() {
       binding.tvDate.text = dateFormat(selectedDate)
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(requireActivity(), MainFragment())
+         replaceFragment3(parentFragmentManager, MainFragment())
       }
 
       binding.clPrev.setOnClickListener {

@@ -50,7 +50,7 @@ class ReportBodyFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -67,15 +67,15 @@ class ReportBodyFragment : Fragment() {
       binding.tvDate.text = dateFormat(calendarDate)
 
       binding.clMenu2.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportFoodFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportFoodFragment())
       }
 
       binding.clMenu3.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportExerciseFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportExerciseFragment())
       }
 
       binding.clMenu4.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportDrugFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportMedicineFragment())
       }
 
       binding.clPrev.setOnClickListener {
@@ -139,7 +139,6 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun dailyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -147,6 +146,7 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
+      resetChart()
 
       lifecycleScope.launch {
          val getBody = powerSync.getBody(calendarDate.toString())
@@ -196,7 +196,6 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -204,6 +203,7 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
+      resetChart()
 
       val itemList1 = ArrayList<Body>()
       val itemList2 = ArrayList<Body>()
@@ -212,7 +212,7 @@ class ReportBodyFragment : Fragment() {
       val weekArray = weekArray(calendarDate)
 
       lifecycleScope.launch {
-         val getBody = powerSync.getAllBody(weekArray[0].toString(), weekArray[6].toString())
+         val getBody = powerSync.getBodies(weekArray[0].toString(), weekArray[6].toString())
 
          for(i in getBody.indices) {
             if(getBody[i].weight != null && getBody[i].weight!! > 0) {
@@ -274,7 +274,6 @@ class ReportBodyFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -282,6 +281,7 @@ class ReportBodyFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
+      resetChart()
 
       val itemList1 = ArrayList<Body>()
       val itemList2 = ArrayList<Body>()
@@ -290,7 +290,7 @@ class ReportBodyFragment : Fragment() {
       val monthArray = monthArray2(calendarDate)
 
       lifecycleScope.launch {
-         val getBody = powerSync.getAllBody(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         val getBody = powerSync.getBodies(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
 
          for(i in getBody.indices) {
             if(getBody[i].weight != null && getBody[i].weight!! > 0) {
@@ -390,7 +390,7 @@ class ReportBodyFragment : Fragment() {
       dataSets.add(lineDataSet)
 
       val lineData = LineData(dataSets)
-      lineData.setValueTextSize(8f)
+      lineData.setValueTextSize(9f)
       lineData.setValueFormatter(MyValueFormatter())
       lineData.setValueTextColor(resources.getColor(R.color.black_white))
 

@@ -12,13 +12,15 @@ import androidx.lifecycle.lifecycleScope
 import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.databinding.FragmentExerciseInputBinding
-import kr.bodywell.android.model.Activities
+import kr.bodywell.android.model.ActivityData
+import kr.bodywell.android.model.Constants.ACTIVITIES
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import java.time.LocalDateTime
+import java.util.Calendar
 import java.util.UUID
 
 class ExerciseInputFragment : Fragment() {
@@ -26,13 +28,12 @@ class ExerciseInputFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-//   private lateinit var dataManager: DataManager
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment()
+            replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -46,21 +47,18 @@ class ExerciseInputFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-//      dataManager = DataManager(activity)
-//      dataManager.open()
-
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
       binding.clX.setOnClickListener {
-         replaceFragment()
+         replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
       }
 
       binding.cvSave.setOnClickListener {
          lifecycleScope.launch {
-            val getData = powerSync.getData("activities", "name", "name", binding.etName.text.trim().toString())
+            val getData = powerSync.getData(ACTIVITIES, "name", "name", binding.etName.text.trim().toString())
 
             if(binding.etName.text.toString().trim().isEmpty()) {
                Toast.makeText(context, "운동이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -69,23 +67,17 @@ class ExerciseInputFragment : Fragment() {
             }else if(getData != "") {
                Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
             }else {
-               val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
-               powerSync.insertActivity(Activities(id = uuid.toString(), name = binding.etName.text.toString().trim(),
-                  createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+               val uuid = UuidCreator.getTimeOrderedEpoch()
+               val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
+               powerSync.insertActivity(ActivityData(id = uuid.toString(), name = binding.etName.text.toString().trim(), createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
+
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment()
+               replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
             }
          }
       }
 
       return binding.root
-   }
-
-   private fun replaceFragment() {
-      when(arguments?.getString("back")) {
-         "1" -> replaceFragment3(requireActivity(), ExerciseRecord1Fragment())
-         else -> replaceFragment3(requireActivity(), ExerciseRecord2Fragment())
-      }
    }
 
    override fun onDetach() {

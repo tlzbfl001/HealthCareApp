@@ -11,14 +11,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Constant
-import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.monthArray
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.getDietImages
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -84,12 +84,26 @@ class CalendarDialog(context: Context) : Dialog(context) {
 
       days = monthArray()
       val adapter = CalendarAdapter1(days, 2)
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
+      val layoutManager = GridLayoutManager(context, 7)
 
       rv?.layoutManager = layoutManager
       rv?.adapter = adapter
 
-      setImageView()
+      runBlocking {
+         val imageList = getDietImages(selectedDate.toString())
+
+         if (imageList.size > 0) {
+            viewPager?.visibility = View.VISIBLE
+            tvStatus?.visibility = View.GONE
+
+            val slideAdapter = PhotoSlideAdapter(context, imageList)
+            viewPager?.adapter = slideAdapter
+            viewPager?.setPadding(0, 0, 210, 0)
+         }else {
+            viewPager?.visibility = View.GONE
+            tvStatus?.visibility = View.VISIBLE
+         }
+      }
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {
@@ -167,43 +181,6 @@ class CalendarDialog(context: Context) : Dialog(context) {
 
       override fun onTouchEvent(view: RecyclerView, motionEvent: MotionEvent) {}
       override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-   }
-
-   private fun setImageView() {
-      val itemList = ArrayList<Image>()
-
-      // 데이터 가져오기
-
-      val getData1 = dataManager!!.getImage(Constant.BREAKFAST.name, selectedDate.toString())
-      val getData2 = dataManager!!.getImage(Constant.LUNCH.name, selectedDate.toString())
-      val getData3 = dataManager!!.getImage(Constant.DINNER.name, selectedDate.toString())
-      val getData4 = dataManager!!.getImage(Constant.SNACK.name, selectedDate.toString())
-
-      // 리스트에 데이터 저장
-      for (i in 0 until getData1.size) {
-         itemList.add(Image(id = getData1[i].id, imageName = getData1[i].imageName, createdAt = selectedDate.toString()))
-      }
-      for (i in 0 until getData2.size) {
-         itemList.add(Image(id = getData2[i].id, imageName = getData2[i].imageName, createdAt = selectedDate.toString()))
-      }
-      for (i in 0 until getData3.size) {
-         itemList.add(Image(id = getData3[i].id, imageName = getData3[i].imageName, createdAt = selectedDate.toString()))
-      }
-      for (i in 0 until getData4.size) {
-         itemList.add(Image(id = getData4[i].id, imageName = getData4[i].imageName, createdAt = selectedDate.toString()))
-      }
-
-      if (itemList.size > 0) {
-         viewPager?.visibility = View.VISIBLE
-         tvStatus?.visibility = View.GONE
-
-         val adapter = PhotoSlideAdapter(context, itemList)
-         viewPager?.adapter = adapter
-         viewPager?.setPadding(0, 0, 210, 0)
-      }else {
-         viewPager?.visibility = View.GONE
-         tvStatus?.visibility = View.VISIBLE
-      }
    }
 
    companion object {

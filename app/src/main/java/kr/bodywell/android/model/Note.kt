@@ -1,10 +1,11 @@
 package kr.bodywell.android.model
 
 data class Note (
-   var id: Int = 0,
-   var userId: Int = 0,
+   var id: String = "",
    var title: String = "",
    var content: String = "",
-   var status: Int = 1,
-   var createdAt: String = ""
+   var emotion: String = "",
+   var date: String = "",
+   var createdAt: String = "",
+   val updatedAt: String = ""
 )

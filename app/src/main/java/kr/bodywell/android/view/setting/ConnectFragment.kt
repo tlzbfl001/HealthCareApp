@@ -49,7 +49,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(requireActivity(), SettingFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -69,7 +69,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(requireActivity(), SettingFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
       }
 
       if (!requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -165,7 +165,7 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
       sets.add(device.device.name)
       sets.add(device.device.address)
       MyApp.prefs.setDevice(sets)
-      replaceFragment1(requireActivity(), BluetoothFragment())
+      replaceFragment1(requireActivity().supportFragmentManager, BluetoothFragment())
    }
 
    override fun onDetach() {

@@ -52,6 +52,9 @@ data class MedicineTimeDTO(
 	@SerializedName("time")
 	var time: String = "",
 
+	@SerializedName("medicineId")
+	var medicineId: String = "",
+
 	@SerializedName("createdAt")
 	var createdAt: String = "",
 
@@ -62,6 +65,9 @@ data class MedicineTimeDTO(
 data class MedicineIntakeDTO(
 	@SerializedName("intakedAt")
 	var intakedAt: String = "",
+
+	@SerializedName("medicineTimeId")
+	var medicineTimeId: String = "",
 
 	@SerializedName("createdAt")
 	var createdAt: String = "",

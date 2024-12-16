@@ -16,8 +16,5 @@ data class SleepResponse (
 	var createdAt: String?,
 
 	@SerializedName("updatedAt")
-	var updatedAt: String?,
-
-	@SerializedName("deletedAt")
-	var deletedAt: String?
+	var updatedAt: String?
 )

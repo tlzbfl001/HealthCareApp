@@ -17,7 +17,7 @@
          android:id="@+id/cl"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_marginTop="15dp">
+         android:layout_marginTop="10dp">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clGoal"
             android:layout_width="wrap_content"
@@ -41,8 +41,9 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black_white"
-               android:textSize="15.3dp"
-               android:fontFamily="@font/nanum"
+               android:textSize="14dp"
+               android:fontFamily="@font/noto"
+               android:includeFontPadding="false"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent"/>
          </androidx.constraintlayout.widget.ConstraintLayout>
@@ -64,7 +65,7 @@
                app:progress_start_color="@color/drug"
                app:progress_start_degree="90"
                app:progress_stroke_cap="round"
-               app:progress_stroke_width="15dp"
+               app:progress_stroke_width="14.5dp"
                app:progress_style="solid_line" />
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
@@ -77,8 +78,9 @@
                   android:layout_height="wrap_content"
                   android:text="복용횟수"
                   android:textColor="@color/black_white"
-                  android:textSize="16dp"
-                  android:fontFamily="@font/nanum_bold"
+                  android:textSize="15dp"
+                  android:fontFamily="@font/noto"
+                  android:includeFontPadding="false"
                   app:layout_constraintBottom_toTopOf="@id/tvDrugCount"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
@@ -88,11 +90,11 @@
                   android:id="@+id/tvDrugCount"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:layout_marginTop="2dp"
                   android:text="0회"
                   android:textColor="@color/black_white"
                   android:textSize="16dp"
-                  android:fontFamily="@font/nanum"
+                  android:fontFamily="@font/noto_bold"
+                  android:includeFontPadding="false"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
@@ -103,11 +105,12 @@
             android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="17dp"
             android:text="목표 복용 횟수"
             android:textColor="@color/black_white"
-            android:textSize="16dp"
-            android:fontFamily="@font/nanum_bold"
+            android:textSize="15dp"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintEnd_toStartOf="@id/view1"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
@@ -126,10 +129,11 @@
             android:id="@+id/tvGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="-3dp"
             android:text="0회"
-            android:textSize="15.5dp"
-            android:fontFamily="@font/nanum"
+            android:textSize="16dp"
+            android:fontFamily="@font/noto_bold"
+            android:includeFontPadding="false"
             android:textColor="@color/black_white"
             app:layout_constraintTop_toBottomOf="@id/tv1"
             app:layout_constraintEnd_toEndOf="@id/tv1"/>
@@ -139,8 +143,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="남은 복용 횟수"
-            android:textSize="16dp"
-            android:fontFamily="@font/nanum_bold"
+            android:textSize="15dp"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             android:textColor="@color/black_white"
             app:layout_constraintTop_toTopOf="@id/tv1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -149,10 +154,11 @@
             android:id="@+id/tvRemain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="-3dp"
             android:text="0회"
             android:textSize="16dp"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto_bold"
+            android:includeFontPadding="false"
             android:textColor="@color/black_white"
             app:layout_constraintTop_toBottomOf="@id/tv3"
             app:layout_constraintStart_toStartOf="@id/tv3"/>
@@ -164,7 +170,7 @@
          android:orientation="vertical"
          android:background="@drawable/rec_top_radius_35"
          android:backgroundTint="@color/drug_grey"
-         android:layout_marginTop="20dp"
+         android:layout_marginTop="17dp"
          app:layout_constraintTop_toBottomOf="@id/cl"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent">
@@ -184,7 +190,7 @@
                android:textColor="@color/black_white"
                android:textSize="15dp"
                android:textAlignment="center"
-               android:fontFamily="@font/nanum"
+               android:fontFamily="@font/noto"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintEnd_toEndOf="parent"/>
@@ -202,14 +208,15 @@
                <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:layout_marginTop="10dp"
+                  android:layout_marginTop="9dp"
                   android:layout_marginLeft="16dp"
                   android:layout_marginRight="16dp"
                   android:layout_marginBottom="9dp"
                   android:text="권한 설정하러 가기"
                   android:textSize="15dp"
                   android:textColor="#FFFFFF"
-                  android:fontFamily="@font/nanum"/>
+                  android:fontFamily="@font/noto"
+                  android:includeFontPadding="false"/>
             </androidx.cardview.widget.CardView>
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.constraintlayout.widget.ConstraintLayout
@@ -221,12 +228,13 @@
                android:id="@+id/tv4"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_marginTop="25dp"
+               android:layout_marginTop="20dp"
                android:layout_marginLeft="25dp"
                android:text="하루 약복용"
                android:textColor="@color/black_white"
-               android:textSize="16.5dp"
-               android:textStyle="bold"
+               android:textSize="15dp"
+               android:fontFamily="@font/noto"
+               android:includeFontPadding="false"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"/>
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -254,11 +262,12 @@
                   android:layout_height="wrap_content"
                   android:text="약복용 기록"
                   android:textColor="@color/black_white"
-                  android:textSize="15.3dp"
+                  android:textSize="14dp"
+                  android:fontFamily="@font/noto"
+                  android:includeFontPadding="false"
                   app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:layout_constraintVertical_bias="0.0" />
+                  app:layout_constraintTop_toTopOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.constraintlayout.widget.ConstraintLayout>
          <androidx.cardview.widget.CardView
@@ -293,8 +302,8 @@
                   <androidx.constraintlayout.widget.ConstraintLayout
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
-                     android:paddingTop="12dp"
-                     android:paddingBottom="11dp"
+                     android:paddingTop="9dp"
+                     android:paddingBottom="9dp"
                      android:paddingLeft="8dp"
                      android:paddingRight="8dp">
                      <TextView
@@ -305,7 +314,8 @@
                         android:textSize="14dp"
                         android:textColor="@color/white"
                         android:textAlignment="center"
-                        android:fontFamily="@font/nanum"
+                        android:fontFamily="@font/noto"
+                        android:includeFontPadding="false"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -319,7 +329,8 @@
                         android:textSize="14dp"
                         android:textColor="@color/white"
                         android:textAlignment="center"
-                        android:fontFamily="@font/nanum"
+                        android:fontFamily="@font/noto"
+                        android:includeFontPadding="false"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toEndOf="@id/tvList1"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -333,7 +344,8 @@
                         android:textSize="14dp"
                         android:textColor="@color/white"
                         android:textAlignment="center"
-                        android:fontFamily="@font/nanum"
+                        android:fontFamily="@font/noto"
+                        android:includeFontPadding="false"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toEndOf="@id/tvList2"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -347,7 +359,8 @@
                         android:textSize="14dp"
                         android:textColor="@color/white"
                         android:textAlignment="center"
-                        android:fontFamily="@font/nanum"
+                        android:fontFamily="@font/noto"
+                        android:includeFontPadding="false"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toEndOf="@id/tvList3"
                         app:layout_constraintBottom_toBottomOf="parent"

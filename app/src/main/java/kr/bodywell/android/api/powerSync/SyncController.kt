@@ -17,6 +17,8 @@ import kr.bodywell.android.api.dto.MedicineDTO
 import kr.bodywell.android.api.dto.MedicineIntakeDTO
 import kr.bodywell.android.api.dto.MedicineTimeDTO
 import kr.bodywell.android.api.dto.MedicineUpdateDTO
+import kr.bodywell.android.api.dto.NoteDTO
+import kr.bodywell.android.api.dto.NoteUpdateDTO
 import kr.bodywell.android.api.dto.ProfileDTO
 import kr.bodywell.android.api.dto.SleepDTO
 import kr.bodywell.android.api.dto.SleepUpdateDTO
@@ -27,10 +29,13 @@ import kr.bodywell.android.api.dto.WorkoutUpdateDTO
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getToken
-import kr.bodywell.android.util.CustomUtil.powerSync
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 object SyncController {
-	suspend fun upsert(entry: CrudEntry) {
+	suspend fun upsert(context: Context, entry: CrudEntry) {
 		val op = entry.opData!!
 
 		when(entry.table) {
@@ -45,11 +50,9 @@ object SyncController {
 				}
 			}
 			"diets" -> {
-				val photos = ArrayList<String>()
-				photos.add("https://example.com/picture.jpg")
 				val response = RetrofitAPI.api.createDiets("Bearer ${getToken.access}", entry.id, DietDTO(op["meal_time"]!!, op["name"]!!,
 					op["calorie"]!!.toInt(), op["carbohydrate"]!!.toDouble(), op["protein"]!!.toDouble(), op["fat"]!!.toDouble(), 1, "개",
-					op["volume"]!!.toInt(), op["volume_unit"]!!, photos, op["date"]!!, op["created_at"]!!, op["updated_at"]!!, op["food_id"]!!))
+					op["volume"]!!.toInt(), op["volume_unit"]!!, op["date"]!!, op["created_at"]!!, op["updated_at"]!!, op["food_id"]!!))
 				if(response.isSuccessful) {
 					Log.d(TAG, "createDiets: ${response.body()}")
 				}else {
@@ -110,8 +113,8 @@ object SyncController {
 				}
 			}
 			"medicine_times" -> {
-				val response = RetrofitAPI.api.createMedicineTime("Bearer ${getToken.access}", op["medicine_id"]!!, entry.id,
-					MedicineTimeDTO(op["time"]!!, op["created_at"]!!, op["updated_at"]!!))
+				val response = RetrofitAPI.api.createMedicineTime("Bearer ${getToken.access}", entry.id,
+					MedicineTimeDTO(op["time"]!!, op["medicine_id"]!!, op["created_at"]!!, op["updated_at"]!!))
 				if(response.isSuccessful) {
 					Log.d(TAG, "createMedicineTime: ${response.body()}")
 				}else {
@@ -119,12 +122,8 @@ object SyncController {
 				}
 			}
 			"medicine_intakes" -> {
-				Log.d(TAG, "source_id: ${op["source_id"]!!}")
-				Log.d(TAG, "medicine_time_id: ${op["medicine_time_id"]!!}")
-				Log.d(TAG, "entry.id: ${entry.id}")
-
-				val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", op["source_id"]!!, op["medicine_time_id"]!!, entry.id,
-					MedicineIntakeDTO(op["intaked_at"]!!, op["created_at"]!!, op["updated_at"]!!))
+				val response = RetrofitAPI.api.createMedicineIntake("Bearer ${getToken.access}", entry.id,
+					MedicineIntakeDTO(op["intaked_at"]!!, op["medicine_time_id"]!!, op["created_at"]!!, op["updated_at"]!!))
 				if(response.isSuccessful) {
 					Log.d(TAG, "createMedicineIntake: ${response.body()}")
 				}else {
@@ -141,6 +140,37 @@ object SyncController {
 					Log.e(TAG, "createGoal: $response")
 				}
 			}
+			"notes" -> {
+				val response = RetrofitAPI.api.createNote("Bearer ${getToken.access}", entry.id,
+					NoteDTO(op["title"]!!, op["content"]!!, op["emotion"]!!, op["date"]!!, op["created_at"]!!, op["updated_at"]!!))
+				if(response.isSuccessful) {
+					Log.d(TAG, "createNote: ${response.body()}")
+				}else {
+					Log.e(TAG, "createNote: $response")
+				}
+			}
+			"files" -> {
+				val file = File(context.filesDir.toString() + "/" + op["name"]!!)
+				val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+
+				if(op["profile_id"] != null) {
+					val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+					val response = RetrofitAPI.api.createProfilePicture("Bearer ${getToken.access}", op["profile_id"]!!, body)
+					if(response.isSuccessful) {
+						Log.d(TAG, "createProfilePicture: ${response.body()}")
+					}else {
+						Log.e(TAG, "createProfilePicture: $response")
+					}
+				}else if(op["diet_id"] != null) {
+					val body = MultipartBody.Part.createFormData("photos", file.name, requestFile)
+					val response = RetrofitAPI.api.createDietsPicture("Bearer ${getToken.access}", op["diet_id"]!!, body)
+					if(response.isSuccessful) {
+						Log.d(TAG, "createDietsPicture: ${response.body()}")
+					}else {
+						Log.e(TAG, "createDietsPicture: $response")
+					}
+				}
+			}
 		}
 	}
 
@@ -150,14 +180,14 @@ object SyncController {
 			"profiles" -> {
 				val getProfile = RetrofitAPI.api.getProfile("Bearer ${getToken.access}")
 				if(getProfile.isSuccessful) {
-					val name = if(op["name"] == null) getProfile.body()!!.name!! else op["name"]!!
-					val birth = if(op["birth"] == null) getProfile.body()!!.birth!! else op["birth"]!!
-					val gender = if(op["gender"] == null) getProfile.body()!!.gender!! else op["gender"]!!
-					val height = if(op["height"] == null) getProfile.body()!!.height!! else op["height"]!!.toDouble()
-					val weight = if(op["weight"] == null) getProfile.body()!!.weight!! else op["weight"]!!.toDouble()
+					val name = if(op["name"] == null || op["name"] == "") getProfile.body()!!.name!! else op["name"]!!
+					val birth = if(op["birth"] == null || op["birth"] == "") getProfile.body()!!.birth!! else op["birth"]!!
+					val gender = if(op["gender"] == null || op["gender"] == "") getProfile.body()!!.gender!! else op["gender"]!!
+					val height = if(op["height"] == null || op["height"] == "0.0") getProfile.body()!!.height!! else op["height"]!!.toDouble()
+					val weight = if(op["weight"] == null || op["weight"] == "0.0") getProfile.body()!!.weight!! else op["weight"]!!.toDouble()
 
-					val updateProfile = RetrofitAPI.api.updateProfile("Bearer ${getToken.access}", ProfileDTO(name, birth, gender, height, weight))
-					if(updateProfile.isSuccessful) Log.d(TAG, "updateProfile: ${updateProfile.body()}") else Log.e(TAG, "updateProfile: $updateProfile")
+					val response = RetrofitAPI.api.updateProfile("Bearer ${getToken.access}", entry.id, ProfileDTO(name, birth, gender, height, weight))
+					if(response.isSuccessful) Log.d(TAG, "updateProfile: ${response.body()}") else Log.e(TAG, "updateProfile: $response")
 				}else Log.e(TAG, "getProfile: $getProfile")
 			}
 			"foods" -> {
@@ -167,16 +197,23 @@ object SyncController {
 					val carbohydrate = if(op["carbohydrate"] == null) getFood.body()!!.carbohydrate else op["carbohydrate"]!!.toDouble()
 					val protein = if(op["protein"] == null) getFood.body()!!.protein else op["protein"]!!.toDouble()
 					val fat = if(op["fat"] == null) getFood.body()!!.fat else op["fat"]!!.toDouble()
+					val quantityUnit = if(op["quantity_unit"] == null) getFood.body()!!.quantityUnit else op["quantity_unit"]!!
 					val volume = if(op["volume"] == null) getFood.body()!!.volume else op["volume"]!!.toInt()
 					val volumeUnit = if(op["volume_unit"] == null) getFood.body()!!.volumeUnit else op["volume_unit"]
 
-					val updateFood = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", entry.id, FoodUpdateDTO(calorie, carbohydrate, protein, fat, volume, volumeUnit!!))
-					if(updateFood.isSuccessful) Log.d(TAG, "updateFood: ${updateFood.body()}") else Log.e(TAG, "updateFood: $updateFood")
+					val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", entry.id,
+						FoodUpdateDTO(calorie, carbohydrate, protein, fat, quantityUnit, volume, volumeUnit!!))
+					if(response.isSuccessful) Log.d(TAG, "updateFood: ${response.body()}") else Log.e(TAG, "updateFood: $response")
 				}else Log.e(TAG, "getFood: $getFood")
 			}
 			"diets" -> {
-				val updateDiets = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", entry.id, DietUpdateDTO(op["quantity"]!!.toInt()))
-				if(updateDiets.isSuccessful) Log.d(TAG, "updateDiets: ${updateDiets.body()}") else Log.e(TAG, "updateDiets: $updateDiets")
+				val getDiets = RetrofitAPI.api.getDiets("Bearer ${getToken.access}", entry.id)
+				if(getDiets.isSuccessful) {
+					val quantity = if(op["quantity"] == null) getDiets.body()!!.quantity else op["quantity"]!!.toInt()
+
+					val response = RetrofitAPI.api.updateDiets("Bearer ${getToken.access}", entry.id, DietUpdateDTO(quantity))
+					if(response.isSuccessful) Log.d(TAG, "updateDiets: ${response.body()}") else Log.e(TAG, "updateDiets: $response")
+				}else Log.e(TAG, "getDiets: $getDiets")
 			}
 			"water" -> {
 				val getWater = RetrofitAPI.api.getWater("Bearer ${getToken.access}", entry.id)
@@ -200,10 +237,20 @@ object SyncController {
 				}
 			}
 			"body_measurements" -> {
-				val response = RetrofitAPI.api.updateBody("Bearer ${getToken.access}", entry.id, BodyUpdateDTO(op["height"]!!.toDouble(),
-					op["weight"]!!.toDouble(), op["body_mass_index"]!!.toDouble(), op["body_fat_percentage"]!!.toDouble(), op["skeletal_muscle_mass"]!!.toDouble(),
-					op["basal_metabolic_rate"]!!.toDouble(), op["workout_intensity"]!!.toInt()))
-				if(response.isSuccessful) Log.d(TAG, "updateBody: ${response.body()}") else Log.e(TAG, "updateBody: $response")
+				val getBody = RetrofitAPI.api.getBody("Bearer ${getToken.access}", entry.id)
+				if(getBody.isSuccessful) {
+					val height = if (op["height"] == null) getBody.body()!!.height else op["height"]!!.toDouble()
+					val weight = if (op["weight"] == null) getBody.body()!!.weight else op["weight"]!!.toDouble()
+					val bodyMassIndex = if (op["body_mass_index"] == null) getBody.body()!!.bodyMassIndex else op["body_mass_index"]!!.toDouble()
+					val bodyFatPercentage = if (op["body_fat_percentage"] == null) getBody.body()!!.bodyFatPercentage else op["body_fat_percentage"]!!.toDouble()
+					val skeletalMuscleMass = if (op["skeletal_muscle_mass"] == null) getBody.body()!!.skeletalMuscleMass else op["skeletal_muscle_mass"]!!.toDouble()
+					val basalMetabolicRate = if (op["basal_metabolic_rate"] == null) getBody.body()!!.basalMetabolicRate else op["basal_metabolic_rate"]!!.toDouble()
+					val workoutIntensity = if (op["workout_intensity"] == null) getBody.body()!!.workoutIntensity else op["workout_intensity"]!!.toInt()
+
+					val response = RetrofitAPI.api.updateBody("Bearer ${getToken.access}", entry.id, BodyUpdateDTO(height,
+						weight, bodyMassIndex, bodyFatPercentage, skeletalMuscleMass, basalMetabolicRate, workoutIntensity))
+					if(response.isSuccessful) Log.d(TAG, "updateBody: ${response.body()}") else Log.e(TAG, "updateBody: $response")
+				}
 			}
 			"sleep" -> {
 				val response = RetrofitAPI.api.updateSleep("Bearer ${getToken.access}", entry.id, SleepUpdateDTO(op["starts"]!!, op["ends"]!!))
@@ -221,6 +268,17 @@ object SyncController {
 
 					val response = RetrofitAPI.api.updateMedicine("Bearer ${getToken.access}", entry.id, MedicineUpdateDTO(category, name, amount, unit, starts, ends))
 					if(response.isSuccessful) Log.d(TAG, "updateMedicine: ${response.body()}") else Log.e(TAG, "updateMedicine: $response")
+				}
+			}
+			"notes" -> {
+				val getNote = RetrofitAPI.api.getNote("Bearer ${getToken.access}", entry.id)
+				if(getNote.isSuccessful) {
+					val title = if(op["title"] == null) getNote.body()!!.title else op["title"]!!
+					val content = if(op["name"] == null) getNote.body()!!.content else op["content"]!!
+					val emotion = if(op["emotion"] == null) getNote.body()!!.emotion else op["emotion"]!!
+
+					val response = RetrofitAPI.api.updateNote("Bearer ${getToken.access}", entry.id, NoteUpdateDTO(title, content, emotion))
+					if(response.isSuccessful) Log.d(TAG, "updateNote: ${response.body()}") else Log.e(TAG, "updateNote: $response")
 				}
 			}
 			"goals" -> {
@@ -267,53 +325,21 @@ object SyncController {
 				val response = RetrofitAPI.api.deleteWorkout("Bearer ${getToken.access}", id)
 				if(response.isSuccessful) Log.d(TAG, "deleteWorkout: ${response.raw().code}") else Log.e(TAG, "deleteWorkout: $response")
 			}
+			"body_measurements" -> {
+				val response = RetrofitAPI.api.deleteBody("Bearer ${getToken.access}", id)
+				if(response.isSuccessful) Log.d(TAG, "deleteBody: ${response.raw().code}") else Log.e(TAG, "deleteBody: $response")
+			}
 			"medicines" -> {
-				val getMedicineTime = powerSync.getAllMedicineTime("medicine_id", id)
-				// 약복용 기록 삭제
-				for(i in getMedicineTime.indices) {
-					val getData = powerSync.getData("medicine_intakes", "id", "medicine_time_id", getMedicineTime[i].id)
-					if(getData != "") {
-						val deleteMedicineIntake = RetrofitAPI.api.deleteMedicineIntake("Bearer ${getToken.access}", id, getMedicineTime[i].id, getData)
-						if(deleteMedicineIntake.isSuccessful) {
-							Log.d(TAG, "deleteMedicineIntake: ${deleteMedicineIntake.raw().code}")
-							dataManager.deleteItem("medicineIntake", "uid", getData)
-						}else Log.e(TAG, "deleteMedicineIntake: $deleteMedicineIntake")
-					}
-				}
-				// 약복용 시간 삭제
-				for(i in getMedicineTime.indices) {
-					val deleteMedicineTime = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", id, getMedicineTime[i].id)
-					if(deleteMedicineTime.isSuccessful) {
-						Log.d(TAG, "deleteMedicineTime: ${deleteMedicineTime.raw().code}")
-						dataManager.deleteItem("medicineTime", "uid", getMedicineTime[i].id)
-					}else Log.e(TAG, "deleteMedicineTime: $deleteMedicineTime")
-				}
-				// 약복용 삭제
 				val response = RetrofitAPI.api.deleteMedicine("Bearer ${getToken.access}", id)
-				if(response.isSuccessful) {
-					Log.d(TAG, "deleteMedicine: ${response.raw().code}")
-					dataManager.deleteItem("medicines", "uid", id)
-				}else Log.e(TAG, "deleteMedicine: $response")
+				if(response.isSuccessful) Log.d(TAG, "deleteMedicine: ${response.raw().code}") else Log.e(TAG, "deleteMedicine: $response")
 			}
 			"medicine_times" -> {
-				val getData = dataManager.getMedicineTime(id)
-				Log.d(TAG, "medicineId: ${getData.medicineId}")
-
-				val response = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", getData.medicineId, id)
-				if(response.isSuccessful) {
-					Log.d(TAG, "deleteMedicineTime: ${response.raw().code}")
-					dataManager.deleteItem("medicineTime", "uid", id)
-				}else Log.e(TAG, "deleteMedicineTime: $response")
+				val response = RetrofitAPI.api.deleteMedicineTime("Bearer ${getToken.access}", id)
+				if(response.isSuccessful) Log.d(TAG, "deleteMedicineTime: ${response.raw().code}") else Log.e(TAG, "deleteMedicineTime: $response")
 			}
 			"medicine_intakes" -> {
-				val getData = dataManager.getMedicineIntake(id)
-				Log.d(TAG, "medicineId: ${getData.medicineId}\nmedicineTimeId: ${getData.medicineTimeId}")
-
-				val response = RetrofitAPI.api.deleteMedicineIntake("Bearer ${getToken.access}", getData.medicineId, getData.medicineTimeId, id)
-				if(response.isSuccessful) {
-					Log.d(TAG, "deleteMedicineIntake: ${response.raw().code}")
-					dataManager.deleteItem("medicineIntake", "uid", id)
-				}else Log.e(TAG, "deleteMedicineIntake: $response")
+				val response = RetrofitAPI.api.deleteMedicineIntake("Bearer ${getToken.access}", id)
+				if(response.isSuccessful) Log.d(TAG, "deleteMedicineIntake: ${response.raw().code}") else Log.e(TAG, "deleteMedicineIntake: $response")
 			}
 		}
 	}

@@ -25,16 +25,13 @@ data class DietDTO(
 	var quantity: Int = 0,
 
 	@SerializedName("quantityUnit")
-	var quantityUnit: String = "",
+	var quantityUnit: String = "0",
 
 	@SerializedName("volume")
 	var volume: Int = 0,
 
 	@SerializedName("volumeUnit")
 	var volumeUnit: String = "",
-
-	@SerializedName("photos")
-	var photos: ArrayList<String> = ArrayList(),
 
 	@SerializedName("date")
 	var date: String = "",
@@ -51,5 +48,5 @@ data class DietDTO(
 
 data class DietUpdateDTO(
 	@SerializedName("quantity")
-	var quantity: Int = 0
+	var quantity: Int = 1
 )

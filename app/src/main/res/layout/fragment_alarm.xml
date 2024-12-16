@@ -34,7 +34,8 @@
       android:text="알림 설정"
       android:textSize="18dp"
       android:textColor="@color/black_white"
-      android:fontFamily="@font/nanum"
+      android:fontFamily="@font/noto"
+      android:includeFontPadding="false"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="@id/clBack"
       app:layout_constraintEnd_toEndOf="parent"/>
@@ -54,7 +55,7 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:paddingTop="20dp"
+         android:paddingTop="18dp"
          android:paddingBottom="20dp"
          android:paddingLeft="15dp"
          android:paddingRight="15dp">
@@ -65,7 +66,8 @@
             android:text="앱 알림 설정"
             android:textSize="16.5dp"
             android:textColor="@color/black_white"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
          <TextView
@@ -75,7 +77,8 @@
             android:text="꺼짐"
             android:textSize="15dp"
             android:textColor="@color/grey_white"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="@+id/tvAlarm"
             app:layout_constraintBottom_toBottomOf="@id/tvAlarm"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -97,7 +100,7 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:paddingTop="20dp"
+         android:paddingTop="18dp"
          android:paddingBottom="20dp"
          android:paddingLeft="15dp"
          android:paddingRight="15dp">
@@ -108,7 +111,8 @@
             android:text="알람 및 리마인더 설정"
             android:textSize="16.5dp"
             android:textColor="@color/black_white"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
          <TextView
@@ -118,7 +122,8 @@
             android:text="꺼짐"
             android:textSize="15dp"
             android:textColor="@color/grey_white"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="@+id/tvReminder"
             app:layout_constraintBottom_toBottomOf="@id/tvReminder"
             app:layout_constraintEnd_toEndOf="parent"/>

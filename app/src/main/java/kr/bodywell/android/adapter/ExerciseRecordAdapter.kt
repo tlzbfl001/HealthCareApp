@@ -12,13 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TYPE_USER
-import kr.bodywell.android.model.Activities
+import kr.bodywell.android.model.ActivityData
+import kr.bodywell.android.model.Constants.ACTIVITIES
+import kr.bodywell.android.model.Constants.USER
 import kr.bodywell.android.util.CustomUtil.powerSync
 
 class ExerciseRecordAdapter (
    private val context: Activity,
-   private var itemList: ArrayList<Activities> =ArrayList<Activities>()
+   private var itemList: ArrayList<ActivityData> = ArrayList()
 ) : RecyclerView.Adapter<ExerciseRecordAdapter.ViewHolder>() {
    private var onItemClickListener: OnItemClickListener? = null
 
@@ -34,7 +35,7 @@ class ExerciseRecordAdapter (
          onItemClickListener!!.onItemClick(position)
       }
 
-      if(itemList[position].registerType == TYPE_USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+      if(itemList[position].registerType == USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
@@ -47,7 +48,7 @@ class ExerciseRecordAdapter (
                .setMessage("정말 삭제하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   runBlocking {
-                     powerSync.deleteItem("activities", "id", itemList[position].id)
+                     powerSync.deleteItem(ACTIVITIES, "id", itemList[position].id)
                   }
 
                   itemList.removeAt(position)

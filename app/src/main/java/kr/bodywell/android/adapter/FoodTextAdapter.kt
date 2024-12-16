@@ -9,7 +9,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.model.Food
 
 class FoodTextAdapter (
-    private val item: ArrayList<Food> = ArrayList<Food>()
+    private val item: ArrayList<Food> = ArrayList()
 ) : RecyclerView.Adapter<FoodTextAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_food_text, parent, false)

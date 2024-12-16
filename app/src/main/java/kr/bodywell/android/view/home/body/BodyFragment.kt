@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,14 +21,18 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
+import kr.bodywell.android.model.Constants.BODY_MEASUREMENTS
+import kr.bodywell.android.model.Constants.GOALS
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Calendar
 import kotlin.math.roundToInt
 
 class BodyFragment : Fragment() {
@@ -67,10 +70,10 @@ class BodyFragment : Fragment() {
                if(getGoal.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertGoal(Goal(id = uuid.toString(), weight = et.text.toString().toDouble(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateData("goals", "weight", et.text.toString(), getGoal.id)
+                  powerSync.updateData(GOALS, "weight", et.text.toString(), getGoal.id)
                }
             }
 
@@ -84,7 +87,7 @@ class BodyFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), BodyRecordFragment())
+         replaceFragment1(parentFragmentManager, BodyRecordFragment())
       }
 
       binding.clBmi.setOnClickListener {
@@ -152,7 +155,7 @@ class BodyFragment : Fragment() {
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
          getBody = powerSync.getBody(selectedDate.toString())
-         powerSync.deleteDuplicates("body_measurements", "strftime('%Y-%m-%d', time)", selectedDate.toString(), getBody.id!!)
+         powerSync.deleteDuplicate(BODY_MEASUREMENTS, "strftime('%Y-%m-%d', time)", selectedDate.toString(), getBody.id!!)
       }
 
       if (getGoal.weight > 0) {
@@ -178,16 +181,15 @@ class BodyFragment : Fragment() {
             else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
          }
 
-         remain = getGoal.weight - getBody.weight!!.toString().toDouble()
+         remain = getGoal.weight - getBody.weight!!
       }
 
       if(remain > 0) {
          val split = remain.toString().split(".")
          when (split[1]) {
             "0" -> binding.tvRemain.text = "${split[0]} kg"
-            else -> binding.tvRemain.text = "$remain kg"
+            else -> binding.tvRemain.text = "${String.format("%.1f", remain)} kg"
          }
-         binding.tvWeight.text = "${getBody.weight} kg"
       }
    }
 

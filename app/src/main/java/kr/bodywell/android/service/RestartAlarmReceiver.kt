@@ -15,7 +15,6 @@ class RestartAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action.equals("android.intent.action.BOOT_COMPLETED")) {
             alarmReceiver = AlarmReceiver()
-
             coroutineScope.launch {
                 resetAlarm(context)
             }

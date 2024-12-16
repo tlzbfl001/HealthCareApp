@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Image
+import kr.bodywell.android.model.FileItem
 
 class PhotoSlideAdapter2 (
     private val context: Context,
-    private val itemList: ArrayList<Image>
+    private val itemList: ArrayList<FileItem>
 ) : PagerAdapter() {
     private var onLongClickListener: OnLongClickListener? = null
 
@@ -22,11 +22,11 @@ class PhotoSlideAdapter2 (
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val inflater = LayoutInflater.from(context)
-        val view: View = inflater.inflate(R.layout.item_photo_slide2, container, false)
+        val view = inflater.inflate(R.layout.item_photo_slide2, container, false)
         val imageView: ImageView = view.findViewById(R.id.imageView)
 
         if(itemList[position].bitmap == null) {
-            val imgPath = context.filesDir.toString() + "/" + itemList[position].imageName
+            val imgPath = context.filesDir.toString() + "/" + itemList[position].name
             val bm = BitmapFactory.decodeFile(imgPath)
             imageView.setImageBitmap(bm)
         }else {

@@ -13,7 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentExerciseDailyEditBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.HIGH
+import kr.bodywell.android.model.Constants.LOW
+import kr.bodywell.android.model.Constants.MODERATE
+import kr.bodywell.android.model.Constants.WORKOUTS
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
@@ -25,13 +28,13 @@ class ExerciseDailyEditFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private var intensity = Constant.HIGH
+	private var intensity = HIGH
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment1(requireActivity(), ExerciseListFragment())
+				replaceFragment1(parentFragmentManager, ExerciseListFragment())
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -45,16 +48,16 @@ class ExerciseDailyEditFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		val getWorkout = arguments?.getParcelable<Workout>("workouts")!!
+		val getWorkout = arguments?.getParcelable<Workout>(WORKOUTS)!!
 
 		binding.tvName.text = getWorkout.name
 		binding.etTime.setText(getWorkout.time.toString())
 		binding.etKcal.setText(getWorkout.calorie.toString())
 
 		when(getWorkout.intensity) {
-			Constant.HIGH.name -> unit1()
-			Constant.MODERATE.name -> unit2()
-			Constant.LOW.name -> unit3()
+			HIGH -> unit1()
+			MODERATE -> unit2()
+			LOW -> unit3()
 		}
 
 		binding.mainLayout.setOnTouchListener { _, _ ->
@@ -63,7 +66,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		}
 
 		binding.clX.setOnClickListener {
-			replaceFragment1(requireActivity(), ExerciseListFragment())
+			replaceFragment1(parentFragmentManager, ExerciseListFragment())
 		}
 
 		binding.tvIntensity1.setOnClickListener {
@@ -79,17 +82,16 @@ class ExerciseDailyEditFragment : Fragment() {
 		}
 
 		binding.cvSave.setOnClickListener {
-			if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == ""
-				|| binding.etKcal.text.toString().toInt() < 1) {
-				Toast.makeText(requireActivity(), "시간, 칼로리는 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
+			if(binding.etTime.text.toString() == "" || binding.etTime.text.toString().toInt() < 1 || binding.etKcal.text.toString() == "" || binding.etKcal.text.toString().toInt() < 1) {
+				Toast.makeText(requireActivity(), "시간, 칼로리는 1이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 			}else {
 				lifecycleScope.launch {
-					powerSync!!.updateWorkout(Workout(id = getWorkout.id, calorie = binding.etKcal.text.toString().trim().toInt(),
-						intensity = intensity.name, time = binding.etTime.text.toString().trim().toInt()))
+					powerSync.updateWorkout(Workout(id = getWorkout.id, calorie = binding.etKcal.text.toString().trim().toInt(),
+						intensity = intensity, time = binding.etTime.text.toString().trim().toInt()))
 				}
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-				replaceFragment1(requireActivity(), ExerciseListFragment())
+				replaceFragment1(parentFragmentManager, ExerciseListFragment())
 			}
 		}
 
@@ -103,7 +105,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = Constant.HIGH
+		intensity = HIGH
 	}
 
 	private fun unit2() {
@@ -113,7 +115,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.WHITE)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
-		intensity = Constant.MODERATE
+		intensity = MODERATE
 	}
 
 	private fun unit3() {
@@ -123,7 +125,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity2.setTextColor(Color.BLACK)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
 		binding.tvIntensity3.setTextColor(Color.WHITE)
-		intensity = Constant.LOW
+		intensity = LOW
 	}
 
 	override fun onDetach() {

@@ -3,6 +3,7 @@ package kr.bodywell.android.view.report
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,12 +29,14 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ReportAdapter
 import kr.bodywell.android.databinding.FragmentReportExerciseBinding
+import kr.bodywell.android.model.Constants.WORKOUTS
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -57,7 +60,7 @@ class ReportExerciseFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -74,15 +77,15 @@ class ReportExerciseFragment : Fragment() {
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.clMenu1.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportBodyFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportBodyFragment())
       }
 
       binding.clMenu2.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportFoodFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportFoodFragment())
       }
 
       binding.clMenu4.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportDrugFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportMedicineFragment())
       }
 
       binding.clPrev.setOnClickListener {
@@ -146,7 +149,6 @@ class ReportExerciseFragment : Fragment() {
    }
 
    private fun dailyView() {
-      chartReset()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -154,23 +156,23 @@ class ReportExerciseFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
+      resetChart()
 
       val dates = ArrayList<String>()
 
       lifecycleScope.launch {
-         val getWorkout = powerSync.getAllWorkout("date", calendarDate.toString())
-
+         val getWorkout = powerSync.getWorkouts(calendarDate.toString())
          if(getWorkout.isNotEmpty()) {
             dates.add(calendarDate.toString())
             settingChart1(binding.chart1, dates)
             settingChart2(binding.chart2, dates)
-            rankView(dateType, "", "")
+            rankView("", "")
          }
       }
    }
 
    private fun weeklyView() {
-      chartReset()
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -182,18 +184,17 @@ class ReportExerciseFragment : Fragment() {
       val weekArray = weekArray(calendarDate)
 
       lifecycleScope.launch {
-         val getDates = powerSync.getAllDate("workouts", "date", weekArray[0].toString(), weekArray[6].toString())
-
+         val getDates = powerSync.getDates(WORKOUTS, "date", weekArray[0].toString(), weekArray[6].toString())
          if(getDates.isNotEmpty()) {
             settingChart1(binding.chart1, getDates)
             settingChart2(binding.chart2, getDates)
-            rankView(dateType, weekArray[0].toString(), weekArray[6].toString())
+            rankView(weekArray[0].toString(), weekArray[6].toString())
          }
       }
    }
 
    private fun monthlyView() {
-      chartReset()
+      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -205,17 +206,16 @@ class ReportExerciseFragment : Fragment() {
       val monthArray = monthArray2(calendarDate)
 
       lifecycleScope.launch {
-         val getDates = powerSync.getAllDate("workouts", "date", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-
+         val getDates = powerSync.getDates(WORKOUTS, "date", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
          if(getDates.isNotEmpty()) {
             settingChart1(binding.chart1, getDates)
             settingChart2(binding.chart2, getDates)
-            rankView(dateType, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+            rankView(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
          }
       }
    }
 
-   private fun chartReset() {
+   private fun resetChart() {
       binding.recyclerView.visibility = View.GONE
       binding.tvEmpty.visibility = View.VISIBLE
       binding.chart1.visibility = View.GONE
@@ -238,58 +238,56 @@ class ReportExerciseFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in getData.indices){
-         var total = 0f
+      lifecycleScope.launch {
+         for(i in getData.indices){
+            var total = 0f
 
-         lifecycleScope.launch {
-            val getWorkout =powerSync.getAllWorkout("date", getData[i])
+            val getWorkout = powerSync.getWorkouts(getData[i])
             for(j in getWorkout.indices) {
-               if(getWorkout[j].time > 0) {
-                  total += getWorkout[j].time.toFloat()
-               }
+               if(getWorkout[j].time > 0) total += getWorkout[j].time.toFloat()
+            }
+
+            if(total > 0) {
+               lineList += total
+               barEntries.add(BarEntry(count.toFloat(), total))
+               xVal += format2.format(format1.parse(getData[i])!!)
+               count += 1
+            }
+
+            if(lineList.isNotEmpty()) {
+               binding.chart1.visibility = View.VISIBLE
+               binding.tvEmpty1.visibility = View.GONE
+
+               for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
+
+               val lineDataSet = LineDataSet(entries, "Line DataSet")
+               lineDataSet.color = Color.parseColor("#E8C583")
+               lineDataSet.lineWidth = 1f
+               lineDataSet.setDrawCircles(false)
+               lineDataSet.setDrawValues(true)
+               lineDataSet.valueTextSize = 9f
+               lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+               lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+               lineDataSet.valueFormatter = XValueFormatter()
+
+               lineData.addDataSet(lineDataSet)
+               lineData.setValueTextColor(resources.getColor(R.color.black_white))
+               data.setData(lineData)
+
+               val barDataSet = BarDataSet(barEntries, "")
+               barDataSet.color = Color.parseColor("#E8C583")
+               barDataSet.valueTextSize = 0f
+
+               val barData = BarData(barDataSet)
+               barData.barWidth = 0.27f
+
+               data.setData(barData)
+
+               chart.data = data
+
+               chartCommon(chart, xVal)
             }
          }
-
-         if(total > 0) {
-            lineList += total
-            barEntries.add(BarEntry(count.toFloat(), total))
-            xVal += format2.format(format1.parse(getData[i])!!)
-            count += 1
-         }
-      }
-
-      if(lineList.isNotEmpty()) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
-
-         for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
-
-         val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#E8C583")
-         lineDataSet.lineWidth = 1f
-         lineDataSet.setDrawCircles(false)
-         lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 8f
-         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-         lineDataSet.valueFormatter = XValueFormatter()
-
-         lineData.addDataSet(lineDataSet)
-         lineData.setValueTextColor(resources.getColor(R.color.black_white))
-         data.setData(lineData)
-
-         val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.color = Color.parseColor("#E8C583")
-         barDataSet.valueTextSize = 0f
-
-         val barData = BarData(barDataSet)
-         barData.barWidth = 0.27f
-
-         data.setData(barData)
-
-         chart.data = data
-
-         chartCommon(chart, xVal)
       }
    }
 
@@ -307,57 +305,57 @@ class ReportExerciseFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in getData.indices){
-         var total = 0f
+      lifecycleScope.launch {
+         for(i in getData.indices){
+            var total = 0f
 
-         lifecycleScope.launch {
-            val getWorkout =powerSync.getAllWorkout("date", getData[i])
+            val getWorkout =powerSync.getWorkouts(getData[i])
             for(j in getWorkout.indices) {
                if(getWorkout[j].calorie > 0) {
                   total += getWorkout[j].calorie.toFloat()
                }
             }
+
+            if(total > 0) {
+               lineList += total
+               barEntries.add(BarEntry(count.toFloat(), total))
+               xVal += format2.format(format1.parse(getData[i])!!)
+               count++
+            }
          }
 
-         if(total > 0) {
-            lineList += total
-            barEntries.add(BarEntry(count.toFloat(), total))
-            xVal += format2.format(format1.parse(getData[i])!!)
-            count++
+         if(lineList.isNotEmpty()) {
+            binding.chart2.visibility = View.VISIBLE
+            binding.tvEmpty2.visibility = View.GONE
+
+            for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
+
+            val lineDataSet = LineDataSet(entries, "Line DataSet")
+            lineDataSet.color = Color.parseColor("#FFD4E1")
+            lineDataSet.lineWidth = 1f
+            lineDataSet.setDrawCircles(false)
+            lineDataSet.setDrawValues(true)
+            lineDataSet.valueTextSize = 9f
+            lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+            lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+
+            lineData.addDataSet(lineDataSet)
+            lineData.setValueTextColor(resources.getColor(R.color.black_white))
+            data.setData(lineData)
+
+            val barDataSet = BarDataSet(barEntries, "")
+            barDataSet.color = Color.parseColor("#FFD4E1")
+            barDataSet.valueTextSize = 0f
+
+            val barData = BarData(barDataSet)
+            barData.barWidth = 0.27f
+
+            data.setData(barData)
+
+            chart.data = data
+
+            chartCommon(chart, xVal)
          }
-      }
-
-      if(lineList.isNotEmpty()) {
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
-
-         for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
-
-         val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#FFD4E1")
-         lineDataSet.lineWidth = 1f
-         lineDataSet.setDrawCircles(false)
-         lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 8f
-         lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-
-         lineData.addDataSet(lineDataSet)
-         lineData.setValueTextColor(resources.getColor(R.color.black_white))
-         data.setData(lineData)
-
-         val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.color = Color.parseColor("#FFD4E1")
-         barDataSet.valueTextSize = 0f
-
-         val barData = BarData(barDataSet)
-         barData.barWidth = 0.27f
-
-         data.setData(barData)
-
-         chart.data = data
-
-         chartCommon(chart, xVal)
       }
    }
 
@@ -398,37 +396,20 @@ class ReportExerciseFragment : Fragment() {
       chart.invalidate()
    }
 
-   class XValueFormatter : IValueFormatter {
-      override fun getFormattedValue(
-         value: Float,
-         entry: Entry,
-         dataSetIndex: Int,
-         viewPortHandler: ViewPortHandler
-      ): String {
-         val remain = value.toInt() % 60
-         val result = if(value.toInt() < 60) {
-            value.toInt().toString() + "분"
-         }else {
-            if(remain == 0) "${value.toInt() / 60}시간" else "${value.toInt() / 60}시간 ${remain}분"
-         }
-         return result
-      }
-   }
-
-   private fun rankView(type: Int, start: String, end: String) {
+   private fun rankView(start: String, end: String) {
       val itemList = ArrayList<Item>()
 
       lifecycleScope.launch {
-         val getData = when(type) {
-            1 -> powerSync.getRanking("workouts", "name", "date", calendarDate.toString())
-            else -> powerSync.getRanking("workouts", "name", "date", start, end)
+         val getData = when(dateType) {
+            1 -> powerSync.getWorkoutRanking(calendarDate.toString())
+            else -> powerSync.getWorkoutRanking(start, end)
          }
 
          if(getData.isNotEmpty()) {
             binding.tvEmpty.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
 
-            for(i in getData.indices) itemList.add(Item(string1 = getData[i].string1, string2 = getData[i].string2))
+            for(i in getData.indices) itemList.add(Item(string1 = getData[i].id, string2 = getData[i].name))
 
             when(getData.size) {
                1 -> {
@@ -452,6 +433,23 @@ class ReportExerciseFragment : Fragment() {
             adapter = ReportAdapter(itemList)
             binding.recyclerView.adapter = adapter
          }
+      }
+   }
+
+   class XValueFormatter : IValueFormatter {
+      override fun getFormattedValue(
+         value: Float,
+         entry: Entry,
+         dataSetIndex: Int,
+         viewPortHandler: ViewPortHandler
+      ): String {
+         val remain = value.toInt() % 60
+         val result = if(value.toInt() < 60) {
+            value.toInt().toString() + "분"
+         }else {
+            if(remain == 0) "${value.toInt() / 60}시간" else "${value.toInt() / 60}시간 ${remain}분"
+         }
+         return result
       }
    }
 

@@ -63,7 +63,8 @@
          android:gravity="center_vertical"
          android:textColor="@color/black_white"
          android:textSize="17dp"
-         android:fontFamily="@font/nanum"
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
@@ -96,7 +97,6 @@
       android:background="@color/white_black"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="13dp"
-      android:layout_marginTop="2dp"
       app:tabPaddingTop="0dp"
       app:tabPaddingStart="0dp"
       app:tabPaddingEnd="7dp"

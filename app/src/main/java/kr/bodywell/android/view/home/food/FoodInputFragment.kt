@@ -16,15 +16,16 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.BREAKFAST
+import kr.bodywell.android.model.Constants.FOODS
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import java.time.LocalDateTime
-import java.util.UUID
+import java.util.Calendar
 
 class FoodInputFragment : Fragment() {
    private var _binding: FragmentFoodInputBinding? = null
@@ -32,14 +33,14 @@ class FoodInputFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private var bundle = Bundle()
-   private var type = Constant.BREAKFAST.name
+   private var type = BREAKFAST
    private var unit = "mg"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment()
+            replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -67,7 +68,7 @@ class FoodInputFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment()
+         replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
       }
 
       binding.tvMg.setOnClickListener {
@@ -233,7 +234,7 @@ class FoodInputFragment : Fragment() {
          }
 
          lifecycleScope.launch {
-            val getFood = powerSync.getData("foods", "name", "name", name)
+            val getFood = powerSync.getData(FOODS, "name", "name", name)
 
             if(name.trim().isEmpty()) {
                Toast.makeText(context, "음식이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -244,12 +245,13 @@ class FoodInputFragment : Fragment() {
             }else if(amount == 0 || calorie == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0) {
                Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
             }else {
-               val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+               val uuid = UuidCreator.getTimeOrderedEpoch()
+               val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
                powerSync.insertFood(Food(id = uuid.toString(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein,
-                  fat = fat, volume = amount, volumeUnit = unit, createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  fat = fat, quantityUnit = "0", volume = amount, volumeUnit = unit, createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
 
                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment()
+               replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
             }
          }
       }
@@ -330,13 +332,6 @@ class FoodInputFragment : Fragment() {
       binding.tvL.setBackgroundResource(R.drawable.rec_25_pink)
       binding.tvL.setTextColor(Color.WHITE)
       binding.tvUnit.text = unit
-   }
-
-   private fun replaceFragment() {
-      when(arguments?.getString("back")) {
-         "1" -> replaceFragment4(requireActivity(), FoodRecord1Fragment(), bundle)
-         else -> replaceFragment4(requireActivity(), FoodRecord2Fragment(), bundle)
-      }
    }
 
    override fun onDetach() {

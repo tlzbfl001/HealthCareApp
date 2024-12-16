@@ -29,8 +29,9 @@
             android:text="서비스 이용 약관 동의"
             android:textSize="17dp"
             android:textColor="@color/black"
-           android:fontFamily="@font/nanum_bold"
-            app:layout_constraintTop_toTopOf="parent"
+           android:fontFamily="@font/noto_bold"
+           android:includeFontPadding="false"
+           app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/clX"/>

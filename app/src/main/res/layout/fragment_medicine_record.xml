@@ -34,7 +34,8 @@
       android:text="복용약 리스트"
       android:textSize="17dp"
       android:textColor="@color/black_white"
-      android:fontFamily="@font/nanum"
+      android:fontFamily="@font/noto"
+      android:includeFontPadding="false"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"/>
@@ -43,7 +44,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginRight="20dp"
-      app:cardBackgroundColor="#ACACAC"
+      app:cardBackgroundColor="#B7B7B7"
       app:cardCornerRadius="8dp"
       app:cardElevation="0dp"
       app:layout_constraintTop_toTopOf="@id/tvTitle"
@@ -52,14 +53,15 @@
          android:id="@+id/tvAdd"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="6dp"
+         android:layout_marginTop="4dp"
          android:layout_marginBottom="5dp"
          android:layout_marginLeft="14dp"
          android:layout_marginRight="14dp"
          android:text="추가"
-         android:textSize="16dp"
+         android:textSize="15dp"
          android:textColor="@color/white"
-         android:fontFamily="@font/nanum"/>
+         android:includeFontPadding="false"
+         android:fontFamily="@font/noto"/>
    </androidx.cardview.widget.CardView>
    <ScrollView
        android:layout_width="match_parent"

@@ -22,7 +22,7 @@ data class FoodDTO(
 	var quantity: Int = 0,
 
 	@SerializedName("quantityUnit")
-	var quantityUnit: String = "",
+	var quantityUnit: String = "0",
 
 	@SerializedName("volume")
 	var volume: Int = 0,
@@ -49,6 +49,9 @@ data class FoodUpdateDTO(
 
 	@SerializedName("fat")
 	var fat: Double = 0.0,
+
+	@SerializedName("quantityUnit")
+	var quantityUnit: String = "0",
 
 	@SerializedName("volume")
 	var volume: Int = 0,

@@ -26,21 +26,21 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.database.DBHelper.Companion.IMAGE
 import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_INTAKE
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
-import kr.bodywell.android.database.DBHelper.Companion.NOTE
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
+import kr.bodywell.android.database.DBHelper.Companion.UPDATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.GOOGLE
+import kr.bodywell.android.model.Constants.KAKAO
+import kr.bodywell.android.model.Constants.NAVER
+import kr.bodywell.android.model.Constants.MALE
+import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -51,6 +51,7 @@ import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_2
 import kr.bodywell.android.util.PermissionUtil.checkBtPermission
 import kr.bodywell.android.view.home.MainFragment
 import kr.bodywell.android.view.init.LoginActivity
+import java.io.File
 import java.util.Calendar
 import kotlin.system.exitProcess
 
@@ -63,12 +64,13 @@ class SettingFragment : Fragment() {
    private lateinit var dataManager: DataManager
    private var getUser = User()
    private var getToken = Token()
+   private var getFile = FileItem()
 
-   override fun onAttach(context: Context) {
+      override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -92,14 +94,14 @@ class SettingFragment : Fragment() {
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
 
-      userProfile()
+      showProfile()
 
       binding.cvProfile.setOnClickListener {
-         replaceFragment1(requireActivity(), ProfileFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, ProfileFragment())
       }
 
       binding.tvAlarm.setOnClickListener {
-         replaceFragment1(requireActivity(), AlarmFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, AlarmFragment())
       }
 
       binding.tvConnect.setOnClickListener {
@@ -111,7 +113,7 @@ class SettingFragment : Fragment() {
                pLauncher.launch(BT_PERMISSION_1)
             }
          }else {
-            replaceFragment1(requireActivity(), ConnectFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, ConnectFragment())
          }
       }
 
@@ -124,7 +126,7 @@ class SettingFragment : Fragment() {
                .setMessage("정말 로그아웃 하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
-                     Constant.GOOGLE.name -> {
+                     GOOGLE -> {
                         val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
                            .requestIdToken(resources.getString(R.string.googleWebClientId))
                            .requestEmail()
@@ -136,12 +138,12 @@ class SettingFragment : Fragment() {
                            if(it.isSuccessful) logoutProcess() else Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                         }
                      }
-                     Constant.NAVER.name -> {
+                     NAVER -> {
                         NaverIdLoginSDK.initialize(requireActivity(), resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
                         NaverIdLoginSDK.logout()
                         logoutProcess()
                      }
-                     Constant.KAKAO.name -> {
+                     KAKAO -> {
                         UserApiClient.instance.logout { error ->
                            if(error != null) Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show() else logoutProcess()
                         }
@@ -164,7 +166,7 @@ class SettingFragment : Fragment() {
                .setMessage("정말 탈퇴하시겠습니까?")
                .setPositiveButton("확인") { _, _ ->
                   when(getUser.type) {
-                     Constant.GOOGLE.name -> {
+                     GOOGLE -> {
                         val account = GoogleSignIn.getLastSignedInAccount(requireActivity())
                         val gso = GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
                            .requestIdToken(resources.getString(R.string.googleWebClientId))
@@ -181,7 +183,7 @@ class SettingFragment : Fragment() {
                            }
                         }
                      }
-                     Constant.NAVER.name -> {
+                     NAVER -> {
                         NaverIdLoginSDK.initialize(requireActivity(), resources.getString(R.string.naverClientId), resources.getString(R.string.naverClientSecret), getString(R.string.app_name))
 
                         if(NaverIdLoginSDK.getAccessToken() == null) {
@@ -204,7 +206,7 @@ class SettingFragment : Fragment() {
                            }
                         }
                      }
-                     Constant.KAKAO.name -> {
+                     KAKAO -> {
                         UserApiClient.instance.accessTokenInfo { token, error ->
                            if(error != null) {
                               Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
@@ -229,16 +231,21 @@ class SettingFragment : Fragment() {
       return binding.root
    }
 
-   private fun userProfile() {
+   private fun showProfile() {
       lifecycleScope.launch {
-         val getProfile = powerSync.getProfile(CustomUtil.getUser.uid)
+         val getProfile = powerSync.getProfile(getUser.uid)
+
+         getFile = powerSync.getFile(getProfile.id)
+         if(getFile.name != "") {
+            val imgPath = requireActivity().filesDir.toString() + "/" + getFile.name
+            val file = File(imgPath)
+            if(file.exists()){
+               val bm = BitmapFactory.decodeFile(imgPath)
+               binding.ivUser.setImageBitmap(bm)
+            }
+         }
 
          if(getProfile.name != "") binding.tvName.text = getProfile.name
-         if(getProfile.pictureUrl != null && getProfile.pictureUrl != "") {
-            val imgPath = requireActivity().filesDir.toString() + "/" + getProfile.pictureUrl // 내부 저장소에 저장되어 있는 이미지 경로
-            val bm = BitmapFactory.decodeFile(imgPath)
-            binding.ivUser.setImageBitmap(bm)
-         }
 
          if(getProfile.birth != "") {
             val current = Calendar.getInstance()
@@ -249,7 +256,7 @@ class SettingFragment : Fragment() {
             var age = currentYear - getProfile.birth!!.substring(0 until 4).toInt()
             if(getProfile.birth!!.substring(5 until 7).toInt() * 100 + getProfile.birth!!.substring(8 until 10).toInt() > currentMonth * 100 + currentDay) age--
 
-            val gender = if(getProfile.gender == Constant.MALE.name) "남" else "여"
+            val gender = if(getProfile.gender == MALE) "남" else "여"
 
             binding.tvAge.text = "만${age}세 / $gender"
          }
@@ -300,24 +307,22 @@ class SettingFragment : Fragment() {
    }
 
    private fun deleteData() {
+      // 알람 삭제
+      val alarmReceiver = AlarmReceiver()
+      val getAllMedicine = dataManager.getAllMedicine()
+      for(i in getAllMedicine.indices) alarmReceiver.cancelAlarm(requireActivity(), getAllMedicine[i].id)
+
+      // 테이블 삭제
       dataManager.deleteTable(USER, "id")
       dataManager.deleteTable(TOKEN, USER_ID)
-      dataManager.deleteTable(MEDICINE, USER_ID)
-      dataManager.deleteTable(MEDICINE_TIME, USER_ID)
-      dataManager.deleteTable(MEDICINE_INTAKE, USER_ID)
-      dataManager.deleteTable(NOTE, USER_ID)
-      dataManager.deleteTable(IMAGE, USER_ID)
+      dataManager.deleteTable("medicine", USER_ID)
+      dataManager.deleteTable(UPDATED_AT, USER_ID)
 
-      lifecycleScope.launch {
-         // 사용자 데이터 삭제
-         val alarmReceiver = AlarmReceiver()
-         val getCategories = powerSync.getAllCategory()
-         for(i in getCategories.indices) alarmReceiver.cancelAlarm(requireActivity(), getCategories[i].toInt())
-         MyApp.prefs.removePrefs()
+      // preference 정보 삭제
+      MyApp.prefs.removePrefs()
 
-         requireActivity().runOnUiThread {
-            Toast.makeText(context, "탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
-         }
+      requireActivity().runOnUiThread {
+         Toast.makeText(context, "탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
       }
 
       finishAffinity(requireActivity())

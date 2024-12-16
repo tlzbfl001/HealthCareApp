@@ -12,8 +12,8 @@ import kr.bodywell.android.api.powerSync.SyncService
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.networkStatus
-import kr.bodywell.android.api.ViewModelUtil.refreshToken
-import kr.bodywell.android.api.ViewModelUtil.requestStatus
+import kr.bodywell.android.util.ViewModelUtil.refreshToken
+import kr.bodywell.android.util.ViewModelUtil.requestStatus
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getToken
 import kr.bodywell.android.util.CustomUtil.getUser
@@ -24,7 +24,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    private val context = application.applicationContext
    val dataManager = DataManager(context)
    var dateVM = MutableLiveData<LocalDate>()
-   var intVM = MutableLiveData<Int>()
+   var medicineCheckVM = MutableLiveData<Int>()
+   var selectedVM = MutableLiveData<Boolean>()
 
    init {
       dataManager.open()
@@ -52,7 +53,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       dateVM.value = selectedDate
    }
 
-   fun setInt(data: Int) {
-      intVM.value = data
+   fun setMedicineCheck(data: Int) {
+      medicineCheckVM.value = data
+   }
+
+   fun setSelected(data: Boolean) {
+      selectedVM.value = data
    }
 }

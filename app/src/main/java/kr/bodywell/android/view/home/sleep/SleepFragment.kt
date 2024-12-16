@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,10 +17,13 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentSleepBinding
+import kr.bodywell.android.model.Constants.GOALS
+import kr.bodywell.android.model.Constants.SLEEP
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -30,6 +32,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class SleepFragment : Fragment() {
    private var _binding: FragmentSleepBinding? = null
@@ -38,6 +41,8 @@ class SleepFragment : Fragment() {
    private val viewModel: MainViewModel by activityViewModels()
    private var getGoal = Goal()
    private var getSleep = Sleep()
+   private var starts = LocalDateTime.now()
+   private var ends = LocalDateTime.now()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -61,10 +66,11 @@ class SleepFragment : Fragment() {
          lifecycleScope.launch {
             if(getGoal.id == "") {
                val uuid = UuidCreator.getTimeOrderedEpoch()
-               powerSync.insertGoal(Goal(id = uuid.toString(), sleep = total, date = selectedDate.toString(), createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+               powerSync.insertGoal(Goal(id = uuid.toString(), sleep = total, date = selectedDate.toString(),
+                  createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                getGoal = powerSync.getGoal(selectedDate.toString())
             }else {
-               powerSync.updateData("goals", "sleep", total.toString(), getGoal.id)
+               powerSync.updateData(GOALS, SLEEP, total.toString(), getGoal.id)
             }
          }
 
@@ -78,7 +84,7 @@ class SleepFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), SleepRecordFragment())
+         replaceFragment1(parentFragmentManager, SleepRecordFragment())
       }
 
       viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
@@ -101,41 +107,42 @@ class SleepFragment : Fragment() {
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
          getSleep = powerSync.getSleep(selectedDate.toString())
-      }
 
-      if(getSleep.starts != "" && getSleep.ends!= "") {
-         var starts: LocalDateTime?
-         var ends: LocalDateTime?
+         if(getSleep.starts != "" && getSleep.ends!= "") {
+            if(getSleep.starts.contains("+09:00")) {
+               starts = isoToDateTime(getSleep.starts)
+               ends = isoToDateTime(getSleep.ends)
+            }else {
+               val split1 = getSleep.starts.split(".", limit=2)
+               val replace1 = split1[0].replace("T", " ")
+               val split2 = getSleep.ends.split(".", limit=2)
+               val replace2 = split2[0].replace("T", " ")
+               starts = LocalDateTime.parse(replace1, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusHours(9)
+               ends = LocalDateTime.parse(replace2, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusHours(9)
+            }
 
-         try {
-            val starts1 = LocalDateTime.parse(getSleep.starts, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'"))
-            val ends1 = LocalDateTime.parse(getSleep.ends, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'"))
-            starts = starts1.plusHours(9)
-            ends = ends1.plusHours(9)
-         }catch(e: Exception) {
-            Log.e(TAG, "err: $e")
-            starts = isoToDateTime(getSleep.starts)
-            ends = isoToDateTime(getSleep.ends)
+            val diff1 = Duration.between(starts, ends)
+            total = diff1.toMinutes().toInt()
+
+            binding.pbSleep.setProgressStartColor(resources.getColor(R.color.sleep))
+            binding.pbSleep.setProgressEndColor(resources.getColor(R.color.sleep))
+            binding.pbSleep.max = getGoal.sleep
+            binding.pbSleep.progress = total
+
+            if(starts.toString() != "" && ends.toString() != "") {
+               binding.tvBedtime.text = "${starts!!.hour}h ${starts!!.minute}m"
+               binding.tvWakeTime.text = "${ends!!.hour}h ${ends!!.minute}m"
+            }
+
+            val remain = (getGoal.sleep - total)
+            if(remain > 0) binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
+         }else {
+            binding.tvBedtime.text = "0h 0m"
+            binding.tvWakeTime.text = "0h 0m"
          }
 
-         val diff1 = Duration.between(starts, ends)
-         total = diff1.toMinutes().toInt()
-
-         binding.pbSleep.setProgressStartColor(resources.getColor(R.color.sleep))
-         binding.pbSleep.setProgressEndColor(resources.getColor(R.color.sleep))
-         binding.pbSleep.max = getGoal.sleep
-         binding.pbSleep.progress = total
-         binding.tvBedtime.text = "${starts!!.hour}h ${starts!!.minute}m"
-         binding.tvWakeTime.text = "${ends!!.hour}h ${ends!!.minute}m"
-
-         val remain = (getGoal.sleep - total)
-         if(remain > 0) binding.tvRemain.text = "${remain / 60}h ${remain % 60}m"
-      }else {
-         binding.tvBedtime.text = "0h 0m"
-         binding.tvWakeTime.text = "0h 0m"
+         binding.tvGoal.text = "${getGoal.sleep / 60}h ${getGoal.sleep % 60}m"
+         binding.tvSleep.text = "${total / 60}h ${total % 60}m"
       }
-
-      binding.tvGoal.text = "${getGoal.sleep / 60}h ${getGoal.sleep % 60}m"
-      binding.tvSleep.text = "${total / 60}h ${total % 60}m"
    }
 }

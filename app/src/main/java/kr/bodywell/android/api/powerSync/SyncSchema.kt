@@ -10,14 +10,28 @@ val SyncSchema: Schema = Schema(
 			name = "profiles",
 			columns = listOf(
 				Column.text("name"),
-				Column.text("picture_url"),
 				Column.text("birth"),
-				Column.text("gender"),
 				Column.real("height"),
 				Column.real("weight"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("user_id")
+				Column.text("user_id"),
+				Column.text("gender")
+			)
+		),
+		Table(
+			name = "files",
+			columns = listOf(
+				Column.text("name"),
+				Column.text("size"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("data"),
+				Column.text("filetype"),
+				Column.text("mimetype"),
+				Column.text("user_id"),
+				Column.text("diet_id"),
+				Column.text("profile_id")
 			)
 		),
 		Table(
@@ -35,7 +49,16 @@ val SyncSchema: Schema = Schema(
 				Column.text("register_type"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at"),
+				Column.text("user_id")
+			)
+		),
+		Table(
+			name = "food_usages",
+			columns = listOf(
+				Column.text("usage_count"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("food_id"),
 				Column.text("user_id")
 			)
 		),
@@ -52,11 +75,9 @@ val SyncSchema: Schema = Schema(
 				Column.text("quantity_unit"),
 				Column.integer("volume"),
 				Column.text("volume_unit"),
-				Column.text("photos"),
 				Column.text("date"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at"),
 				Column.text("user_id"),
 				Column.text("food_id")
 			)
@@ -69,7 +90,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("date"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at")
+				Column.text("deleted_at"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -79,7 +101,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("register_type"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at")
+				Column.text("deleted_at"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -93,7 +116,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("created_at"),
 				Column.text("updated_at"),
 				Column.text("deleted_at"),
-				Column.text("activity_id")
+				Column.text("activity_id"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -109,7 +133,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("time"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at")
+				Column.text("deleted_at"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -119,7 +144,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("ends"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at")
+				Column.text("deleted_at"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -133,7 +159,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("ends"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at")
+				Column.text("deleted_at"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -143,7 +170,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("created_at"),
 				Column.text("updated_at"),
 				Column.text("deleted_at"),
-				Column.text("medicine_id")
+				Column.text("medicine_id"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -158,7 +186,20 @@ val SyncSchema: Schema = Schema(
 				Column.text("updated_at"),
 				Column.text("deleted_at"),
 				Column.text("medicine_time_id"),
-				Column.text("source_id")
+				Column.text("medicine_id"),
+				Column.text("user_id")
+			)
+		),
+		Table(
+			name = "notes",
+			columns = listOf(
+				Column.text("title"),
+				Column.text("content"),
+				Column.text("emotion"),
+				Column.text("date"),
+				Column.text("created_at"),
+				Column.text("updated_at"),
+				Column.text("user_id")
 			)
 		),
 		Table(
@@ -174,7 +215,8 @@ val SyncSchema: Schema = Schema(
 				Column.text("date"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
-				Column.text("deleted_at")
+				Column.text("deleted_at"),
+				Column.text("user_id")
 			)
 		)
 	)

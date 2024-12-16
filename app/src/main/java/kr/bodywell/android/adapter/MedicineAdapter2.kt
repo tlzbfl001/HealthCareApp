@@ -1,7 +1,7 @@
 package kr.bodywell.android.adapter
 
-import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +12,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.model.Constants.MEDICINES
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
@@ -24,30 +27,38 @@ import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.medicine.MedicineAddFragment
 
 class MedicineAdapter2 (
-   private val context: Activity,
+   private val fragmentManager: FragmentManager,
    private val itemList: ArrayList<Medicine> = ArrayList()
 ) : RecyclerView.Adapter<MedicineAdapter2.ViewHolder>() {
+   private lateinit var context: Context
+   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var alarmReceiver: AlarmReceiver = AlarmReceiver()
    private var getMedicineTime = ArrayList<MedicineTime>()
    private val timeList = ArrayList<MedicineTime>()
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_record, parent, false)
+      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_medicine_record, parent, false)
+      context = parent.context
+      dataManager = DataManager(context)
+      dataManager.open()
+
       return ViewHolder(view)
    }
 
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-      val split = itemList[pos].name.split("/", limit=4)
+      val alarmId = dataManager.getMedicine(itemList[pos].id).id.toInt()
 
+      val split = itemList[pos].category.split("/", limit=3)
       holder.tvType.text = split[0]
-      holder.tvName.text = split[1]
+      holder.tvName.text = itemList[pos].name
       holder.tvCount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
+      // 약복용 시간목록 보여주기
       runBlocking {
-         getMedicineTime = powerSync.getAllMedicineTime("medicine_id", itemList[pos].id) as ArrayList<MedicineTime>
+         getMedicineTime = powerSync.getAllMedicineTime(itemList[pos].id) as ArrayList<MedicineTime>
 
-         holder.tvPeriod.text = "${split[2]}일동안 ${getMedicineTime.size}회 복용"
+         holder.tvPeriod.text = "${split[1]}일동안 ${getMedicineTime.size}회 복용"
 
          if(getMedicineTime.isNotEmpty()) {
             val timeList = ArrayList<MedicineTime>()
@@ -60,42 +71,45 @@ class MedicineAdapter2 (
             holder.recyclerView.adapter = adapter
          }
 
-         if(split[3].toInt() == 1) {
+         if(split[2].toInt() == 1) {
             holder.switchOnOff.isChecked = true
             holder.ivAlarm.setColorFilter(Color.parseColor("#A47AE8"))
          }
       }
 
+      // 알람 유무 체크
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
-            val message = split[1] + " " + itemList[pos].amount + itemList[pos].unit
-            alarmReceiver.setAlarm(context, itemList[pos].category.toInt(), itemList[pos].starts, itemList[pos].ends, timeList, message)
+            val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
+            alarmReceiver.setAlarm(context, alarmId, itemList[pos].starts, itemList[pos].ends, timeList, message)
             runBlocking {
-               powerSync.updateData("medicines", "name", "${split[0]}/${split[1]}/${split[2]}/1", itemList[pos].id)
+               powerSync.updateData(MEDICINES, "category", "${split[0]}/${split[1]}/1", itemList[pos].id)
             }
          }else {
-            alarmReceiver.cancelAlarm(context, itemList[pos].category.toInt())
+            alarmReceiver.cancelAlarm(context, alarmId)
             runBlocking {
-               powerSync.updateData("medicines", "name", "${split[0]}/${split[1]}/${split[2]}/0", itemList[pos].id)
+               powerSync.updateData(MEDICINES, "category", "${split[0]}/${split[1]}/0", itemList[pos].id)
             }
          }
       }
 
+      // 약복용 수정페이지로 이동
       holder.cvEdit.setOnClickListener {
-         bundle.putParcelable("medicine", itemList[pos])
-         replaceFragment2(context, MedicineAddFragment(), bundle)
+         bundle.putParcelable(MEDICINES, itemList[pos])
+         replaceFragment2(fragmentManager, MedicineAddFragment(), bundle)
       }
 
+      // 약복용 삭제
       holder.ivDelete.setOnClickListener {
          val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
             .setTitle("복용약 삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                runBlocking {
-                  powerSync.deleteItem("medicines", "id", itemList[pos].id)
+                  powerSync.deleteItem(MEDICINES, "id", itemList[pos].id)
                }
 
-               alarmReceiver.cancelAlarm(context, itemList[pos].category.toInt())
+               alarmReceiver.cancelAlarm(context, alarmId)
                itemList.removeAt(pos)
                notifyDataSetChanged()
 

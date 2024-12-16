@@ -1,6 +1,5 @@
 package kr.bodywell.android.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +10,10 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.MedicineIntake
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDateTime
@@ -27,7 +26,7 @@ class MedicineAdapter1 (
     private var check = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drug_daily, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_medicine_daily, parent, false)
         dataManager = DataManager(parent.context)
         dataManager.open()
         return ViewHolder(view)
@@ -39,30 +38,27 @@ class MedicineAdapter1 (
         holder.tvAmount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
         check = itemList[pos].initCheck
-        viewModel.setInt(check)
+        viewModel.setMedicineCheck(check)
         if(itemList[pos].isChecked != "") holder.tvCheck.isChecked = true
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {
             runBlocking {
-                val getData = powerSync.getMedicineIntake(selectedDate.toString(), itemList[pos].medicineTimeId)
+                val getData = powerSync.getIntake(selectedDate.toString(), itemList[pos].medicineTimeId)
 
                 if(holder.tvCheck.isChecked) {
                     check += 1
                     if(getData.id == "") {
                         val uuid = UuidCreator.getTimeOrderedEpoch()
-                        powerSync.insertMedicineIntake(MedicineIntake(id = uuid.toString(), intakeAt = selectedDate.toString(), createdAt = LocalDateTime.now().toString(),
-                            updatedAt = LocalDateTime.now().toString(), medicineId = itemList[pos].medicineId, medicineTimeId = itemList[pos].medicineTimeId))
-                        Log.d(CustomUtil.TAG, "uuid: ${uuid}")
-                        dataManager.insertMedicineIntake(MedicineIntake(id = uuid.toString(), medicineId = itemList[pos].medicineId, medicineTimeId = itemList[pos].medicineTimeId,
-                            intakeAt = selectedDate.toString()))
+                        powerSync.insertMedicineIntake(MedicineIntake(id = uuid.toString(), name = itemList[pos].name, intakeAt = selectedDate.toString(),
+                            createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString(), medicineTimeId = itemList[pos].medicineTimeId))
                     }
                 }else {
                     if(check > 0) check -= 1
-                    if(getData.id != "") powerSync.deleteItem("medicine_intakes", "id", getData.id)
+                    if(getData.id != "") powerSync.deleteItem(MEDICINE_INTAKES, "id", getData.id)
                 }
 
-                viewModel.setInt(check)
+                viewModel.setMedicineCheck(check)
             }
         }
     }

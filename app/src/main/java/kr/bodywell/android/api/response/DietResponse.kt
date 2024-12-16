@@ -36,18 +36,38 @@ data class DietResponse(
 	@SerializedName("volumeUnit")
 	var volumeUnit: String = "",
 
-	@SerializedName("photos")
-	var photos: ArrayList<String> = ArrayList(),
-
 	@SerializedName("date")
 	var date: String = "",
 
 	@SerializedName("createdAt")
-	var createdAt: String?,
+	var createdAt: String = "",
 
 	@SerializedName("updatedAt")
-	var updatedAt: String?,
+	var updatedAt: String = "",
 
-	@SerializedName("deletedAt")
-	var deletedAt: String?
+	@SerializedName("photos")
+	var photos: ArrayList<PhotoResponse> = ArrayList()
+)
+
+data class PhotoResponse(
+	@SerializedName("id")
+	var id: String = "",
+
+	@SerializedName("name")
+	var name: String = "",
+
+	@SerializedName("mimetype")
+	var mimetype: String = "",
+
+	@SerializedName("filetype")
+	var filetype: String = "",
+
+	@SerializedName("size")
+	var size: Int = 0,
+
+	@SerializedName("createdAt")
+	var createdAt: String = "",
+
+	@SerializedName("updatedAt")
+	var updatedAt: String = ""
 )

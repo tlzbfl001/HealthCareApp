@@ -26,7 +26,7 @@ class BluetoothFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment3(requireActivity(), ConnectFragment())
+				replaceFragment3(requireActivity().supportFragmentManager, ConnectFragment())
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -41,7 +41,7 @@ class BluetoothFragment : Fragment() {
 		setStatusBar(requireActivity(), binding.mainLayout)
 
 		binding.clBack.setOnClickListener {
-			replaceFragment3(requireActivity(), ConnectFragment())
+			replaceFragment3(requireActivity().supportFragmentManager, ConnectFragment())
 		}
 
 		binding.viewPager.adapter = MyAdapter(requireActivity())

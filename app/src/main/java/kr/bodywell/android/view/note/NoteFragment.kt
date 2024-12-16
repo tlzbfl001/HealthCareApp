@@ -21,14 +21,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter2
-import kr.bodywell.android.adapter.PhotoSlideAdapter
-import kr.bodywell.android.database.DBHelper.Companion.CREATED_AT
-import kr.bodywell.android.database.DBHelper.Companion.NOTE
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteBinding
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.PermissionUtil
@@ -43,16 +40,14 @@ class NoteFragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var days = ArrayList<LocalDate?>()
-   private var type = "NOTE"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -72,11 +67,8 @@ class NoteFragment : Fragment() {
 
       }
 
-      dataManager = DataManager(activity)
-      dataManager.open()
-
       // 날짜 초기화
-      if(arguments?.getString("data").toString() != NOTE) selectedDate = LocalDate.now()
+      if(arguments?.getString("data").toString() != "note") selectedDate = LocalDate.now()
 
       binding.clExpand.setOnClickListener {
          val dialog = NoteCalendarDialog(requireActivity())
@@ -94,11 +86,11 @@ class NoteFragment : Fragment() {
       }
 
       binding.ivWrite.setOnClickListener {
-         replaceFragment1(requireActivity(), NoteWriteFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, NoteWriteFragment())
       }
 
       binding.clWrite.setOnClickListener {
-         replaceFragment1(requireActivity(), NoteWriteFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, NoteWriteFragment())
       }
 
       val gestureListener = SwipeGesture(binding.recyclerView)
@@ -117,7 +109,7 @@ class NoteFragment : Fragment() {
 
       binding.clGallery.setOnClickListener {
          if(checkCameraPermission(requireActivity())) {
-            replaceFragment1(requireActivity(), GalleryFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, GalleryFragment())
          }else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_2)
@@ -140,20 +132,22 @@ class NoteFragment : Fragment() {
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
 
-      val getNote = dataManager.getNote(selectedDate.toString())
+      lifecycleScope.launch {
+         val getNote = powerSync.getNote(selectedDate.toString())
 
-      if(getNote.createdAt != "") {
-         binding.tvTitle.text = getNote.title
-         when(getNote.status) {
-            1 -> binding.ivFace.setImageResource(R.drawable.face1)
-            2 -> binding.ivFace.setImageResource(R.drawable.face2)
-            3 -> binding.ivFace.setImageResource(R.drawable.face3)
-            4 -> binding.ivFace.setImageResource(R.drawable.face4)
-            5 -> binding.ivFace.setImageResource(R.drawable.face5)
+         if(getNote.id != "") {
+            binding.tvTitle.text = getNote.title
+            when(getNote.emotion) {
+               "Happy" -> binding.ivFace.setImageResource(R.drawable.face1)
+               "Peaceful" -> binding.ivFace.setImageResource(R.drawable.face2)
+               "Excited" -> binding.ivFace.setImageResource(R.drawable.face3)
+               "Sad" -> binding.ivFace.setImageResource(R.drawable.face4)
+               "Angry" -> binding.ivFace.setImageResource(R.drawable.face5)
+            }
+         }else {
+            binding.tvTitle.text = "제목"
+            binding.ivFace.setImageResource(R.drawable.face1)
          }
-      }else {
-         binding.tvTitle.text = "제목"
-         binding.ivFace.setImageResource(R.drawable.face1)
       }
 
       // 달력 설정
@@ -166,24 +160,22 @@ class NoteFragment : Fragment() {
          // 섭취 칼로리 계산
          val foodKcal = getFoodCalories(selectedDate.toString())
          binding.tvKcal1.text = "${foodKcal.int5}kcal"
+
+         // 소비 칼로리 계산
+         var total = 0
+         val getAllWorkout = powerSync.getWorkouts(selectedDate.toString())
+         for(i in getAllWorkout.indices) total += getAllWorkout[i].calorie
+         binding.tvKcal2.text = "${total}kcal"
       }
-
-      // 소비 칼로리 계산
-      var total = 0
-//      val getDailyExercise = dataManager.getDailyExercise(CREATED_AT, selectedDate.toString())
-//
-//      for(i in 0 until getDailyExercise.size) total += getDailyExercise[i].kcal
-
-      binding.tvKcal2.text = "${total}kcal"
 
       setImageView()
    }
 
    private fun setImageView() {
-      val dataList = dataManager.getImage(type, selectedDate.toString())
+      /*val dataList = dataManager.getImage(type, selectedDate.toString())
       val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
       binding.viewPager.adapter = photoAdapter
-      binding.viewPager.setPadding(140, 0, 140, 0)
+      binding.viewPager.setPadding(140, 0, 140, 0)*/
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {

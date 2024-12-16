@@ -8,30 +8,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.lifecycleScope
+import com.github.f4b6a3.uuid.UuidCreator
+import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.NOTE
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentNoteWriteBinding
 import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import java.time.LocalDateTime
+import java.util.UUID
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private lateinit var dataManager: DataManager
+   private var getNote = Note()
    private var bundle = Bundle()
-   private var status = 1
+   private var emotion = "Happy"
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment2(requireActivity(), NoteFragment(), bundle)
+            replaceFragment2(requireActivity().supportFragmentManager, NoteFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -54,11 +58,11 @@ class NoteWriteFragment : Fragment() {
          true
       }
 
-      dataManager = DataManager(activity)
-      dataManager.open()
+      lifecycleScope.launch {
+         getNote = powerSync.getNote(selectedDate.toString())
+      }
 
-      val getNote = dataManager.getNote(selectedDate.toString())
-      bundle.putString("data", NOTE)
+      bundle.putString("data", "note")
 
       binding.linear.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -66,7 +70,7 @@ class NoteWriteFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment2(requireActivity(), NoteFragment(), bundle)
+         replaceFragment2(requireActivity().supportFragmentManager, NoteFragment(), bundle)
       }
 
       binding.clPrev.setOnClickListener {
@@ -81,44 +85,49 @@ class NoteWriteFragment : Fragment() {
 
       binding.ivFace1.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face1)
-         status = 1
+         emotion = "Happy"
       }
 
       binding.ivFace2.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face2)
-         status = 2
+         emotion = "Peaceful"
       }
 
       binding.ivFace3.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face3)
-         status = 3
+         emotion = "Excited"
       }
 
       binding.ivFace4.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face4)
-         status = 4
+         emotion = "Sad"
       }
 
       binding.ivFace5.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face5)
-         status = 5
+         emotion = "Angry"
       }
 
       binding.cvSave.setOnClickListener {
          if(binding.etTitle.text.toString().contains("'") || binding.etContent.text.toString().contains("'")) {
             Toast.makeText(activity, "특수문자 '는 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(getNote.createdAt == "") {
-               dataManager.insertNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-                  status = status, createdAt = selectedDate.toString()))
-               Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-            }else {
-               dataManager.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-                  status = status, createdAt = selectedDate.toString()))
-               Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launch {
+               getNote = powerSync.getNote(selectedDate.toString())
+
+               if(getNote.id == "") {
+                  val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+                  powerSync.insertNote(Note(id = uuid.toString(), title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+                     emotion = emotion, date = selectedDate.toString(), createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+               }else {
+                  powerSync.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
+                     emotion = emotion, date = selectedDate.toString()))
+                  Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+               }
             }
 
-            replaceFragment2(requireActivity(), NoteFragment(), bundle)
+            replaceFragment2(requireActivity().supportFragmentManager, NoteFragment(), bundle)
          }
       }
 
@@ -130,23 +139,26 @@ class NoteWriteFragment : Fragment() {
    private fun settingData() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
-      val getNote = dataManager.getNote(selectedDate.toString())
-      if(getNote.createdAt != "") {
-         binding.etTitle.setText(getNote.title)
-         binding.etContent.setText(getNote.content)
-         when(getNote.status) {
-            1 -> binding.ivFace.setImageResource(R.drawable.face1)
-            2 -> binding.ivFace.setImageResource(R.drawable.face2)
-            3 -> binding.ivFace.setImageResource(R.drawable.face3)
-            4 -> binding.ivFace.setImageResource(R.drawable.face4)
-            5 -> binding.ivFace.setImageResource(R.drawable.face5)
+      lifecycleScope.launch {
+         getNote = powerSync.getNote(selectedDate.toString())
+
+         if(getNote.id != "") {
+            binding.etTitle.setText(getNote.title)
+            binding.etContent.setText(getNote.content)
+            when(getNote.emotion) {
+               "Happy" -> binding.ivFace.setImageResource(R.drawable.face1)
+               "Peaceful" -> binding.ivFace.setImageResource(R.drawable.face2)
+               "Excited" -> binding.ivFace.setImageResource(R.drawable.face3)
+               "Sad" -> binding.ivFace.setImageResource(R.drawable.face4)
+               "Angry" -> binding.ivFace.setImageResource(R.drawable.face5)
+            }
+         }else {
+            binding.etTitle.setText("")
+            binding.etContent.setText("")
+            binding.etTitle.hint = "제목."
+            binding.etContent.hint = "내용입력"
+            binding.ivFace.setImageResource(R.drawable.face1)
          }
-      }else {
-         binding.etTitle.setText("")
-         binding.etContent.setText("")
-         binding.etTitle.hint = "제목."
-         binding.etContent.hint = "내용입력"
-         binding.ivFace.setImageResource(R.drawable.face1)
       }
    }
 

@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -24,25 +23,21 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.CalendarAdapter1
-import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
-import kr.bodywell.android.model.MedicineIntake
-import kr.bodywell.android.model.MedicineTime
-import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.model.Constants.FILES
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.getUser
-import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.MainViewModel
+import java.io.File
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -59,8 +54,10 @@ class MainFragment : Fragment() {
    private val viewModel: MainViewModel by activityViewModels()
    private lateinit var dataManager: DataManager
    private var adapter: CalendarAdapter1? = null
-   private var pressedTime: Long = 0
    private var days = ArrayList<LocalDate?>()
+   private var pressedTime: Long = 0
+   private var starts = LocalDateTime.now()
+   private var ends = LocalDateTime.now()
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -100,73 +97,52 @@ class MainFragment : Fragment() {
       selectedDate = LocalDate.now()
       viewModel.setDate()
 
-      val alarmReceiver = AlarmReceiver()
-
+      // 프로필 설정
       lifecycleScope.launch {
          val getProfile = powerSync.getProfile(getUser.uid)
-         if(getProfile.name != "") binding.tvName.text = getProfile.name + " 님"
-         if(getProfile.pictureUrl != null && getProfile.pictureUrl != "") {
-            val imgPath = requireActivity().filesDir.toString() + "/" + getProfile.pictureUrl // 내부 저장소에 저장되어 있는 이미지 경로
-            val bm = BitmapFactory.decodeFile(imgPath)
-            binding.ivUser.setImageBitmap(bm)
-         }
 
-         val alarmId = dataManager.getAlarmId()
-         val watchMedicine = powerSync.watchMedicine(alarmId)
-         val timeList = ArrayList<MedicineTime>()
-
-         // 실시간 약복용 정보 업데이트
-         watchMedicine.collect {
-            Log.d(TAG, "$it")
-            for(i in it.indices) {
-               dataManager.insertMedicine(it[i].id, it[i].category.toInt())
-
-               val getTime = powerSync.getAllMedicineTime("medicine_id", it[i].id)
-               for(j in getTime.indices) {
-                  timeList.add(MedicineTime(time = getTime[j].time))
-                  dataManager.insertMedicineTime(MedicineTime(id = getTime[j].id, medicineId = it[i].id))
-
-                  val getData = powerSync.getData("medicine_intakes", "id", "medicine_time_id", getTime[j].id)
-                  if(getData != "") {
-                     dataManager.insertMedicineIntake(MedicineIntake(id = getData, medicineId = it[i].id, medicineTimeId = getTime[j].id))
-                  }
-               }
-
-               if(timeList.isNotEmpty()) {
-                  alarmReceiver.setAlarm(requireActivity(), it[i].category.toInt(), it[i].starts, it[i].ends, timeList, "${it[i].name} ${it[i].amount}${it[i].unit} 복용")
-               }
+         val getFile = powerSync.getFile(getProfile.id)
+         if(getFile.name != "") {
+            powerSync.deleteDuplicate(FILES, "profile_id", getProfile.id, getFile.id)
+            val imgPath = requireActivity().filesDir.toString() + "/" + getFile.name
+            val file = File(imgPath)
+            if(file.exists()){
+               val bm = BitmapFactory.decodeFile(imgPath)
+               binding.ivUser.setImageBitmap(bm)
             }
          }
+
+         if(getProfile.name != "") binding.tvName.text = getProfile.name + " 님"
       }
 
       binding.cvFood.setOnClickListener {
          layoutType = 1
-         replaceFragment1(requireActivity(), DetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.cvWater.setOnClickListener {
          layoutType = 2
-         replaceFragment1(requireActivity(), DetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.cvExercise.setOnClickListener {
          layoutType = 3
-         replaceFragment1(requireActivity(), DetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.cvBody.setOnClickListener {
          layoutType = 4
-         replaceFragment1(requireActivity(), DetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.cvSleep.setOnClickListener {
          layoutType = 5
-         replaceFragment1(requireActivity(), DetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.cvDrug.setOnClickListener {
          layoutType = 6
-         replaceFragment1(requireActivity(), DetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.ivCalendar.setOnClickListener {
@@ -184,7 +160,7 @@ class MainFragment : Fragment() {
          window?.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
       }
 
-      val gestureListener: SwipeGesture = SwipeGesture(binding.recyclerView)
+      val gestureListener = SwipeGesture(binding.recyclerView)
       val gestureDetector = GestureDetector(requireActivity(), gestureListener)
 
       binding.recyclerView.setOnTouchListener { _, event ->
@@ -311,7 +287,7 @@ class MainFragment : Fragment() {
          val exerciseSum = getExerciseCalories(selectedDate.toString())
          val getBody = powerSync.getBody(selectedDate.toString())
          val getSleep = powerSync.getSleep(selectedDate.toString())
-         val getIntakeCount = powerSync.getIntakeCount(selectedDate.toString())
+         val getIntake = powerSync.getRecentlyIntakes(selectedDate.toString())
 
          if(foodSum > 0) {
             binding.tvFoodPt.text = if(getGoal.kcalOfDiet > 0) "${((foodSum * 100) / getGoal.kcalOfDiet)}%" else "100%"
@@ -347,26 +323,23 @@ class MainFragment : Fragment() {
          }
 
          val sleep = if(getGoal.sleep % 60 == 0) "${getGoal.sleep / 60}h" else "${getGoal.sleep / 60}h${getGoal.sleep % 60}m"
-         var total = 0
 
          if(getSleep.starts != "" && getSleep.ends!= "") {
-            var starts: LocalDateTime?
-            var ends: LocalDateTime?
-
-            try {
-               val starts1 = LocalDateTime.parse(getSleep.starts, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'"))
-               val ends1 = LocalDateTime.parse(getSleep.ends, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'"))
-               starts = starts1.plusHours(9)
-               ends = ends1.plusHours(9)
-            }catch(e: Exception) {
-               Log.e(TAG, "err: $e")
-               starts = isoToDateTime(getSleep.starts)
-               ends = isoToDateTime(getSleep.ends)
+            if(getSleep.starts.contains("+09:00")) {
+               starts = CustomUtil.isoToDateTime(getSleep.starts)
+               ends = CustomUtil.isoToDateTime(getSleep.ends)
+            }else {
+               val split1 = getSleep.starts.split(".", limit=2)
+               val replace1 = split1[0].replace("T", " ")
+               val split2 = getSleep.ends.split(".", limit=2)
+               val replace2 = split2[0].replace("T", " ")
+               starts = LocalDateTime.parse(replace1, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusHours(9)
+               ends = LocalDateTime.parse(replace2, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusHours(9)
             }
-
-            val diff1 = Duration.between(starts, ends)
-            total = diff1.toMinutes().toInt()
          }
+
+         val diff1 = Duration.between(starts, ends)
+         val total = diff1.toMinutes().toInt()
 
          if(total > 0) {
             binding.tvSleepPt.text = if(getGoal.sleep > 0) "${(total * 100) / getGoal.sleep}%" else "100%"
@@ -374,10 +347,10 @@ class MainFragment : Fragment() {
             binding.pbSleep.progress = total
          }
 
-         if(getIntakeCount > 0) {
-            binding.tvDrugPt.text = if(getGoal.medicineIntake > 0) "${(getIntakeCount * 100) / getGoal.medicineIntake}%" else "100%"
-            binding.pbDrug.max = if(getGoal.medicineIntake > 0) getGoal.medicineIntake else getIntakeCount
-            binding.pbDrug.progress = getIntakeCount
+         if(getIntake.isNotEmpty()) {
+            binding.tvDrugPt.text = if(getGoal.medicineIntake > 0) "${(getIntake.size * 100) / getGoal.medicineIntake}%" else "100%"
+            binding.pbDrug.max = if(getGoal.medicineIntake > 0) getGoal.medicineIntake else getIntake.size
+            binding.pbDrug.progress = getIntake.size
          }
 
          binding.tvFood.text = "$foodSum/${getGoal.kcalOfDiet}kcal"
@@ -385,7 +358,7 @@ class MainFragment : Fragment() {
          binding.tvExercise.text = "$exerciseSum/${getGoal.kcalOfWorkout}kcal"
          binding.tvBody.text = "${weight}/${weightGoal}kg"
          binding.tvSleep.text = "${total / 60}h${total % 60}m/$sleep"
-         binding.tvDrug.text = "$getIntakeCount/${getGoal.medicineIntake}회"
+         binding.tvDrug.text = "${getIntake.size}/${getGoal.medicineIntake}회"
       }
    }
 

@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
+import kr.bodywell.android.model.Constants.WORKOUTS
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -21,6 +21,7 @@ import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
 
 class ExerciseListAdapter (
    private val context: Activity,
+   private val fragmentManager: FragmentManager,
    private val itemList: ArrayList<Workout>
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
    private var bundle = Bundle()
@@ -36,8 +37,8 @@ class ExerciseListAdapter (
       holder.tvKcal.text = "${itemList[pos].calorie} kcal"
 
       holder.cl.setOnClickListener {
-         bundle.putParcelable("workouts", itemList[pos])
-         replaceFragment2(context, ExerciseDailyEditFragment(), bundle)
+         bundle.putParcelable(WORKOUTS, itemList[pos])
+         replaceFragment2(fragmentManager, ExerciseDailyEditFragment(), bundle)
       }
 
       holder.clX.setOnClickListener {

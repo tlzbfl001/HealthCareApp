@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.ExerciseRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.databinding.FragmentExerciseRecord2Binding
-import kr.bodywell.android.model.Activities
+import kr.bodywell.android.model.ActivityData
+import kr.bodywell.android.model.Constants.ACTIVITIES
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
@@ -28,16 +29,16 @@ class ExerciseRecord2Fragment : Fragment() {
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private var bundle = Bundle()
+   private val bundle = Bundle()
    private var adapter1: ExerciseRecordAdapter? = null
-   private var itemList = ArrayList<Activities>()
+   private var itemList = ArrayList<ActivityData>()
    private val searchList = ArrayList<Item>()
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(requireActivity(), ExerciseListFragment())
+            replaceFragment3(parentFragmentManager, ExerciseListFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -50,8 +51,6 @@ class ExerciseRecord2Fragment : Fragment() {
       _binding = FragmentExerciseRecord2Binding.inflate(layoutInflater)
 
       setStatusBar(requireActivity(), binding.mainLayout)
-
-      bundle.putString("back", "2")
 
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -74,20 +73,20 @@ class ExerciseRecord2Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(requireActivity(), ExerciseListFragment())
+         replaceFragment3(parentFragmentManager, ExerciseListFragment())
       }
 
       binding.tvBtn1.setOnClickListener {
-         replaceFragment3(requireActivity(), ExerciseRecord1Fragment())
+         replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
       }
 
       binding.tvBtn3.setOnClickListener {
-         replaceFragment3(requireActivity(), ExerciseInputFragment())
+         replaceFragment3(parentFragmentManager, ExerciseInputFragment())
       }
 
       lifecycleScope.launch {
-         itemList = powerSync.getAllActivityOrder() as ArrayList<Activities>
-         for(i in itemList.indices) powerSync.deleteDuplicates("activities", "name", itemList[i].name, itemList[i].id)
+         itemList = powerSync.getActivities() as ArrayList<ActivityData>
+         for(i in itemList.indices) powerSync.deleteDuplicate(ACTIVITIES, "name", itemList[i].name, itemList[i].id)
       }
 
       if(itemList.size > 0) {
@@ -100,14 +99,14 @@ class ExerciseRecord2Fragment : Fragment() {
          adapter1!!.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                bundle.putString("id", itemList[pos].id)
-               replaceFragment2(requireActivity(), ExerciseAddFragment(), bundle)
+               replaceFragment2(parentFragmentManager, ExerciseAddFragment(), bundle)
             }
          })
 
          binding.rv1.adapter = adapter1
       }
 
-      val adapter = SearchAdapter(requireActivity(), "2", "")
+      val adapter = SearchAdapter(requireActivity(), childFragmentManager, "")
 
       binding.etSearch.addTextChangedListener(object: TextWatcher {
          override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -135,8 +134,8 @@ class ExerciseRecord2Fragment : Fragment() {
 
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
-            bundle.putString("id", searchList[pos].int1.toString())
-            replaceFragment2(requireActivity(), ExerciseAddFragment(), bundle)
+            bundle.putString("id", searchList[pos].string1)
+            replaceFragment2(parentFragmentManager, ExerciseAddFragment(), bundle)
          }
       })
 

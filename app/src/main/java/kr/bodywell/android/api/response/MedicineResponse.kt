@@ -39,7 +39,10 @@ data class MedicineTimeResponse (
 	var id: String = "",
 
 	@SerializedName("time")
-	var time: String = ""
+	var time: String = "",
+
+	@SerializedName("medicineId")
+	var medicineId: String = ""
 )
 
 data class MedicineIntakeResponse (
@@ -65,5 +68,11 @@ data class MedicineIntakeResponse (
 	var createdAt: String = "",
 
 	@SerializedName("updatedAt")
-	var updatedAt: String = ""
+	var updatedAt: String = "",
+
+	@SerializedName("medicineTimeId")
+	var medicineTimeId: String = "",
+
+	@SerializedName("medicineId")
+	var medicineId: String = ""
 )

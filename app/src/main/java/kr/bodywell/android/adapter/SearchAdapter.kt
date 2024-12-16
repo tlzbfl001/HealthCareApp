@@ -9,11 +9,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.TYPE_ADMIN
+import kr.bodywell.android.model.Constants.ACTIVITIES
+import kr.bodywell.android.model.Constants.ADMIN
+import kr.bodywell.android.model.Constants.FOODS
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -21,7 +24,7 @@ import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class SearchAdapter(
     private val context: Activity,
-    private val back: String,
+    private val fragmentManager: FragmentManager,
     private val type: String
 ) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
     private var bundle = Bundle()
@@ -40,7 +43,7 @@ class SearchAdapter(
             itemClickListener?.onClick(it, holder.adapterPosition)
         }
 
-        if(itemList[position].string3 == TYPE_ADMIN) holder.cl.visibility = View.GONE else holder.cl.visibility = View.VISIBLE
+        if(itemList[position].string3 == ADMIN) holder.cl.visibility = View.GONE else holder.cl.visibility = View.VISIBLE
 
         holder.cl.setOnClickListener {
             if(type != "") {
@@ -52,8 +55,7 @@ class SearchAdapter(
                 clEdit.setOnClickListener {
                     bundle.putString("id", itemList[position].string1)
                     bundle.putString("type", type)
-                    bundle.putString("back", back)
-                    replaceFragment2(context, FoodEditFragment(), bundle)
+                    replaceFragment2(fragmentManager, FoodEditFragment(), bundle)
                     dialog.dismiss()
                 }
 
@@ -63,7 +65,7 @@ class SearchAdapter(
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             runBlocking {
-                                powerSync.deleteItem("foods", "id", itemList[position].string1)
+                                powerSync.deleteItem(FOODS, "id", itemList[position].string1)
                             }
 
                             itemList.removeAt(position)
@@ -87,7 +89,7 @@ class SearchAdapter(
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             runBlocking {
-                                powerSync.deleteItem("activities", "id", itemList[position].string1)
+                                powerSync.deleteItem(ACTIVITIES, "id", itemList[position].string1)
                             }
 
                             itemList.removeAt(position)

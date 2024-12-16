@@ -12,7 +12,10 @@ import com.google.android.material.tabs.TabLayout
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.databinding.FragmentFoodDetailBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.BREAKFAST
+import kr.bodywell.android.model.Constants.DINNER
+import kr.bodywell.android.model.Constants.LUNCH
+import kr.bodywell.android.model.Constants.SNACK
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -24,13 +27,13 @@ class FoodDetailFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private val bundle = Bundle()
-   private var type = Constant.BREAKFAST.name
+   private var type = BREAKFAST
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(requireActivity(), DetailFragment())
+            replaceFragment3(parentFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -47,12 +50,12 @@ class FoodDetailFragment : Fragment() {
       if(arguments?.getString("type") != null) type = arguments?.getString("type").toString()
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(requireActivity(), DetailFragment())
+         replaceFragment3(parentFragmentManager, DetailFragment())
       }
 
       binding.cvInput.setOnClickListener {
          bundle.putString("type", type)
-         replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+         replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
       }
 
       setTabView()
@@ -76,15 +79,15 @@ class FoodDetailFragment : Fragment() {
       }
 
       when(type) {
-         Constant.BREAKFAST.name -> {
+         BREAKFAST -> {
             button1()
             binding.viewPager.currentItem = 0
          }
-         Constant.LUNCH.name -> {
+         LUNCH -> {
             button2()
             binding.viewPager.currentItem = 1
          }
-         Constant.DINNER.name -> {
+         DINNER -> {
             button3()
             binding.viewPager.currentItem = 2
          }
@@ -112,7 +115,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button1() {
-      type = Constant.BREAKFAST.name
+      type = BREAKFAST
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -120,7 +123,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button2() {
-      type = Constant.LUNCH.name
+      type = LUNCH
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
@@ -128,7 +131,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button3() {
-      type = Constant.DINNER.name
+      type = DINNER
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_food)
@@ -136,7 +139,7 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun button4() {
-      type = Constant.SNACK.name
+      type = SNACK
       binding.tabLayout.getTabAt(0)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(1)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tabLayout.getTabAt(2)?.customView?.setBackgroundResource(R.drawable.rec_25_border_gray)

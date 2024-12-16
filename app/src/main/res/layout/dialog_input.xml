@@ -26,7 +26,8 @@
             android:text="식단 / 목표 칼로리 입력"
             android:textSize="17dp"
             android:textColor="@color/black"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+             android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -38,7 +39,8 @@
             android:textAlignment="textEnd"
             android:textSize="16dp"
             android:textColor="@color/black"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="@id/et"
             app:layout_constraintBottom_toBottomOf="@id/et"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -65,7 +67,8 @@
             android:text="kcal"
             android:textSize="16dp"
             android:textColor="@color/black"
-            android:fontFamily="@font/nanum"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="@id/et"
             app:layout_constraintBottom_toBottomOf="@id/et"
             app:layout_constraintStart_toEndOf="@id/et"/>
@@ -85,12 +88,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-               android:layout_marginTop="9dp"
+               android:layout_marginTop="8dp"
                android:layout_marginBottom="8dp"
                 android:text="저장"
                 android:textColor="@color/white"
                 android:textSize="16dp"
-               android:fontFamily="@font/nanum" />
+               android:fontFamily="@font/noto"
+               android:includeFontPadding="false"/>
          </androidx.cardview.widget.CardView>
       </androidx.constraintlayout.widget.ConstraintLayout>
    </androidx.cardview.widget.CardView>

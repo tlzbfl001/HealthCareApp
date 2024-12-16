@@ -19,21 +19,19 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.GOOGLE
+import kr.bodywell.android.model.Constants.KAKAO
+import kr.bodywell.android.model.Constants.NAVER
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatus
-import kr.bodywell.android.util.CustomUtil.resetAlarm
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
 import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
 import kr.bodywell.android.util.RegisterUtil.naverLoginRequest
-import kr.bodywell.android.view.home.MainActivity
 
 class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
@@ -102,30 +100,13 @@ class LoginActivity : AppCompatActivity() {
       super.onActivityResult(requestCode, resultCode, data)
       if (requestCode == 1000) {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
-            if(it.isSuccessful) {
-               val getUser = dataManager.getUser(Constant.GOOGLE.name, it.result.email.toString())
-               if(getUser.email == "") { // 초기 가입
-                  if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
-                     val user = User(type = Constant.GOOGLE.name, email = it.result.email!!, idToken = it.result.idToken!!)
-//                     val intent = Intent(this, SignupActivity::class.java)
-//                     intent.putExtra("user", user)
-//                     startActivity(intent)
-
-                     lifecycleScope.launch {
-                        googleLoginRequest(this@LoginActivity, dataManager, user)
-                     }
-                  }else {
-                     Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                  }
-               }else { // 로그인
-                  MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
-                  lifecycleScope.launch {
-                     resetAlarm(this@LoginActivity)
-                  }
-                  startActivity(Intent(this, MainActivity::class.java))
+            if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
+               val user = User(type = GOOGLE, email = it.result.email!!, idToken = it.result.idToken!!)
+               lifecycleScope.launch {
+                  googleLoginRequest(this@LoginActivity, user)
                }
             }else {
-               Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+               Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
             }
          }
       }
@@ -136,27 +117,13 @@ class LoginActivity : AppCompatActivity() {
          override fun onSuccess() {
             NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse> {
                override fun onSuccess(result: NidProfileResponse) {
-                  val getUser = dataManager.getUser(Constant.NAVER.name, result.profile?.email.toString())
-
-                  if(getUser.email == "") { // 회원 가입
-                     if(NaverIdLoginSDK.getAccessToken() != "" && NaverIdLoginSDK.getAccessToken() != null && result.profile?.email != "" && result.profile?.email != null) {
-                        val user = User(type = Constant.NAVER.name, accessToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!)
-//                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-//                        intent.putExtra("user", user)
-//                        startActivity(intent)
-
-                        lifecycleScope.launch {
-                           naverLoginRequest(this@LoginActivity, dataManager, user)
-                        }
-                     }else {
-                        Toast.makeText(this@LoginActivity, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                     }
-                  }else { // 로그인
-                     MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
+                  if(NaverIdLoginSDK.getAccessToken() != "" && NaverIdLoginSDK.getAccessToken() != null && result.profile?.email != "" && result.profile?.email != null) {
+                     val user = User(type = NAVER, accessToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!)
                      lifecycleScope.launch {
-                        resetAlarm(this@LoginActivity)
+                        naverLoginRequest(this@LoginActivity, user)
                      }
-                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                  }else {
+                     Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
                   }
                }
 
@@ -186,7 +153,9 @@ class LoginActivity : AppCompatActivity() {
 
    private fun kakaoLogin() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-         if (error != null) Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show() else if (token != null) createKakaoUser(token)
+         if (error != null) {
+            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+         } else if (token != null) createKakaoUser(token)
       }
 
       // 카카오톡이 설치되어있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
@@ -205,27 +174,13 @@ class LoginActivity : AppCompatActivity() {
    private fun createKakaoUser(token: OAuthToken) {
       UserApiClient.instance.me { user, error ->
          if(error == null) {
-            val getUser = dataManager.getUser(Constant.KAKAO.name, user?.kakaoAccount!!.email.toString())
-
-            if(getUser.email == "") { // 회원 가입
-               if(token.idToken != "" && token.idToken != null && user.kakaoAccount?.email != "" && user.kakaoAccount?.email != null) {
-                  val data = User(type = Constant.KAKAO.name, idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!)
-//                  val intent = Intent(this, SignupActivity::class.java)
-//                  intent.putExtra("user", data)
-//                  startActivity(intent)
-
-                  lifecycleScope.launch {
-                     kakaoLoginRequest(this@LoginActivity, dataManager, data)
-                  }
-               }else {
-                  Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()
-               }
-            }else { // 로그인
-               MyApp.prefs.setUserId(Constant.USER_PREFERENCE.name, getUser.id)
+            if(token.idToken != "" && token.idToken != null && user!!.kakaoAccount?.email != "" && user.kakaoAccount?.email != null) {
+               val data = User(type = KAKAO, idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!)
                lifecycleScope.launch {
-                  resetAlarm(this@LoginActivity)
+                  kakaoLoginRequest(this@LoginActivity, data)
                }
-               startActivity(Intent(this, MainActivity::class.java))
+            }else {
+               Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
             }
          }else {
             Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()

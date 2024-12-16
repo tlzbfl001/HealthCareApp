@@ -14,8 +14,10 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentExerciseAddBinding
-import kr.bodywell.android.model.Activities
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.ActivityData
+import kr.bodywell.android.model.Constants.HIGH
+import kr.bodywell.android.model.Constants.LOW
+import kr.bodywell.android.model.Constants.MODERATE
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
@@ -24,21 +26,21 @@ import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.Calendar
 
 class ExerciseAddFragment : Fragment() {
     private var _binding: FragmentExerciseAddBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var callback: OnBackPressedCallback
-    private var getActivity = Activities()
-    private var intensity = Constant.HIGH
+    private var getActivity = ActivityData()
+    private var intensity = HIGH
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                replaceFragment()
+                replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -66,7 +68,7 @@ class ExerciseAddFragment : Fragment() {
         }
 
         binding.clX.setOnClickListener {
-            replaceFragment()
+            replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
         }
 
         binding.tvIntensity1.setOnClickListener {
@@ -76,7 +78,7 @@ class ExerciseAddFragment : Fragment() {
             binding.tvIntensity2.setTextColor(Color.BLACK)
             binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
             binding.tvIntensity3.setTextColor(Color.BLACK)
-            intensity = Constant.HIGH
+            intensity = HIGH
         }
 
         binding.tvIntensity2.setOnClickListener {
@@ -86,7 +88,7 @@ class ExerciseAddFragment : Fragment() {
             binding.tvIntensity2.setTextColor(Color.WHITE)
             binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
             binding.tvIntensity3.setTextColor(Color.BLACK)
-            intensity = Constant.MODERATE
+            intensity = MODERATE
         }
 
         binding.tvIntensity3.setOnClickListener {
@@ -96,7 +98,7 @@ class ExerciseAddFragment : Fragment() {
             binding.tvIntensity2.setTextColor(Color.BLACK)
             binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
             binding.tvIntensity3.setTextColor(Color.WHITE)
-            intensity = Constant.LOW
+            intensity = LOW
         }
 
         binding.cvSave.setOnClickListener {
@@ -106,26 +108,18 @@ class ExerciseAddFragment : Fragment() {
                 Toast.makeText(requireActivity(), "시간, 칼로리를 1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else {
                 lifecycleScope.launch {
-                    val dateTimeFormat = dateTimeToIso(LocalDateTime.now())
                     val uuid = UuidCreator.getTimeOrderedEpoch()
                     powerSync.insertWorkout(Workout(id = uuid.toString(), name = getActivity.name, calorie = binding.etKcal.text.toString().toInt(),
-                        intensity = intensity.name, time = binding.etTime.text.toString().toInt(), date = selectedDate.toString(),
-                        createdAt = dateTimeFormat, updatedAt = dateTimeFormat, activityId = id))
+                        intensity = intensity, time = binding.etTime.text.toString().toInt(), date = selectedDate.toString(),
+                        createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString(), activityId = id))
                 }
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                replaceFragment3(requireActivity(), ExerciseListFragment())
+                replaceFragment3(parentFragmentManager, ExerciseListFragment())
             }
         }
 
         return binding.root
-    }
-
-    private fun replaceFragment() {
-        when(arguments?.getString("back")) {
-            "1" -> replaceFragment3(requireActivity(), ExerciseRecord1Fragment())
-            else -> replaceFragment3(requireActivity(), ExerciseRecord2Fragment())
-        }
     }
 
     override fun onDetach() {

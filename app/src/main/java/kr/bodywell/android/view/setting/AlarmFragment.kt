@@ -27,7 +27,7 @@ class AlarmFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment3(requireActivity(), SettingFragment())
+				replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -42,7 +42,7 @@ class AlarmFragment : Fragment() {
 		setStatusBar(requireActivity(), binding.mainLayout)
 
 		binding.clBack.setOnClickListener {
-			replaceFragment3(requireActivity(), SettingFragment())
+			replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
 		}
 
 		return binding.root

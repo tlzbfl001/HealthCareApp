@@ -1,21 +1,22 @@
 package kr.bodywell.android.adapter
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
+import kr.bodywell.android.model.Constants.DIETS
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodDailyEditFragment
 
 class FoodIntakeAdapter (
-    private val context: Activity,
-    private var itemList: ArrayList<Food> = ArrayList<Food>(),
+    private val fragmentManager: FragmentManager,
+    private var itemList: ArrayList<Food> = ArrayList(),
     private val type: String
 ) : RecyclerView.Adapter<FoodIntakeAdapter.ViewHolder>() {
     private var bundle = Bundle()
@@ -28,15 +29,14 @@ class FoodIntakeAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val count = itemList[position].quantity
-
         holder.tvName.text = itemList[position].name
         holder.tvKcal.text = "${itemList[position].calorie!! * count} kcal"
         holder.tvDesc.text = "${count}개/${itemList[position].volume!! * count}${itemList[position].volumeUnit}"
 
         holder.cl.setOnClickListener {
-            bundle.putParcelable("diets", itemList[position])
+            bundle.putParcelable(DIETS, itemList[position])
             bundle.putString("type", type)
-            replaceFragment2(context, FoodDailyEditFragment(), bundle)
+            replaceFragment2(fragmentManager, FoodDailyEditFragment(), bundle)
         }
 
         holder.clX.setOnClickListener {

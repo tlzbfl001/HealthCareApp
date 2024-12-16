@@ -16,9 +16,10 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.FoodRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.databinding.FragmentFoodRecord1Binding
+import kr.bodywell.android.model.Constants.FOODS
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -37,7 +38,7 @@ class FoodRecord1Fragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
+            replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -53,7 +54,6 @@ class FoodRecord1Fragment : Fragment() {
 
       val type = arguments?.getString("type").toString()
       bundle.putString("type", type)
-      bundle.putString("back", "1")
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
          hideKeyboard(requireActivity())
@@ -76,32 +76,33 @@ class FoodRecord1Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment4(requireActivity(), FoodDetailFragment(), bundle)
+         replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
       }
 
       binding.tvBtn2.setOnClickListener {
-         replaceFragment4(requireActivity(), FoodRecord2Fragment(), bundle)
+         replaceFragment4(parentFragmentManager, FoodRecord2Fragment(), bundle)
       }
 
       binding.tvBtn3.setOnClickListener {
-         replaceFragment2(requireActivity(), FoodInputFragment(), bundle)
+         replaceFragment2(parentFragmentManager, FoodInputFragment(), bundle)
       }
 
       lifecycleScope.launch {
-         val itemList = powerSync.getAllFood() as ArrayList<Food>
-         for(i in 0 until itemList.size) powerSync.deleteDuplicates("foods", "name", itemList[i].name, itemList[i].id)
+         val getFoods = powerSync.getFoods()
+         for(i in getFoods.indices) powerSync.deleteDuplicate(FOODS, "name", getFoods[i].name, getFoods[i].id)
+         val itemList = powerSync.getFoodUsages() as ArrayList<Food>
 
          if(itemList.isNotEmpty()) {
             binding.tvEmpty.visibility = View.GONE
             binding.rv1.visibility = View.VISIBLE
 
-            val recordAdapter = FoodRecordAdapter(requireActivity(), itemList, "1", type)
+            val recordAdapter = FoodRecordAdapter(requireActivity(), parentFragmentManager, itemList, type)
             binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
             recordAdapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
                override fun onItemClick(pos: Int) {
-                  bundle.putParcelable("food", itemList[pos])
-                  replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
+                  bundle.putParcelable(FOODS, itemList[pos])
+                  replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
                }
             })
 
@@ -109,7 +110,7 @@ class FoodRecord1Fragment : Fragment() {
             binding.rv1.requestLayout()
          }
 
-         val searchAdapter = SearchAdapter(requireActivity(), "1", type)
+         val searchAdapter = SearchAdapter(requireActivity(), parentFragmentManager, type)
          binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
          binding.rv2.adapter = searchAdapter
 
@@ -137,8 +138,8 @@ class FoodRecord1Fragment : Fragment() {
 
          searchAdapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
             override fun onClick(v: View, pos: Int) {
-               bundle.putParcelable("food", itemList[pos])
-               replaceFragment2(requireActivity(), FoodAddFragment(), bundle)
+               bundle.putParcelable(FOODS, itemList[pos])
+               replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
             }
          })
 

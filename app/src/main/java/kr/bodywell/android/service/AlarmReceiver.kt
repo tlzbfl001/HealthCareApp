@@ -64,13 +64,13 @@ class AlarmReceiver : BroadcastReceiver() {
         intent.putExtra("timeList", timeList)
         intent.putExtra("message", message)
 
-        pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        pendingIntent = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val today = LocalDate.now()
         val cal = Calendar.getInstance()
 
-        if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { //설정된 알람주기동안 실행
-            val currentTime = System.currentTimeMillis() //현재시간(밀리세컨드)
+        if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { // 설정된 알람주기동안 실행
+            val currentTime = System.currentTimeMillis() // 현재시간(밀리세컨드)
 
             for(i in 0 until timeList.size) {
                 val split1 = timeList[i].time.split(":")
@@ -80,7 +80,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 cal.set(Calendar.MILLISECOND, 0)
                 var selectTime = cal.timeInMillis
 
-                if(selectTime > currentTime) { //선택된 시간이 현재시간보다 크면 알람실행
+                if(selectTime > currentTime) { // 선택된 시간이 현재시간보다 크면 알람실행
                     try{
                         if(checkAlarmPermission2(context)) {
                             alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
@@ -128,12 +128,10 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    fun cancelAlarm(context: Context, notificationId: Int) {
+    fun cancelAlarm(context: Context, id: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
-
-        pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
+        pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         alarmManager.cancel(pendingIntent!!)
     }
 }

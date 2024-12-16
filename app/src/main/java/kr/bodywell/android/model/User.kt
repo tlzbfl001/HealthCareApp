@@ -12,19 +12,17 @@ data class User(
     var username: String = "",
     var email: String = "",
     var role: String = "",
-    var uid: String = "",
-    var profileUid: String = "",
-    var deviceUid: String = ""
+    var uid: String = ""
 ) : Parcelable
 
 data class Profile(
     var id: String = "",
     var name: String? = "",
-    var pictureUrl: String? = "",
     var birth: String? = "",
-    var gender: String? = "",
     var height: Double? = 0.0,
     var weight: Double? = 0.0,
     var createdAt: String = "",
-    var updatedAt: String = ""
+    var updatedAt: String = "",
+    var userId: String = "",
+    var gender: String? = ""
 )

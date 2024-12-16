@@ -15,9 +15,10 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.DIETS
+import kr.bodywell.android.model.Constants.SNACK
+import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.powerSync
 import java.io.File
@@ -28,8 +29,8 @@ class FoodSnackFragment : Fragment() {
     val binding get() = _binding!!
 
     private var photoAdapter: PhotoSlideAdapter2? = null
-    private var imageList = ArrayList<Image>()
-    private var type = Constant.SNACK.name
+    private var getDiets = ArrayList<Food>()
+    private var imageList = ArrayList<FileItem>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,70 +45,74 @@ class FoodSnackFragment : Fragment() {
     }
 
     private fun imageView() {
-        /*binding.viewPager.adapter = null
+        lifecycleScope.launch {
+            binding.viewPager.adapter = null
 
-        val getImage = dataManager.getImage(type, selectedDate.toString())
+            getDiets = powerSync.getDiets(SNACK, selectedDate.toString()) as ArrayList<Food>
 
-        for(i in 0 until getImage.size) imageList.add(Image(id = getImage[i].id, dataName = getImage[i].dataName, imageName = getImage[i].imageName))
-
-        if(imageList.size > 0) {
-            photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
-            binding.viewPager.adapter = photoAdapter
-            binding.viewPager.setPadding(0, 0, 0, 0)
-
-            binding.clLeft.setOnClickListener {
-                val current = binding.viewPager.currentItem
-                if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+            for(i in getDiets.indices) {
+                val getFiles = powerSync.getFiles(getDiets[i].id)
+                for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
             }
 
-            binding.clRight.setOnClickListener {
-                val current = binding.viewPager.currentItem
-                binding.viewPager.setCurrentItem(current+1, true)
+            if(imageList.size > 0) {
+                photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
+                binding.viewPager.adapter = photoAdapter
+                binding.viewPager.setPadding(0, 0, 0, 0)
+
+                binding.clLeft.setOnClickListener {
+                    val current = binding.viewPager.currentItem
+                    if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+                }
+
+                binding.clRight.setOnClickListener {
+                    val current = binding.viewPager.currentItem
+                    binding.viewPager.setCurrentItem(current+1, true)
+                }
             }
-        }*/
+        }
     }
 
     private fun listView() {
         lifecycleScope.launch {
-            val itemList = powerSync!!.getAllDiet(type, selectedDate.toString()) as ArrayList<Food>
-            for(i in 0 until itemList.size) powerSync!!.deleteDuplicates("diets", "name", itemList[i].name, itemList[i].id)
+            for(i in 0 until getDiets.size) powerSync.deleteDiet(SNACK, getDiets[i].name, selectedDate.toString(), getDiets[i].id)
+        }
 
-            if(itemList.isNotEmpty()) {
-                val intakeAdapter = FoodIntakeAdapter(requireActivity(), itemList, type)
-                binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+        if(getDiets.isNotEmpty()) {
+            val intakeAdapter = FoodIntakeAdapter(parentFragmentManager, getDiets, SNACK)
+            binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-                intakeAdapter.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
-                    override fun onItemClick(pos: Int) {
-                        val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
-                            .setTitle("음식 삭제")
-                            .setMessage("정말 삭제하시겠습니까?")
-                            .setPositiveButton("확인") { _, _ ->
-                                if(imageList.size > 0) {
-                                    imageList.stream().filter { x -> x.dataName == itemList[pos].name }
-                                        .collect(Collectors.toList()).forEach { x ->
-                                            imageList.remove(x)
-                                            File(requireActivity().filesDir, x.imageName).delete()
-                                        }
-                                }
-
-                                runBlocking {
-                                    powerSync!!.deleteItem("diets", "id", itemList[pos].id)
-                                }
-
-                                itemList.removeAt(pos)
-                                binding.viewPager.adapter = photoAdapter
-                                intakeAdapter!!.notifyDataSetChanged()
-
-                                Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+            intakeAdapter.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+                override fun onItemClick(pos: Int) {
+                    val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                        .setTitle("음식 삭제")
+                        .setMessage("정말 삭제하시겠습니까?")
+                        .setPositiveButton("확인") { _, _ ->
+                            if(imageList.size > 0) {
+                                imageList.stream().filter { x -> x.name == getDiets[pos].name }
+                                    .collect(Collectors.toList()).forEach { x ->
+                                        imageList.remove(x)
+                                        File(requireActivity().filesDir, x.name).delete()
+                                    }
                             }
-                            .setNegativeButton("취소", null)
-                            .create()
-                        dialog.show()
-                    }
-                })
 
-                binding.rv.adapter = intakeAdapter
-            }
+                            runBlocking {
+                                powerSync.deleteItem(DIETS, "id", getDiets[pos].id)
+                            }
+
+                            getDiets.removeAt(pos)
+                            binding.viewPager.adapter = photoAdapter
+                            intakeAdapter!!.notifyDataSetChanged()
+
+                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("취소", null)
+                        .create()
+                    dialog.show()
+                }
+            })
+
+            binding.rv.adapter = intakeAdapter
         }
     }
 }

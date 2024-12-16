@@ -13,9 +13,9 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentFoodEditBinding
+import kr.bodywell.android.model.Constants.FOODS
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
@@ -34,7 +34,7 @@ class FoodEditFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment()
+				replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -48,18 +48,18 @@ class FoodEditFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		val food = arguments?.getParcelable<Food>("food")!!
+		val getFood = arguments?.getParcelable<Food>(FOODS)!!
 		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
 
-		binding.tvName.text = food.name
-		binding.etVolume.setText(food.volume.toString())
-		binding.etKcal.setText(food.calorie.toString())
-		binding.etCar.setText(food.carbohydrate.toString())
-		binding.etProtein.setText(food.protein.toString())
-		binding.etFat.setText(food.fat.toString())
+		binding.tvName.text = getFood.name
+		binding.etVolume.setText(getFood.volume.toString())
+		binding.etKcal.setText(getFood.calorie.toString())
+		binding.etCar.setText(getFood.carbohydrate.toString())
+		binding.etProtein.setText(getFood.protein.toString())
+		binding.etFat.setText(getFood.fat.toString())
 
-		when(food.volumeUnit) {
+		when(getFood.volumeUnit) {
 			"mg" -> unit1()
 			"g" -> unit2()
 			"kg" -> unit3()
@@ -78,7 +78,7 @@ class FoodEditFragment : Fragment() {
 		}
 
 		binding.clBack.setOnClickListener {
-			replaceFragment()
+			replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
 		}
 
 		binding.tvMg.setOnClickListener {
@@ -220,13 +220,13 @@ class FoodEditFragment : Fragment() {
 
 		binding.cvEdit.setOnClickListener {
 			lifecycleScope.launch {
-				powerSync!!.updateFood(Food(id = food.id, calorie = binding.etKcal.text.toString().trim().toInt(),
-					carbohydrate = binding.etCar.text.toString().trim().toDouble(), protein = binding.etProtein.text.toString().trim().toDouble(),
-					fat = binding.etFat.text.toString().trim().toDouble(), volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
+				powerSync.updateFood(Food(id = getFood.id, calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
+					protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
+					volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
 			}
 
 			Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-			replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
+			replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
 		}
 
 		return binding.root
@@ -305,13 +305,6 @@ class FoodEditFragment : Fragment() {
 		binding.tvL.setBackgroundResource(R.drawable.rec_25_pink)
 		binding.tvL.setTextColor(Color.WHITE)
 		binding.tvUnit.text = unit
-	}
-
-	private fun replaceFragment() {
-		when(arguments?.getString("back")) {
-			"1" -> replaceFragment2(requireActivity(), FoodRecord1Fragment(), bundle)
-			else -> replaceFragment2(requireActivity(), FoodRecord2Fragment(), bundle)
-		}
 	}
 
 	override fun onDetach() {

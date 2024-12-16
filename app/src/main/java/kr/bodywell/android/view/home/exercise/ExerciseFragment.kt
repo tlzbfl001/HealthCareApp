@@ -20,15 +20,19 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
 import kr.bodywell.android.databinding.FragmentExerciseBinding
+import kr.bodywell.android.model.Constants.GOALS
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Calendar
 
 class ExerciseFragment : Fragment() {
    private var _binding: FragmentExerciseBinding? = null
@@ -62,10 +66,10 @@ class ExerciseFragment : Fragment() {
                if(getGoal.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertGoal(Goal(id = uuid.toString(), kcalOfWorkout = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateData("goals", "kcal_of_workout", et.text.toString(), getGoal.id)
+                  powerSync.updateData(GOALS, "kcal_of_workout", et.text.toString(), getGoal.id)
                }
             }
 
@@ -88,7 +92,7 @@ class ExerciseFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), ExerciseListFragment())
+         replaceFragment1(parentFragmentManager, ExerciseListFragment())
       }
 
       viewModel.dateVM.observe(viewLifecycleOwner, Observer<LocalDate> {
@@ -123,13 +127,9 @@ class ExerciseFragment : Fragment() {
          binding.tvConsume.text = "$sum kcal"
 
          val remain = getGoal.kcalOfWorkout - sum
-         if(remain > 0) {
-            binding.tvRemain.text = "$remain kcal"
-         }else {
-            binding.tvRemain.text = "0 kcal"
-         }
+         if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
-         val getAllWorkout = powerSync.getAllWorkout(selectedDate.toString()) as ArrayList<Workout>
+         val getAllWorkout = powerSync.getWorkouts(selectedDate.toString()) as ArrayList<Workout>
 
          adapter = ExerciseAdapter(getAllWorkout)
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)

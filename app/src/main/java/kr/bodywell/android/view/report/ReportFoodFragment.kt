@@ -26,6 +26,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
+import kr.bodywell.android.model.Constants.DIETS
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2
@@ -58,7 +59,7 @@ class ReportFoodFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment1(requireActivity(), MainFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -75,15 +76,15 @@ class ReportFoodFragment : Fragment() {
       binding.tvCalTitle.text = dateFormat(calendarDate)
 
       binding.clMenu1.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportBodyFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportBodyFragment())
       }
 
       binding.clMenu3.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportExerciseFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportExerciseFragment())
       }
 
       binding.clMenu4.setOnClickListener {
-         replaceFragment3(requireActivity(), ReportDrugFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ReportMedicineFragment())
       }
 
       binding.clPrev.setOnClickListener {
@@ -147,7 +148,6 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun dailyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -155,17 +155,16 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 0
+      resetChart()
 
       lifecycleScope.launch {
-//         val getDates = dataManager.getDates(DAILY_FOOD, calendarDate.toString(), calendarDate.toString())
-         val getDates = powerSync.getAllDate("diets", "date", calendarDate.toString(), calendarDate.toString())
+         val getDates = powerSync.getDates(DIETS, "date", calendarDate.toString(), calendarDate.toString())
          if(getDates.isNotEmpty()) {
             settingChart1(binding.chart1, getDates)
             settingChart2(binding.chart2, getDates)
          }
 
          val getWater = ArrayList<Water>()
-//         val data = dataManager.getWater(selectedDate.toString())
          val data = powerSync.getWater(selectedDate.toString())
 
          if(data.count > 0) {
@@ -181,7 +180,6 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun weeklyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_purple)
@@ -189,18 +187,17 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvMonthly.setTextColor(Color.BLACK)
       dateType = 1
+      resetChart()
 
       lifecycleScope.launch {
          val weekArray = weekArray(calendarDate)
 
-//         val getDates = dataManager.getDates(DAILY_FOOD, weekArray[0].toString(), weekArray[6].toString())
-         val getDates = powerSync.getAllDate("diets", "date", weekArray[0].toString(), weekArray[6].toString())
+         val getDates = powerSync.getDates(DIETS, "date", weekArray[0].toString(), weekArray[6].toString())
          if(getDates.isNotEmpty()) {
             settingChart1(binding.chart1, getDates)
             settingChart2(binding.chart2, getDates)
          }
 
-//         val getWater = dataManager.getWater(weekArray[0].toString(), weekArray[6].toString())
          val getWater = powerSync.getAllWater(weekArray[0].toString(), weekArray[6].toString())
          if(getWater.isNotEmpty()) {
             binding.chart3.visibility = View.VISIBLE
@@ -214,7 +211,6 @@ class ReportFoodFragment : Fragment() {
    }
 
    private fun monthlyView() {
-      resetChart()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_border_gray)
       binding.tvDaily.setTextColor(Color.BLACK)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -222,17 +218,16 @@ class ReportFoodFragment : Fragment() {
       binding.tvMonthly.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvMonthly.setTextColor(Color.WHITE)
       dateType = 2
+      resetChart()
 
       lifecycleScope.launch {
          val monthArray = monthArray2(calendarDate)
-//         val getDates = dataManager.getDates(DAILY_FOOD, monthArray[0].toString(), monthArray[monthArray.size-1].toString())
-         val getDates = powerSync.getAllDate("diets", "date", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
+         val getDates = powerSync.getDates(DIETS, "date", monthArray[0].toString(), monthArray[monthArray.size-1].toString())
          if(getDates.isNotEmpty()) {
             settingChart1(binding.chart1, getDates)
             settingChart2(binding.chart2, getDates)
          }
 
-//         val getWater = dataManager.getWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
          val getWater = powerSync.getAllWater(monthArray[0].toString(), monthArray[monthArray.size-1].toString())
          if(getWater.isNotEmpty()) {
             binding.chart3.visibility = View.VISIBLE
@@ -290,7 +285,7 @@ class ReportFoodFragment : Fragment() {
          lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextSize = 9f
          lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
          lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
          lineDataSet.valueFormatter = DefaultValueFormatter(0)
@@ -360,7 +355,7 @@ class ReportFoodFragment : Fragment() {
          lineDataSet.lineWidth = 1f
          lineDataSet.setDrawCircles(false)
          lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 8f
+         lineDataSet.valueTextSize = 9f
          lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
          lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
          lineDataSet.valueFormatter = MyValueFormatter()
@@ -372,7 +367,6 @@ class ReportFoodFragment : Fragment() {
          barColor.add(Color.parseColor("#F3E1A3"))
          barColor.add(Color.parseColor("#F4D279"))
          barColor.add(Color.parseColor("#EFC75D"))
-//         barColor.add(Color.parseColor("#EFB522"))
 
          val barDataSet = BarDataSet(barEntries, "")
          barDataSet.colors = barColor
@@ -417,7 +411,7 @@ class ReportFoodFragment : Fragment() {
       lineDataSet.lineWidth = 1f
       lineDataSet.setDrawCircles(false)
       lineDataSet.setDrawValues(true)
-      lineDataSet.valueTextSize = 8f
+      lineDataSet.valueTextSize = 9f
       lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
       lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
       lineDataSet.valueFormatter = DefaultValueFormatter(0)

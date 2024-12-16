@@ -21,17 +21,24 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.databinding.FragmentFoodBinding
-import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constants.BREAKFAST
+import kr.bodywell.android.model.Constants.DINNER
+import kr.bodywell.android.model.Constants.GOALS
+import kr.bodywell.android.model.Constants.LUNCH
+import kr.bodywell.android.model.Constants.SNACK
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
-import kr.bodywell.android.model.Image
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.getDietImages
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Calendar
 import kotlin.math.roundToInt
 
 class FoodFragment : Fragment() {
@@ -71,21 +78,17 @@ class FoodFragment : Fragment() {
                if(getGoal.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertGoal(Goal(id = uuid.toString(), kcalOfDiet = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = selectedDate.toString()))
+                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateData("goals", "kcal_of_diet", et.text.toString(), getGoal.id)
+                  powerSync.updateData(GOALS, "kcal_of_diet", et.text.toString(), getGoal.id)
                }
 
                binding.pbFood.max = et.text.toString().toInt()
                binding.tvGoal.text = "${et.text} kcal"
 
                val remain = et.text.toString().toInt() - sum
-               if(remain > 0) {
-                  binding.tvRemain.text = "$remain kcal"
-               }else {
-                  binding.tvRemain.text = "0 kcal"
-               }
+               if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
                dialog.dismiss()
             }
@@ -97,7 +100,7 @@ class FoodFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(requireActivity(), FoodDetailFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, FoodDetailFragment())
       }
 
       binding.clExpand1.setOnClickListener {
@@ -197,32 +200,25 @@ class FoodFragment : Fragment() {
       if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
       // 갤러리 초기화
-      val imageList = ArrayList<Image>()
       binding.viewPager.adapter = null
 
-      /*val getData1 = dataManager.getImage(Constant.BREAKFAST.name, selectedDate.toString())
-      val getData2 = dataManager.getImage(Constant.LUNCH.name, selectedDate.toString())
-      val getData3 = dataManager.getImage(Constant.DINNER.name, selectedDate.toString())
-      val getData4 = dataManager.getImage(Constant.SNACK.name, selectedDate.toString())
+      lifecycleScope.launch {
+         val imageList = getDietImages(selectedDate.toString())
 
-      for(i in 0 until getData1.size) imageList.add(Image(id = getData1[i].id, imageName = getData1[i].imageName))
-      for(i in 0 until getData2.size) imageList.add(Image(id = getData2[i].id, imageName = getData2[i].imageName))
-      for(i in 0 until getData3.size) imageList.add(Image(id = getData3[i].id, imageName = getData3[i].imageName))
-      for(i in 0 until getData4.size) imageList.add(Image(id = getData4[i].id, imageName = getData4[i].imageName))*/
+         if(imageList.size > 0) {
+            val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+            binding.viewPager.adapter = adapter
+            binding.viewPager.setPadding(0, 0, 0, 0)
 
-      if(imageList.size > 0) {
-         val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
-         binding.viewPager.adapter = adapter
-         binding.viewPager.setPadding(0, 0, 0, 0)
+            binding.clLeft.setOnClickListener {
+               val current = binding.viewPager.currentItem
+               if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+            }
 
-         binding.clLeft.setOnClickListener {
-            val current = binding.viewPager.currentItem
-            if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
-         }
-
-         binding.clRight.setOnClickListener {
-            val current = binding.viewPager.currentItem
-            binding.viewPager.setCurrentItem(current+1, true)
+            binding.clRight.setOnClickListener {
+               val current = binding.viewPager.currentItem
+               binding.viewPager.setCurrentItem(current+1, true)
+            }
          }
       }
    }
@@ -242,10 +238,10 @@ class FoodFragment : Fragment() {
       binding.ivExpand4.setImageResource(R.drawable.arrow_down)
 
       lifecycleScope.launch {
-         val dietList1 = powerSync.getAllDiet(Constant.BREAKFAST.name, selectedDate.toString())
-         val dietList2 = powerSync.getAllDiet(Constant.LUNCH.name, selectedDate.toString())
-         val dietList3 = powerSync.getAllDiet(Constant.DINNER.name, selectedDate.toString())
-         val dietList4 = powerSync.getAllDiet(Constant.SNACK.name, selectedDate.toString())
+         val dietList1 = powerSync.getDiets(BREAKFAST, selectedDate.toString())
+         val dietList2 = powerSync.getDiets(LUNCH, selectedDate.toString())
+         val dietList3 = powerSync.getDiets(DINNER, selectedDate.toString())
+         val dietList4 = powerSync.getDiets(SNACK, selectedDate.toString())
 
          var kcal1 = 0
          var carbohydrate1 = 0.0

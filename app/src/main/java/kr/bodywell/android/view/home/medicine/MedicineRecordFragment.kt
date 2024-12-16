@@ -32,7 +32,7 @@ class MedicineRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(requireActivity(), DetailFragment())
+            replaceFragment3(parentFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -47,19 +47,21 @@ class MedicineRecordFragment : Fragment() {
       setStatusBar(requireActivity(), binding.mainLayout)
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(requireActivity(), DetailFragment())
+         replaceFragment3(parentFragmentManager, DetailFragment())
       }
 
       binding.tvAdd.setOnClickListener {
-         replaceFragment1(requireActivity(), MedicineAddFragment())
+         replaceFragment1(parentFragmentManager, MedicineAddFragment())
       }
 
       lifecycleScope.launch {
-         val getMedicine = powerSync.getAllMedicine(selectedDate.toString()) as ArrayList<Medicine>
-         adapter = MedicineAdapter2(requireActivity(), getMedicine)
-         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.recyclerView.requestLayout()
-         binding.recyclerView.adapter = adapter
+         val getMedicine = powerSync.getMedicines(selectedDate.toString()) as ArrayList<Medicine>
+         if(getMedicine.isNotEmpty()) {
+            adapter = MedicineAdapter2(parentFragmentManager,getMedicine)
+            binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+            binding.recyclerView.requestLayout()
+            binding.recyclerView.adapter = adapter
+         }
       }
 
       return binding.root

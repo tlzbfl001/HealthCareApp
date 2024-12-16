@@ -56,15 +56,14 @@
          android:id="@+id/iv1"
          android:layout_width="match_parent"
          android:layout_height="0dp"
-         app:layout_constraintVertical_weight="3"
+         app:layout_constraintVertical_weight="4"
          app:layout_constraintTop_toBottomOf="@id/cl"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintBottom_toBottomOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="-20dp">
+            android:layout_height="match_parent">
             <ImageView
                android:layout_width="wrap_content"
                android:layout_height="match_parent"
@@ -76,7 +75,7 @@
             <ImageView
                android:id="@+id/iv3"
                android:layout_width="match_parent"
-               android:layout_height="52dp"
+               android:layout_height="45dp"
                android:background="#ffffff"
                android:layout_gravity="bottom"
                app:layout_constraintStart_toStartOf="parent"

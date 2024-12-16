@@ -23,9 +23,6 @@ data class ProfileResponse (
 	@SerializedName("name")
 	var name: String? = "",
 
-	@SerializedName("pictureUrl")
-	var pictureUrl: String?,
-
 	@SerializedName("birth")
 	var birth: String?,
 
@@ -47,11 +44,9 @@ data class ProfileResponse (
 	@SerializedName("updatedAt")
 	var updatedAt: String = "",
 
+	@SerializedName("pictureId")
+	var pictureId: String?,
+
 	@SerializedName("userId")
 	var userId: String = ""
-)
-
-data class ExistResponse (
-	@SerializedName("exists")
-	var exists: Boolean = false
 )

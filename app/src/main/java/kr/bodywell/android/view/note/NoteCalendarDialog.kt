@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 class NoteCalendarDialog(context: Context) : Dialog(context) {
-   private var dataManager: DataManager? = null
+//   private var dataManager: DataManager? = null
    private var days: ArrayList<LocalDate?> = ArrayList()
 
    private var tvYear : TextView? = null
@@ -37,8 +37,8 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.dialog_calendar2)
 
-      dataManager = DataManager(context)
-      dataManager!!.open()
+//      dataManager = DataManager(context)
+//      dataManager!!.open()
 
       tvYear = findViewById(R.id.tvYear)
       tvMonth = findViewById(R.id.tvMonth)
@@ -165,7 +165,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
    }
 
    private fun setImageView() {
-      val getImage = dataManager!!.getImage("NOTE", selectedDate.toString())
+      /*val getImage = dataManager!!.getImage("NOTE", selectedDate.toString())
 
       if (getImage.size > 0) {
          viewPager?.visibility = View.VISIBLE
@@ -177,7 +177,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
       }else {
          viewPager?.visibility = View.GONE
          tvStatus?.visibility = View.VISIBLE
-      }
+      }*/
    }
 
    companion object {
