@@ -101,7 +101,6 @@ class MainActivity : AppCompatActivity() {
                   for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
 
                   if(timeList.isNotEmpty()) {
-                     Log.d(TAG, "알람 저장: ${it[i].id}")
                      dataManager.insertMedicine(it[i].id, it[i].updatedAt)
                      val getData = dataManager.getMedicine(it[i].id)
                      val split = it[i].name.split("/", limit=3)
@@ -116,7 +115,6 @@ class MainActivity : AppCompatActivity() {
                   for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
 
                   if(timeList.isNotEmpty()) {
-                     Log.d(TAG, "알람 수정: ${it[i].id}")
                      dataManager.updateData("medicine", it[i].updatedAt)
                      val split = it[i].name.split("/", limit=3)
                      alarmReceiver.setAlarm(this@MainActivity, getMedicine.id.toInt(), it[i].starts, it[i].ends, timeList, "${split[0]} ${it[i].amount}${it[i].unit}")
@@ -129,7 +127,6 @@ class MainActivity : AppCompatActivity() {
             for(j in 0 until getAllMedicine.size) {
                val result = powerSync.getMedicine(getAllMedicine[j].medicineId)
                if(result.id == "") {
-                  Log.d(TAG, "알람 삭제: ${getAllMedicine[j].medicineId}")
                   dataManager.deleteItem("medicine", "medicineId", getAllMedicine[j].medicineId)
                   alarmReceiver.cancelAlarm(this@MainActivity, getAllMedicine[j].id)
                }
@@ -140,8 +137,6 @@ class MainActivity : AppCompatActivity() {
          val getFileUpdated = dataManager.getUpdatedAt()
          val watchFile = powerSync.watchFile(getFileUpdated)
          watchFile.collect {
-            Log.d(TAG, "watchFile: $it")
-
             // 내부저장소에 파일이 없으면 내부저장소에 저장
             for(i in it.indices) {
                val imgPath = filesDir.toString() + "/" + it[i].name
@@ -170,8 +165,6 @@ class MainActivity : AppCompatActivity() {
             }
          }
       }
-
-//      Log.d(TAG, "keyHash : ${Utility.getKeyHash(this)}")
    }
 
    private fun requestUpdate() {

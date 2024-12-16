@@ -5,8 +5,5 @@
       android:font="@font/noto"/>
    <font
       android:fontStyle="normal"
-      android:font="@font/noto_medium"/>
-   <font
-      android:fontStyle="normal"
       android:font="@font/noto_bold"/>
 </font-family>

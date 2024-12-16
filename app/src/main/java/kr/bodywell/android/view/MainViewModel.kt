@@ -31,7 +31,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       dataManager.open()
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
-      Log.d(TAG, "userId: ${getUser.uid}\naccess: ${getToken.access}")
 
       val driverFactory = DatabaseDriverFactory(context)
       powerSync = SyncService(context,driverFactory)

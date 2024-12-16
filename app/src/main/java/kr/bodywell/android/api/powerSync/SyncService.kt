@@ -80,17 +80,14 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 
 					when (entry.op) {
 						UpdateType.PUT -> {
-							Log.d(TAG, "${entry.op}\nid: ${entry.id}\ntable: ${entry.table}\ndata: ${entry.opData}")
 							upsert(_context, entry)
 						}
 
 						UpdateType.PATCH -> {
-							Log.d(TAG, "${entry.op}\ntable: ${entry.table}\nid: ${entry.id}\ndata: ${entry.opData}")
 							update(entry)
 						}
 
 						UpdateType.DELETE -> {
-							Log.d(TAG, "${entry.op}\ntable: ${entry.table}\nid: ${entry.id}")
 							delete(_context, entry.table, entry.id)
 
 						}

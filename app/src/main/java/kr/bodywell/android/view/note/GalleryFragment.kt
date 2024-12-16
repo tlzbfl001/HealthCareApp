@@ -227,7 +227,7 @@ class GalleryFragment : Fragment() {
 			adapter!!.setOnClickListener(object : GalleryAdapter.OnClickListener {
 				override fun onClick(pos: Int) {
 					selectionList.add(imageList[pos].name)
-					/** 삭제버튼 만들고 버튼누르면 selectionList 파일 전부 삭제 **/
+					/** 삭제버튼누르면 selectionList 파일 전부 삭제 **/
 				}
 			})
 

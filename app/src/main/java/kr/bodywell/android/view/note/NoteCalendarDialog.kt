@@ -22,7 +22,6 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 class NoteCalendarDialog(context: Context) : Dialog(context) {
-//   private var dataManager: DataManager? = null
    private var days: ArrayList<LocalDate?> = ArrayList()
 
    private var tvYear : TextView? = null
@@ -36,9 +35,6 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.dialog_calendar2)
-
-//      dataManager = DataManager(context)
-//      dataManager!!.open()
 
       tvYear = findViewById(R.id.tvYear)
       tvMonth = findViewById(R.id.tvMonth)
