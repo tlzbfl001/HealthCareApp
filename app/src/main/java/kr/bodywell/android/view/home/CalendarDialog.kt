@@ -18,7 +18,7 @@ import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CalendarUtil.monthArray
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.getDietImages
+import kr.bodywell.android.util.CustomUtil.getDietFiles
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -60,7 +60,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
          setMonthView()
       }
 
-      val gestureListener: SwipeGesture = SwipeGesture(rv!!)
+      val gestureListener = SwipeGesture(rv!!)
       val gestureDetector = GestureDetector(context, gestureListener)
 
       rv!!.setOnTouchListener { _, event ->
@@ -83,14 +83,14 @@ class CalendarDialog(context: Context) : Dialog(context) {
       tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
 
       days = monthArray()
-      val adapter = CalendarAdapter1(days, 2)
+      val adapter = CalendarAdapter1(days)
       val layoutManager = GridLayoutManager(context, 7)
 
       rv?.layoutManager = layoutManager
       rv?.adapter = adapter
 
       runBlocking {
-         val imageList = getDietImages(selectedDate.toString())
+         val imageList = getDietFiles(selectedDate.toString())
 
          if (imageList.size > 0) {
             viewPager?.visibility = View.VISIBLE

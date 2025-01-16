@@ -48,7 +48,7 @@ class ExerciseListFragment : Fragment() {
          replaceFragment3(parentFragmentManager, DetailFragment())
       }
 
-      binding.cvInput.setOnClickListener {
+      binding.tvInput.setOnClickListener {
          replaceFragment1(parentFragmentManager, ExerciseRecord1Fragment())
       }
 

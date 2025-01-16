@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.util.CustomUtil.resetAlarm
 
+// 전원 온오프 후 알람 재설정
 class RestartAlarmReceiver : BroadcastReceiver() {
     private val coroutineScope by lazy { CoroutineScope(Dispatchers.IO) }
     private lateinit var alarmReceiver: AlarmReceiver

@@ -5,6 +5,10 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -21,7 +25,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import kr.bodywell.android.adapter.BTItemAdapter
+import kr.bodywell.android.adapter.BluetoothItemAdapter
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
 import kr.bodywell.android.util.CustomUtil.TAG
@@ -30,20 +34,24 @@ import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
-import java.io.IOException
-
 
 @SuppressLint("MissingPermission")
-class ConnectFragment : Fragment(), BTItemAdapter.Listener {
+class ConnectFragment : Fragment(), BluetoothItemAdapter.Listener {
    private var _binding: FragmentConnectBinding? = null
    private val binding get() = _binding!!
 
    private lateinit var callback: OnBackPressedCallback
-   private var bluetoothAdapter: BluetoothAdapter? = null
    private var bluetoothManager: BluetoothManager? = null
-   private lateinit var itemAdapter: BTItemAdapter
-   private lateinit var discoveryItemAdapter: BTItemAdapter
+   private var bluetoothAdapter: BluetoothAdapter? = null
+   private lateinit var itemAdapter: BluetoothItemAdapter
+   private lateinit var discoveryItemAdapter: BluetoothItemAdapter
    private lateinit var btLauncher: ActivityResultLauncher<Intent>
+   val pairedList = mutableListOf<Bluetooth>()
+   val discoveryList = mutableListOf<Bluetooth>()
+
+   companion object {
+      const val DEVICE_NAME = "BODYWELL_MEDICINE"
+   }
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -72,11 +80,24 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
          replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
       }
 
-      if (!requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-         Toast.makeText(requireActivity(), "BLE 미지원", Toast.LENGTH_SHORT).show()
+      if(!requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+         Toast.makeText(requireActivity(), "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_SHORT).show()
       }else {
          bluetoothManager = requireActivity().getSystemService(BluetoothManager::class.java)
          bluetoothAdapter = bluetoothManager!!.adapter
+         val bluetoothLeScanner = bluetoothAdapter!!.bluetoothLeScanner
+
+         val scanSettings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+            .build()
+
+         val filters: MutableList<ScanFilter> = ArrayList()
+         val scanFilter = ScanFilter.Builder()
+            .setDeviceName(DEVICE_NAME)
+            .build()
+         filters.add(scanFilter)
+
+         bluetoothLeScanner.startScan(filters, scanSettings, scanCallback)
 
          val f1 = IntentFilter(BluetoothDevice.ACTION_FOUND)
          val f2 = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
@@ -87,14 +108,15 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
          binding.recyclerView1.layoutManager = LinearLayoutManager(requireActivity())
          binding.recyclerView2.layoutManager = LinearLayoutManager(requireActivity())
-         itemAdapter = BTItemAdapter(this,  false)
-         discoveryItemAdapter= BTItemAdapter(this, true)
+         itemAdapter = BluetoothItemAdapter(this,  false, pairedList)
+         discoveryItemAdapter = BluetoothItemAdapter(this, true, discoveryList)
          binding.recyclerView1.adapter=itemAdapter
          binding.recyclerView2.adapter=discoveryItemAdapter
 
+         // 연결된 기기 가져오기
          btLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if(it.resultCode == Activity.RESULT_OK) {
-               getPairedDevices() // 연결된 기기 가져오기
+               getPairedDevices()
             }else {
                Log.d(TAG, "기기 가져오기 실패")
             }
@@ -116,46 +138,60 @@ class ConnectFragment : Fragment(), BTItemAdapter.Listener {
 
    private fun getPairedDevices() {
       try{
-         val list = ArrayList<Bluetooth>()
-
          if(bluetoothAdapter?.bondedDevices != null) {
             val deviceList=bluetoothAdapter?.bondedDevices as Set<BluetoothDevice>
 
             deviceList.forEach {
-               list.add(Bluetooth(it))
+               pairedList.add(Bluetooth(it))
+               discoveryList.remove(Bluetooth(it))
             }
 
-            binding.recyclerView1.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
-            itemAdapter.submitList(list)
+            binding.recyclerView1.visibility = if(pairedList.isEmpty()) View.GONE else View.VISIBLE
+            binding.recyclerView2.visibility = if(discoveryList.isEmpty()) View.GONE else View.VISIBLE
+            binding.progressBar.visibility = if(discoveryList.isEmpty()) View.GONE else View.VISIBLE
+            itemAdapter.notifyDataSetChanged()
+            discoveryItemAdapter.notifyDataSetChanged()
          }
       }catch(e: SecurityException) {
          e.printStackTrace()
       }
    }
 
+   private val scanCallback: ScanCallback = object : ScanCallback() {
+      override fun onScanResult(callbackType: Int, result: ScanResult) {
+         if(result.device.name != null) {
+            var uuid = "null"
+
+            if(result.scanRecord?.serviceUuids != null) {
+               uuid = result.scanRecord!!.serviceUuids.toString()
+            }
+            addScanResult(result)
+         }
+      }
+
+      override fun onScanFailed(errorCode: Int) {
+         Log.e(TAG, "onScanFailed: $errorCode")
+      }
+
+      private fun addScanResult(result: ScanResult) {
+         // 중복 체크
+         for(dev in discoveryList) {
+            if (dev.device.address == result.device.address) return
+         }
+
+         if(result.device.bondState != 12) discoveryList.add(Bluetooth(result.device))
+
+         discoveryItemAdapter.notifyDataSetChanged()
+         binding.recyclerView2.visibility = if(discoveryList.isEmpty()) View.GONE else View.VISIBLE
+         binding.progressBar.visibility = if(discoveryList.isEmpty()) View.GONE else View.VISIBLE
+      }
+   }
+
    private val bReceiver = object : BroadcastReceiver() {
       override fun onReceive(p0: Context?, intent: Intent?) {
          when(intent?.action) {
-            BluetoothDevice.ACTION_FOUND -> {
-               val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-
-               val list = mutableSetOf<Bluetooth>()
-               list.addAll(discoveryItemAdapter.currentList)
-
-               try {
-                  if(device?.name != null) {
-                     list.add(Bluetooth(device))
-                  }
-               }catch(e: IOException) {
-                  e.printStackTrace()
-               }
-
-               discoveryItemAdapter.submitList(list.toList())
-               binding.recyclerView2.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
-               binding.progressBar2.visibility = if(list.isEmpty()) View.GONE else View.VISIBLE
-            }
             BluetoothDevice.ACTION_BOND_STATE_CHANGED -> getPairedDevices()
-            BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> binding.progressBar2.visibility=View.GONE
+            BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> binding.progressBar.visibility=View.GONE
          }
       }
    }

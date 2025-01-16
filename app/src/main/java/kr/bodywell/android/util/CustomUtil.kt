@@ -10,19 +10,19 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.github.f4b6a3.uuid.UuidCreator
 import com.powersync.DatabaseDriverFactory
 import kr.bodywell.android.R
 import kr.bodywell.android.api.powerSync.SyncService
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Constants.BREAKFAST
-import kr.bodywell.android.model.Constants.DINNER
-import kr.bodywell.android.model.Constants.LUNCH
-import kr.bodywell.android.model.Constants.SNACK
+import kr.bodywell.android.model.Constant.BREAKFAST
+import kr.bodywell.android.model.Constant.DINNER
+import kr.bodywell.android.model.Constant.LUNCH
+import kr.bodywell.android.model.Constant.SNACK
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
@@ -30,10 +30,8 @@ import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
-import okhttp3.MultipartBody
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -49,8 +47,8 @@ import kotlin.math.floor
 import kotlin.math.sqrt
 
 object CustomUtil {
-   lateinit var powerSync: SyncService
    const val TAG = "logTAG"
+   lateinit var powerSync: SyncService
    var getUser = User()
    var getToken = Token()
    var drugTimeList = ArrayList<MedicineTime>()
@@ -92,14 +90,24 @@ object CustomUtil {
       return date.atStartOfDay().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
    }
 
-   fun dateTimeToIso(date: Calendar): String {
+   fun dateTimeToIso1(date: Calendar): String {
       val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-      sdf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+      sdf.timeZone = TimeZone.getTimeZone(ZoneId.systemDefault())
       return sdf.format(date.time)
    }
 
-   fun isoToDateTime(date: String): LocalDateTime {
-      return LocalDateTime.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date)).atZone(ZoneId.of("Asia/Seoul")))
+   fun dateTimeToIso2(): String {
+      val format = LocalDateTime.now().atZone(ZoneId.of(ZoneId.systemDefault().toString())).toInstant().toString()
+      return format.replace("T", " ")
+   }
+
+   fun isoToDateTime(data: String): LocalDateTime {
+      val parse = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(data)).atZone(ZoneId.of(ZoneId.systemDefault().toString()))
+      return LocalDateTime.from(parse)
+   }
+
+   fun getUUID(): String {
+      return UuidCreator.getTimeOrderedEpoch().toString()
    }
 
    fun setStatusBar(context: Activity, mainLayout: ConstraintLayout) {
@@ -136,33 +144,31 @@ object CustomUtil {
       return match.find()
    }
 
-   fun saveImage(context: Context, bitmap: Bitmap): String {
-      Log.d(TAG, "bitmap: ${bitmap.allocationByteCount}")
+   fun saveFile(context: Context, bitmap: Bitmap): String {
       val imageName = SimpleDateFormat("yyMMddhhmmSSS").format(Date()) + ".jpg" // 이미지 파일명을 현재시간으로 설정
       val file = File(context.filesDir, imageName) // 파일 경로 설정
 
-      val maxBytes = 1024 * 1024
+      val maxBytes = 921600
       val currentWidth = bitmap.width
       val currentHeight = bitmap.height
       val currentPixels = currentWidth * currentHeight
-      val maxPixels = maxBytes / 4
 
       try {
          file.createNewFile() // 새 파일 생성
          val fos = FileOutputStream(file) // 출력 스트림 열기
 
-         if(currentPixels <= maxPixels) {
+         if(currentPixels <= maxBytes) {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
          }else {
-            val scaleFactor = sqrt(maxPixels / currentPixels.toDouble())
+            val scaleFactor = sqrt(maxBytes / currentPixels.toDouble())
             val newWidthPx = floor(currentWidth * scaleFactor).toInt()
             val newHeightPx = floor(currentHeight * scaleFactor).toInt()
             val scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidthPx, newHeightPx, true)
             scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            Log.d(TAG, "scaledBitmap: ${scaledBitmap.allocationByteCount}")
          }
 
          fos.close() // 출력 스트림 닫기
+
          return imageName
       }catch(e: Exception) {
          e.printStackTrace()
@@ -172,12 +178,12 @@ object CustomUtil {
    }
 
    fun getRotatedBitmap(context: Context, data: Uri): Bitmap? {
-      val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(data))	// 사진 가져오기
+      val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(data))
       var degree = 0F
 
-      // 이미지 회전정보 가져오기
-      val inputStream = context.contentResolver.openInputStream(data) // 스트림을 추출
-      val exif: ExifInterface? = try { // ExifInterface 정보를 읽어옴
+      // ExifInterface 정보 가져오기
+      val inputStream = context.contentResolver.openInputStream(data)
+      val exif: ExifInterface? = try {
          ExifInterface(inputStream!!)
       }catch(e: Exception) {
          e.printStackTrace()
@@ -202,24 +208,6 @@ object CustomUtil {
       return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, m, true)
    }
 
-   fun downloadFile(imageURL: String, fileName: String) {
-      val url = URL(imageURL)
-      val input = url.openStream()
-      val output = FileOutputStream(fileName)
-      try{
-         val buffer = ByteArray(1048)
-         var bytesRead = 0
-         while (input.read(buffer, 0, buffer.size).also { bytesRead = it } >= 0) {
-            output.write(buffer, 0, bytesRead)
-         }
-      }catch(e: java.lang.Exception) {
-         e.printStackTrace()
-      }finally {
-         output.close()
-         input.close()
-      }
-   }
-
    suspend fun resetAlarm(context: Context) {
       val alarmReceiver = AlarmReceiver()
       val dataManager = DataManager(context)
@@ -239,10 +227,10 @@ object CustomUtil {
             val getMedicineTime = powerSync.getAllMedicineTime(getMedicineId[i])
             for(element in getMedicineTime) timeList.add(MedicineTime(time = element.time))
 
-            val getData = dataManager.getMedicine(getMedicineId[i])
-            if(timeList.isNotEmpty() && getData.id != "") {
+            val getId = dataManager.getMedicine(getMedicineId[i]) // 알람ID 가져오기
+            if(timeList.isNotEmpty() && getId != 0) {
                val message = split[0] + " " + getMedicine.amount + getMedicine.unit
-               alarmReceiver.setAlarm(context, getData.id.toInt(), getMedicine.starts, getMedicine.ends, timeList, message)
+               alarmReceiver.setAlarm(context, getId, getMedicine.starts, getMedicine.ends, timeList, message)
             }
          }
       }
@@ -283,7 +271,6 @@ object CustomUtil {
       val getDiet2 = powerSync.getDiets(LUNCH, date)
       val getDiet3 = powerSync.getDiets(DINNER, date)
       val getDiet4 = powerSync.getDiets(SNACK, date)
-
       var carbohydrate = 0.0
       var protein = 0.0
       var fat = 0.0
@@ -312,24 +299,22 @@ object CustomUtil {
       return Food(carbohydrate = carbohydrate, protein = protein, fat = fat, volumeUnit = (carbohydrate + protein + fat).toString())
    }
 
-   suspend fun getDietImages(date:String) : ArrayList<FileItem> {
-      val imageList = ArrayList<FileItem>()
+   suspend fun getDietFiles(date:String) : ArrayList<FileItem> {
+      val files = ArrayList<FileItem>()
       val getDiets = powerSync.getDietIds(date)
 
-      for (i in getDiets.indices) {
-         val getFiles = powerSync.getFiles(getDiets[i])
-         for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
+      for(i in getDiets.indices) {
+         val getFiles = powerSync.getFiles("diet_id", getDiets[i])
+         for(j in getFiles.indices) files.add(FileItem(name = getFiles[j].name))
       }
 
-      return imageList
+      return files
    }
 
    suspend fun getExerciseCalories(date:String) : Int {
       var sum = 0
-      val getExercise = powerSync.getWorkouts(date)
-      for(element in getExercise) {
-         sum += element.calorie
-      }
+      val getWorkouts = powerSync.getWorkouts(date)
+      for(element in getWorkouts) sum += element.calorie
       return sum
    }
 

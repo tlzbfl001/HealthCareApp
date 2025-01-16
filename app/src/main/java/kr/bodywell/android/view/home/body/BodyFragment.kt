@@ -21,17 +21,15 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentBodyBinding
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.Constants.BODY_MEASUREMENTS
-import kr.bodywell.android.model.Constants.GOALS
+import kr.bodywell.android.model.Constant.BODY_MEASUREMENTS
+import kr.bodywell.android.model.Constant.GOALS
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
 import kotlin.math.roundToInt
 
@@ -60,7 +58,7 @@ class BodyFragment : Fragment() {
       tvTitle.text = "신체 / 목표 체중 입력"
       et.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
       tvUnit.text = "kg"
-      btnSave.setCardBackgroundColor(Color.parseColor("#B3AED77D"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#D7FFCA29"))
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
@@ -70,7 +68,7 @@ class BodyFragment : Fragment() {
                if(getGoal.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertGoal(Goal(id = uuid.toString(), weight = et.text.toString().toDouble(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                     createdAt = CustomUtil.dateTimeToIso1(Calendar.getInstance()), updatedAt = CustomUtil.dateTimeToIso1(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, "weight", et.text.toString(), getGoal.id)
@@ -158,18 +156,17 @@ class BodyFragment : Fragment() {
          powerSync.deleteDuplicate(BODY_MEASUREMENTS, "strftime('%Y-%m-%d', time)", selectedDate.toString(), getBody.id!!)
       }
 
-      if (getGoal.weight > 0) {
+      if(getGoal.weight > 0) {
          binding.pbBody.max = getGoal.weight.roundToInt()
 
          val split = getGoal.weight.toString().split(".")
-         when (split[1]) {
+         when(split[1]) {
             "0" -> binding.tvGoal.text = "${split[0]} kg"
             else -> binding.tvGoal.text = "${getGoal.weight} kg"
          }
       }
 
-      var remain = 0.0
-      if(getBody.weight != null && getBody.weight!! > 0) {
+      if(getBody.weight != null) {
          binding.pbBody.setProgressStartColor(resources.getColor(R.color.body))
          binding.pbBody.setProgressEndColor(resources.getColor(R.color.body))
          binding.pbBody.max = getGoal.weight.roundToInt()
@@ -181,13 +178,10 @@ class BodyFragment : Fragment() {
             else -> binding.tvWeight.text = "${String.format("%.1f", getBody.weight)} kg"
          }
 
-         remain = getGoal.weight - getBody.weight!!
-      }
-
-      if(remain > 0) {
-         val split = remain.toString().split(".")
-         when (split[1]) {
-            "0" -> binding.tvRemain.text = "${split[0]} kg"
+         val remain = (getGoal.weight - getBody.weight!!)
+         val split2 = remain.toString().split(".")
+         when(split[1]) {
+            "0" -> binding.tvRemain.text = "${split2[0]} kg"
             else -> binding.tvRemain.text = "${String.format("%.1f", remain)} kg"
          }
       }
@@ -202,8 +196,8 @@ class BodyFragment : Fragment() {
       // 체질량지수 범위
       var bmi = 0
       if(getBody.bodyMassIndex != null) {
-         val format1 = String.format("%.1f", getBody.bodyMassIndex)
-         bmi = format1.replace(".", "").toInt()
+         val format = String.format("%.1f", getBody.bodyMassIndex)
+         bmi = format.replace(".", "").toInt()
       }
       when {
          bmi < 186 -> {
@@ -271,8 +265,8 @@ class BodyFragment : Fragment() {
       // 체지방율 범위
       var fat = 0
       if(getBody.bodyMassIndex != null) {
-         val format2 = String.format("%.1f", getBody.bodyFatPercentage)
-         fat = format2.replace(".", "").toInt()
+         val format = String.format("%.1f", getBody.bodyFatPercentage)
+         fat = format.replace(".", "").toInt()
       }
       when {
          fat < 141 -> {
@@ -325,8 +319,8 @@ class BodyFragment : Fragment() {
       // 골격근량 범위
       var muscle = 0
       if(getBody.bodyMassIndex != null) {
-         val format3 = String.format("%.1f", getBody.skeletalMuscleMass)
-         muscle = format3.replace(".", "").toInt()
+         val format = String.format("%.1f", getBody.skeletalMuscleMass)
+         muscle = format.replace(".", "").toInt()
       }
       when {
          muscle < 267 -> {
@@ -351,10 +345,5 @@ class BodyFragment : Fragment() {
             binding.tvMuscleStatus.text = "높음"
          }
       }
-   }
-
-   override fun onDestroyView() {
-      super.onDestroyView()
-      _binding = null
    }
 }

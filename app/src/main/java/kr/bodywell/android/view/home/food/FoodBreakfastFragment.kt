@@ -2,6 +2,7 @@ package kr.bodywell.android.view.home.food
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +15,16 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.databinding.FragmentFoodBreakfastBinding
-import kr.bodywell.android.model.Constants.BREAKFAST
-import kr.bodywell.android.model.Constants.DIETS
+import kr.bodywell.android.model.Constant.BREAKFAST
+import kr.bodywell.android.model.Constant.DIETS
+import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import java.io.File
 import java.util.stream.Collectors
 
@@ -38,8 +43,13 @@ class FoodBreakfastFragment : Fragment() {
    ): View {
       _binding = FragmentFoodBreakfastBinding.inflate(layoutInflater)
 
-      imageView() // 식단 이미지 뷰
-      listView() // 섭취한 식단 설정
+      // 섭취한 식단 설정
+      listView()
+
+      // 식단 이미지 뷰
+      if(checkCameraPermission(requireActivity())) {
+         imageView()
+      }
 
       return binding.root
    }
@@ -48,10 +58,8 @@ class FoodBreakfastFragment : Fragment() {
       lifecycleScope.launch {
          binding.viewPager.adapter = null
 
-         getDiets = powerSync.getDiets(BREAKFAST, selectedDate.toString()) as ArrayList<Food>
-
-         for (i in getDiets.indices) {
-            val getFiles = powerSync.getFiles(getDiets[i].id)
+         for(i in getDiets.indices) {
+            val getFiles = powerSync.getFiles("diet_id", getDiets[i].id)
             for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
          }
 
@@ -75,6 +83,7 @@ class FoodBreakfastFragment : Fragment() {
 
    private fun listView() {
       lifecycleScope.launch {
+         getDiets = powerSync.getDiets(BREAKFAST, selectedDate.toString()) as ArrayList<Food>
          for(i in 0 until getDiets.size) powerSync.deleteDiet(BREAKFAST, getDiets[i].name, selectedDate.toString(), getDiets[i].id)
       }
 
@@ -89,14 +98,15 @@ class FoodBreakfastFragment : Fragment() {
                   .setMessage("정말 삭제하시겠습니까?")
                   .setPositiveButton("확인") { _, _ ->
                      if(imageList.size > 0) {
-                        imageList.stream().filter { x -> x.name == getDiets[pos].name }
-                           .collect(Collectors.toList()).forEach { x ->
-                              imageList.remove(x)
-                              File(requireActivity().filesDir, x.name).delete()
-                           }
+                        imageList.stream().filter { x -> x.name == getDiets[pos].name }.collect(Collectors.toList()).forEach { x ->
+                           imageList.remove(x)
+                           File(requireActivity().filesDir, x.name).delete()
+                        }
                      }
 
                      lifecycleScope.launch {
+                        val getFiles = powerSync.getFiles("diet_id", getDiets[pos].id)
+                        for(element in getFiles) powerSync.deleteItem(FILES, "id", element.id)
                         powerSync.deleteItem(DIETS, "id", getDiets[pos].id)
                      }
 

@@ -13,10 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentExerciseDailyEditBinding
-import kr.bodywell.android.model.Constants.HIGH
-import kr.bodywell.android.model.Constants.LOW
-import kr.bodywell.android.model.Constants.MODERATE
-import kr.bodywell.android.model.Constants.WORKOUTS
+import kr.bodywell.android.model.Constant.HIGH
+import kr.bodywell.android.model.Constant.LOW
+import kr.bodywell.android.model.Constant.MODERATE
+import kr.bodywell.android.model.Constant.WORKOUTS
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync

@@ -11,12 +11,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.adapter.PhotoSlideAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.CalendarUtil
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.powerSync
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -76,7 +77,7 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
       tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
 
       days = CalendarUtil.monthArray()
-      val adapter = CalendarAdapter1(days, 2)
+      val adapter = CalendarAdapter1(days)
       val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, 7)
 
       rv?.layoutManager = layoutManager
@@ -161,19 +162,22 @@ class NoteCalendarDialog(context: Context) : Dialog(context) {
    }
 
    private fun setImageView() {
-      /*val getImage = dataManager!!.getImage("NOTE", selectedDate.toString())
+      runBlocking {
+         val getNote = powerSync.getNote(selectedDate.toString())
+         val getFiles = powerSync.getFiles("note_id", getNote.id)
 
-      if (getImage.size > 0) {
-         viewPager?.visibility = View.VISIBLE
-         tvStatus?.visibility = View.GONE
+         if (getFiles.isNotEmpty()) {
+            viewPager?.visibility = View.VISIBLE
+            tvStatus?.visibility = View.GONE
 
-         val adapter = PhotoSlideAdapter(context, getImage)
-         viewPager?.adapter = adapter
-         viewPager?.setPadding(0, 0, 210, 0)
-      }else {
-         viewPager?.visibility = View.GONE
-         tvStatus?.visibility = View.VISIBLE
-      }*/
+            val adapter = PhotoSlideAdapter(context, getFiles)
+            viewPager?.adapter = adapter
+            viewPager?.setPadding(0, 0, 210, 0)
+         }else {
+            viewPager?.visibility = View.GONE
+            tvStatus?.visibility = View.VISIBLE
+         }
+      }
    }
 
    companion object {

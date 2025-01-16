@@ -16,5 +16,8 @@ data class NoteResponse (
    var emotion: String,
 
    @SerializedName("date")
-   var date: String
+   var date: String,
+
+   @SerializedName("photos")
+   var photos: List<PhotoResponse> = listOf()
 )

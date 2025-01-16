@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Constants.FOODS
-import kr.bodywell.android.model.Constants.USER
+import kr.bodywell.android.model.Constant.FOODS
+import kr.bodywell.android.model.Constant.USER
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.view.home.food.FoodEditFragment
@@ -48,7 +50,7 @@ class FoodRecordAdapter(
          val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
          clEdit.setOnClickListener {
-            bundle.putParcelable(FOODS, itemList[pos])
+            bundle.putString("foodId", itemList[pos].id)
             bundle.putString("type", type)
             replaceFragment2(fragmentManager, FoodEditFragment(), bundle)
             dialog.dismiss()

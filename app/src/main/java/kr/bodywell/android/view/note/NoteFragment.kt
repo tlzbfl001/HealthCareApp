@@ -21,14 +21,25 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter2
+import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.databinding.FragmentNoteBinding
+import kr.bodywell.android.model.Constant.ANGRY
+import kr.bodywell.android.model.Constant.EXCITED
+import kr.bodywell.android.model.Constant.HAPPY
+import kr.bodywell.android.model.Constant.NOTES
+import kr.bodywell.android.model.Constant.PEACEFUL
+import kr.bodywell.android.model.Constant.SAD
+import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
 import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import kr.bodywell.android.view.home.MainFragment
 import java.time.LocalDate
@@ -42,6 +53,7 @@ class NoteFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var days = ArrayList<LocalDate?>()
+   private var getNote = Note()
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -63,12 +75,10 @@ class NoteFragment : Fragment() {
 
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
-      ){
-
-      }
+      ){}
 
       // 날짜 초기화
-      if(arguments?.getString("data").toString() != "note") selectedDate = LocalDate.now()
+      if(arguments?.getString("data").toString() != NOTES) selectedDate = LocalDate.now()
 
       binding.clExpand.setOnClickListener {
          val dialog = NoteCalendarDialog(requireActivity())
@@ -109,12 +119,14 @@ class NoteFragment : Fragment() {
 
       binding.clGallery.setOnClickListener {
          if(checkCameraPermission(requireActivity())) {
-            replaceFragment1(requireActivity().supportFragmentManager, GalleryFragment())
+            val bundle = Bundle()
+            bundle.putString("noteId", getNote.id)
+            replaceFragment2(requireActivity().supportFragmentManager, GalleryFragment(), bundle)
          }else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-               pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_2)
+               pLauncher.launch(CAMERA_PERMISSION_2)
             }else {
-               pLauncher.launch(PermissionUtil.CAMERA_PERMISSION_1)
+               pLauncher.launch(CAMERA_PERMISSION_1)
             }
          }
       }
@@ -128,54 +140,48 @@ class NoteFragment : Fragment() {
    }
 
    private fun setDailyView() {
-      // 텍스트 초기화
+      // 달력 초기화
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
 
-      lifecycleScope.launch {
-         val getNote = powerSync.getNote(selectedDate.toString())
+      days = weekArray(selectedDate)
+      val adapter = CalendarAdapter2(requireActivity(), days)
+      binding.recyclerView.adapter = adapter
 
-         if(getNote.id != "") {
+      lifecycleScope.launch {
+         getNote = powerSync.getNote(selectedDate.toString())
+
+         // 섭취, 소비 칼로리 초기화
+         var total = 0
+         val foodKcal = getFoodCalories(selectedDate.toString())
+         binding.tvKcal1.text = "${foodKcal.int5}kcal"
+         val getAllWorkout = powerSync.getWorkouts(selectedDate.toString())
+         for(i in getAllWorkout.indices) total += getAllWorkout[i].calorie
+         binding.tvKcal2.text = "${total}kcal"
+
+         // 이미지 뷰 초기화
+         if(checkCameraPermission(requireActivity())) {
+            val getFiles = powerSync.getFiles("note_id", getNote.id)
+            val photoAdapter = PhotoSlideAdapter(requireActivity(), getFiles)
+            binding.viewPager.adapter = photoAdapter
+            binding.viewPager.setPadding(140, 0, 140, 0)
+         }
+
+         // 일기 데이터 초기화
+         if(getNote.title != "" && getNote.content != "") {
             binding.tvTitle.text = getNote.title
             when(getNote.emotion) {
-               "Happy" -> binding.ivFace.setImageResource(R.drawable.face1)
-               "Peaceful" -> binding.ivFace.setImageResource(R.drawable.face2)
-               "Excited" -> binding.ivFace.setImageResource(R.drawable.face3)
-               "Sad" -> binding.ivFace.setImageResource(R.drawable.face4)
-               "Angry" -> binding.ivFace.setImageResource(R.drawable.face5)
+               HAPPY -> binding.ivFace.setImageResource(R.drawable.face1)
+               PEACEFUL -> binding.ivFace.setImageResource(R.drawable.face2)
+               EXCITED -> binding.ivFace.setImageResource(R.drawable.face3)
+               SAD -> binding.ivFace.setImageResource(R.drawable.face4)
+               ANGRY -> binding.ivFace.setImageResource(R.drawable.face5)
             }
          }else {
             binding.tvTitle.text = "제목"
             binding.ivFace.setImageResource(R.drawable.face1)
          }
       }
-
-      // 달력 설정
-      days = weekArray(selectedDate)
-
-      val adapter = CalendarAdapter2(days)
-      binding.recyclerView.adapter = adapter
-
-      lifecycleScope.launch {
-         // 섭취 칼로리 계산
-         val foodKcal = getFoodCalories(selectedDate.toString())
-         binding.tvKcal1.text = "${foodKcal.int5}kcal"
-
-         // 소비 칼로리 계산
-         var total = 0
-         val getAllWorkout = powerSync.getWorkouts(selectedDate.toString())
-         for(i in getAllWorkout.indices) total += getAllWorkout[i].calorie
-         binding.tvKcal2.text = "${total}kcal"
-      }
-
-      setImageView()
-   }
-
-   private fun setImageView() {
-      /*val dataList = dataManager.getImage(type, selectedDate.toString())
-      val photoAdapter = PhotoSlideAdapter(requireActivity(), dataList)
-      binding.viewPager.adapter = photoAdapter
-      binding.viewPager.setPadding(140, 0, 140, 0)*/
    }
 
    inner class SwipeGesture(v: View) : GestureDetector.OnGestureListener {

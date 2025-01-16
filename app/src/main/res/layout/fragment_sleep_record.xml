@@ -37,7 +37,7 @@
          android:id="@+id/tvTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="18dp"
+         android:layout_marginTop="15dp"
          android:text="나의 기상/취침 시간 기록"
          android:textSize="17dp"
          android:textColor="@color/white"
@@ -113,146 +113,123 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toBottomOf="parent">
-      <TextView
-         android:id="@+id/tvBed"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="취침 시간"
-         android:textSize="16dp"
-         android:textColor="@color/black_white"
-         android:fontFamily="@font/noto_bold"
-         android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintEnd_toEndOf="@id/clBedtime"
-         app:layout_constraintStart_toStartOf="@id/clBedtime"
-         app:layout_constraintBottom_toTopOf="@id/clBedtime"
-         app:layout_constraintVertical_chainStyle="packed"/>
-      <TextView
-         android:id="@+id/tvWake"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="기상 시간"
-         android:textSize="16dp"
-         android:textColor="@color/black_white"
-         android:fontFamily="@font/noto_bold"
-         android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="@id/tvBed"
-         app:layout_constraintStart_toStartOf="@id/clWake"
-         app:layout_constraintEnd_toEndOf="@id/clWake"
-         app:layout_constraintBottom_toBottomOf="@id/tvBed"/>
-      <androidx.constraintlayout.widget.ConstraintLayout
-         android:id="@+id/clBedtime"
-         android:layout_width="0dp"
-         android:layout_height="135dp"
-         android:background="@drawable/sleep_box1"
-         android:layout_marginTop="7dp"
-         android:layout_marginLeft="30dp"
-         android:layout_marginRight="30dp"
-         android:padding="10dp"
-         app:layout_constraintTop_toBottomOf="@id/tvBed"
-         app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintEnd_toStartOf="@id/clWake"
-         app:layout_constraintBottom_toTopOf="@id/cvSave">
-         <TextView
-            android:id="@+id/tv1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="BedTime"
-            android:textSize="17dp"
-            android:textColor="@color/white"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tvBedtime"
-            app:layout_constraintVertical_chainStyle="packed" />
-         <TextView
-            android:id="@+id/tvBedtime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="0 : 0"
-            android:textSize="25dp"
-            android:textColor="@color/white"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/tv1"
-            app:layout_constraintStart_toStartOf="@id/tv1"
-            app:layout_constraintEnd_toEndOf="@id/tv1"
-            app:layout_constraintBottom_toBottomOf="parent" />
-      </androidx.constraintlayout.widget.ConstraintLayout>
-      <androidx.constraintlayout.widget.ConstraintLayout
-         android:id="@+id/clWake"
-         android:layout_width="0dp"
-         android:layout_height="0dp"
-         android:background="@drawable/sleep_box2"
-         android:layout_marginRight="30dp"
-         android:padding="10dp"
-         app:layout_constraintTop_toTopOf="@id/clBedtime"
-         app:layout_constraintStart_toEndOf="@id/clBedtime"
-         app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toBottomOf="@id/clBedtime">
-         <TextView
-            android:id="@+id/tv2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WakeUpTime"
-            android:textSize="15dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tvWakeupTime"
-            app:layout_constraintVertical_chainStyle="packed"/>
-         <TextView
-            android:id="@+id/tvWakeupTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="0 : 0"
-            android:textSize="25dp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/tv2"
-            app:layout_constraintStart_toStartOf="@id/tv2"
-            app:layout_constraintEnd_toEndOf="@id/tv2"
-            app:layout_constraintBottom_toBottomOf="parent" />
-      </androidx.constraintlayout.widget.ConstraintLayout>
       <androidx.cardview.widget.CardView
-         android:id="@+id/cvSave"
-         android:layout_width="220dp"
+         android:id="@+id/cvBox1"
+         android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_gravity="center"
-         android:layout_marginBottom="30dp"
-         app:cardBackgroundColor="#9F98FF"
-         app:cardCornerRadius="35dp"
+         android:layout_marginTop="20dp"
+         android:layout_marginLeft="20dp"
+         android:layout_marginRight="20dp"
+         app:cardBackgroundColor="@color/white_grey"
+         app:cardCornerRadius="15dp"
+         app:cardElevation="3dp"
+         app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintStart_toStartOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="9dp"
-            android:paddingBottom="9dp">
+            android:layout_height="wrap_content">
             <TextView
-               android:id="@+id/tvStart"
-               android:layout_width="0dp"
+               android:id="@+id/tvTitle1"
+               android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:gravity="center"
-               android:text="저장"
-               android:textColor="@color/white"
+               android:layout_marginLeft="30dp"
+               android:text="취침 시간"
                android:textSize="16dp"
-               android:fontFamily="@font/noto"
-               android:includeFontPadding="false"
-               app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintStart_toStartOf="parent"
+               android:textColor="@color/black_white"
+               android:fontFamily="@font/noto_bold"
                app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+               android:id="@+id/tvBedtime"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="-35dp"
+               android:text="0 : 0"
+               android:textSize="29dp"
+               android:textColor="@color/black_white"
+               android:fontFamily="@font/noto"
+               app:layout_constraintTop_toTopOf="@id/tvTitle1"
+               app:layout_constraintStart_toEndOf="@id/tvTitle1"
+               app:layout_constraintBottom_toBottomOf="@id/tvTitle1"
+               app:layout_constraintEnd_toEndOf="parent"/>
+         </androidx.constraintlayout.widget.ConstraintLayout>
+      </androidx.cardview.widget.CardView>
+      <androidx.cardview.widget.CardView
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="14dp"
+         android:layout_marginLeft="20dp"
+         android:layout_marginRight="20dp"
+         app:cardBackgroundColor="@color/white_grey"
+         app:cardCornerRadius="15dp"
+         app:cardElevation="3dp"
+         app:layout_constraintTop_toBottomOf="@id/cvBox1"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent">
+         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+               android:id="@+id/tvTitle2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="30dp"
+               android:text="기상 시간"
+               android:textSize="16dp"
+               android:textColor="@color/black_white"
+               android:fontFamily="@font/noto_bold"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+               android:id="@+id/tvWakeTime"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="-35dp"
+               android:text="0 : 0"
+               android:textSize="29dp"
+               android:textColor="@color/black_white"
+               android:fontFamily="@font/noto"
+               app:layout_constraintTop_toTopOf="@id/tvTitle2"
+               app:layout_constraintStart_toEndOf="@id/tvTitle2"
+               app:layout_constraintBottom_toBottomOf="@id/tvTitle2"
                app:layout_constraintEnd_toEndOf="parent"/>
          </androidx.constraintlayout.widget.ConstraintLayout>
       </androidx.cardview.widget.CardView>
    </androidx.constraintlayout.widget.ConstraintLayout>
+   <androidx.cardview.widget.CardView
+      android:id="@+id/cvSave"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="25dp"
+      android:layout_marginLeft="24dp"
+      android:layout_marginRight="24dp"
+      app:cardBackgroundColor="#8B5AFF"
+      app:cardCornerRadius="50dp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent">
+      <androidx.constraintlayout.widget.ConstraintLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:paddingTop="11dp"
+         android:paddingBottom="11dp">
+         <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="수정"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            android:fontFamily="@font/noto"
+            android:includeFontPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+      </androidx.constraintlayout.widget.ConstraintLayout>
+   </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

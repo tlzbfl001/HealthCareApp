@@ -26,7 +26,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentReportFoodBinding
-import kr.bodywell.android.model.Constants.DIETS
+import kr.bodywell.android.model.Constant.DIETS
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2

@@ -30,7 +30,7 @@
       android:id="@+id/tv1"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="18dp"
+      android:layout_marginTop="15dp"
       android:text="블루투스"
       android:textColor="@color/black_white"
       android:textSize="17dp"
@@ -62,15 +62,6 @@
             android:includeFontPadding="false"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
-         <ProgressBar
-            android:id="@+id/progressBar1"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:layout_marginLeft="10dp"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/tvPaired"
-            app:layout_constraintTop_toTopOf="@id/tvPaired"
-            app:layout_constraintBottom_toBottomOf="@id/tvPaired"/>
          <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView1"
             android:layout_width="match_parent"
@@ -96,7 +87,7 @@
             app:layout_constraintTop_toBottomOf="@id/recyclerView1"
             app:layout_constraintStart_toStartOf="parent"/>
          <ProgressBar
-            android:id="@+id/progressBar2"
+            android:id="@+id/progressBar"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:layout_marginLeft="10dp"

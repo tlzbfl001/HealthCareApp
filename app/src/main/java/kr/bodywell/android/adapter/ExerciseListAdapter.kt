@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Constants.WORKOUTS
+import kr.bodywell.android.model.Constant.WORKOUTS
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -27,7 +27,7 @@ class ExerciseListAdapter (
    private var bundle = Bundle()
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_list2, parent, false)
+      val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_record2, parent, false)
       return ViewHolder(view)
    }
 
@@ -47,7 +47,7 @@ class ExerciseListAdapter (
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton("확인") { _, _ ->
                runBlocking {
-                  powerSync.deleteItem("workouts", "id", itemList[pos].id)
+                  powerSync.deleteItem(WORKOUTS, "id", itemList[pos].id)
                }
 
                itemList.removeAt(pos)

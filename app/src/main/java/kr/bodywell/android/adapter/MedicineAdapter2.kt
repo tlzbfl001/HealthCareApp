@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Constants.MEDICINES
+import kr.bodywell.android.model.Constant.MEDICINES
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
@@ -47,7 +47,7 @@ class MedicineAdapter2 (
    }
 
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-      val alarmId = dataManager.getMedicine(itemList[pos].id).id.toInt()
+      val alarmId = dataManager.getMedicine(itemList[pos].id)
 
       val split = itemList[pos].category.split("/", limit=3)
       holder.tvType.text = split[0]
@@ -73,7 +73,6 @@ class MedicineAdapter2 (
 
          if(split[2].toInt() == 1) {
             holder.switchOnOff.isChecked = true
-            holder.ivAlarm.setColorFilter(Color.parseColor("#A47AE8"))
          }
       }
 
@@ -128,7 +127,6 @@ class MedicineAdapter2 (
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       val tvType: TextView = itemView.findViewById(R.id.tvType)
       val switchOnOff: SwitchCompat = itemView.findViewById(R.id.switchOnOff)
-      val ivAlarm: ImageView = itemView.findViewById(R.id.ivAlarm)
       val tvName: TextView = itemView.findViewById(R.id.tvName)
       val tvPeriod: TextView = itemView.findViewById(R.id.tvPeriod)
       val tvCount: TextView = itemView.findViewById(R.id.tvCount)

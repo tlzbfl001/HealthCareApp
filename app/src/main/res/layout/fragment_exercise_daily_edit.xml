@@ -15,7 +15,7 @@
          android:layout_width="30dp"
          android:layout_height="30dp"
          android:src="@drawable/x"
-         android:layout_marginTop="16dp"
+         android:layout_marginTop="15dp"
          android:layout_marginLeft="15dp"
          android:layout_marginBottom="5dp"
          android:layout_marginRight="10dp"
@@ -256,19 +256,22 @@
    </androidx.cardview.widget.CardView>
    <androidx.cardview.widget.CardView
       android:id="@+id/cvSave"
-      android:layout_width="220dp"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="30dp"
-      app:cardBackgroundColor="#9F98FF"
-      app:cardCornerRadius="35dp"
+      android:layout_marginTop="60dp"
+      android:layout_marginBottom="25dp"
+      android:layout_marginLeft="24dp"
+      android:layout_marginRight="24dp"
+      app:cardBackgroundColor="#8B5AFF"
+      app:cardCornerRadius="50dp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:paddingTop="10dp"
-         android:paddingBottom="10dp">
+         android:paddingTop="11dp"
+         android:paddingBottom="11dp">
          <TextView
             android:id="@+id/tvStart"
             android:layout_width="0dp"

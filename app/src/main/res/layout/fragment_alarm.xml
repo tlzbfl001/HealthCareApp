@@ -4,7 +4,7 @@
    android:layout_width="match_parent"
    android:layout_height="match_parent"
    android:id="@+id/mainLayout"
-   android:background="@color/light_grey_black">
+   android:background="@color/white_black">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/clBack"
       android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
       android:id="@+id/tvTitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="18dp"
+      android:layout_marginTop="15dp"
       android:text="알림 설정"
       android:textSize="18dp"
       android:textColor="@color/black_white"
@@ -39,94 +39,78 @@
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintStart_toStartOf="@id/clBack"
       app:layout_constraintEnd_toEndOf="parent"/>
-   <androidx.cardview.widget.CardView
-      android:id="@+id/cv1"
+   <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/btn1"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="25dp"
+      android:background="@drawable/rec_15"
+      android:backgroundTint="@color/main_button"
+      android:layout_marginTop="20dp"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
-      app:cardCornerRadius="15dp"
-      app:cardElevation="3dp"
-      app:cardBackgroundColor="@color/white_grey"
+      android:padding="16dp"
       app:layout_constraintTop_toBottomOf="@id/tvTitle"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
-      <androidx.constraintlayout.widget.ConstraintLayout
-         android:layout_width="match_parent"
+      <TextView
+         android:id="@+id/tvAlarm"
+         android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:paddingTop="18dp"
-         android:paddingBottom="20dp"
-         android:paddingLeft="15dp"
-         android:paddingRight="15dp">
-         <TextView
-            android:id="@+id/tvAlarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="앱 알림 설정"
-            android:textSize="16.5dp"
-            android:textColor="@color/black_white"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-         <TextView
-            android:id="@+id/tvPerm1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="꺼짐"
-            android:textSize="15dp"
-            android:textColor="@color/grey_white"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="@+id/tvAlarm"
-            app:layout_constraintBottom_toBottomOf="@id/tvAlarm"
-            app:layout_constraintEnd_toEndOf="parent"/>
-      </androidx.constraintlayout.widget.ConstraintLayout>
-   </androidx.cardview.widget.CardView>
-   <androidx.cardview.widget.CardView
-      android:id="@+id/cv2"
+         android:text="앱 알림 설정"
+         android:textSize="16.5dp"
+         android:textColor="@color/black_white"
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"/>
+      <TextView
+         android:id="@+id/tvPerm1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="꺼짐"
+         android:textSize="15dp"
+         android:textColor="@color/grey_white"
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"
+         app:layout_constraintTop_toTopOf="@+id/tvAlarm"
+         app:layout_constraintBottom_toBottomOf="@id/tvAlarm"
+         app:layout_constraintEnd_toEndOf="parent"/>
+   </androidx.constraintlayout.widget.ConstraintLayout>
+   <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/btn2"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="12dp"
+      android:background="@drawable/rec_15"
+      android:backgroundTint="@color/main_button"
+      android:layout_marginTop="10dp"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
-      app:cardCornerRadius="15dp"
-      app:cardElevation="3dp"
-      app:cardBackgroundColor="@color/white_grey"
-      app:layout_constraintTop_toBottomOf="@id/cv1"
+      android:padding="16dp"
+      app:layout_constraintTop_toBottomOf="@id/btn1"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
-      <androidx.constraintlayout.widget.ConstraintLayout
-         android:layout_width="match_parent"
+      <TextView
+         android:id="@+id/tvReminder"
+         android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:paddingTop="18dp"
-         android:paddingBottom="20dp"
-         android:paddingLeft="15dp"
-         android:paddingRight="15dp">
-         <TextView
-            android:id="@+id/tvReminder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="알람 및 리마인더 설정"
-            android:textSize="16.5dp"
-            android:textColor="@color/black_white"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-         <TextView
-            android:id="@+id/tvPerm2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="꺼짐"
-            android:textSize="15dp"
-            android:textColor="@color/grey_white"
-            android:fontFamily="@font/noto"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="@+id/tvReminder"
-            app:layout_constraintBottom_toBottomOf="@id/tvReminder"
-            app:layout_constraintEnd_toEndOf="parent"/>
-      </androidx.constraintlayout.widget.ConstraintLayout>
-   </androidx.cardview.widget.CardView>
+         android:text="알림 리마인더 설정"
+         android:textSize="16.5dp"
+         android:textColor="@color/black_white"
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"/>
+      <TextView
+         android:id="@+id/tvPerm2"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="꺼짐"
+         android:textSize="15dp"
+         android:textColor="@color/grey_white"
+         android:fontFamily="@font/noto"
+         android:includeFontPadding="false"
+         app:layout_constraintTop_toTopOf="@+id/tvReminder"
+         app:layout_constraintBottom_toBottomOf="@id/tvReminder"
+         app:layout_constraintEnd_toEndOf="parent"/>
+   </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

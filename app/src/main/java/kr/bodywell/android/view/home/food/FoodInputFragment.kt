@@ -12,15 +12,15 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentFoodInputBinding
-import kr.bodywell.android.model.Constants.BREAKFAST
-import kr.bodywell.android.model.Constants.FOODS
+import kr.bodywell.android.model.Constant.BREAKFAST
+import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
 import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
@@ -226,29 +226,30 @@ class FoodInputFragment : Fragment() {
             fat = 0.17
          }else {
             if(binding.etName.text.toString() != "") name = binding.etName.text.toString().trim()
-            if(binding.etAmount.text.toString() != "") amount = binding.etAmount.text.toString().trim().toInt()
-            if(binding.etKcal.text.toString() != "") calorie = binding.etKcal.text.toString().trim().toInt()
-            if(binding.etCar.text.toString() != "") carbohydrate = binding.etCar.text.toString().trim().toDouble()
-            if(binding.etProtein.text.toString() != "") protein = binding.etProtein.text.toString().trim().toDouble()
-            if(binding.etFat.text.toString() != "") fat = binding.etFat.text.toString().trim().toDouble()
+            if(binding.etAmount.text.toString() != "") amount = binding.etAmount.text.toString().toInt()
+            if(binding.etKcal.text.toString() != "") calorie = binding.etKcal.text.toString().toInt()
+            if(binding.etCar.text.toString() != "") carbohydrate = binding.etCar.text.toString().toDouble()
+            if(binding.etProtein.text.toString() != "") protein = binding.etProtein.text.toString().toDouble()
+            if(binding.etFat.text.toString() != "") fat = binding.etFat.text.toString().toDouble()
          }
 
          lifecycleScope.launch {
-            val getFood = powerSync.getData(FOODS, "name", "name", name)
+            val getData = powerSync.getData(FOODS, "name", "name", name)
 
-            if(name.trim().isEmpty()) {
+            if(name == "") {
                Toast.makeText(context, "음식이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }else if(!filterText(name)) {
                Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
-            }else if(getFood != "") {
+            }else if(getData != "") {
                Toast.makeText(context, "음식이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
-            }else if(amount == 0 || calorie == 0 || carbohydrate == 0.0 || protein == 0.0 || fat == 0.0) {
-               Toast.makeText(context, "입력되지않은 데이터가 있습니다.", Toast.LENGTH_SHORT).show()
+            }else if(amount < 1 || calorie < 1) {
+               Toast.makeText(context, "섭취량, 칼로리는 1이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
+            }else if(carbohydrate < 0.1 || protein < 0.1 || fat < 0.1) {
+               Toast.makeText(context, "영양성분은 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
             }else {
-               val uuid = UuidCreator.getTimeOrderedEpoch()
-               val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
-               powerSync.insertFood(Food(id = uuid.toString(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein,
-                  fat = fat, quantityUnit = "0", volume = amount, volumeUnit = unit, createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
+//               val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
+               powerSync.insertFood(Food(id = getUUID(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat,
+                  volume = amount, volumeUnit = unit, createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
 
                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)

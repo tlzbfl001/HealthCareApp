@@ -15,24 +15,24 @@ import kr.bodywell.android.api.powerSync.SyncController.upsert
 import kr.bodywell.android.api.powerSync.SyncController.update
 import kr.bodywell.android.model.ActivityData
 import kr.bodywell.android.model.Body
-import kr.bodywell.android.model.Constants.ACTIVITIES
-import kr.bodywell.android.model.Constants.BODY_MEASUREMENTS
-import kr.bodywell.android.model.Constants.DIETS
-import kr.bodywell.android.model.Constants.FILES
-import kr.bodywell.android.model.Constants.FOODS
-import kr.bodywell.android.model.Constants.FOOD_USAGES
-import kr.bodywell.android.model.Constants.GOALS
-import kr.bodywell.android.model.Constants.MEDICINES
-import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
-import kr.bodywell.android.model.Constants.MEDICINE_TIMES
-import kr.bodywell.android.model.Constants.NOTES
-import kr.bodywell.android.model.Constants.PROFILES
-import kr.bodywell.android.model.Constants.SLEEP
-import kr.bodywell.android.model.Constants.WATER
-import kr.bodywell.android.model.Constants.WORKOUTS
+import kr.bodywell.android.model.Constant.ACTIVITIES
+import kr.bodywell.android.model.Constant.ACTIVITY_USAGES
+import kr.bodywell.android.model.Constant.BODY_MEASUREMENTS
+import kr.bodywell.android.model.Constant.DIETS
+import kr.bodywell.android.model.Constant.FILES
+import kr.bodywell.android.model.Constant.FOODS
+import kr.bodywell.android.model.Constant.FOOD_USAGES
+import kr.bodywell.android.model.Constant.GOALS
+import kr.bodywell.android.model.Constant.MEDICINES
+import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
+import kr.bodywell.android.model.Constant.MEDICINE_TIMES
+import kr.bodywell.android.model.Constant.NOTES
+import kr.bodywell.android.model.Constant.PROFILES
+import kr.bodywell.android.model.Constant.SLEEP
+import kr.bodywell.android.model.Constant.WATER
+import kr.bodywell.android.model.Constant.WORKOUTS
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.model.FoodUsage
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineIntake
@@ -42,10 +42,9 @@ import kr.bodywell.android.model.Profile
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.model.Workout
-import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.getToken
 import kr.bodywell.android.util.CustomUtil.getUser
-import okhttp3.MultipartBody
 
 class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	private val _context = context
@@ -60,7 +59,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	inner class MyConnector : PowerSyncBackendConnector() {
-		private val powerSyncEndpoint = "https://6711c44725a60ad3b2df2ae6.powersync.journeyapps.com"
+		private val powerSyncEndpoint = "https://6711c44725a60ad3b2df2ae6.powersync.journeyapps.com" // development
+//		private val powerSyncEndpoint = "https://677f6f80e88075f9091b99d3.powersync.journeyapps.com" // production
 
 		override suspend fun fetchCredentials(): PowerSyncCredentials {
 			return PowerSyncCredentials(
@@ -89,7 +89,6 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 
 						UpdateType.DELETE -> {
 							delete(_context, entry.table, entry.id)
-
 						}
 					}
 				}
@@ -102,9 +101,15 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		}
 	}
 
-	fun watchMedicine(data: String): Flow<List<Medicine>> {
+	fun watchMedicine1(): Flow<List<String>> {
+		return database.watch("SELECT id FROM $MEDICINES WHERE user_id = '${getUser.uid}'", mapper = { cursor ->
+			cursor.getString(0)!!
+		})
+	}
+
+	fun watchMedicine2(data: String): Flow<List<Medicine>> {
 		return database.watch("SELECT id, category, name, amount, unit, strftime('%Y-%m-%d', starts), strftime('%Y-%m-%d', ends), updated_at " +
-			"FROM $MEDICINES WHERE user_id = '${getUser.uid}' AND '$data' BETWEEN strftime('%Y-%m-%d', starts) AND strftime('%Y-%m-%d', ends)", mapper = { cursor ->
+			"FROM $MEDICINES WHERE user_id = '${getUser.uid}' AND updated_at > '$data'", mapper = { cursor ->
 			Medicine(
 				id = cursor.getString(0)!!,
 				category = cursor.getString(1)!!,
@@ -119,16 +124,17 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	fun watchFile(data: String): Flow<List<FileItem>> {
-		return database.watch("SELECT name, data FROM $FILES WHERE user_id = '${getUser.uid}' AND updated_at >= '$data'", mapper = { cursor ->
+		return database.watch("SELECT id, name, data FROM $FILES WHERE user_id = '${getUser.uid}' AND created_at > '$data'", mapper = { cursor ->
 			FileItem(
-				name = cursor.getString(0)!!,
-				data = cursor.getString(1)!!
+				id = cursor.getString(0)!!,
+				name = cursor.getString(1)!!,
+				data = cursor.getString(2)!!
 			)
 		})
 	}
 
-	suspend fun getProfile(data: String): Profile {
-		return database.getOptional(sql = "SELECT id, name, birth, height, weight, gender FROM $PROFILES WHERE user_id = '$data'", mapper = { cursor ->
+	suspend fun getProfile(): Profile {
+		return database.getOptional(sql = "SELECT id, name, birth, height, weight, gender FROM $PROFILES WHERE user_id = '${getUser.uid}'", mapper = { cursor ->
 			Profile(
 				id = cursor.getString(0)!!,
 				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
@@ -138,6 +144,22 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				gender = if(cursor.getString(5) == null) "" else cursor.getString(5)!!
 			)}
 		) ?: Profile()
+	}
+
+	suspend fun getFood(data: String): Food {
+		return database.getOptional(sql = "SELECT name, calorie, carbohydrate, protein, fat, quantity, volume, volume_unit " +
+			"FROM $FOODS WHERE user_id = '${getUser.uid}' AND id = '$data'", mapper = { cursor ->
+			Food(
+				name = cursor.getString(0)!!,
+				calorie = if(cursor.getString(1) == null) 0 else cursor.getDouble(1)!!.toInt(),
+				carbohydrate = if(cursor.getDouble(2) == null) 0.0 else cursor.getDouble(2)!!,
+				protein = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
+				fat = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
+				quantity = if(cursor.getString(5) == null) 0 else cursor.getDouble(5)!!.toInt(),
+				volume = if(cursor.getString(6) == null) 0 else cursor.getDouble(6)!!.toInt(),
+				volumeUnit = cursor.getString(7)!!
+			)}
+		) ?: Food()
 	}
 
 	suspend fun getFoods(): List<Food> {
@@ -158,9 +180,9 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		)
 	}
 
-	suspend fun getFoodUsages(): List<Food> {
-		return database.getAll(sql = "SELECT id, name, calorie, carbohydrate, protein, fat, quantity_unit, volume, volume_unit " +
-			"FROM $FOODS WHERE user_id = '${getUser.uid}' ORDER BY quantity_unit DESC", mapper = { cursor ->
+	suspend fun getFoodUsages1(): List<Food> {
+		return database.getAll(sql = "SELECT * FROM (SELECT a.id, name, calorie, carbohydrate, protein, fat, quantity_unit, volume, volume_unit, " +
+			"usage_count FROM $FOODS a, $FOOD_USAGES b WHERE a.user_id = '${getUser.uid}' AND a.id = b.food_id) ORDER BY usage_count DESC", mapper = { cursor ->
 			Food(
 				id = cursor.getString(0)!!,
 				name = cursor.getString(1)!!,
@@ -173,6 +195,23 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				volumeUnit = cursor.getString(8)!!
 			)
 		})
+	}
+
+	suspend fun getFoodUsages2(): List<Food> {
+		return database.getAll(sql = "SELECT * FROM (SELECT a.id, name, calorie, carbohydrate, protein, fat, quantity_unit, volume, volume_unit, b.updated_at " +
+			"FROM $FOODS a, $FOOD_USAGES b WHERE a.user_id = '${getUser.uid}' AND a.id = b.food_id) ORDER BY updated_at DESC", mapper = { cursor ->
+			Food(
+				id = cursor.getString(0)!!,
+				name = cursor.getString(1)!!,
+				calorie = if(cursor.getString(2) == null) 0 else cursor.getDouble(2)!!.toInt(),
+				carbohydrate = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
+				protein = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
+				fat = if(cursor.getDouble(5) == null) 0.0 else cursor.getDouble(5)!!,
+				quantityUnit = cursor.getString(6)!!,
+				volume = if(cursor.getString(7) == null) 0 else cursor.getDouble(7)!!.toInt(),
+				volumeUnit = cursor.getString(8)!!
+			)}
+		)
 	}
 
 	suspend fun getDiet(mealTime: String, name: String, date: String): Food {
@@ -205,7 +244,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	suspend fun getDietIds(date: String): List<String> {
-		return database.getAll(sql = "SELECT * FROM(SELECT * FROM $DIETS WHERE user_id = '${getUser.uid}' " +
+		return database.getAll(sql = "SELECT id FROM(SELECT id, name FROM $DIETS WHERE user_id = '${getUser.uid}' " +
 			"AND strftime('%Y-%m-%d', date) = '$date' ORDER BY created_at DESC) GROUP BY name",mapper = { cursor ->
 			cursor.getString(0)!!
 		})
@@ -235,13 +274,35 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		)
 	}
 
-	suspend fun getActivities(): List<ActivityData> {
-		return database.getAll(sql = "SELECT * FROM(SELECT id, name, created_at FROM $ACTIVITIES WHERE user_id = '${getUser.uid}' " +
-			"ORDER BY created_at DESC) GROUP BY name", mapper = { cursor ->
+	suspend fun getActivityUsages1(): List<ActivityData> {
+		return database.getAll(sql = "SELECT * FROM (SELECT a.id, a.name, register_type, usage_count FROM $ACTIVITIES a, $ACTIVITY_USAGES b " +
+			"WHERE a.user_id = '${getUser.uid}' AND a.id = b.activity_id) ORDER BY usage_count DESC", mapper = { cursor ->
 			ActivityData(
 				id = cursor.getString(0)!!,
 				name = cursor.getString(1)!!,
-				createdAt = cursor.getString(2)!!
+				registerType = cursor.getString(2)!!
+			)}
+		)
+	}
+
+	suspend fun getActivityUsages2(): List<ActivityData> {
+		return database.getAll(sql = "SELECT * FROM (SELECT a.id, a.name, register_type, b.updated_at FROM $ACTIVITIES a, $ACTIVITY_USAGES b " +
+			"WHERE a.user_id = '${getUser.uid}' AND a.id = b.activity_id) ORDER BY updated_at DESC", mapper = { cursor ->
+			ActivityData(
+				id = cursor.getString(0)!!,
+				name = cursor.getString(1)!!,
+				registerType = cursor.getString(2)!!
+			)}
+		)
+	}
+
+	suspend fun getActivities(): List<ActivityData> {
+		return database.getAll(sql = "SELECT * FROM(SELECT id, name, register_type, created_at FROM $ACTIVITIES " +
+			"WHERE user_id = '${getUser.uid}') GROUP BY name ORDER BY created_at DESC", mapper = { cursor ->
+			ActivityData(
+				id = cursor.getString(0)!!,
+				name = cursor.getString(1)!!,
+				registerType = if(cursor.getString(2) == null) "" else cursor.getString(2)!!
 			)}
 		)
 	}
@@ -353,10 +414,11 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	suspend fun getAllMedicineTime(data: String): List<MedicineTime> {
-		return database.getAll(sql = "SELECT id, time FROM $MEDICINE_TIMES WHERE user_id = '${getUser.uid}' AND medicine_id = '$data' ORDER BY time", mapper = { cursor ->
+		return database.getAll(sql = "SELECT id, time, created_at FROM $MEDICINE_TIMES WHERE user_id = '${getUser.uid}' AND medicine_id = '$data' ORDER BY time", mapper = { cursor ->
 			MedicineTime(
 				id = cursor.getString(0)!!,
-				time = cursor.getString(1)!!
+				time = cursor.getString(1)!!,
+				createdAt = cursor.getString(2)!!
 			)}
 		)
 	}
@@ -375,7 +437,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	suspend fun getIntakes(data: String): List<String> {
-		return database.getAll(sql = "SELECT * FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' AND strftime('%Y-%m-%d', intaked_at) = '$data'", mapper = { cursor ->
+		return database.getAll(sql = "SELECT id FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' AND strftime('%Y-%m-%d', intaked_at) = '$data'", mapper = { cursor ->
 			cursor.getString(0)!!
 		})
 	}
@@ -424,8 +486,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		) ?: FileItem()
 	}
 
-	suspend fun getFiles(data: String): List<FileItem> {
-		return database.getAll(sql = "SELECT id, name FROM $FILES WHERE user_id = '${getUser.uid}' AND diet_id = '$data'", mapper = { cursor ->
+	suspend fun getFiles(data1: String, data2: String): List<FileItem> {
+		return database.getAll(sql = "SELECT id, name FROM $FILES WHERE user_id = '${getUser.uid}' AND $data1 = '$data2'", mapper = { cursor ->
 			FileItem(
 				id = cursor.getString(0)!!,
 				name = cursor.getString(1)!!
@@ -474,7 +536,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	suspend fun getData(table: String, column1: String, column2: String, data: String): String {
-		return database.getOptional(sql = "SELECT $column1 FROM $table WHERE user_id = '${getUser.uid}' AND $column2 = '$data'", mapper = { cursor ->
+		return database.getOptional(sql = "SELECT $column1 FROM $table WHERE user_id = '${getUser.uid}' AND $column2 = '$data' limit 1", mapper = { cursor ->
 			cursor.getString(0)!!
 		}) ?: ""
 	}
@@ -501,7 +563,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				sql = "INSERT INTO $FOODS(id, name, calorie, carbohydrate, protein, fat, quantity, quantity_unit, volume, volume_unit, " +
 					"created_at, updated_at, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				parameters = listOf(data.id, data.name, "${data.calorie}", "${data.carbohydrate}", "${data.protein}", "${data.fat}", "1",
-					"0", "${data.volume}", data.volumeUnit, data.createdAt, data.updatedAt, getUser.uid)
+					"개", "${data.volume}", data.volumeUnit, data.createdAt, data.updatedAt, getUser.uid)
 			)
 		}
 	}
@@ -613,6 +675,15 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		}
 	}
 
+	suspend fun insertNoteFile(data: FileItem) {
+		database.writeTransaction {
+			database.execute(
+				sql = "INSERT INTO $FILES(id, name, note_id) VALUES (?, ?, ?)",
+				parameters = listOf(data.id, data.name, data.noteId)
+			)
+		}
+	}
+
 	suspend fun insertGoal(data: Goal) {
 		database.writeTransaction {
 			database.execute(
@@ -627,8 +698,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun updateProfile(data: Profile) {
 		database.writeTransaction {
 			database.execute(
-				sql = "UPDATE $PROFILES SET name = ?, birth = ?, gender = ?, height = ?, weight = ? WHERE user_id = ?",
-				parameters = listOf(data.name, data.birth, data.gender, "${data.height}", "${data.weight}", getUser.uid)
+				sql = "UPDATE $PROFILES SET name = ?, birth = ?, height = ?, weight = ?, gender = ? WHERE user_id = ?",
+				parameters = listOf(data.name, data.birth, "${data.height}", "${data.weight}", data.gender, getUser.uid)
 			)
 		}
 	}
@@ -644,10 +715,6 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		database.execute(
 			sql = "UPDATE $DIETS SET quantity = ? WHERE id = ?",
 			parameters = listOf("${data.quantity}", data.id))
-	}
-
-	suspend fun updateCount(id: String, quantityUnit: String) {
-		database.execute(sql = "UPDATE $FOODS SET quantity_unit = ? WHERE id = ?", parameters = listOf(quantityUnit, id))
 	}
 
 	suspend fun updateWater(data: Water) {

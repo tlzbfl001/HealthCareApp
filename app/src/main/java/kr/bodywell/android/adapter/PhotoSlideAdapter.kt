@@ -9,10 +9,11 @@ import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import kr.bodywell.android.R
 import kr.bodywell.android.model.FileItem
+import java.io.File
 
 class PhotoSlideAdapter(
    private val context: Context,
-   private val itemList: ArrayList<FileItem>
+   private val itemList: List<FileItem>
 ) : PagerAdapter() {
 
    override fun isViewFromObject(view: View, `object`: Any): Boolean {
@@ -25,8 +26,11 @@ class PhotoSlideAdapter(
       val imageView: ImageView = view.findViewById(R.id.imageView)
 
       val imgPath = context.filesDir.toString() + "/" + itemList[position].name
-      val bm = BitmapFactory.decodeFile(imgPath)
-      imageView.setImageBitmap(bm)
+      val file = File(imgPath)
+      if(file.exists()){
+         val bm = BitmapFactory.decodeFile(imgPath)
+         imageView.setImageBitmap(bm)
+      }
 
       container.addView(view, 0)
 

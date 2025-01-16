@@ -3,6 +3,7 @@ package kr.bodywell.android.view.setting
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
@@ -25,18 +26,16 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.api.RetrofitAPI
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
 import kr.bodywell.android.database.DBHelper.Companion.UPDATED_AT
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
-import kr.bodywell.android.model.Constants.GOOGLE
-import kr.bodywell.android.model.Constants.KAKAO
-import kr.bodywell.android.model.Constants.NAVER
-import kr.bodywell.android.model.Constants.MALE
+import kr.bodywell.android.model.Constant.GOOGLE
+import kr.bodywell.android.model.Constant.KAKAO
+import kr.bodywell.android.model.Constant.NAVER
+import kr.bodywell.android.model.Constant.MALE
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
@@ -96,7 +95,7 @@ class SettingFragment : Fragment() {
 
       showProfile()
 
-      binding.cvProfile.setOnClickListener {
+      binding.tvProfile.setOnClickListener {
          replaceFragment1(requireActivity().supportFragmentManager, ProfileFragment())
       }
 
@@ -105,15 +104,18 @@ class SettingFragment : Fragment() {
       }
 
       binding.tvConnect.setOnClickListener {
-         // 블루투스 권한 설정
-         if(!checkBtPermission(requireActivity())) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-               pLauncher.launch(BT_PERMISSION_2)
-            }else {
-               pLauncher.launch(BT_PERMISSION_1)
-            }
+         if(!requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(requireActivity(), "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_SHORT).show()
          }else {
-            replaceFragment1(requireActivity().supportFragmentManager, ConnectFragment())
+            if(!checkBtPermission(requireActivity())) {
+               if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                  pLauncher.launch(BT_PERMISSION_2)
+               }else {
+                  pLauncher.launch(BT_PERMISSION_1)
+               }
+            }else {
+               replaceFragment1(requireActivity().supportFragmentManager, ConnectFragment())
+            }
          }
       }
 
@@ -135,7 +137,7 @@ class SettingFragment : Fragment() {
                         val gsc = GoogleSignIn.getClient(requireActivity(), gso)
 
                         gsc.signOut().addOnCompleteListener {
-                           if(it.isSuccessful) logoutProcess() else Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
+                           logoutProcess()
                         }
                      }
                      NAVER -> {
@@ -145,7 +147,7 @@ class SettingFragment : Fragment() {
                      }
                      KAKAO -> {
                         UserApiClient.instance.logout { error ->
-                           if(error != null) Toast.makeText(requireActivity(), "로그아웃 실패", Toast.LENGTH_SHORT).show() else logoutProcess()
+                           logoutProcess()
                         }
                      }
                   }
@@ -233,7 +235,7 @@ class SettingFragment : Fragment() {
 
    private fun showProfile() {
       lifecycleScope.launch {
-         val getProfile = powerSync.getProfile(getUser.uid)
+         val getProfile = powerSync.getProfile()
 
          getFile = powerSync.getFile(getProfile.id)
          if(getFile.name != "") {
@@ -288,22 +290,6 @@ class SettingFragment : Fragment() {
       finishAffinity(requireActivity())
       startActivity(Intent(requireActivity(), LoginActivity::class.java))
       exitProcess(0)
-   }
-
-   private fun resignProcess() {
-      lifecycleScope.launch {
-         val getUserUid = RetrofitAPI.api.getUser("Bearer ${getToken.access}")
-         if(getUserUid.isSuccessful) {
-            val response = RetrofitAPI.api.deleteUser("Bearer ${getToken.access}")
-            if(response.isSuccessful) {
-               deleteData()
-            }else {
-               requireActivity().runOnUiThread {
-                  Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
-               }
-            }
-         }
-      }
    }
 
    private fun deleteData() {

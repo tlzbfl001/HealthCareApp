@@ -5,8 +5,8 @@
          <corners android:radius="38dp" />
          <size
             android:width="38dp"
-            android:height="17dp" />
-         <solid android:color="#A282EC" />
+            android:height="19dp" />
+         <solid android:color="@color/medicine" />
       </shape>
    </item>
    <item android:state_checked="false">
@@ -14,7 +14,7 @@
          <corners android:radius="38dp" />
          <size
              android:width="38dp"
-             android:height="17dp" />
+             android:height="19dp" />
          <solid android:color="#D6D6D6"/>
       </shape>
    </item>

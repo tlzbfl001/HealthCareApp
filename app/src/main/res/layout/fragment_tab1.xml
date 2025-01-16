@@ -5,7 +5,7 @@
    tools:context=".view.setting.Tab1Fragment"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/transparent">
+   android:background="@color/white_black">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent">
@@ -17,7 +17,7 @@
          android:text="Connected"
          android:textSize="16dp"
          android:layout_marginTop="20sp"
-         android:layout_marginLeft="25dp"
+         android:layout_marginLeft="20dp"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"/>
       <Button
@@ -25,7 +25,7 @@
          android:layout_width="136dp"
          android:layout_height="wrap_content"
          android:text="Connect"
-         android:layout_marginRight="25dp"
+         android:layout_marginRight="20dp"
          app:layout_constraintTop_toTopOf="@id/tvConnect"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintBottom_toBottomOf="@id/tvConnect"/>
@@ -57,12 +57,12 @@
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toBottomOf="@id/btnInit"/>
       <TextView
-         android:id="@+id/tvDoor1"
+         android:id="@+id/tvCount1"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:text="Door 1 Count : 0"
          android:textColor="@color/black_white"
-         android:layout_marginLeft="25dp"
+         android:layout_marginLeft="20dp"
          app:layout_constraintTop_toTopOf="@id/btnDoor1"
          app:layout_constraintBottom_toBottomOf="@id/btnGetCount1"
          app:layout_constraintStart_toStartOf="parent"/>
@@ -72,7 +72,7 @@
          android:layout_height="wrap_content"
          android:text="Init Door1"
          android:layout_marginTop="10dp"
-         android:layout_marginRight="25dp"
+         android:layout_marginRight="20dp"
          app:layout_constraintTop_toBottomOf="@id/view2"
          app:layout_constraintEnd_toEndOf="parent"/>
       <Button
@@ -92,12 +92,12 @@
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toBottomOf="@id/btnGetCount1"/>
       <TextView
-         android:id="@+id/tvDoor2"
+         android:id="@+id/tvCount2"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:text="Door 2 Count : 0"
          android:textColor="@color/black_white"
-         android:layout_marginLeft="25dp"
+         android:layout_marginLeft="20dp"
          app:layout_constraintTop_toTopOf="@id/btnDoor2"
          app:layout_constraintBottom_toBottomOf="@id/btnGetCount2"
          app:layout_constraintStart_toStartOf="parent"/>
@@ -107,7 +107,7 @@
          android:layout_height="wrap_content"
          android:text="Init Door2"
          android:layout_marginTop="10dp"
-         android:layout_marginRight="25dp"
+         android:layout_marginRight="20dp"
          app:layout_constraintTop_toBottomOf="@id/view3"
          app:layout_constraintEnd_toEndOf="parent"/>
       <Button
@@ -127,12 +127,12 @@
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toBottomOf="@id/btnGetCount2"/>
       <TextView
-         android:id="@+id/tvDoor3"
+         android:id="@+id/tvCount3"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:text="Door 3 Count : 0"
          android:textColor="@color/black_white"
-         android:layout_marginLeft="25dp"
+         android:layout_marginLeft="20dp"
          app:layout_constraintTop_toTopOf="@id/btnDoor3"
          app:layout_constraintBottom_toBottomOf="@id/btnGetCount3"
          app:layout_constraintStart_toStartOf="parent"/>
@@ -142,7 +142,7 @@
          android:layout_height="wrap_content"
          android:text="Init Door2"
          android:layout_marginTop="10dp"
-         android:layout_marginRight="25dp"
+         android:layout_marginRight="20dp"
          app:layout_constraintTop_toBottomOf="@id/view4"
          app:layout_constraintEnd_toEndOf="parent"/>
       <Button
@@ -153,6 +153,7 @@
          app:layout_constraintTop_toBottomOf="@id/btnDoor3"
          app:layout_constraintEnd_toEndOf="@id/btnDoor3"/>
       <View
+         android:id="@+id/view"
          android:layout_width="match_parent"
          android:layout_height="0.7dp"
          android:background="#aaaaaa"
@@ -160,5 +161,14 @@
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toBottomOf="@id/btnGetCount3"/>
+      <Button
+         android:id="@+id/btnOnOff"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="10dp"
+         android:layout_marginRight="20dp"
+         android:text="Light ON/OFF"
+         app:layout_constraintTop_toBottomOf="@id/view"
+         app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

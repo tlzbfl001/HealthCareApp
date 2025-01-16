@@ -3,6 +3,7 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,17 +22,20 @@ import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
+import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.api.dto.KakaoLoginDTO
+import kr.bodywell.android.api.dto.LoginDTO
+import kr.bodywell.android.api.dto.NaverLoginDTO
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
-import kr.bodywell.android.model.Constants.GOOGLE
-import kr.bodywell.android.model.Constants.KAKAO
-import kr.bodywell.android.model.Constants.NAVER
+import kr.bodywell.android.model.Constant.GOOGLE
+import kr.bodywell.android.model.Constant.KAKAO
+import kr.bodywell.android.model.Constant.NAVER
+import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.RegisterUtil.googleLoginRequest
-import kr.bodywell.android.util.RegisterUtil.kakaoLoginRequest
-import kr.bodywell.android.util.RegisterUtil.naverLoginRequest
 
 class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
@@ -98,15 +102,37 @@ class LoginActivity : AppCompatActivity() {
 
    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
       super.onActivityResult(requestCode, resultCode, data)
-      if (requestCode == 1000) {
+      if(requestCode == 1000) {
          GoogleSignIn.getSignedInAccountFromIntent(data).addOnCompleteListener {
-            if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
-               val user = User(type = GOOGLE, email = it.result.email!!, idToken = it.result.idToken!!)
-               lifecycleScope.launch {
-                  googleLoginRequest(this@LoginActivity, user)
+            try{
+               if(it.result.idToken != "" && it.result.idToken != null && it.result.email != "" && it.result.email != null) {
+                  val user = User(type = GOOGLE, email = it.result.email!!, idToken = it.result.idToken!!)
+
+                  lifecycleScope.launch {
+                     val loginWithGoogle = RetrofitAPI.api.loginWithGoogle(LoginDTO(user.idToken))
+                     if(loginWithGoogle.isSuccessful) {
+                        val access = loginWithGoogle.body()!!.accessToken
+                        val refresh = loginWithGoogle.body()!!.refreshToken
+
+                        val getUser = RetrofitAPI.api.getUser("Bearer $access")
+                        if(getUser.isSuccessful) {
+                           val newUser = User(type = user.type, idToken = user.idToken, email = user.email, username = getUser.body()!!.username, role = getUser.body()!!.role, uid = getUser.body()!!.id)
+                           val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                           intent.putExtra("user", newUser)
+                           intent.putExtra("token", Token(access = access, refresh = refresh))
+                           startActivity(intent)
+                        }else {
+                           Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        }
+                     }else {
+                        Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                     }
+                  }
+               }else {
+                  Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
                }
-            }else {
-               Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+            }catch (e: Exception) {
+               Log.e(TAG, "GoogleSignIn: $e")
             }
          }
       }
@@ -119,8 +145,26 @@ class LoginActivity : AppCompatActivity() {
                override fun onSuccess(result: NidProfileResponse) {
                   if(NaverIdLoginSDK.getAccessToken() != "" && NaverIdLoginSDK.getAccessToken() != null && result.profile?.email != "" && result.profile?.email != null) {
                      val user = User(type = NAVER, accessToken = NaverIdLoginSDK.getAccessToken().toString(), email = result.profile?.email!!)
+
                      lifecycleScope.launch {
-                        naverLoginRequest(this@LoginActivity, user)
+                        val response = RetrofitAPI.api.loginWithNaver(NaverLoginDTO(user.accessToken))
+                        if(response.isSuccessful) {
+                           val access = response.body()!!.accessToken
+                           val refresh = response.body()!!.refreshToken
+
+                           val getUser = RetrofitAPI.api.getUser("Bearer $access")
+                           if(getUser.isSuccessful) {
+                              val newUser = User(type = user.type, accessToken = user.accessToken, email = user.email, username = getUser.body()!!.username, role = getUser.body()!!.role, uid = getUser.body()!!.id)
+                              val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                              intent.putExtra("user", newUser)
+                              intent.putExtra("token", Token(access = access, refresh = refresh))
+                              startActivity(intent)
+                           }else {
+                              Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                           }
+                        }else {
+                           Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        }
                      }
                   }else {
                      Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
@@ -153,9 +197,9 @@ class LoginActivity : AppCompatActivity() {
 
    private fun kakaoLogin() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-         if (error != null) {
-            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
-         } else if (token != null) createKakaoUser(token)
+         if(error != null) {
+            Log.e(TAG, "kakaoLogin: $error")
+         }else if (token != null) createKakaoUser(token)
       }
 
       // 카카오톡이 설치되어있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
@@ -175,9 +219,25 @@ class LoginActivity : AppCompatActivity() {
       UserApiClient.instance.me { user, error ->
          if(error == null) {
             if(token.idToken != "" && token.idToken != null && user!!.kakaoAccount?.email != "" && user.kakaoAccount?.email != null) {
-               val data = User(type = KAKAO, idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!)
                lifecycleScope.launch {
-                  kakaoLoginRequest(this@LoginActivity, data)
+                  val response = RetrofitAPI.api.loginWithKakao(KakaoLoginDTO(token.accessToken, token.idToken!!))
+                  if(response.isSuccessful) {
+                     val access = response.body()!!.accessToken
+                     val refresh = response.body()!!.refreshToken
+
+                     val getUser = RetrofitAPI.api.getUser("Bearer $access")
+                     if(getUser.isSuccessful) {
+                        val newUser = User(type = KAKAO, idToken = token.idToken!!, accessToken = token.accessToken, email = user.kakaoAccount?.email!!, username = getUser.body()!!.username, role = getUser.body()!!.role, uid = getUser.body()!!.id)
+                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                        intent.putExtra("user", newUser)
+                        intent.putExtra("token", Token(access = access, refresh = refresh))
+                        startActivity(intent)
+                     }else {
+                        Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                     }
+                  }else {
+                     Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                  }
                }
             }else {
                Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()

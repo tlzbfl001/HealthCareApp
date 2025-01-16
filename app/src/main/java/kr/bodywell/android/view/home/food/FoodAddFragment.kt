@@ -9,13 +9,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.databinding.FragmentFoodAddBinding
-import kr.bodywell.android.model.Constants.FOODS
+import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateToIso
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
@@ -28,6 +29,7 @@ class FoodAddFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private var bundle = Bundle()
+	private var getFood = Food()
 	private var unit = "mg"
 
 	override fun onAttach(context: Context) {
@@ -48,9 +50,13 @@ class FoodAddFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		val getFood = arguments?.getParcelable<Food>(FOODS)!!
+		val foodId = arguments?.getString("foodId")!!
 		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
+
+		lifecycleScope.launch {
+			getFood = powerSync.getFood(foodId)
+		}
 
 		unit = getFood.volumeUnit
 		binding.tvName.text = getFood.name
@@ -76,20 +82,12 @@ class FoodAddFragment : Fragment() {
 
 				if(getDiet.id == "") {
 					val getData = powerSync.getData(FOODS, "id", "name", getFood.name)
-					val uuid = UuidCreator.getTimeOrderedEpoch()
-					val calendar = Calendar.getInstance()
-					calendar.set(selectedDate.year, selectedDate.monthValue - 1, selectedDate.dayOfMonth, 10, 0)
-					val format1 = dateTimeToIso(calendar)
-					val format2 = dateTimeToIso(Calendar.getInstance())
-
-					powerSync.insertDiet(Food(id = uuid.toString(), mealTime = type, name = getFood.name, calorie = getFood.calorie, carbohydrate = getFood.carbohydrate,
-						protein = getFood.protein, fat = getFood.fat, volume = getFood.volume, volumeUnit = getFood.volumeUnit, date = format1,
-						createdAt = format2, updatedAt = format2, foodId = getData))
+					powerSync.insertDiet(Food(id = getUUID(), mealTime = type, name = getFood.name, calorie = getFood.calorie, carbohydrate = getFood.carbohydrate,
+						protein = getFood.protein, fat = getFood.fat, volume = getFood.volume, volumeUnit = getFood.volumeUnit, date = dateToIso(selectedDate),
+						createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance()), foodId = getData))
 				}else {
 					powerSync.updateDiet(Food(id = getDiet.id, quantity = getFood.quantity + 1))
 				}
-
-				powerSync.updateCount(getFood.id, (getFood.quantityUnit.toInt()+1).toString())
 			}
 
 			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()

@@ -1,11 +1,8 @@
 package kr.bodywell.android.view.home.medicine
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,18 +16,20 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.MedicineAdapter4
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMedicineAddBinding
-import kr.bodywell.android.model.Constants.MEDICINES
-import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
-import kr.bodywell.android.model.Constants.MEDICINE_TIMES
+import kr.bodywell.android.model.Constant.MEDICINES
+import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
+import kr.bodywell.android.model.Constant.MEDICINE_TIMES
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso2
 import kr.bodywell.android.util.CustomUtil.drugTimeList
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -38,6 +37,7 @@ import kr.bodywell.android.util.CustomUtil.setDrugTimeList
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDateTime
+import java.util.Calendar
 
 class MedicineAddFragment : Fragment() {
    private var _binding: FragmentMedicineAddBinding? = null
@@ -84,7 +84,6 @@ class MedicineAddFragment : Fragment() {
 
       val getMedicine = arguments?.getParcelable<Medicine>(MEDICINES)
 
-      // 약복용 수정일경우 데이터 가져오기
       if(getMedicine != null) {
          split = getMedicine.category.split("/", limit=3)
          binding.etType.setText(split[0])
@@ -106,7 +105,6 @@ class MedicineAddFragment : Fragment() {
          lifecycleScope.launch {
             getMedicineTime = powerSync.getAllMedicineTime(getMedicine.id) as ArrayList<MedicineTime>
             for(element in getMedicineTime) setDrugTimeList(element.time)
-            binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
          }
       }
 
@@ -126,36 +124,27 @@ class MedicineAddFragment : Fragment() {
          replaceFragment3(parentFragmentManager, MedicineRecordFragment())
       }
 
-      binding.etAmount.addTextChangedListener(object : TextWatcher {
-         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
-         }
-
-         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-         override fun afterTextChanged(p0: Editable?) {}
-      })
-
-      binding.clUnit1.setOnClickListener {
+      binding.tvUnit1.setOnClickListener {
          unit1()
       }
 
-      binding.clUnit2.setOnClickListener {
+      binding.tvUnit2.setOnClickListener {
          unit2()
       }
 
-      binding.clUnit3.setOnClickListener {
+      binding.tvUnit3.setOnClickListener {
          unit3()
       }
 
-      binding.clUnit4.setOnClickListener {
+      binding.tvUnit4.setOnClickListener {
          unit4()
       }
 
-      binding.clUnit5.setOnClickListener {
+      binding.tvUnit5.setOnClickListener {
          unit5()
       }
 
-      binding.clUnit6.setOnClickListener {
+      binding.tvUnit6.setOnClickListener {
          unit6()
       }
 
@@ -163,23 +152,21 @@ class MedicineAddFragment : Fragment() {
          if(count > 1) {
             count -= 1
             binding.tvCount.text = count.toString()
-            binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
          }
       }
 
       binding.ivPlus.setOnClickListener {
          count += 1
          binding.tvCount.text = count.toString()
-         binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
       }
 
       binding.cvSave.setOnClickListener {
-         val category = if(binding.etType.text.toString() == "") "untitled" else binding.etType.text.toString().trim()
-         val name = if(binding.etName.text.toString() == "") "untitled" else binding.etName.text.toString().trim()
+         val category = if(binding.etType.text.toString() == "") "제목없음" else binding.etType.text.toString().trim()
+         val name = if(binding.etName.text.toString() == "") "제목없음" else binding.etName.text.toString().trim()
          val amount = if(binding.etAmount.text.toString() == "") 1 else binding.etAmount.text.toString().trim().toInt()
 
          if(itemList.size == 0) {
-            Toast.makeText(activity, "시간 미입력", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "시간을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             val ends = selectedDate.plusDays((count-1).toLong()).toString()
             lifecycleScope.launch {
@@ -217,39 +204,38 @@ class MedicineAddFragment : Fragment() {
 
                   // 새로 생성된 데이터 저장
                   for(i in 0 until addList.size) {
-                     val uuid = UuidCreator.getTimeOrderedEpoch()
-                     powerSync.insertMedicineTime(MedicineTime(id = uuid.toString(), time = addList[i], createdAt = LocalDateTime.now().toString(),
-                        updatedAt = LocalDateTime.now().toString(), medicineId = getMedicine.id))
+                     powerSync.insertMedicineTime(MedicineTime(id = getUUID(), time = addList[i], createdAt = dateTimeToIso1(Calendar.getInstance()),
+                        updatedAt = dateTimeToIso1(Calendar.getInstance()), medicineId = getMedicine.id))
                   }
 
                   // 알람 수정
-                  val getData = dataManager.getMedicine(getMedicine.id)
-                  if(getData.id != "") {
-                     alarmReceiver!!.setAlarm(requireActivity(), getData.id.toInt(), selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
+                  val getId = dataManager.getMedicine(getMedicine.id)
+                  if(getId != 0) {
+                     alarmReceiver!!.setAlarm(requireActivity(), getId, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
                   }
 
                   // 약복용 시간 수정
-                  dataManager.updateData("medicine", LocalDateTime.now().toString())
+                  dataManager.updateMedicineTime(dateTimeToIso2())
 
                   Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
                }else { // 약복용 정보 저장
-                  val uuid1 = UuidCreator.getTimeOrderedEpoch()
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
 
-                  powerSync.insertMedicine(Medicine(id = uuid1.toString(), category = "$category/$count/1", name = name, amount = amount, unit = unit,
-                     starts = selectedDate.toString(), ends = ends, createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  powerSync.insertMedicine(Medicine(id = uuid.toString(), category = "$category/$count/1", name = name, amount = amount, unit = unit,
+                     starts = selectedDate.toString(), ends = ends, createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
 
                   for(i in 0 until drugTimeList.size) {
-                     val uuid2 = UuidCreator.getTimeOrderedEpoch()
-                     powerSync.insertMedicineTime(MedicineTime(id = uuid2.toString(), time = drugTimeList[i].time, createdAt = LocalDateTime.now().toString(),
-                        updatedAt = LocalDateTime.now().toString(), medicineId = uuid1.toString()))
+                     powerSync.insertMedicineTime(MedicineTime(id = getUUID(), time = drugTimeList[i].time, createdAt = dateTimeToIso1(Calendar.getInstance()),
+                        updatedAt = dateTimeToIso1(Calendar.getInstance()), medicineId = uuid.toString()))
                   }
 
-                  dataManager.insertMedicine(uuid1.toString(), LocalDateTime.now().toString())
-
-                  val getData = dataManager.getMedicine(uuid1.toString())
-                  if(getData.id != "") {
-                     alarmReceiver!!.setAlarm(requireActivity(), getData.id.toInt(), selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
+                  dataManager.insertMedicine(uuid.toString())
+                  val getId = dataManager.getMedicine(uuid.toString())
+                  if(getId != 0) {
+                     alarmReceiver!!.setAlarm(requireActivity(), getId, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
                   }
+
+                  dataManager.updateMedicineTime(dateTimeToIso2())
 
                   Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                }
@@ -257,10 +243,6 @@ class MedicineAddFragment : Fragment() {
 
             replaceFragment3(parentFragmentManager, MedicineRecordFragment())
          }
-      }
-
-      viewModel.medicineCheckVM.observe(viewLifecycleOwner) { item ->
-         binding.tvDesc.text = "${count}일동안 ${item}회 복용"
       }
 
       settingTime()
@@ -319,7 +301,6 @@ class MedicineAddFragment : Fragment() {
          binding.recyclerView.visibility = View.GONE
       }else {
          binding.recyclerView.visibility = View.VISIBLE
-         binding.tvDesc.text = "${count}일동안 ${drugTimeList.size}회 복용"
       }
 
       adapter = MedicineAdapter4(itemList, viewModel)
@@ -327,97 +308,97 @@ class MedicineAddFragment : Fragment() {
    }
 
    private fun unit1() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
+      binding.tvUnit1.background = resources.getDrawable(R.drawable.rec_medicine)
       binding.tvUnit1.setTextColor(Color.WHITE)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit2.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit3.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit4.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit5.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit6.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "정"
    }
 
    private fun unit2() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit1.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
+      binding.tvUnit2.background = resources.getDrawable(R.drawable.rec_medicine)
       binding.tvUnit2.setTextColor(Color.WHITE)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit3.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit4.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit5.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit6.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "개"
    }
 
    private fun unit3() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit1.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit2.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
+      binding.tvUnit3.background = resources.getDrawable(R.drawable.rec_medicine)
       binding.tvUnit3.setTextColor(Color.WHITE)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit4.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit5.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit6.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "봉"
    }
 
    private fun unit4() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit1.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit2.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit3.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
+      binding.tvUnit4.background = resources.getDrawable(R.drawable.rec_medicine)
       binding.tvUnit4.setTextColor(Color.WHITE)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit5.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit6.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "mg"
    }
 
    private fun unit5() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit1.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit2.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit3.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit4.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
+      binding.tvUnit5.background = resources.getDrawable(R.drawable.rec_medicine)
       binding.tvUnit5.setTextColor(Color.WHITE)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit6.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit6.setTextColor(Color.BLACK)
       unit = "ml"
    }
 
    private fun unit6() {
-      binding.clUnit1.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit1.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit1.setTextColor(Color.BLACK)
-      binding.clUnit2.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit2.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit2.setTextColor(Color.BLACK)
-      binding.clUnit3.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit3.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit3.setTextColor(Color.BLACK)
-      binding.clUnit4.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit4.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit4.setTextColor(Color.BLACK)
-      binding.clUnit5.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+      binding.tvUnit5.background = resources.getDrawable(R.drawable.rec_25_border_gray)
       binding.tvUnit5.setTextColor(Color.BLACK)
-      binding.clUnit6.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#A47AE8"))
+      binding.tvUnit6.background = resources.getDrawable(R.drawable.rec_medicine)
       binding.tvUnit6.setTextColor(Color.WHITE)
       unit = "set"
    }

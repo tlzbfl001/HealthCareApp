@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
@@ -16,18 +17,20 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityMainBinding
-import kr.bodywell.android.model.Constants.FILES
-import kr.bodywell.android.model.Constants.MEDICINES
-import kr.bodywell.android.model.FileItem
+import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.downloadFile
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso2
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
@@ -35,7 +38,10 @@ import kr.bodywell.android.view.note.NoteFragment
 import kr.bodywell.android.view.report.ReportBodyFragment
 import kr.bodywell.android.view.setting.SettingFragment
 import java.io.File
-import java.time.LocalDate
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
    private var _binding: ActivityMainBinding? = null
@@ -44,8 +50,7 @@ class MainActivity : AppCompatActivity() {
    private lateinit var viewModel: MainViewModel
    private var appUpdateManager: AppUpdateManager? = null
    private lateinit var dataManager: DataManager
-   private val fileList = arrayListOf<String>()
-   private val newFileList = arrayListOf<FileItem>()
+   private lateinit var alarmReceiver: AlarmReceiver
 
    @RequiresApi(Build.VERSION_CODES.R)
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,83 +90,127 @@ class MainActivity : AppCompatActivity() {
       dataManager = DataManager(this)
       dataManager.open()
 
-      val alarmReceiver = AlarmReceiver()
+      alarmReceiver = AlarmReceiver()
 
+      // 약복용 데이터 업데이트
+      updateMedicine()
+
+      // 약복용 데이터 삭제
       lifecycleScope.launch {
-         // 약복용 데이터 업데이트
-         val watchMedicine = powerSync.watchMedicine(LocalDate.now().toString())
+         val watchMedicine = powerSync.watchMedicine1()
+         val getAllMedicine = dataManager.getAllMedicine()
+
          watchMedicine.collect {
-            for(i in it.indices) {
-               val getMedicine = dataManager.getMedicine(it[i].id)
-
-               // 알람 저장
-               if(getMedicine.id == "") {
-                  val timeList = ArrayList<MedicineTime>()
-                  val getTime = powerSync.getAllMedicineTime(it[i].id)
-                  for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
-
-                  if(timeList.isNotEmpty()) {
-                     dataManager.insertMedicine(it[i].id, it[i].updatedAt)
-                     val getData = dataManager.getMedicine(it[i].id)
-                     val split = it[i].name.split("/", limit=3)
-                     alarmReceiver.setAlarm(this@MainActivity, getData.id.toInt(), it[i].starts, it[i].ends, timeList, "${split[0]} ${it[i].amount}${it[i].unit}")
-                  }
-               }
-
-               // 알람 수정
-               if(getMedicine.updatedAt != "" && it[i].updatedAt != getMedicine.updatedAt) {
-                  val timeList = ArrayList<MedicineTime>()
-                  val getTime = powerSync.getAllMedicineTime(it[i].id)
-                  for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
-
-                  if(timeList.isNotEmpty()) {
-                     dataManager.updateData("medicine", it[i].updatedAt)
-                     val split = it[i].name.split("/", limit=3)
-                     alarmReceiver.setAlarm(this@MainActivity, getMedicine.id.toInt(), it[i].starts, it[i].ends, timeList, "${split[0]} ${it[i].amount}${it[i].unit}")
-                  }
-               }
-            }
-
-            // 알람 삭제
-            val getAllMedicine = dataManager.getAllMedicine()
-            for(j in 0 until getAllMedicine.size) {
-               val result = powerSync.getMedicine(getAllMedicine[j].medicineId)
+            for(i in 0 until getAllMedicine.size) {
+               val result = powerSync.getMedicine(getAllMedicine[i].medicineId)
                if(result.id == "") {
-                  dataManager.deleteItem("medicine", "medicineId", getAllMedicine[j].medicineId)
-                  alarmReceiver.cancelAlarm(this@MainActivity, getAllMedicine[j].id)
+                  dataManager.deleteMedicine(getAllMedicine[i].medicineId)
+                  alarmReceiver.cancelAlarm(this@MainActivity, getAllMedicine[i].id)
                }
             }
          }
+      }
 
-         // 파일 데이터 업데이트
-         val getFileUpdated = dataManager.getUpdatedAt()
-         val watchFile = powerSync.watchFile(getFileUpdated)
+      // 파일 데이터 업데이트
+      updateFile()
+   }
+
+   private fun updateMedicine() {
+      lifecycleScope.launch {
+         var updatedAt = dataManager.getUpdatedAt("medicine")
+         val watchMedicine = powerSync.watchMedicine2(updatedAt)
+         var isNotEmpty = true
+
+         watchMedicine.collect {
+            if(it.isNotEmpty()) {
+               for(i in it.indices) {
+                  val getMedicine = dataManager.getMedicine(it[i].id)
+                  val getTime = powerSync.getAllMedicineTime(it[i].id)
+
+                  if(getMedicine == 0) { // 알람 저장
+                     val timeList = ArrayList<MedicineTime>()
+                     for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
+
+                     if(timeList.isNotEmpty()) {
+                        dataManager.insertMedicine(it[i].id)
+                        val getId = dataManager.getMedicine(it[i].id)
+                        val split = it[i].category.split("/", limit=3)
+                        alarmReceiver.setAlarm(this@MainActivity, getId, it[i].starts, it[i].ends, timeList, "${split[0]} ${it[i].amount}${it[i].unit}")
+                     }else isNotEmpty = false
+                  }else { // 알람 수정
+                     val timeList = ArrayList<MedicineTime>()
+                     var check = false
+
+                     for(j in getTime.indices) {
+                        if(getTime[j].createdAt > updatedAt) {
+                           check = true
+                           break
+                        }
+                     }
+
+                     if(check) for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
+
+                     if(timeList.isNotEmpty()) {
+                        val split = it[i].category.split("/", limit=3)
+                        alarmReceiver.setAlarm(this@MainActivity, getMedicine, it[i].starts, it[i].ends, timeList, "${split[0]} ${it[i].amount}${it[i].unit}")
+                     }else isNotEmpty = false
+                  }
+               }
+
+               if(isNotEmpty) dataManager.updateMedicineTime(dateTimeToIso2())
+
+               delay(2000)
+               updateMedicine()
+            }
+         }
+      }
+   }
+
+   private fun updateFile() {
+      lifecycleScope.launch {
+         var updatedAt = dataManager.getUpdatedAt("file")
+         val watchFile = powerSync.watchFile(updatedAt)
+
          watchFile.collect {
-            // 내부저장소에 파일이 없으면 내부저장소에 저장
+            // 파일 저장
             for(i in it.indices) {
-               val imgPath = filesDir.toString() + "/" + it[i].name
-               val file = File(imgPath)
+               val file1 = File(filesDir.toString() + "/" + it[i].name)
+               if(!file1.exists()){
+                  val base64Image = it[i].data.split(",")[1]
+                  val imageBytes = Base64.decode(base64Image, Base64.DEFAULT)
+                  val file2 = File(filesDir, it[i].name)
+                  val deferred = async {
+                     withContext(Dispatchers.IO) {
+                        val fos = FileOutputStream(file2)
+                        fos.use { fos ->
+                           fos.write(imageBytes)
+                        }
+                     }
+                  }
 
-               if(!file.exists()){
-                  newFileList.add(FileItem(name = it[i].name, data = it[i].data))
+                  deferred.await()
                }
             }
 
-            for(i in newFileList.indices) {
-               Thread {
-                  downloadFile(newFileList[i].data, "$filesDir/${newFileList[i].name}")
-               }.start()
+            // 파일 삭제
+            val file = File(filesDir.toString())
+            val files = file.listFiles()
+            val today = SimpleDateFormat("yyMMdd").format(Date())
+            for(i in files.indices) {
+               val fileUploadDate = if(files!![i].name.length > 6) files[i].name.substring(0, 6) else ""
+               if(files[i].name.contains("jpg") && today != fileUploadDate) {
+                  val getData = powerSync.getData(FILES, "name", "name", files[i].name)
+                  if(getData == "") {
+                     Log.d(TAG, "파일 삭제: ${files[i].name}")
+                     File(filesDir, files[i].name).delete()
+                  }
+               }
             }
 
-            // 내부저장소 파일 가져오기
-            val directory = File(filesDir.toString())
-            val files = directory.listFiles()
-            for(element in files!!) fileList.add(element.name)
-
-            // 삭제된 파일 내부저장소에서 제거
-            for(i in fileList.indices) {
-               val getData = powerSync.getData(FILES, "name", "name", fileList[i])
-               if(getData == "") File(filesDir, fileList[i]).delete()
+            if(it.isNotEmpty()) {
+               dataManager.updateFileTime(dateTimeToIso1(Calendar.getInstance()))
+               delay(2000)
+               updateFile()
             }
          }
       }

@@ -3,6 +3,7 @@ package kr.bodywell.android.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
+import android.util.Log
 import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
 import kr.bodywell.android.database.DBHelper.Companion.UPDATED_AT
@@ -12,6 +13,7 @@ import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.MyApp
 
 class DataManager(private var context: Context?) {
@@ -73,23 +75,22 @@ class DataManager(private var context: Context?) {
       return values
    }
 
-   fun getMedicine(data: String) : Medicine {
+   fun getMedicine(data: String) : Int {
       val db = dbHelper!!.readableDatabase
-      val values = Medicine()
-      val sql = "SELECT id, updatedAt FROM medicine WHERE $USER_ID = ${MyApp.prefs.getUserId()} AND medicineId = '$data'"
+      var value = 0
+      val sql = "SELECT id, medicineId FROM $MEDICINE WHERE $USER_ID = ${MyApp.prefs.getUserId()} AND medicineId = '$data'"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
-         values.id = cursor.getInt(0).toString()
-         values.updatedAt = cursor.getString(1)
+         value = cursor.getInt(0)
       }
       cursor.close()
-      return values
+      return value
    }
 
    fun getAllMedicine() : ArrayList<MedicineList> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<MedicineList>()
-      val sql = "select id, medicineId from medicine where $USER_ID = ${MyApp.prefs.getUserId()}"
+      val sql = "select id, medicineId from $MEDICINE where $USER_ID = ${MyApp.prefs.getUserId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          val value = MedicineList()
@@ -101,10 +102,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getUpdatedAt() : String {
+   fun getUpdatedAt(data: String) : String {
       val db = dbHelper!!.readableDatabase
       var value = ""
-      val sql = "select updatedAt from $UPDATED_AT where $USER_ID = ${MyApp.prefs.getUserId()}"
+      val sql = "select $data from $UPDATED_AT where $USER_ID = ${MyApp.prefs.getUserId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          value = cursor.getString(0)
@@ -137,20 +138,20 @@ class DataManager(private var context: Context?) {
       db!!.insert(TOKEN, null, values)
    }
 
-   fun insertMedicine(medicineId: String, updatedAt: String) {
+   fun insertMedicine(medicineId: String) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getUserId())
       values.put("medicineId", medicineId)
-      values.put("updatedAt", updatedAt)
-      db!!.insert("medicine", null, values)
+      db!!.insert(MEDICINE, null, values)
    }
 
    fun insertUpdatedAt(data: String) {
       val db = dbHelper!!.writableDatabase
       val values = ContentValues()
       values.put(USER_ID, MyApp.prefs.getUserId())
-      values.put("updatedAt", data)
+      values.put("medicine", data)
+      values.put("file", data)
       db!!.insert(UPDATED_AT, null, values)
    }
 
@@ -177,9 +178,16 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateData(table: String, data: String){
+   fun updateMedicineTime(data: String){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $table set updatedAt='$data' where $USER_ID=${MyApp.prefs.getUserId()}"
+      val sql = "update $UPDATED_AT set medicine='$data' where $USER_ID=${MyApp.prefs.getUserId()}"
+      db.execSQL(sql)
+      db.close()
+   }
+
+   fun updateFileTime(data: String){
+      val db = dbHelper!!.writableDatabase
+      val sql = "update $UPDATED_AT set file='$data' where $USER_ID=${MyApp.prefs.getUserId()}"
       db.execSQL(sql)
       db.close()
    }
@@ -191,9 +199,9 @@ class DataManager(private var context: Context?) {
       return result
    }
 
-   fun deleteItem(table: String, column: String, data: String): Int {
+   fun deleteMedicine(data: String): Int {
       val db = dbHelper!!.writableDatabase
-      val result = db.delete(table, "$USER_ID=${MyApp.prefs.getUserId()} and $column='$data'", null)
+      val result = db.delete(MEDICINE, "$USER_ID=${MyApp.prefs.getUserId()} and medicineId='$data'", null)
       db.close()
       return result
    }

@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import kr.bodywell.android.R
 import kr.bodywell.android.model.FileItem
+import java.io.File
 
 class PhotoSlideAdapter2 (
     private val context: Context,
@@ -27,8 +28,11 @@ class PhotoSlideAdapter2 (
 
         if(itemList[position].bitmap == null) {
             val imgPath = context.filesDir.toString() + "/" + itemList[position].name
-            val bm = BitmapFactory.decodeFile(imgPath)
-            imageView.setImageBitmap(bm)
+            val file = File(imgPath)
+            if(file.exists()){
+                val bm = BitmapFactory.decodeFile(imgPath)
+                imageView.setImageBitmap(bm)
+            }
         }else {
             imageView.setImageBitmap(itemList[position].bitmap)
         }

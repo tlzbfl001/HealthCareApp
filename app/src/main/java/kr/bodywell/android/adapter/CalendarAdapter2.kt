@@ -1,5 +1,6 @@
 package kr.bodywell.android.adapter
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class CalendarAdapter2 (
+   private val context: Context,
    private val days: ArrayList<LocalDate?>
 ) : RecyclerView.Adapter<CalendarAdapter2.ViewHolder>() {
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,7 +30,7 @@ class CalendarAdapter2 (
       }else {
          holder.tvDate.text = date.dayOfMonth.toString()
          if (date == selectedDate) {
-            holder.cv.setCardBackgroundColor(Color.parseColor("#6C95C2"))
+            holder.cv.setCardBackgroundColor(Color.parseColor("#512DA8"))
             holder.tvWeek.setTextColor(Color.WHITE)
             holder.tvDate.setTextColor(Color.WHITE)
          }

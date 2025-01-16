@@ -2,7 +2,7 @@ package kr.bodywell.android.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import kr.bodywell.android.model.Constants.USER
+import kr.bodywell.android.model.Constant.USER
 
 @Parcelize
 data class ActivityData (

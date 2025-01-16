@@ -2,8 +2,8 @@ package kr.bodywell.android.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import kr.bodywell.android.model.Constants.DEVICE
-import kr.bodywell.android.model.Constants.PREFERENCE
+import kr.bodywell.android.model.Constant.DEVICE
+import kr.bodywell.android.model.Constant.PREFERENCE
 
 class PreferenceUtil(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)

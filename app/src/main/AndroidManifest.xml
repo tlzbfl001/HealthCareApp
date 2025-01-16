@@ -11,18 +11,24 @@
    <uses-permission
       android:name="android.permission.POST_NOTIFICATIONS"
       android:minSdkVersion="33" />
-   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
    <uses-permission
       android:name="android.permission.BLUETOOTH"
       android:maxSdkVersion="30" />
-   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+   <uses-permission
+      android:name="android.permission.BLUETOOTH_ADMIN"
+      android:maxSdkVersion="30" />
    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+   <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
    <uses-permission
       android:name="android.permission.BLUETOOTH_SCAN"
       android:usesPermissionFlags="neverForLocation" />
-   <uses-feature android:name="android.hardware.bluetooth" />
 
+   <uses-feature
+      android:name="android.hardware.bluetooth"
+      android:required="false" />
+
+   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
    <uses-permission android:name="android.permission.CAMERA" />
 
    <uses-feature
@@ -55,6 +61,11 @@
       android:usesCleartextTraffic="true"
       tools:replace="android:allowBackup"
       tools:targetApi="34">
+      <service
+         android:name=".service.BluetoothLeService"
+         android:enabled="true"
+         android:exported="true"></service>
+
       <activity
          android:name=".view.init.SignupActivity"
          android:exported="false" />
@@ -65,6 +76,7 @@
          android:theme="@style/AppTheme.SplashScreen">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
+
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
@@ -84,6 +96,7 @@
          <intent-filter>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
          </intent-filter>
+
          <meta-data
             android:name="health_permissions"
             android:resource="@array/health_permissions" />
@@ -93,13 +106,16 @@
          android:exported="true">
          <intent-filter>
             <action android:name="android.intent.action.VIEW" />
+
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
+
             <data
                android:host="oauth"
                android:scheme="@string/kakaoOauthHost" />
          </intent-filter>
       </activity>
+
       <receiver
          android:name=".service.AlarmReceiver"
          android:exported="false" />
@@ -111,6 +127,7 @@
             <action android:name="android.intent.action.BOOT_COMPLETED" />
          </intent-filter>
       </receiver>
+
       <provider
          android:name="androidx.core.content.FileProvider"
          android:authorities="kr.bodywell.android.file_provider"
@@ -118,7 +135,8 @@
          android:grantUriPermissions="true">
          <meta-data
             android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths"></meta-data>
+            android:resource="@xml/file_paths" />
       </provider>
    </application>
+
 </manifest>

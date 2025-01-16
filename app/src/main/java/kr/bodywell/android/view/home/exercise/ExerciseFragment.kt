@@ -15,23 +15,21 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ExerciseAdapter
 import kr.bodywell.android.databinding.FragmentExerciseBinding
-import kr.bodywell.android.model.Constants.GOALS
+import kr.bodywell.android.model.Constant.GOALS
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
 
 class ExerciseFragment : Fragment() {
@@ -55,18 +53,17 @@ class ExerciseFragment : Fragment() {
       val tvTitle = dialog.findViewById<TextView>(R.id.tvTitle)
       val et = dialog.findViewById<TextView>(R.id.et)
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-
       tvTitle.text = "운동 / 목표 칼로리 입력"
-      btnSave.setCardBackgroundColor(Color.parseColor("#B3F6BD4B"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#FF5B5B"))
+
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
             Toast.makeText(requireActivity(), "목표를 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             lifecycleScope.launch {
                if(getGoal.id == "") {
-                  val uuid = UuidCreator.getTimeOrderedEpoch()
-                  powerSync.insertGoal(Goal(id = uuid.toString(), kcalOfWorkout = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  powerSync.insertGoal(Goal(id = getUUID(), kcalOfWorkout = et.text.toString().toInt(), date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, "kcal_of_workout", et.text.toString(), getGoal.id)
@@ -77,11 +74,7 @@ class ExerciseFragment : Fragment() {
             binding.tvGoal.text = "${et.text} kcal"
 
             val remain = et.text.toString().toInt() - sum
-            if(remain > 0) {
-               binding.tvRemain.text = "$remain kcal"
-            }else {
-               binding.tvRemain.text = "0 kcal"
-            }
+            if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
             dialog.dismiss()
          }
@@ -105,7 +98,6 @@ class ExerciseFragment : Fragment() {
    }
 
    private fun dailyView() {
-      // 목표 초기화
       binding.pbExercise.setProgressStartColor(Color.TRANSPARENT)
       binding.pbExercise.setProgressEndColor(Color.TRANSPARENT)
       binding.tvConsume.text = "0 kcal"

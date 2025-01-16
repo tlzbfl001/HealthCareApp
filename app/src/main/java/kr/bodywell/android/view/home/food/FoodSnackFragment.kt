@@ -15,12 +15,14 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
-import kr.bodywell.android.model.Constants.DIETS
-import kr.bodywell.android.model.Constants.SNACK
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constant.DIETS
+import kr.bodywell.android.model.Constant.SNACK
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.PermissionUtil
 import java.io.File
 import java.util.stream.Collectors
 
@@ -38,43 +40,20 @@ class FoodSnackFragment : Fragment() {
     ): View {
         _binding = FragmentFoodSnackBinding.inflate(layoutInflater)
 
-        imageView() // 식단 이미지 뷰
-        listView() // 섭취한 식단 설정
+        // 섭취한 식단 설정
+        listView()
+
+        // 식단 이미지 뷰
+        if(PermissionUtil.checkCameraPermission(requireActivity())) {
+            imageView()
+        }
 
         return binding.root
     }
 
-    private fun imageView() {
-        lifecycleScope.launch {
-            binding.viewPager.adapter = null
-
-            getDiets = powerSync.getDiets(SNACK, selectedDate.toString()) as ArrayList<Food>
-
-            for(i in getDiets.indices) {
-                val getFiles = powerSync.getFiles(getDiets[i].id)
-                for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
-            }
-
-            if(imageList.size > 0) {
-                photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
-                binding.viewPager.adapter = photoAdapter
-                binding.viewPager.setPadding(0, 0, 0, 0)
-
-                binding.clLeft.setOnClickListener {
-                    val current = binding.viewPager.currentItem
-                    if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
-                }
-
-                binding.clRight.setOnClickListener {
-                    val current = binding.viewPager.currentItem
-                    binding.viewPager.setCurrentItem(current+1, true)
-                }
-            }
-        }
-    }
-
     private fun listView() {
         lifecycleScope.launch {
+            getDiets = powerSync.getDiets(SNACK, selectedDate.toString()) as ArrayList<Food>
             for(i in 0 until getDiets.size) powerSync.deleteDiet(SNACK, getDiets[i].name, selectedDate.toString(), getDiets[i].id)
         }
 
@@ -89,14 +68,15 @@ class FoodSnackFragment : Fragment() {
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
                             if(imageList.size > 0) {
-                                imageList.stream().filter { x -> x.name == getDiets[pos].name }
-                                    .collect(Collectors.toList()).forEach { x ->
-                                        imageList.remove(x)
-                                        File(requireActivity().filesDir, x.name).delete()
-                                    }
+                                imageList.stream().filter { x -> x.name == getDiets[pos].name }.collect(Collectors.toList()).forEach { x ->
+                                    imageList.remove(x)
+                                    File(requireActivity().filesDir, x.name).delete()
+                                }
                             }
 
                             runBlocking {
+                                val getFiles = powerSync.getFiles("diet_id", getDiets[pos].id)
+                                for(element in getFiles) powerSync.deleteItem(Constant.FILES, "id", element.id)
                                 powerSync.deleteItem(DIETS, "id", getDiets[pos].id)
                             }
 
@@ -113,6 +93,33 @@ class FoodSnackFragment : Fragment() {
             })
 
             binding.rv.adapter = intakeAdapter
+        }
+    }
+
+    private fun imageView() {
+        lifecycleScope.launch {
+            binding.viewPager.adapter = null
+
+            for(i in getDiets.indices) {
+                val getFiles = powerSync.getFiles("diet_id", getDiets[i].id)
+                for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
+            }
+
+            if(imageList.size > 0) {
+                photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
+                binding.viewPager.adapter = photoAdapter
+                binding.viewPager.setPadding(0, 0, 0, 0)
+
+                binding.clLeft.setOnClickListener {
+                    val current = binding.viewPager.currentItem
+                    if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+                }
+
+                binding.clRight.setOnClickListener {
+                    val current = binding.viewPager.currentItem
+                    binding.viewPager.setCurrentItem(current + 1, true)
+                }
+            }
         }
     }
 }

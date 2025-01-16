@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +15,10 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.FoodRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.databinding.FragmentFoodRecord1Binding
-import kr.bodywell.android.model.Constants.FOODS
+import kr.bodywell.android.model.Constant.BREAKFAST
+import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -32,7 +31,9 @@ class FoodRecord1Fragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private var bundle = Bundle()
+   private var itemList = ArrayList<Food>()
    private val searchList = ArrayList<Item>()
+   private var type = BREAKFAST
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -52,7 +53,7 @@ class FoodRecord1Fragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.constraint)
 
-      val type = arguments?.getString("type").toString()
+      type = arguments?.getString("type").toString()
       bundle.putString("type", type)
 
       binding.constraint.setOnTouchListener { view, motionEvent ->
@@ -87,10 +88,30 @@ class FoodRecord1Fragment : Fragment() {
          replaceFragment2(parentFragmentManager, FoodInputFragment(), bundle)
       }
 
+      listView()
+      searchView()
+
+      return binding.root
+   }
+
+   private fun listView() {
       lifecycleScope.launch {
-         val getFoods = powerSync.getFoods()
+         val getFoods = powerSync.getFoods() as ArrayList<Food>
          for(i in getFoods.indices) powerSync.deleteDuplicate(FOODS, "name", getFoods[i].name, getFoods[i].id)
-         val itemList = powerSync.getFoodUsages() as ArrayList<Food>
+
+         itemList = powerSync.getFoodUsages1() as ArrayList<Food>
+         val getUsages = powerSync.getFoodUsages1() as ArrayList<Food>
+
+         for(i in 0 until getFoods.size) {
+            var check = false
+            for(j in 0 until getUsages.size) {
+               if(getFoods[i].name == getUsages[j].name) {
+                  check = true
+                  break
+               }
+            }
+            if(!check) itemList.add(getFoods[i])
+         }
 
          if(itemList.isNotEmpty()) {
             binding.tvEmpty.visibility = View.GONE
@@ -101,7 +122,7 @@ class FoodRecord1Fragment : Fragment() {
 
             recordAdapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
                override fun onItemClick(pos: Int) {
-                  bundle.putParcelable(FOODS, itemList[pos])
+                  bundle.putString("foodId", itemList[pos].id)
                   replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
                }
             })
@@ -109,44 +130,43 @@ class FoodRecord1Fragment : Fragment() {
             binding.rv1.adapter = recordAdapter
             binding.rv1.requestLayout()
          }
+      }
+   }
 
-         val searchAdapter = SearchAdapter(requireActivity(), parentFragmentManager, type)
-         binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         binding.rv2.adapter = searchAdapter
+   private fun searchView() {
+      val searchAdapter = SearchAdapter(requireActivity(), parentFragmentManager, type)
+      binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
-         binding.etSearch.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun afterTextChanged(p0: Editable?) {
-               binding.rv1.visibility = View.GONE
-               binding.rv2.visibility = View.VISIBLE
-               searchList.clear()
-               if(binding.etSearch.text.toString() == "") {
-                  binding.rv1.visibility = View.VISIBLE
-                  binding.rv2.visibility = View.GONE
-                  searchAdapter.clearItems()
-               }else {
-                  for(i in itemList.indices) { // 검색 단어를 포함하는지 확인
-                     if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
-                        searchList.add(Item(string1 = itemList[i].id, string2 = itemList[i].name, string3 = itemList[i].registerType))
-                     }
-                     searchAdapter.setItems(searchList)
+      binding.etSearch.addTextChangedListener(object: TextWatcher{
+         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+         override fun afterTextChanged(p0: Editable?) {
+            binding.rv1.visibility = View.GONE
+            binding.rv2.visibility = View.VISIBLE
+            searchList.clear()
+            if(binding.etSearch.text.toString() == "") {
+               binding.rv1.visibility = View.VISIBLE
+               binding.rv2.visibility = View.GONE
+               searchAdapter.clearItems()
+            }else {
+               for(i in itemList.indices) { // 검색 단어를 포함하는지 확인
+                  if(itemList[i].name.lowercase().contains(binding.etSearch.text.toString().lowercase())) {
+                     searchList.add(Item(string1 = itemList[i].id, string2 = itemList[i].name, string3 = itemList[i].registerType))
                   }
+                  searchAdapter.setItems(searchList)
                }
             }
-         })
+         }
+      })
 
-         searchAdapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
-            override fun onClick(v: View, pos: Int) {
-               bundle.putParcelable(FOODS, itemList[pos])
-               replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
-            }
-         })
+      searchAdapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
+         override fun onClick(v: View, pos: Int) {
+            bundle.putString("foodId", searchList[pos].string1)
+            replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
+         }
+      })
 
-         binding.rv2.adapter = searchAdapter
-      }
-
-      return binding.root
+      binding.rv2.adapter = searchAdapter
    }
 
    override fun onDetach() {

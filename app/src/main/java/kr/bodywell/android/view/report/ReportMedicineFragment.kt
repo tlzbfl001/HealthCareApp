@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.ReportAdapter
 import kr.bodywell.android.databinding.FragmentReportMedicineBinding
-import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
+import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.monthArray2

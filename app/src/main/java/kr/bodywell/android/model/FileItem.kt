@@ -9,6 +9,7 @@ data class FileItem(
     val updatedAt: String = "",
     var data: String = "",
     var bitmap: Bitmap? = null,
+    var profileId: String = "",
     var dietId: String = "",
-    var profileId: String = ""
+    var noteId: String = ""
 )

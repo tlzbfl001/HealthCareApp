@@ -11,14 +11,19 @@ import androidx.core.content.ContextCompat
 
 object PermissionUtil {
     val BT_PERMISSION_1 = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     @RequiresApi(Build.VERSION_CODES.S)
     val BT_PERMISSION_2 = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_SCAN,
-        Manifest.permission.BLUETOOTH_CONNECT
+        Manifest.permission.BLUETOOTH_ADVERTISE,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     val CAMERA_PERMISSION_1 = arrayOf(
@@ -69,10 +74,10 @@ object PermissionUtil {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (alarmManager.canScheduleExactAlarms()) { // 권한이 있다면 true를 반환
+            if (alarmManager.canScheduleExactAlarms()) {
                 result = true
             }
-        }else { // 나머지 버전은 해당사항 없음
+        }else {
             result = true
         }
 

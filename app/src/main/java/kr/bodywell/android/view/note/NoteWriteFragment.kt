@@ -13,6 +13,12 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentNoteWriteBinding
+import kr.bodywell.android.model.Constant.ANGRY
+import kr.bodywell.android.model.Constant.EXCITED
+import kr.bodywell.android.model.Constant.HAPPY
+import kr.bodywell.android.model.Constant.NOTES
+import kr.bodywell.android.model.Constant.PEACEFUL
+import kr.bodywell.android.model.Constant.SAD
 import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
@@ -20,7 +26,6 @@ import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import java.time.LocalDateTime
-import java.util.UUID
 
 class NoteWriteFragment : Fragment() {
    private var _binding: FragmentNoteWriteBinding? = null
@@ -29,7 +34,7 @@ class NoteWriteFragment : Fragment() {
    private lateinit var callback: OnBackPressedCallback
    private var getNote = Note()
    private var bundle = Bundle()
-   private var emotion = "Happy"
+   private var emotion = HAPPY
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -53,6 +58,8 @@ class NoteWriteFragment : Fragment() {
          binding.mainLayout.setPadding(0, statusBarHeight, 0, 0)
       }
 
+      bundle.putString("data", NOTES)
+
       binding.mainLayout.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
@@ -61,8 +68,6 @@ class NoteWriteFragment : Fragment() {
       lifecycleScope.launch {
          getNote = powerSync.getNote(selectedDate.toString())
       }
-
-      bundle.putString("data", "note")
 
       binding.linear.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
@@ -75,54 +80,57 @@ class NoteWriteFragment : Fragment() {
 
       binding.clPrev.setOnClickListener {
          selectedDate = selectedDate.minusDays(1)
-         settingData()
+         setDailyView()
       }
 
       binding.clNext.setOnClickListener {
          selectedDate = selectedDate.plusDays(1)
-         settingData()
+         setDailyView()
       }
 
       binding.ivFace1.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face1)
-         emotion = "Happy"
+         emotion = HAPPY
       }
 
       binding.ivFace2.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face2)
-         emotion = "Peaceful"
+         emotion = PEACEFUL
       }
 
       binding.ivFace3.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face3)
-         emotion = "Excited"
+         emotion = EXCITED
       }
 
       binding.ivFace4.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face4)
-         emotion = "Sad"
+         emotion = SAD
       }
 
       binding.ivFace5.setOnClickListener {
          binding.ivFace.setImageResource(R.drawable.face5)
-         emotion = "Angry"
+         emotion = ANGRY
       }
 
       binding.cvSave.setOnClickListener {
          if(binding.etTitle.text.toString().contains("'") || binding.etContent.text.toString().contains("'")) {
             Toast.makeText(activity, "특수문자 '는 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
+         }else if(binding.etTitle.text.toString().trim() == "" || binding.etContent.text.toString().trim() == "") {
+            Toast.makeText(activity, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+         }else if(binding.etContent.text.toString().trim() == "") {
+            Toast.makeText(activity, "내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
             lifecycleScope.launch {
                getNote = powerSync.getNote(selectedDate.toString())
 
                if(getNote.id == "") {
-                  val uuid: UUID = UuidCreator.getTimeOrderedEpoch()
+                  val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertNote(Note(id = uuid.toString(), title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
                      emotion = emotion, date = selectedDate.toString(), createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
                   Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                }else {
-                  powerSync.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(),
-                     emotion = emotion, date = selectedDate.toString()))
+                  powerSync.updateNote(Note(title = binding.etTitle.text.toString(), content = binding.etContent.text.toString(), emotion = emotion, date = selectedDate.toString()))
                   Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
                }
             }
@@ -131,26 +139,26 @@ class NoteWriteFragment : Fragment() {
          }
       }
 
-      settingData()
+      setDailyView()
 
       return binding.root
    }
 
-   private fun settingData() {
+   private fun setDailyView() {
       binding.tvCalTitle.text = dateFormat(selectedDate)
 
       lifecycleScope.launch {
          getNote = powerSync.getNote(selectedDate.toString())
 
-         if(getNote.id != "") {
+         if(getNote.title != "" && getNote.content != "") {
             binding.etTitle.setText(getNote.title)
             binding.etContent.setText(getNote.content)
             when(getNote.emotion) {
-               "Happy" -> binding.ivFace.setImageResource(R.drawable.face1)
-               "Peaceful" -> binding.ivFace.setImageResource(R.drawable.face2)
-               "Excited" -> binding.ivFace.setImageResource(R.drawable.face3)
-               "Sad" -> binding.ivFace.setImageResource(R.drawable.face4)
-               "Angry" -> binding.ivFace.setImageResource(R.drawable.face5)
+               HAPPY -> binding.ivFace.setImageResource(R.drawable.face1)
+               PEACEFUL -> binding.ivFace.setImageResource(R.drawable.face2)
+               EXCITED -> binding.ivFace.setImageResource(R.drawable.face3)
+               SAD -> binding.ivFace.setImageResource(R.drawable.face4)
+               ANGRY -> binding.ivFace.setImageResource(R.drawable.face5)
             }
          }else {
             binding.etTitle.setText("")

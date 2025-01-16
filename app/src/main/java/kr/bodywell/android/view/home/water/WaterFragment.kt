@@ -16,21 +16,19 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.WaterAdapter
 import kr.bodywell.android.databinding.FragmentWaterBinding
-import kr.bodywell.android.model.Constants.WATER
+import kr.bodywell.android.model.Constant.WATER
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
 
 class WaterFragment : Fragment() {
@@ -43,7 +41,6 @@ class WaterFragment : Fragment() {
    private var getWater = Water()
    private var volume = 200
    private var count = 0
-   private var uuid = UuidCreator.getTimeOrderedEpoch()
 
    override fun onCreateView(
       inflater: LayoutInflater, container: ViewGroup?,
@@ -67,18 +64,16 @@ class WaterFragment : Fragment() {
                volume = if(etVolume.text.toString() != "") etVolume.text.toString().toInt() else 200
 
                if(getGoal.id == "") {
-                  val uuid = UuidCreator.getTimeOrderedEpoch()
-                  powerSync.insertGoal(Goal(id = uuid.toString(), waterAmountOfCup = volume, waterIntake = goal, date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  powerSync.insertGoal(Goal(id = getUUID(), waterAmountOfCup = volume, waterIntake = goal, date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateWaterGoal(Goal(id = getGoal.id, waterAmountOfCup = volume, waterIntake = goal))
                }
 
-               if(getWater.date == "") {
-                  val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
-                  powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
-                     createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
+               if(getWater.id == "") {
+                  powerSync.insertWater(Water(id = getUUID(), mL = volume, count = count, date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
@@ -105,20 +100,17 @@ class WaterFragment : Fragment() {
                getWater = powerSync.getWater(selectedDate.toString())
 
                if(getWater.id == "") {
-                  val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
-                  powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
-                     createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
+                  powerSync.insertWater(Water(id = getUUID(), mL = volume, count = count, date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
 
-               if(count == 0) binding.rv.visibility = View.GONE
-
-               if(count == 0 && getWater.id != "") {
+               if(count == 0) {
+                  binding.rv.visibility = View.GONE
                   binding.pbWater.setProgressStartColor(Color.TRANSPARENT)
                   binding.pbWater.setProgressEndColor(Color.TRANSPARENT)
                   powerSync.deleteItem(WATER, "date", selectedDate.toString())
-                  uuid = UuidCreator.getTimeOrderedEpoch()
                }
             }
 
@@ -140,9 +132,8 @@ class WaterFragment : Fragment() {
                getWater = powerSync.getWater(selectedDate.toString())
 
                if(getWater.id == "") {
-                  val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
-                  powerSync.insertWater(Water(id = uuid.toString(), mL = volume, count = count, date = selectedDate.toString(),
-                     createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
+                  powerSync.insertWater(Water(id = getUUID(), mL = volume, count = count, date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }

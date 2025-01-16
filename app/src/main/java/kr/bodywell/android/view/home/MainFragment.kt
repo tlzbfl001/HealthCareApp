@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -25,13 +26,15 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
-import kr.bodywell.android.model.Constants.FILES
+import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.getUser
+import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
@@ -89,7 +92,7 @@ class MainFragment : Fragment() {
    ): View {
       _binding = FragmentMainBinding.inflate(layoutInflater)
 
-      setStatusBar(requireActivity(), binding.cl1)
+      setStatusBar(requireActivity(), binding.mainLayout)
 
       dataManager = DataManager(requireActivity())
       dataManager.open()
@@ -99,11 +102,10 @@ class MainFragment : Fragment() {
 
       // 프로필 설정
       lifecycleScope.launch {
-         val getProfile = powerSync.getProfile(getUser.uid)
-
+         val getProfile = powerSync.getProfile()
          val getFile = powerSync.getFile(getProfile.id)
+
          if(getFile.name != "") {
-            powerSync.deleteDuplicate(FILES, "profile_id", getProfile.id, getFile.id)
             val imgPath = requireActivity().filesDir.toString() + "/" + getFile.name
             val file = File(imgPath)
             if(file.exists()){
@@ -115,37 +117,37 @@ class MainFragment : Fragment() {
          if(getProfile.name != "") binding.tvName.text = getProfile.name + " 님"
       }
 
-      binding.cvFood.setOnClickListener {
+      binding.clFood.setOnClickListener {
          layoutType = 1
          replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
-      binding.cvWater.setOnClickListener {
+      binding.clWater.setOnClickListener {
          layoutType = 2
          replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
-      binding.cvExercise.setOnClickListener {
+      binding.clExercise.setOnClickListener {
          layoutType = 3
          replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
-      binding.cvBody.setOnClickListener {
+      binding.clBody.setOnClickListener {
          layoutType = 4
          replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
-      binding.cvSleep.setOnClickListener {
+      binding.clSleep.setOnClickListener {
          layoutType = 5
          replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
-      binding.cvDrug.setOnClickListener {
+      binding.clMedicine.setOnClickListener {
          layoutType = 6
          replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
-      binding.ivCalendar.setOnClickListener {
+      binding.btnCalendar.setOnClickListener {
          val calendarDialog = CalendarDialog(requireActivity())
          calendarDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
          calendarDialog.window?.setGravity(Gravity.TOP)
@@ -256,31 +258,23 @@ class MainFragment : Fragment() {
    }
 
    fun dailyView() {
-      // 달력 설정
+      // 데이터 초기화
       days = weekArray(selectedDate)
-      adapter = CalendarAdapter1(days, 1)
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
+      adapter = CalendarAdapter1(days)
+      val layoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
       binding.recyclerView.adapter = adapter
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvMonth.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
+      binding.btnFood.text = "0% 완료"
+      binding.btnWater.text = "0% 완료"
+      binding.btnExercise.text = "0% 완료"
+      binding.btnBody.text = "0% 완료"
+      binding.btnSleep.text = "0% 완료"
+      binding.btnMedicine.text = "0% 완료"
 
-      // 데이터 초기화
-      binding.pbFood.progress = 0
-      binding.pbWater.progress = 0
-      binding.pbExercise.progress = 0
-      binding.pbBody.progress = 0
-      binding.pbSleep.progress = 0
-      binding.pbDrug.progress = 0
-      binding.tvFoodPt.text = "0%"
-      binding.tvWaterPt.text = "0%"
-      binding.tvExercisePt.text = "0%"
-      binding.tvBodyPt.text = "0%"
-      binding.tvSleepPt.text = "0%"
-      binding.tvDrugPt.text = "0%"
-
+      // 목표 달성 데이터 설정
       lifecycleScope.launch {
-         // 목표 달성 데이터 설정
          val getGoal = powerSync.getGoal(selectedDate.toString())
          val foodSum = getFoodCalories(selectedDate.toString()).int5
          val getWater = powerSync.getWater(selectedDate.toString())
@@ -290,21 +284,15 @@ class MainFragment : Fragment() {
          val getIntake = powerSync.getRecentlyIntakes(selectedDate.toString())
 
          if(foodSum > 0) {
-            binding.tvFoodPt.text = if(getGoal.kcalOfDiet > 0) "${((foodSum * 100) / getGoal.kcalOfDiet)}%" else "100%"
-            binding.pbFood.max = if(getGoal.kcalOfDiet > 0) getGoal.kcalOfDiet else foodSum
-            binding.pbFood.progress = foodSum
+            binding.btnFood.text = if(getGoal.kcalOfDiet > 0) "${((foodSum * 100) / getGoal.kcalOfDiet)}% 완료" else "100% 완료"
          }
 
          if(getWater.count > 0) {
-            binding.tvWaterPt.text = if(getGoal.waterIntake > 0) "${(getWater.count * 100) / getGoal.waterIntake}%" else "100%"
-            binding.pbWater.max = if(getGoal.waterIntake > 0) getGoal.waterIntake else getWater.count
-            binding.pbWater.progress = getWater.count
+            binding.btnWater.text = if(getGoal.waterIntake > 0) "${(getWater.count * 100) / getGoal.waterIntake}% 완료" else "100% 완료"
          }
 
          if(exerciseSum > 0) {
-            binding.tvExercisePt.text = if(getGoal.kcalOfWorkout > 0) "${(exerciseSum * 100) / getGoal.kcalOfWorkout}%" else "100%"
-            binding.pbExercise.max = if(getGoal.kcalOfWorkout > 0) getGoal.kcalOfWorkout else exerciseSum
-            binding.pbExercise.progress = exerciseSum
+            binding.btnExercise.text = if(getGoal.kcalOfWorkout > 0) "${(exerciseSum * 100) / getGoal.kcalOfWorkout}% 완료" else "100% 완료"
          }
 
          val weightGoalSplit = getGoal.weight.toString().split(".")
@@ -317,24 +305,20 @@ class MainFragment : Fragment() {
          }
 
          if(getBody.weight != null && getBody.weight!! > 0) {
-            binding.tvBodyPt.text =if(getGoal.weight > 0)  "${(getBody.weight!!.toInt() * 100) / getGoal.weight.roundToInt()}%" else "100%"
-            binding.pbBody.max = if(getGoal.weight > 0) getGoal.weight.roundToInt() else getBody.weight!!.toInt()
-            binding.pbBody.progress = getBody.weight!!.toInt()
+            binding.btnBody.text =if(getGoal.weight > 0)  "${(getBody.weight!!.toInt() * 100) / getGoal.weight.roundToInt()}% 완료" else "100% 완료"
          }
 
          val sleep = if(getGoal.sleep % 60 == 0) "${getGoal.sleep / 60}h" else "${getGoal.sleep / 60}h${getGoal.sleep % 60}m"
 
          if(getSleep.starts != "" && getSleep.ends!= "") {
-            if(getSleep.starts.contains("+09:00")) {
-               starts = CustomUtil.isoToDateTime(getSleep.starts)
-               ends = CustomUtil.isoToDateTime(getSleep.ends)
+            if(getSleep.starts.contains("T")) {
+               starts = isoToDateTime(getSleep.starts)
+               ends = isoToDateTime(getSleep.ends)
             }else {
-               val split1 = getSleep.starts.split(".", limit=2)
-               val replace1 = split1[0].replace("T", " ")
-               val split2 = getSleep.ends.split(".", limit=2)
-               val replace2 = split2[0].replace("T", " ")
-               starts = LocalDateTime.parse(replace1, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusHours(9)
-               ends = LocalDateTime.parse(replace2, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).plusHours(9)
+               val replace1 = getSleep.starts.replace(" ", "T")
+               val replace2 = getSleep.ends.replace(" ", "T")
+               starts = isoToDateTime(replace1)
+               ends = isoToDateTime(replace2)
             }
          }
 
@@ -342,23 +326,19 @@ class MainFragment : Fragment() {
          val total = diff1.toMinutes().toInt()
 
          if(total > 0) {
-            binding.tvSleepPt.text = if(getGoal.sleep > 0) "${(total * 100) / getGoal.sleep}%" else "100%"
-            binding.pbSleep.max = if(getGoal.sleep > 0) getGoal.sleep else total
-            binding.pbSleep.progress = total
+            binding.btnSleep.text = if(getGoal.sleep > 0) "${(total * 100) / getGoal.sleep}% 완료" else "100% 완료"
          }
 
          if(getIntake.isNotEmpty()) {
-            binding.tvDrugPt.text = if(getGoal.medicineIntake > 0) "${(getIntake.size * 100) / getGoal.medicineIntake}%" else "100%"
-            binding.pbDrug.max = if(getGoal.medicineIntake > 0) getGoal.medicineIntake else getIntake.size
-            binding.pbDrug.progress = getIntake.size
+            binding.btnMedicine.text = if(getGoal.medicineIntake > 0) "${(getIntake.size * 100) / getGoal.medicineIntake}% 완료" else "100% 완료"
          }
 
-         binding.tvFood.text = "$foodSum/${getGoal.kcalOfDiet}kcal"
-         binding.tvWater.text = "${getWater.count}/${getGoal.waterIntake}잔"
-         binding.tvExercise.text = "$exerciseSum/${getGoal.kcalOfWorkout}kcal"
-         binding.tvBody.text = "${weight}/${weightGoal}kg"
-         binding.tvSleep.text = "${total / 60}h${total % 60}m/$sleep"
-         binding.tvDrug.text = "${getIntake.size}/${getGoal.medicineIntake}회"
+         binding.tvFoodGoal.text = "$foodSum/${getGoal.kcalOfDiet}kcal"
+         binding.tvWaterGoal.text = "${getWater.count}/${getGoal.waterIntake}잔"
+         binding.tvExerciseGoal.text = "$exerciseSum/${getGoal.kcalOfWorkout}kcal"
+         binding.tvBodyGoal.text = "${weight}/${weightGoal}kg"
+         binding.tvSleepGoal.text = "${total / 60}h${total % 60}m/$sleep"
+         binding.tvMedicineGoal.text = "${getIntake.size}/${getGoal.medicineIntake}회"
       }
    }
 

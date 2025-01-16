@@ -57,7 +57,7 @@ class MedicineRecordFragment : Fragment() {
       lifecycleScope.launch {
          val getMedicine = powerSync.getMedicines(selectedDate.toString()) as ArrayList<Medicine>
          if(getMedicine.isNotEmpty()) {
-            adapter = MedicineAdapter2(parentFragmentManager,getMedicine)
+            adapter = MedicineAdapter2(parentFragmentManager, getMedicine)
             binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             binding.recyclerView.requestLayout()
             binding.recyclerView.adapter = adapter

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.view.MainViewModel
+import java.io.File
 
 class GalleryAdapter (
 	private val viewModel: MainViewModel,
@@ -31,16 +32,19 @@ class GalleryAdapter (
 		// 실제 파일이름과 비트맵 파일로 구분해서 적용
 		if(itemList[position].bitmap == null) {
 			val imgPath = context!!.filesDir.toString() + "/" + itemList[position].name
-			val bm = BitmapFactory.decodeFile(imgPath)
-			holder.imageView.setImageBitmap(bm)
+			val file = File(imgPath)
+			if(file.exists()){
+				val bm = BitmapFactory.decodeFile(imgPath)
+				holder.imageView.setImageBitmap(bm)
+			}
 		}else {
 			holder.imageView.setImageBitmap(itemList[position].bitmap)
 		}
 
 		// 이미지 다중선택 로직
 		val lifeCycleOwner = context as LifecycleOwner
-		viewModel.selectedVM.observe(lifeCycleOwner) { item ->
-			if(!item) {
+		viewModel.pictureSelectedVM.observe(lifeCycleOwner) {
+			if(!it) {
 				holder.checkbox.visibility = View.GONE
 			}else {
 				holder.checkbox.visibility = View.VISIBLE
@@ -54,7 +58,8 @@ class GalleryAdapter (
 		}
 
 		holder.imageView.setOnClickListener {
-			onClickListener!!.onClick(position)
+			holder.checkbox.isChecked = !holder.checkbox.isChecked
+			onClickListener!!.onClick(position, holder.checkbox.isChecked)
 		}
 	}
 
@@ -70,7 +75,7 @@ class GalleryAdapter (
 	}
 
 	interface OnClickListener {
-		fun onClick(pos: Int)
+		fun onClick(pos: Int, checked: Boolean)
 	}
 
 	fun setOnClickListener(listener: OnClickListener) {

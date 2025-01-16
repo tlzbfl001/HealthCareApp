@@ -59,7 +59,7 @@ class AlarmFragment : Fragment() {
 			binding.tvPerm1.setTextColor(Color.parseColor("#CCCCCC"))
 		}
 
-		binding.cv1.setOnClickListener {
+		binding.btn1.setOnClickListener {
 			val intent = Intent()
 			intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
 			intent.putExtra("android.provider.extra.APP_PACKAGE", requireActivity().packageName)
@@ -67,7 +67,7 @@ class AlarmFragment : Fragment() {
 		}
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			binding.cv2.visibility = View.VISIBLE
+			binding.btn2.visibility = View.VISIBLE
 			if(checkAlarmPermission2(requireActivity())) {
 				binding.tvPerm2.text = "켜짐"
 				binding.tvPerm2.setTextColor(Color.parseColor("#A38FF1"))
@@ -76,7 +76,7 @@ class AlarmFragment : Fragment() {
 				binding.tvPerm2.setTextColor(Color.parseColor("#CCCCCC"))
 			}
 
-			binding.cv2.setOnClickListener {
+			binding.btn2.setOnClickListener {
 				val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
 				startActivity(intent)
 			}

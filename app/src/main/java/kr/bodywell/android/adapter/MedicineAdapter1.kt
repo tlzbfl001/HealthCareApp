@@ -10,7 +10,7 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
-import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
+import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.MedicineIntake
 import kr.bodywell.android.util.CalendarUtil.selectedDate

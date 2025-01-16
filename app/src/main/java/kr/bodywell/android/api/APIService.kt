@@ -36,6 +36,7 @@ import kr.bodywell.android.api.response.MedicineIntakeResponse
 import kr.bodywell.android.api.response.MedicineResponse
 import kr.bodywell.android.api.response.MedicineTimeResponse
 import kr.bodywell.android.api.response.NoteResponse
+import kr.bodywell.android.api.response.FileResponse
 import kr.bodywell.android.api.response.ProfileResponse
 import kr.bodywell.android.api.response.SleepResponse
 import kr.bodywell.android.api.response.TokenResponse
@@ -100,7 +101,7 @@ interface APIService {
 
 	@Multipart
 	@POST("v1/profiles/{id}/picture")
-	suspend fun createProfilePicture(
+	suspend fun createProfileFile(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
 		@Part file : MultipartBody.Part
@@ -157,11 +158,12 @@ interface APIService {
 	): Response<DietResponse>
 
 	@Multipart
-	@POST("v1/diets/{id}/uploads")
-	suspend fun createDietsPicture(
+	@PUT("v1/diets/{id}/uploads/{photoId}")
+	suspend fun createDietFile(
 		@Header("Authorization") token: String,
 		@Path("id") id: String,
-		@Part photos : MultipartBody.Part
+		@Path("photoId") photoId: String,
+		@Part photo : MultipartBody.Part
 	): Response<DietResponse>
 
 	@PATCH("v1/diets/{id}")
@@ -282,6 +284,11 @@ interface APIService {
 		@Body dto: SleepUpdateDTO
 	): Response<SleepResponse>
 
+	@GET("v1/medicines")
+	suspend fun getMedicines(
+		@Header("Authorization") token: String
+	): Response<List<MedicineResponse>>
+
 	@GET("v1/medicines/{id}")
 	suspend fun getMedicine(
 		@Header("Authorization") token: String,
@@ -347,6 +354,15 @@ interface APIService {
 		@Body dto: NoteDTO
 	): Response<NoteResponse>
 
+	@Multipart
+	@PUT("v1/notes/{id}/uploads/{photoId}")
+	suspend fun createNoteFile(
+		@Header("Authorization") token: String,
+		@Path("id") id: String,
+		@Path("photoId") photoId: String,
+		@Part file : MultipartBody.Part?
+	): Response<NoteResponse>
+
 	@PATCH("v1/notes/{id}")
 	suspend fun updateNote(
 		@Header("Authorization") token: String,
@@ -373,4 +389,10 @@ interface APIService {
 		@Path("id") id: String,
 		@Body dto: GoalUpdateDTO
 	): Response<GoalResponse>
+
+	@DELETE("v1/files/{id}")
+	suspend fun deleteFile(
+		@Header("Authorization") token: String,
+		@Path("id") id: String
+	): Response<FileResponse>
 }

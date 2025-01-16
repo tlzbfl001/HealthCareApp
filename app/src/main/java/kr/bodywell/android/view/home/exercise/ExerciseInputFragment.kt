@@ -9,19 +9,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.databinding.FragmentExerciseInputBinding
 import kr.bodywell.android.model.ActivityData
-import kr.bodywell.android.model.Constants.ACTIVITIES
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.model.Constant.ACTIVITIES
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
 import kr.bodywell.android.util.CustomUtil.filterText
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import java.util.Calendar
-import java.util.UUID
 
 class ExerciseInputFragment : Fragment() {
    private var _binding: FragmentExerciseInputBinding? = null
@@ -67,10 +66,8 @@ class ExerciseInputFragment : Fragment() {
             }else if(getData != "") {
                Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
             }else {
-               val uuid = UuidCreator.getTimeOrderedEpoch()
-               val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
-               powerSync.insertActivity(ActivityData(id = uuid.toString(), name = binding.etName.text.toString().trim(), createdAt = dateTimeFormat, updatedAt = dateTimeFormat))
-
+               powerSync.insertActivity(ActivityData(id = getUUID(), name = binding.etName.text.toString().trim(),
+                  createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
             }

@@ -2,27 +2,36 @@ package kr.bodywell.android.view.init
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
+import kr.bodywell.android.api.RetrofitAPI
+import kr.bodywell.android.api.dto.DeviceDTO
+import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
-import kr.bodywell.android.util.RegisterUtil.saveData
+import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.view.home.MainActivity
+import java.time.LocalDateTime
 
 class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
+   private lateinit var dataManager: DataManager
    private var isAll = true
    private var isClickable = true
 
@@ -32,6 +41,9 @@ class SignupActivity : AppCompatActivity() {
       setContentView(binding.root)
 
       setStatusBar()
+
+      dataManager = DataManager(this)
+      dataManager.open()
 
       val user = intent.getParcelableExtra<User>("user")!!
       val token = intent.getParcelableExtra<Token>("token")!!
@@ -112,8 +124,53 @@ class SignupActivity : AppCompatActivity() {
             isClickable = false
             if(networkStatus(this)) {
                if(binding.cb1.isChecked && binding.cb2.isChecked && binding.cb3.isChecked) {
-                  CoroutineScope(Dispatchers.IO).launch {
-                     saveData(this@SignupActivity, user, token)
+                  lifecycleScope.launch {
+                     var getDevice = RetrofitAPI.api.getDevice("Bearer ${token.access}")
+
+                     if(getDevice.body()!!.isEmpty()) {
+                        val manufacturer = if(Build.MANUFACTURER == null || Build.MANUFACTURER == "") "" else Build.MANUFACTURER
+                        val model = if(Build.MODEL == null || Build.MODEL == "") "" else Build.MODEL
+                        val hardwareVer = if(Build.VERSION.RELEASE == null || Build.VERSION.RELEASE == "") "" else Build.VERSION.RELEASE
+                        val softwareVer = if(packageManager.getPackageInfo(packageName, 0).versionName == null || packageManager.getPackageInfo(packageName, 0).versionName == "") {
+                           "" } else packageManager.getPackageInfo(packageName, 0).versionName
+                        RetrofitAPI.api.createDevice("Bearer ${token.access}", DeviceDTO("BodyWell-Android", "Android", manufacturer, model, hardwareVer, softwareVer))
+                     }
+
+                     getDevice = RetrofitAPI.api.getDevice("Bearer ${token.access}")
+                     Log.d(TAG, "getDevice: ${getDevice.isSuccessful} / ${getDevice.body()}")
+
+                     if(getDevice.isSuccessful && getDevice.body()!![0].id != "") {
+                        var getUser = dataManager.getUser(user.type, user.email)
+
+                        // 사용자 정보 저장
+                        if(getUser.email == "") {
+                           dataManager.insertUser(User(type = user.type, idToken = user.idToken, accessToken = user.accessToken, username = user.username, email = user.email, role = user.role, uid = user.uid))
+                        }else {
+                           dataManager.updateUser(User(type = user.type, idToken = user.idToken, accessToken = user.accessToken, username = user.username, email = user.email, role = user.role, uid = user.uid))
+                        }
+
+                        // 사용자ID 저장
+                        getUser = dataManager.getUser(user.type, user.email)
+                        MyApp.prefs.setUserId(Constant.PREFERENCE, getUser.id)
+
+                        // 토큰 정보 저장
+                        val getToken = dataManager.getToken()
+                        if(getToken.accessCreated == "") {
+                           dataManager.insertToken(Token(access = token.access, refresh = token.refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
+                        }else {
+                           dataManager.updateToken(Token(access = token.access, refresh = token.refresh, accessCreated = LocalDateTime.now().toString(), refreshCreated = LocalDateTime.now().toString()))
+                        }
+
+                        // 파일 정보 저장
+                        dataManager.insertUpdatedAt("1900-01-01")
+
+                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        startActivity(intent)
+                     }else {
+                        Toast.makeText(this@SignupActivity, "로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+                     }
+
                      isClickable = true
                   }
                }else {

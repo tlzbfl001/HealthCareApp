@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,20 +17,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.MedicineAdapter1
 import kr.bodywell.android.databinding.FragmentMedicineBinding
-import kr.bodywell.android.model.Constants.GOALS
-import kr.bodywell.android.model.Constants.MEDICINE_INTAKES
+import kr.bodywell.android.model.Constant.GOALS
+import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
@@ -39,7 +35,6 @@ import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.setting.AlarmFragment
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
 
 class MedicineFragment : Fragment() {
@@ -69,9 +64,9 @@ class MedicineFragment : Fragment() {
       val et = dialog.findViewById<TextView>(R.id.et)
       val tvUnit = dialog.findViewById<TextView>(R.id.tvUnit)
       val btnSave = dialog.findViewById<CardView>(R.id.btnSave)
-      tvTitle.text = "약복용 / 하루 복용 횟수"
+      tvTitle.text = "약복용 횟수 입력"
       tvUnit.text = "회"
-      btnSave.setCardBackgroundColor(Color.parseColor("#CC9E63FC"))
+      btnSave.setCardBackgroundColor(Color.parseColor("#E2FF955D"))
 
       btnSave.setOnClickListener {
          if(et.text.toString().trim() == "") {
@@ -79,16 +74,15 @@ class MedicineFragment : Fragment() {
          }else {
             lifecycleScope.launch {
                if(getGoal.id == "") {
-                  val uuid = UuidCreator.getTimeOrderedEpoch()
-                  powerSync.insertGoal(Goal(id = uuid.toString(), medicineIntake = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  powerSync.insertGoal(Goal(id = getUUID(), medicineIntake = et.text.toString().toInt(), date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, MEDICINE_INTAKES, et.text.toString(), getGoal.id)
                }
 
-               dailyView()
                dialog.dismiss()
+               dailyView()
             }
          }
       }
@@ -111,8 +105,8 @@ class MedicineFragment : Fragment() {
 
       viewModel.medicineCheckVM.observe(viewLifecycleOwner, Observer<Int> { item ->
          if(item > 0) {
-            binding.pbDrug.setProgressStartColor(resources.getColor(R.color.drug))
-            binding.pbDrug.setProgressEndColor(resources.getColor(R.color.drug))
+            binding.pbDrug.setProgressStartColor(resources.getColor(R.color.medicine))
+            binding.pbDrug.setProgressEndColor(resources.getColor(R.color.medicine))
             binding.pbDrug.progress = item
          }else {
             binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
@@ -132,11 +126,11 @@ class MedicineFragment : Fragment() {
 
    private fun dailyView() {
       val itemList = ArrayList<MedicineList>()
+      binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
+      binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0회"
       binding.tvRemain.text = "0회"
       binding.tvDrugCount.text = "0회"
-      binding.pbDrug.setProgressEndColor(Color.TRANSPARENT)
-      binding.pbDrug.setProgressStartColor(Color.TRANSPARENT)
 
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
@@ -145,7 +139,12 @@ class MedicineFragment : Fragment() {
 
          for(i in getIntakes.indices) {
             var check = false
-            for(j in getRecently.indices) if(getIntakes[i] == getRecently[j]) check = true
+            for(j in getRecently.indices){
+               if(getIntakes[i] == getRecently[j]){
+                  check = true
+                  break
+               }
+            }
             if(!check) deleteList.add(getIntakes[i])
          }
 
@@ -176,9 +175,9 @@ class MedicineFragment : Fragment() {
                   val getMedicineTime = powerSync.getAllMedicineTime(getMedicine[i].id)
 
                   for(j in getMedicineTime.indices) {
-                     val getMedicineIntake = powerSync.getIntake(selectedDate.toString(), getMedicineTime[j].id)
+                     val getIntake = powerSync.getIntake(selectedDate.toString(), getMedicineTime[j].id)
                      itemList.add(MedicineList(name = getMedicine[i].name, amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
-                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getMedicineTime[j].id, initCheck = getRecently.size, isChecked = getMedicineIntake.id))
+                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getMedicineTime[j].id, initCheck = getRecently.size, isChecked = getIntake.id))
                   }
                }
 

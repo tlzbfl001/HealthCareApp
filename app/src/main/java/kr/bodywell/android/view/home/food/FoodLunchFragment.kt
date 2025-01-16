@@ -14,12 +14,14 @@ import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.databinding.FragmentFoodLunchBinding
-import kr.bodywell.android.model.Constants.DIETS
-import kr.bodywell.android.model.Constants.LUNCH
+import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constant.DIETS
+import kr.bodywell.android.model.Constant.LUNCH
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.PermissionUtil
 import java.io.File
 import java.util.stream.Collectors
 
@@ -38,23 +40,69 @@ class FoodLunchFragment : Fragment() {
     ): View {
         _binding = FragmentFoodLunchBinding.inflate(layoutInflater)
 
-        imageView() // 식단 이미지 뷰
-        listView() // 섭취한 식단 설정
+        // 섭취한 식단 설정
+        listView()
+
+        // 식단 이미지 뷰
+        if(PermissionUtil.checkCameraPermission(requireActivity())) {
+            imageView()
+        }
 
         return binding.root
+    }
+
+    private fun listView() {
+        lifecycleScope.launch {
+            getDiets = powerSync.getDiets(LUNCH, selectedDate.toString()) as ArrayList<Food>
+            for(i in 0 until getDiets.size) powerSync.deleteDiet(LUNCH, getDiets[i].name, selectedDate.toString(), getDiets[i].id)
+        }
+
+        if(getDiets.isNotEmpty()) {
+            binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+            intakeAdapter = FoodIntakeAdapter(parentFragmentManager, getDiets, LUNCH)
+
+            intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
+                override fun onItemClick(pos: Int) {
+                    val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
+                        .setTitle("음식 삭제")
+                        .setMessage("정말 삭제하시겠습니까?")
+                        .setPositiveButton("확인") { _, _ ->
+                            if(imageList.size > 0) {
+                                imageList.stream().filter { x -> x.name == getDiets[pos].name }.collect(Collectors.toList()).forEach { x ->
+                                    imageList.remove(x)
+                                    File(requireActivity().filesDir, x.name).delete()
+                                }
+                            }
+
+                            lifecycleScope.launch {
+                                val getFiles = powerSync.getFiles("diet_id", getDiets[pos].id)
+                                for(element in getFiles) powerSync.deleteItem(Constant.FILES, "id", element.id)
+                                powerSync.deleteItem(DIETS, "id", getDiets[pos].id)
+                            }
+
+                            getDiets.removeAt(pos)
+                            binding.viewPager.adapter = photoAdapter
+                            intakeAdapter!!.notifyDataSetChanged()
+
+                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("취소", null)
+                        .create()
+                    dialog.show()
+                }
+            })
+
+            binding.rv.adapter = intakeAdapter
+        }
     }
 
     private fun imageView() {
         lifecycleScope.launch {
             binding.viewPager.adapter = null
 
-            getDiets = powerSync.getDiets(LUNCH, selectedDate.toString()) as ArrayList<Food>
-
             for(i in getDiets.indices) {
-                val getFiles = powerSync.getFiles(getDiets[i].id)
-                for(j in getFiles.indices) {
-                    imageList.add(FileItem(name = getFiles[j].name))
-                }
+                val getFiles = powerSync.getFiles("diet_id", getDiets[i].id)
+                for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
             }
 
             if(imageList.size > 0) {
@@ -72,49 +120,6 @@ class FoodLunchFragment : Fragment() {
                     binding.viewPager.setCurrentItem(current+1, true)
                 }
             }
-        }
-    }
-
-    private fun listView() {
-        lifecycleScope.launch {
-            for(i in 0 until getDiets.size) powerSync.deleteDiet(LUNCH, getDiets[i].name, selectedDate.toString(), getDiets[i].id)
-        }
-
-        if(getDiets.isNotEmpty()) {
-            binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            intakeAdapter = FoodIntakeAdapter(parentFragmentManager, getDiets, LUNCH)
-
-            intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
-                override fun onItemClick(pos: Int) {
-                    val dialog = AlertDialog.Builder(context, R.style.AlertDialogStyle)
-                        .setTitle("음식 삭제")
-                        .setMessage("정말 삭제하시겠습니까?")
-                        .setPositiveButton("확인") { _, _ ->
-                            if(imageList.size > 0) {
-                                imageList.stream().filter { x -> x.name == getDiets[pos].name }
-                                    .collect(Collectors.toList()).forEach { x ->
-                                        imageList.remove(x)
-                                        File(requireActivity().filesDir, x.name).delete()
-                                    }
-                            }
-
-                            lifecycleScope.launch {
-                                powerSync.deleteItem(DIETS, "id", getDiets[pos].id)
-                            }
-
-                            getDiets.removeAt(pos)
-                            binding.viewPager.adapter = photoAdapter
-                            intakeAdapter!!.notifyDataSetChanged()
-
-                            Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                        }
-                        .setNegativeButton("취소", null)
-                        .create()
-                    dialog.show()
-                }
-            })
-
-            binding.rv.adapter = intakeAdapter
         }
     }
 }

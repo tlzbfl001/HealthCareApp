@@ -45,8 +45,5 @@ data class ProfileResponse (
 	var updatedAt: String = "",
 
 	@SerializedName("pictureId")
-	var pictureId: String?,
-
-	@SerializedName("userId")
-	var userId: String = ""
+	var pictureId: String? = ""
 )

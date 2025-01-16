@@ -15,29 +15,28 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
 import kr.bodywell.android.adapter.PhotoSlideAdapter2
 import kr.bodywell.android.databinding.FragmentFoodBinding
-import kr.bodywell.android.model.Constants.BREAKFAST
-import kr.bodywell.android.model.Constants.DINNER
-import kr.bodywell.android.model.Constants.GOALS
-import kr.bodywell.android.model.Constants.LUNCH
-import kr.bodywell.android.model.Constants.SNACK
+import kr.bodywell.android.model.Constant.BREAKFAST
+import kr.bodywell.android.model.Constant.DINNER
+import kr.bodywell.android.model.Constant.GOALS
+import kr.bodywell.android.model.Constant.LUNCH
+import kr.bodywell.android.model.Constant.SNACK
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
-import kr.bodywell.android.util.CustomUtil.getDietImages
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.getDietFiles
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.Calendar
 import kotlin.math.roundToInt
 
@@ -76,9 +75,8 @@ class FoodFragment : Fragment() {
          }else {
             lifecycleScope.launch {
                if(getGoal.id == "") {
-                  val uuid = UuidCreator.getTimeOrderedEpoch()
-                  powerSync.insertGoal(Goal(id = uuid.toString(), kcalOfDiet = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString()))
+                  powerSync.insertGoal(Goal(id = getUUID(), kcalOfDiet = et.text.toString().toInt(), date = selectedDate.toString(),
+                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, "kcal_of_diet", et.text.toString(), getGoal.id)
@@ -200,24 +198,26 @@ class FoodFragment : Fragment() {
       if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
       // 갤러리 초기화
-      binding.viewPager.adapter = null
+      if(checkCameraPermission(requireActivity())) {
+         binding.viewPager.adapter = null
 
-      lifecycleScope.launch {
-         val imageList = getDietImages(selectedDate.toString())
+         lifecycleScope.launch {
+            val imageList = getDietFiles(selectedDate.toString())
 
-         if(imageList.size > 0) {
-            val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
-            binding.viewPager.adapter = adapter
-            binding.viewPager.setPadding(0, 0, 0, 0)
+            if(imageList.size > 0) {
+               val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+               binding.viewPager.adapter = adapter
+               binding.viewPager.setPadding(0, 0, 0, 0)
 
-            binding.clLeft.setOnClickListener {
-               val current = binding.viewPager.currentItem
-               if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
-            }
+               binding.clLeft.setOnClickListener {
+                  val current = binding.viewPager.currentItem
+                  if(current == 0) binding.viewPager.setCurrentItem(0, true) else binding.viewPager.setCurrentItem(current-1, true)
+               }
 
-            binding.clRight.setOnClickListener {
-               val current = binding.viewPager.currentItem
-               binding.viewPager.setCurrentItem(current+1, true)
+               binding.clRight.setOnClickListener {
+                  val current = binding.viewPager.currentItem
+                  binding.viewPager.setCurrentItem(current+1, true)
+               }
             }
          }
       }

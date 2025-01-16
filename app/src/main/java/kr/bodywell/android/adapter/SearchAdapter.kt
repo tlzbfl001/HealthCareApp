@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.model.Constants.ACTIVITIES
-import kr.bodywell.android.model.Constants.ADMIN
-import kr.bodywell.android.model.Constants.FOODS
+import kr.bodywell.android.model.Constant.ACTIVITIES
+import kr.bodywell.android.model.Constant.ADMIN
+import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -53,7 +53,7 @@ class SearchAdapter(
                 val clDelete = bottomSheetView.findViewById<ConstraintLayout>(R.id.clDelete)
 
                 clEdit.setOnClickListener {
-                    bundle.putString("id", itemList[position].string1)
+                    bundle.putString("foodId", itemList[position].string1)
                     bundle.putString("type", type)
                     replaceFragment2(fragmentManager, FoodEditFragment(), bundle)
                     dialog.dismiss()

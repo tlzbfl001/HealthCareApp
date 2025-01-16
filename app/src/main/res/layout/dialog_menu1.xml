@@ -53,8 +53,8 @@
          app:layout_constraintEnd_toEndOf="parent">
          <ImageView
             android:id="@+id/ivEdit"
-            android:layout_width="17dp"
-            android:layout_height="17dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_marginLeft="22dp"
             android:src="@drawable/pencil"
             app:tint="#888888"
@@ -90,8 +90,8 @@
          app:layout_constraintEnd_toEndOf="parent">
          <ImageView
             android:id="@+id/ivDelete"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:src="@drawable/outline_delete"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"

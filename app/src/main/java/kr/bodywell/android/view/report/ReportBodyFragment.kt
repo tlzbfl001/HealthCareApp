@@ -47,6 +47,7 @@ class ReportBodyFragment : Fragment() {
    private var dateType = 0
 
    override fun onAttach(context: Context) {
+      super.onCreate(null)
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {

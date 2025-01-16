@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
             android:text="text"
-            android:textSize="13dp"
+            android:textSize="12dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/noto"
             android:includeFontPadding="false"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            app:cardBackgroundColor="#ACACAC"
+            app:cardBackgroundColor="@color/medicine"
             app:cardCornerRadius="15dp"
             app:cardElevation="0dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -48,8 +48,8 @@
             <TextView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:layout_marginTop="4dp"
-               android:layout_marginBottom="4dp"
+               android:layout_marginTop="3dp"
+               android:layout_marginBottom="3dp"
                android:layout_marginLeft="11dp"
                android:layout_marginRight="11dp"
                android:includeFontPadding="false"
@@ -58,23 +58,14 @@
                android:textColor="@color/white"
                android:fontFamily="@font/noto"/>
          </androidx.cardview.widget.CardView>
-         <ImageView
-            android:id="@+id/ivAlarm"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/alarm"
-            android:layout_marginRight="5dp"
-            app:layout_constraintTop_toTopOf="@id/switchOnOff"
-            app:layout_constraintBottom_toBottomOf="@id/switchOnOff"
-            app:layout_constraintEnd_toStartOf="@id/switchOnOff"/>
          <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchOnOff"
-            android:layout_width="40dp"
-            android:layout_height="15dp"
+            android:layout_width="45dp"
+            android:layout_height="25dp"
             android:thumb="@drawable/switch_thumb"
             app:track="@drawable/switch_track"
             app:thumbTextPadding="24dp"
-            app:switchMinWidth="36dp"
+            app:switchMinWidth="41dp"
             app:layout_constraintTop_toTopOf="@id/cvEdit"
             app:layout_constraintBottom_toBottomOf="@id/cvEdit"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -142,7 +133,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/tvCount"
             app:layout_constraintStart_toStartOf="parent"/>
          <ImageView
@@ -150,7 +141,7 @@
             android:layout_width="22dp"
             android:layout_height="22dp"
             android:background="@drawable/oval_cal_selected"
-            android:backgroundTint="#666666"
+            android:backgroundTint="#797979"
             android:src="@drawable/x"
             android:padding="2dp"
             app:tint="@color/white"

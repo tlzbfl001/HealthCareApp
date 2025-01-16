@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +16,9 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentFoodEditBinding
-import kr.bodywell.android.model.Constants.FOODS
+import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
@@ -28,6 +30,7 @@ class FoodEditFragment : Fragment() {
 
 	private lateinit var callback: OnBackPressedCallback
 	private var bundle = Bundle()
+	private var getFood = Food()
 	private var unit = "mg"
 
 	override fun onAttach(context: Context) {
@@ -48,9 +51,13 @@ class FoodEditFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		val getFood = arguments?.getParcelable<Food>(FOODS)!!
+		val foodId = arguments?.getString("foodId")!!
 		val type = arguments?.getString("type").toString()
 		bundle.putString("type", type)
+
+		lifecycleScope.launch {
+			getFood = powerSync.getFood(foodId)
+		}
 
 		binding.tvName.text = getFood.name
 		binding.etVolume.setText(getFood.volume.toString())
@@ -220,13 +227,20 @@ class FoodEditFragment : Fragment() {
 
 		binding.cvEdit.setOnClickListener {
 			lifecycleScope.launch {
-				powerSync.updateFood(Food(id = getFood.id, calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
-					protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
-					volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
-			}
+				if(binding.etVolume.text.toString() == "" || binding.etVolume.text.toString().toDouble() < 1 || binding.etKcal.text.toString() == "" || binding.etKcal.text.toString().toDouble() < 1) {
+					Toast.makeText(context, "섭취량, 칼로리는 1이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
+				}else if(binding.etCar.text.toString() == "" || binding.etCar.text.toString().toDouble() < 0.1 || binding.etProtein.text.toString() == "" ||
+					binding.etProtein.text.toString().toDouble() < 0.1 || binding.etFat.text.toString() == ""  || binding.etFat.text.toString().toDouble() < 0.1) {
+					Toast.makeText(context, "영양성분은 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
+				}else {
+					powerSync.updateFood(Food(id = getFood.id, calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
+						protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
+						volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
 
-			Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-			replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
+					Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+					replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
+				}
+			}
 		}
 
 		return binding.root

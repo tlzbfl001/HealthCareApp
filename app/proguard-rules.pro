@@ -49,3 +49,22 @@
 -keep class com.navercorp.nid.** { *; }
 -keep class com.kakao.sdk.**.model.* { <fields>; }
 -keep public class com.github.mikephil.** { public protected *; }
+
+-keep interface com.powersync.** { *; }
+-keep class com.powersync.** { *; }
+-keep class * extends com.powersync.**
+-keep class * implements com.powersync.**
+#-keepclasseswithmembers class com.powersync.** { *; }
+#-keepclassmembers class com.powersync.** { *; }
+#-dontwarn com.powersync.**
+#-keep,allowobfuscation,allowshrinking class com.powersync.**
+
+-keep interface org.slf4j.impl.** { *; }
+-keep class org.slf4j.impl.** { *; }
+-keep class * extends org.slf4j.impl.**
+-keep class * implements org.slf4j.impl.**
+-keep class org.slf4j.impl.** { *; }
+-keepclasseswithmembers class org.slf4j.impl.** { *; }
+-keepclassmembers class org.slf4j.impl.** { *; }
+-dontwarn org.slf4j.impl.**
+-keep,allowobfuscation,allowshrinking class org.slf4j.impl.**

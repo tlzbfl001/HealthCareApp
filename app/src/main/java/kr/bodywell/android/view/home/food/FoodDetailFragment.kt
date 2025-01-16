@@ -12,10 +12,10 @@ import com.google.android.material.tabs.TabLayout
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.PagerAdapter
 import kr.bodywell.android.databinding.FragmentFoodDetailBinding
-import kr.bodywell.android.model.Constants.BREAKFAST
-import kr.bodywell.android.model.Constants.DINNER
-import kr.bodywell.android.model.Constants.LUNCH
-import kr.bodywell.android.model.Constants.SNACK
+import kr.bodywell.android.model.Constant.BREAKFAST
+import kr.bodywell.android.model.Constant.DINNER
+import kr.bodywell.android.model.Constant.LUNCH
+import kr.bodywell.android.model.Constant.SNACK
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
@@ -53,7 +53,7 @@ class FoodDetailFragment : Fragment() {
          replaceFragment3(parentFragmentManager, DetailFragment())
       }
 
-      binding.cvInput.setOnClickListener {
+      binding.tvInput.setOnClickListener {
          bundle.putString("type", type)
          replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
       }

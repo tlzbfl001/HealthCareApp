@@ -10,22 +10,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentExerciseAddBinding
 import kr.bodywell.android.model.ActivityData
-import kr.bodywell.android.model.Constants.HIGH
-import kr.bodywell.android.model.Constants.LOW
-import kr.bodywell.android.model.Constants.MODERATE
+import kr.bodywell.android.model.Constant.HIGH
+import kr.bodywell.android.model.Constant.LOW
+import kr.bodywell.android.model.Constant.MODERATE
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import java.time.LocalDateTime
 import java.util.Calendar
 
 class ExerciseAddFragment : Fragment() {
@@ -103,15 +102,14 @@ class ExerciseAddFragment : Fragment() {
 
         binding.cvSave.setOnClickListener {
             if(binding.etTime.text.toString() == "" || binding.etKcal.text.toString() == "") {
-                Toast.makeText(requireActivity(), "데이터를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "데이터를 입력하세요.", Toast.LENGTH_SHORT).show()
             }else if(binding.etTime.text.toString().toInt() == 0 || binding.etKcal.text.toString().toInt() == 0) {
-                Toast.makeText(requireActivity(), "시간, 칼로리를 1이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "시간, 칼로리는 1이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
             }else {
                 lifecycleScope.launch {
-                    val uuid = UuidCreator.getTimeOrderedEpoch()
-                    powerSync.insertWorkout(Workout(id = uuid.toString(), name = getActivity.name, calorie = binding.etKcal.text.toString().toInt(),
+                    powerSync.insertWorkout(Workout(id = getUUID(), name = getActivity.name, calorie = binding.etKcal.text.toString().toInt(),
                         intensity = intensity, time = binding.etTime.text.toString().toInt(), date = selectedDate.toString(),
-                        createdAt = LocalDateTime.now().toString(), updatedAt = LocalDateTime.now().toString(), activityId = id))
+                        createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance()), activityId = id))
                 }
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()

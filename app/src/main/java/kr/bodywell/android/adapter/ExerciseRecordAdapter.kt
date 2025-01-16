@@ -13,8 +13,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.model.ActivityData
-import kr.bodywell.android.model.Constants.ACTIVITIES
-import kr.bodywell.android.model.Constants.USER
+import kr.bodywell.android.model.Constant.ACTIVITIES
+import kr.bodywell.android.model.Constant.ADMIN
+import kr.bodywell.android.model.Constant.USER
 import kr.bodywell.android.util.CustomUtil.powerSync
 
 class ExerciseRecordAdapter (
@@ -35,7 +36,7 @@ class ExerciseRecordAdapter (
          onItemClickListener!!.onItemClick(position)
       }
 
-      if(itemList[position].registerType == USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+      if(itemList[position].registerType == ADMIN) holder.cl.visibility = View.GONE  else holder.cl.visibility = View.VISIBLE
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +17,11 @@ import kr.bodywell.android.adapter.ExerciseRecordAdapter
 import kr.bodywell.android.adapter.SearchAdapter
 import kr.bodywell.android.databinding.FragmentExerciseRecord2Binding
 import kr.bodywell.android.model.ActivityData
-import kr.bodywell.android.model.Constants.ACTIVITIES
+import kr.bodywell.android.model.Constant.ACTIVITIES
 import kr.bodywell.android.model.Item
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
+import kr.bodywell.android.util.CustomUtil.isoToDateTime
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -85,25 +88,37 @@ class ExerciseRecord2Fragment : Fragment() {
       }
 
       lifecycleScope.launch {
-         itemList = powerSync.getActivities() as ArrayList<ActivityData>
-         for(i in itemList.indices) powerSync.deleteDuplicate(ACTIVITIES, "name", itemList[i].name, itemList[i].id)
-      }
+         val getActivities = powerSync.getActivities() as ArrayList<ActivityData>
+         itemList = powerSync.getActivityUsages2() as ArrayList<ActivityData>
+         val getUsages = powerSync.getActivityUsages2() as ArrayList<ActivityData>
 
-      if(itemList.size > 0) {
-         binding.tvEmpty.visibility = View.GONE
-         binding.rv1.visibility = View.VISIBLE
-
-         adapter1 = ExerciseRecordAdapter(requireActivity(), itemList)
-         binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-
-         adapter1!!.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
-            override fun onItemClick(pos: Int) {
-               bundle.putString("id", itemList[pos].id)
-               replaceFragment2(parentFragmentManager, ExerciseAddFragment(), bundle)
+         for(i in 0 until getActivities.size) {
+            var check = false
+            for(j in 0 until getUsages.size) {
+               if(getActivities[i].name == getUsages[j].name) {
+                  check = true
+                  break
+               }
             }
-         })
+            if(!check) itemList.add(getActivities[i])
+         }
 
-         binding.rv1.adapter = adapter1
+         if(itemList.size > 0) {
+            binding.tvEmpty.visibility = View.GONE
+            binding.rv1.visibility = View.VISIBLE
+
+            adapter1 = ExerciseRecordAdapter(requireActivity(), itemList)
+            binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+
+            adapter1!!.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
+               override fun onItemClick(pos: Int) {
+                  bundle.putString("id", itemList[pos].id)
+                  replaceFragment2(parentFragmentManager, ExerciseAddFragment(), bundle)
+               }
+            })
+
+            binding.rv1.adapter = adapter1
+         }
       }
 
       val adapter = SearchAdapter(requireActivity(), childFragmentManager, "")

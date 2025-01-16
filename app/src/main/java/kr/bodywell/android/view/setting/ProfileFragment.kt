@@ -32,25 +32,21 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
-import kr.bodywell.android.model.Constants.FEMALE
-import kr.bodywell.android.model.Constants.MALE
+import kr.bodywell.android.model.Constant.FEMALE
+import kr.bodywell.android.model.Constant.MALE
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Profile
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.getRotatedBitmap
-import kr.bodywell.android.util.CustomUtil.getUser
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
-import kr.bodywell.android.util.CustomUtil.saveImage
+import kr.bodywell.android.util.CustomUtil.saveFile
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
 import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
 import java.io.File
-import java.io.FileOutputStream
-import java.lang.Exception
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -97,19 +93,11 @@ class ProfileFragment : Fragment() {
 		){}
 
 		lifecycleScope.launch {
-			getProfile = powerSync.getProfile(getUser.uid)
+			getProfile = powerSync.getProfile()
 			getFile = powerSync.getFile(getProfile.id)
 		}
 
 		if(getFile.name != "") {
-			// 이미지 다운로드 테스트
-			/*Thread {
-				downloadFile(
-					"https://bodywell-dev-886ab4be.s3.ap-northeast-2.amazonaws.com/profile-pictures/01934775-6cd7-7520-85cf-9e71eb0705b1/profile-44c93cb8-bfa1-4795-bdcf-98f57f66b95c.png",
-					requireActivity().filesDir.toString() + "/test.jpg"
-				)
-			}.start()*/
-
 			val imgPath = requireActivity().filesDir.toString() + "/" + getFile.name // 내부저장소에 저장되어있는 이미지 경로
 			val file = File(imgPath)
 
@@ -127,7 +115,7 @@ class ProfileFragment : Fragment() {
 			else -> unit1()
 		}
 
-		binding.cl.setOnTouchListener { _, _ ->
+		binding.mainLayout.setOnTouchListener { _, _ ->
 			hideKeyboard(requireActivity())
 			true
 		}
@@ -139,12 +127,12 @@ class ProfileFragment : Fragment() {
 		binding.ivUser.setOnClickListener {
 			if(checkCameraPermission(requireActivity())) {
 				dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
-				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_get_photo, null)
+				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_photo, null)
 
-				val clCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.clCamera)
-				val clGallery = bottomSheetView.findViewById<ConstraintLayout>(R.id.clGallery)
+				val btnCamera = bottomSheetView.findViewById<ConstraintLayout>(R.id.btnCamera)
+				val btnGallery = bottomSheetView.findViewById<ConstraintLayout>(R.id.btnGallery)
 
-				clCamera.setOnClickListener {
+				btnCamera.setOnClickListener {
 					val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE) // 카메라앱 호출을 위한 Intent생성
 
 					val storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)	// 이미지 경로 지정
@@ -164,7 +152,7 @@ class ProfileFragment : Fragment() {
 					pictureFlag = 1
 				}
 
-				clGallery.setOnClickListener {
+				btnGallery.setOnClickListener {
 					val intent = Intent(Intent.ACTION_PICK) // 갤러리에서 이미지를 선택하는 Intent 생성
 					intent.type = "image/*"
 					cLauncher.launch(intent)
@@ -229,29 +217,33 @@ class ProfileFragment : Fragment() {
 		}
 
 		binding.cvEdit.setOnClickListener {
-			val name = if(binding.etName.text.trim().toString() == "") "" else binding.etName.text.trim().toString()
-			val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
+			lifecycleScope.launch {
+				val getProfile = powerSync.getProfile()
+				val name = if(binding.etName.text.trim().toString() == "") getProfile.name else binding.etName.text.trim().toString()
+				val birthday = if(binding.tvBirthday.text.toString() == "") LocalDate.now().toString() else binding.tvBirthday.text.toString()
 
-			if(binding.etName.text.trim().isEmpty()) {
-				Toast.makeText(context, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
-			}else if(!filterText(binding.etName.text.toString())) {
-				Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
-			}else {
-				lifecycleScope.launch {
-					powerSync.updateProfile(Profile(name = name, birth = birthday, gender = gender)) // 프로필 수정
+				if(binding.etName.text.trim().isEmpty()) {
+					Toast.makeText(context, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+				}else if(!filterText(binding.etName.text.toString())) {
+					Toast.makeText(context, "특수문자는 입력 불가합니다.", Toast.LENGTH_SHORT).show()
+				}else {
+					// 프로필 수정
+					powerSync.updateProfile(Profile(name = name, birth = birthday, height = getProfile.height, weight = getProfile.weight, gender = gender))
 
 					if(bitmap != null) {
-						val result = saveImage(requireActivity(), bitmap!!) // 선택한 이미지를 저장하는 메서드 호출
+						val result = saveFile(requireActivity(), bitmap!!)
 						if(result != "") {
-							if(getFile.name != "") File(requireActivity().filesDir, getFile.name).delete() // 전에 있던 파일 삭제
+							val file = File(requireActivity().filesDir, result)
+							if(file.length() < 1048576) {
+								val uuid = UuidCreator.getTimeOrderedEpoch()
+								powerSync.insertProfileFile(FileItem(id = uuid.toString(), name = result, profileId = getProfile.id))
 
-							val uuid = UuidCreator.getTimeOrderedEpoch()
-							powerSync.insertProfileFile(FileItem(id = uuid.toString(), name = result, profileId = getProfile.id)) // 프로필 사진 저장
-
-							Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-							replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
-						}else {
-							Toast.makeText(context, "이미지가 너무 큽니다.", Toast.LENGTH_SHORT).show()
+								Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
+								replaceFragment3(requireActivity().supportFragmentManager, SettingFragment())
+							}else {
+								Toast.makeText(context, "파일 크기가 허용되는 한도를 초과하여 파일을 저장할 수 없습니다.", Toast.LENGTH_SHORT).show()
+								File(requireActivity().filesDir, result).delete()
+							}
 						}
 					}else {
 						Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
@@ -264,37 +256,19 @@ class ProfileFragment : Fragment() {
 		return binding.root
 	}
 
-	private fun downloadFile(imageURL: String, fileName: String) {
-		val url = URL(imageURL)
-		val input = url.openStream()
-		val output = FileOutputStream(fileName)
-		try{
-			val buffer = ByteArray(1048)
-			var bytesRead = 0
-			while (input.read(buffer, 0, buffer.size).also { bytesRead = it } >= 0) {
-				output.write(buffer, 0, bytesRead)
-			}
-		}catch(e: Exception) {
-			e.printStackTrace()
-		}finally {
-			output.close()
-			input.close()
-		}
-	}
-
 	private fun unit1() {
 		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
-		binding.tvWoman.setTextColor(Color.WHITE)
+		binding.tvWoman.setTextColor(resources.getColor(R.color.button_text))
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
-		binding.tvMan.setTextColor(Color.BLACK)
+		binding.tvMan.setTextColor(Color.parseColor("#90212121"))
 		gender = FEMALE
 	}
 
 	private fun unit2() {
 		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_border_gray)
-		binding.tvWoman.setTextColor(Color.BLACK)
+		binding.tvWoman.setTextColor(Color.parseColor("#90212121"))
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
-		binding.tvMan.setTextColor(Color.WHITE)
+		binding.tvMan.setTextColor(resources.getColor(R.color.button_text))
 		gender = MALE
 	}
 

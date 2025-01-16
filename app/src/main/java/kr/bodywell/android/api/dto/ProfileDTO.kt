@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName
 
 data class ProfileDTO (
 	@SerializedName("name")
-	var name: String = "",
+	var name: String? = "",
 
 	@SerializedName("birth")
-	var birth: String = "",
+	var birth: String? = "",
 
 	@SerializedName("gender")
-	var gender: String = "",
+	var gender: String? = "",
 
 	@SerializedName("height")
-	var height: Double = 0.0,
+	var height: Double? = 0.0,
 
 	@SerializedName("weight")
-	var weight: Double = 0.0
+	var weight: Double? = 0.0
 )

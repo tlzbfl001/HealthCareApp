@@ -22,10 +22,10 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
       db.execSQL(token)
 
-      val medicine = "create table $MEDICINE(id integer primary key autoincrement, $USER_ID integer, medicineId text, updatedAt text);"
+      val medicine = "create table $MEDICINE(id integer primary key autoincrement, $USER_ID integer, medicineId text);"
       db.execSQL(medicine)
 
-      val updatedAt = "create table $UPDATED_AT(id integer primary key autoincrement, $USER_ID integer, updatedAt text);"
+      val updatedAt = "create table $UPDATED_AT(id integer primary key autoincrement, $USER_ID integer, medicine text, file text);"
       db.execSQL(updatedAt)
    }
 

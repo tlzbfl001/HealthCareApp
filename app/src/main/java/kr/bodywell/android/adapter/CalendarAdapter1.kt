@@ -5,15 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import java.time.LocalDate
 
 class CalendarAdapter1 (
-   private val days: ArrayList<LocalDate?>,
-   private val type: Int = 0
+   private val days: ArrayList<LocalDate?>
 ) : RecyclerView.Adapter<CalendarAdapter1.ViewHolder>() {
+   var layoutManager: GridLayoutManager? = null
+
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_date1, parent, false)
       return ViewHolder(view)
@@ -33,10 +35,7 @@ class CalendarAdapter1 (
          }
 
          if (!days.contains(null) && date.month != days[6]!!.month) {
-            when(type) {
-               1 -> holder.tvDate.setTextColor(Color.WHITE)
-               else -> holder.tvDate.setTextColor(Color.LTGRAY)
-            }
+            holder.tvDate.setTextColor(Color.LTGRAY)
          }
       }
    }

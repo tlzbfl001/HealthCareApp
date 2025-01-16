@@ -10,14 +10,14 @@ data class DeviceDTO(
 	var name: String = "",
 
 	@SerializedName("manufacturer")
-	var manufacturer: String = "",
+	var manufacturer: String? = "",
 
 	@SerializedName("model")
-	var model: String = "",
+	var model: String? = "",
 
 	@SerializedName("hardwareVersion")
-	var hardwareVersion: String = "",
+	var hardwareVersion: String? = "",
 
 	@SerializedName("softwareVersion")
-	var softwareVersion: String = ""
+	var softwareVersion: String? = ""
 )
