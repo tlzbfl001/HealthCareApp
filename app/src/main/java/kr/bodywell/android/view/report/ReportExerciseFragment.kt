@@ -147,6 +147,7 @@ class ReportExerciseFragment : Fragment() {
    }
 
    private fun dailyView() {
+      val dates = ArrayList<String>()
       binding.tvDaily.setBackgroundResource(R.drawable.rec_5_purple)
       binding.tvDaily.setTextColor(Color.WHITE)
       binding.tvWeekly.setBackgroundResource(R.drawable.rec_5_border_gray)
@@ -156,11 +157,9 @@ class ReportExerciseFragment : Fragment() {
       dateType = 1
       resetChart()
 
-      val dates = ArrayList<String>()
-
       lifecycleScope.launch {
-         val getWorkout = powerSync.getWorkouts(calendarDate.toString())
-         if(getWorkout.isNotEmpty()) {
+         val getWorkouts = powerSync.getWorkouts(calendarDate.toString())
+         if(getWorkouts.isNotEmpty()) {
             dates.add(calendarDate.toString())
             settingChart1(binding.chart1, dates)
             settingChart2(binding.chart2, dates)
@@ -240,9 +239,9 @@ class ReportExerciseFragment : Fragment() {
          for(i in getData.indices){
             var total = 0f
 
-            val getWorkout = powerSync.getWorkouts(getData[i])
-            for(j in getWorkout.indices) {
-               if(getWorkout[j].time > 0) total += getWorkout[j].time.toFloat()
+            val getWorkouts = powerSync.getWorkouts(getData[i])
+            for(j in getWorkouts.indices) {
+               if(getWorkouts[j].time > 0) total += getWorkouts[j].time.toFloat()
             }
 
             if(total > 0) {
@@ -251,40 +250,40 @@ class ReportExerciseFragment : Fragment() {
                xVal += format2.format(format1.parse(getData[i])!!)
                count += 1
             }
+         }
 
-            if(lineList.isNotEmpty()) {
-               binding.chart1.visibility = View.VISIBLE
-               binding.tvEmpty1.visibility = View.GONE
+         if(lineList.isNotEmpty()) {
+            binding.chart1.visibility = View.VISIBLE
+            binding.tvEmpty1.visibility = View.GONE
 
-               for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
+            for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
-               val lineDataSet = LineDataSet(entries, "Line DataSet")
-               lineDataSet.color = Color.parseColor("#E8C583")
-               lineDataSet.lineWidth = 1f
-               lineDataSet.setDrawCircles(false)
-               lineDataSet.setDrawValues(true)
-               lineDataSet.valueTextSize = 9f
-               lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
-               lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-               lineDataSet.valueFormatter = XValueFormatter()
+            val lineDataSet = LineDataSet(entries, "Line DataSet")
+            lineDataSet.color = Color.parseColor("#E8C583")
+            lineDataSet.lineWidth = 1f
+            lineDataSet.setDrawCircles(false)
+            lineDataSet.setDrawValues(true)
+            lineDataSet.valueTextSize = 9f
+            lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+            lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+            lineDataSet.valueFormatter = XValueFormatter()
 
-               lineData.addDataSet(lineDataSet)
-               lineData.setValueTextColor(resources.getColor(R.color.black_white))
-               data.setData(lineData)
+            lineData.addDataSet(lineDataSet)
+            lineData.setValueTextColor(resources.getColor(R.color.black_white))
+            data.setData(lineData)
 
-               val barDataSet = BarDataSet(barEntries, "")
-               barDataSet.color = Color.parseColor("#E8C583")
-               barDataSet.valueTextSize = 0f
+            val barDataSet = BarDataSet(barEntries, "")
+            barDataSet.color = Color.parseColor("#E8C583")
+            barDataSet.valueTextSize = 0f
 
-               val barData = BarData(barDataSet)
-               barData.barWidth = 0.27f
+            val barData = BarData(barDataSet)
+            barData.barWidth = 0.27f
 
-               data.setData(barData)
+            data.setData(barData)
 
-               chart.data = data
+            chart.data = data
 
-               chartCommon(chart, xVal)
-            }
+            chartCommon(chart, xVal)
          }
       }
    }
@@ -307,10 +306,10 @@ class ReportExerciseFragment : Fragment() {
          for(i in getData.indices){
             var total = 0f
 
-            val getWorkout =powerSync.getWorkouts(getData[i])
-            for(j in getWorkout.indices) {
-               if(getWorkout[j].calorie > 0) {
-                  total += getWorkout[j].calorie.toFloat()
+            val getWorkouts = powerSync.getWorkouts(getData[i])
+            for(j in getWorkouts.indices) {
+               if(getWorkouts[j].calorie > 0) {
+                  total += getWorkouts[j].calorie.toFloat()
                }
             }
 
@@ -318,7 +317,7 @@ class ReportExerciseFragment : Fragment() {
                lineList += total
                barEntries.add(BarEntry(count.toFloat(), total))
                xVal += format2.format(format1.parse(getData[i])!!)
-               count++
+               count += 1
             }
          }
 

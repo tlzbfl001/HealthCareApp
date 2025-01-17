@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
             for(i in 0 until getAllMedicine.size) {
                val result = powerSync.getMedicine(getAllMedicine[i].medicineId)
                if(result.id == "") {
+                  Log.d(TAG, "알람 삭제: ${getAllMedicine[i].medicineId}")
                   dataManager.deleteMedicine(getAllMedicine[i].medicineId)
                   alarmReceiver.cancelAlarm(this@MainActivity, getAllMedicine[i].id)
                }
@@ -120,18 +121,24 @@ class MainActivity : AppCompatActivity() {
          var updatedAt = dataManager.getUpdatedAt("medicine")
          val watchMedicine = powerSync.watchMedicine2(updatedAt)
          var isNotEmpty = true
+         Log.d(TAG, "updatedAt: $updatedAt")
 
          watchMedicine.collect {
+            Log.d(TAG, "it: $it")
             if(it.isNotEmpty()) {
                for(i in it.indices) {
                   val getMedicine = dataManager.getMedicine(it[i].id)
                   val getTime = powerSync.getAllMedicineTime(it[i].id)
+                  Log.d(TAG, "getMedicine: $getMedicine")
 
                   if(getMedicine == 0) { // 알람 저장
                      val timeList = ArrayList<MedicineTime>()
                      for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
 
+                     Log.d(TAG, "timeList: $timeList")
+
                      if(timeList.isNotEmpty()) {
+                        Log.d(TAG, "알람 저장: ${it[i].id}")
                         dataManager.insertMedicine(it[i].id)
                         val getId = dataManager.getMedicine(it[i].id)
                         val split = it[i].category.split("/", limit=3)
@@ -142,6 +149,7 @@ class MainActivity : AppCompatActivity() {
                      var check = false
 
                      for(j in getTime.indices) {
+                        Log.d(TAG, "getTime[j].createdAt: ${getTime[j].createdAt} / updatedAt: $updatedAt")
                         if(getTime[j].createdAt > updatedAt) {
                            check = true
                            break
@@ -150,7 +158,10 @@ class MainActivity : AppCompatActivity() {
 
                      if(check) for(j in getTime.indices) timeList.add(MedicineTime(time = getTime[j].time))
 
+                     Log.d(TAG, "timeList: $timeList")
+
                      if(timeList.isNotEmpty()) {
+                        Log.d(TAG, "알람 수정: ${it[i].id}")
                         val split = it[i].category.split("/", limit=3)
                         alarmReceiver.setAlarm(this@MainActivity, getMedicine, it[i].starts, it[i].ends, timeList, "${split[0]} ${it[i].amount}${it[i].unit}")
                      }else isNotEmpty = false
@@ -172,10 +183,14 @@ class MainActivity : AppCompatActivity() {
          val watchFile = powerSync.watchFile(updatedAt)
 
          watchFile.collect {
+            Log.d(TAG, "updatedAt: $updatedAt")
+
             // 파일 저장
             for(i in it.indices) {
                val file1 = File(filesDir.toString() + "/" + it[i].name)
                if(!file1.exists()){
+                  Log.d(TAG, "파일 저장: ${it[i]}")
+
                   val base64Image = it[i].data.split(",")[1]
                   val imageBytes = Base64.decode(base64Image, Base64.DEFAULT)
                   val file2 = File(filesDir, it[i].name)

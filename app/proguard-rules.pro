@@ -54,17 +54,16 @@
 -keep class com.powersync.** { *; }
 -keep class * extends com.powersync.**
 -keep class * implements com.powersync.**
-#-keepclasseswithmembers class com.powersync.** { *; }
-#-keepclassmembers class com.powersync.** { *; }
-#-dontwarn com.powersync.**
-#-keep,allowobfuscation,allowshrinking class com.powersync.**
+-keepclasseswithmembers class com.powersync.** { *; }
+-keepclassmembers class com.powersync.** { *; }
+-keep,allowobfuscation,allowshrinking class com.powersync.**
+-dontwarn com.powersync.**
 
 -keep interface org.slf4j.impl.** { *; }
 -keep class org.slf4j.impl.** { *; }
 -keep class * extends org.slf4j.impl.**
 -keep class * implements org.slf4j.impl.**
--keep class org.slf4j.impl.** { *; }
 -keepclasseswithmembers class org.slf4j.impl.** { *; }
 -keepclassmembers class org.slf4j.impl.** { *; }
--dontwarn org.slf4j.impl.**
 -keep,allowobfuscation,allowshrinking class org.slf4j.impl.**
+-dontwarn org.slf4j.impl.**
