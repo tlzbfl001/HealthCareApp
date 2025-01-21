@@ -4,6 +4,8 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,27 +17,33 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
-import kr.bodywell.android.adapter.PhotoSlideAdapter2
+import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Constant.BREAKFAST
 import kr.bodywell.android.model.Constant.DINNER
 import kr.bodywell.android.model.Constant.GOALS
 import kr.bodywell.android.model.Constant.LUNCH
 import kr.bodywell.android.model.Constant.SNACK
+import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getDietFiles
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.getUUID
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
-import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 import kr.bodywell.android.view.MainViewModel
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 import java.util.Calendar
 import kotlin.math.roundToInt
@@ -46,6 +54,7 @@ class FoodFragment : Fragment() {
 
    private val viewModel: MainViewModel by activityViewModels()
    private var getGoal = Goal()
+   private var images = ArrayList<FileItem>()
    private val itemList1 = ArrayList<Food>()
    private val itemList2 = ArrayList<Food>()
    private val itemList3 = ArrayList<Food>()
@@ -76,7 +85,7 @@ class FoodFragment : Fragment() {
             lifecycleScope.launch {
                if(getGoal.id == "") {
                   powerSync.insertGoal(Goal(id = getUUID(), kcalOfDiet = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, "kcal_of_diet", et.text.toString(), getGoal.id)
@@ -173,7 +182,8 @@ class FoodFragment : Fragment() {
    }
 
    private fun dailyView() {
-      // 목표 초기화
+      // 데이터 초기화
+      images.clear()
       binding.pbFood.setProgressStartColor(Color.TRANSPARENT)
       binding.pbFood.setProgressEndColor(Color.TRANSPARENT)
       binding.tvGoal.text = "0 kcal"
@@ -198,14 +208,33 @@ class FoodFragment : Fragment() {
       if(remain > 0) binding.tvRemain.text = "$remain kcal" else binding.tvRemain.text = "0 kcal"
 
       // 갤러리 초기화
-      if(checkCameraPermission(requireActivity())) {
+      if(checkMediaPermission(requireActivity())) {
          binding.viewPager.adapter = null
 
          lifecycleScope.launch {
-            val imageList = getDietFiles(selectedDate.toString())
+            images = getDietFiles(selectedDate.toString())
+            for(i in 0 until images.size) {
+               val imgPath = requireActivity().filesDir.toString() + "/" + images[i].name
+               val file = File(imgPath)
 
-            if(imageList.size > 0) {
-               val adapter = PhotoSlideAdapter2(requireActivity(), imageList)
+               if(!file.exists()){
+                  val base64Image = images[i].data.split(",")
+                  val imageBytes = Base64.decode(base64Image[1], Base64.DEFAULT)
+
+                  val deferred = async {
+                     withContext(Dispatchers.IO) {
+                        val fos = FileOutputStream(File(imgPath))
+                        fos.use {
+                           it.write(imageBytes)
+                        }
+                     }
+                  }
+                  deferred.await()
+               }
+            }
+
+            if(images.size > 0) {
+               val adapter = PhotoSlideAdapter(requireActivity(), images)
                binding.viewPager.adapter = adapter
                binding.viewPager.setPadding(0, 0, 0, 0)
 

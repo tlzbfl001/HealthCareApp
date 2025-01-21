@@ -14,10 +14,10 @@ import kr.bodywell.android.adapter.MedicineAdapter2
 import kr.bodywell.android.databinding.FragmentMedicineRecordBinding
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.DetailFragment
 import java.util.ArrayList
 

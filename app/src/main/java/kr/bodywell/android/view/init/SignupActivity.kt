@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -21,10 +20,9 @@ import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.view.home.MainActivity
+import kr.bodywell.android.view.MainActivity
 import java.time.LocalDateTime
 
 class SignupActivity : AppCompatActivity() {
@@ -137,7 +135,7 @@ class SignupActivity : AppCompatActivity() {
                      }
 
                      getDevice = RetrofitAPI.api.getDevice("Bearer ${token.access}")
-                     Log.d(TAG, "getDevice: ${getDevice.isSuccessful} / ${getDevice.body()}")
+//                     Log.d(TAG, "getDevice: ${getDevice.isSuccessful} / ${getDevice.body()}")
 
                      if(getDevice.isSuccessful && getDevice.body()!![0].id != "") {
                         var getUser = dataManager.getUser(user.type, user.email)
@@ -162,7 +160,7 @@ class SignupActivity : AppCompatActivity() {
                         }
 
                         // 파일 정보 저장
-                        dataManager.insertUpdatedAt("1900-01-01")
+                        dataManager.insertUpdateTime("1900-01-01")
 
                         val intent = Intent(this@SignupActivity, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

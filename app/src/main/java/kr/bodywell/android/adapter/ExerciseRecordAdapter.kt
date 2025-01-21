@@ -15,8 +15,7 @@ import kr.bodywell.android.R
 import kr.bodywell.android.model.ActivityData
 import kr.bodywell.android.model.Constant.ACTIVITIES
 import kr.bodywell.android.model.Constant.ADMIN
-import kr.bodywell.android.model.Constant.USER
-import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 
 class ExerciseRecordAdapter (
    private val context: Activity,

@@ -9,26 +9,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.MedicineIntake
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDateTime
 
 class MedicineAdapter1 (
-    private val itemList: List<MedicineList>,
-    private val viewModel: MainViewModel
+   private val itemList: List<MedicineList>,
+   private val viewModel: MainViewModel
 ) : RecyclerView.Adapter<MedicineAdapter1.ViewHolder>() {
-    private lateinit var dataManager: DataManager
     private var check = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_medicine_daily, parent, false)
-        dataManager = DataManager(parent.context)
-        dataManager.open()
         return ViewHolder(view)
     }
 
@@ -37,9 +33,9 @@ class MedicineAdapter1 (
         holder.tvName.text = itemList[pos].name
         holder.tvAmount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
-        check = itemList[pos].initCheck
+        check = itemList[pos].initSet
         viewModel.setMedicineCheck(check)
-        if(itemList[pos].isChecked != "") holder.tvCheck.isChecked = true
+        if(itemList[pos].isSet != "") holder.tvCheck.isChecked = true
 
         // 체크박스 체크시 복용횟수 설정
         holder.tvCheck.setOnClickListener {

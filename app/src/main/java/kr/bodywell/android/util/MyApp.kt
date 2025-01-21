@@ -2,19 +2,29 @@ package kr.bodywell.android.util
 
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk
+import com.powersync.DatabaseDriverFactory
 import kr.bodywell.android.R
+import kr.bodywell.android.api.powerSync.SyncService
+import kr.bodywell.android.database.DataManager
 
 class MyApp : Application() {
    companion object {
       lateinit var prefs: PreferenceUtil
+      lateinit var dataManager: DataManager
+      lateinit var powerSync: SyncService
    }
 
    override fun onCreate() {
       super.onCreate()
 
-      // KaKao SDK 초기화
-      KakaoSdk.init(this, resources.getString(R.string.kakaoNativeAppKey))
+      KakaoSdk.init(this, resources.getString(R.string.kakaoNativeAppKey)) // KaKao SDK 초기화
 
       prefs = PreferenceUtil(applicationContext)
+
+      dataManager = DataManager(applicationContext)
+      dataManager.open()
+
+      val driverFactory = DatabaseDriverFactory(applicationContext)
+      powerSync = SyncService(applicationContext, driverFactory)
    }
 }

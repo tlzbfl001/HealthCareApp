@@ -19,10 +19,10 @@ import kr.bodywell.android.model.ActivityData
 import kr.bodywell.android.model.Constant.ACTIVITIES
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 
 class ExerciseRecord1Fragment : Fragment() {
    private var _binding: FragmentExerciseRecord1Binding? = null

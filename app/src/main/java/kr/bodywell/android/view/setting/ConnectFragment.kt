@@ -15,7 +15,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kr.bodywell.android.adapter.BluetoothItemAdapter
 import kr.bodywell.android.databinding.FragmentConnectBinding
 import kr.bodywell.android.model.Bluetooth
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
@@ -118,7 +116,7 @@ class ConnectFragment : Fragment(), BluetoothItemAdapter.Listener {
             if(it.resultCode == Activity.RESULT_OK) {
                getPairedDevices()
             }else {
-               Log.d(TAG, "기기 가져오기 실패")
+//               Log.d(TAG, "기기 가져오기 실패")
             }
          }
 
@@ -170,7 +168,7 @@ class ConnectFragment : Fragment(), BluetoothItemAdapter.Listener {
       }
 
       override fun onScanFailed(errorCode: Int) {
-         Log.e(TAG, "onScanFailed: $errorCode")
+//         Log.e(TAG, "onScanFailed: $errorCode")
       }
 
       private fun addScanResult(result: ScanResult) {

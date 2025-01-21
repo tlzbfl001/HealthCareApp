@@ -35,11 +35,11 @@ import kr.bodywell.android.util.CalendarUtil.monthArray2
 import kr.bodywell.android.util.CalendarUtil.monthFormat
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.view.home.MainFragment
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.view.MainFragment
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 

@@ -1,3 +1,4 @@
+/*
 package kr.bodywell.android.service
 
 import android.annotation.SuppressLint
@@ -13,9 +14,7 @@ import android.content.Intent
 import android.nfc.NfcAdapter.EXTRA_DATA
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import kr.bodywell.android.R
-import kr.bodywell.android.util.CustomUtil.TAG
 import java.util.UUID
 
 class BluetoothLeService : Service() {
@@ -37,7 +36,7 @@ class BluetoothLeService : Service() {
    fun connect(address:String) : Boolean{
       bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
       if (bluetoothAdapter == null || address == null) {
-         Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+//         Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.")
          return false
       }
 
@@ -47,7 +46,7 @@ class BluetoothLeService : Service() {
          bluetoothGatt = device.connectGatt(this, false, bluetoothGattCallback)
          return true;
       }catch (e : IllegalArgumentException) {
-         Log.w(TAG, "Device not found with provided address.");
+//         Log.w(TAG, "Device not found with provided address.")
          return false
       }
    }
@@ -81,7 +80,7 @@ class BluetoothLeService : Service() {
          if (status == BluetoothGatt.GATT_SUCCESS) {
             broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
          } else {
-            Log.w(TAG, "onServicesDiscovered received: $status")
+//            Log.w(TAG, "onServicesDiscovered received: $status")
          }
       }
 
@@ -106,8 +105,8 @@ class BluetoothLeService : Service() {
    private fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic) {
       val intent = Intent(action)
 
-      Log.d(TAG, "characteristic.properties: ${characteristic.properties}")
-      Log.d(TAG, "characteristic.uuid: ${characteristic.uuid}")
+//      Log.d(TAG, "characteristic.properties: ${characteristic.properties}")
+//      Log.d(TAG, "characteristic.uuid: ${characteristic.uuid}")
       // This is special handling for the Heart Rate Measurement profile. Data
       // parsing is carried out as per profile specifications.
       when (characteristic.uuid) {
@@ -115,16 +114,16 @@ class BluetoothLeService : Service() {
             val flag = characteristic.properties
             val format = when (flag and 0x01) {
                0x01 -> {
-                  Log.d(TAG, "Heart rate format UINT16.")
+//                  Log.d(TAG, "Heart rate format UINT16.")
                   BluetoothGattCharacteristic.FORMAT_UINT16
                }
                else -> {
-                  Log.d(TAG, "Heart rate format UINT8.")
+//                  Log.d(TAG, "Heart rate format UINT8.")
                   BluetoothGattCharacteristic.FORMAT_UINT8
                }
             }
             val heartRate = characteristic.getIntValue(format, 1)
-            Log.d(TAG, String.format("Received heart rate: %d", heartRate))
+//            Log.d(TAG, String.format("Received heart rate: %d", heartRate))
             intent.putExtra(EXTRA_DATA, (heartRate).toString())
          }
          else -> {
@@ -152,7 +151,7 @@ class BluetoothLeService : Service() {
             gatt.writeDescriptor(descriptor)
          }
       } ?: run {
-         Log.w(TAG, "BluetoothGatt not initialized")
+//         Log.w(TAG, "BluetoothGatt not initialized")
       }
    }
 
@@ -161,7 +160,7 @@ class BluetoothLeService : Service() {
       bluetoothGatt?.let { gatt ->
          gatt.readCharacteristic(characteristic)
       } ?: run {
-         Log.w(TAG, "BluetoothGatt not initialized")
+//         Log.w(TAG, "BluetoothGatt not initialized")
       }
    }
 
@@ -190,4 +189,4 @@ class BluetoothLeService : Service() {
       private const val ACTION_DATA_AVAILABLE = "ACTION_DATA_AVAILABLE"
       private var connectionState = 0;
    }
-}
+}*/

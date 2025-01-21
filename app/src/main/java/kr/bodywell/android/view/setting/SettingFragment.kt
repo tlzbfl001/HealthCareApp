@@ -26,8 +26,11 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
+import kr.bodywell.android.database.DBHelper
+import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
+import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
-import kr.bodywell.android.database.DBHelper.Companion.UPDATED_AT
+import kr.bodywell.android.database.DBHelper.Companion.UPDATE_TIME
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
 import kr.bodywell.android.database.DataManager
@@ -36,19 +39,20 @@ import kr.bodywell.android.model.Constant.GOOGLE
 import kr.bodywell.android.model.Constant.KAKAO
 import kr.bodywell.android.model.Constant.NAVER
 import kr.bodywell.android.model.Constant.MALE
-import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CustomUtil.networkStatus
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.util.MyApp.Companion.dataManager
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkBtPermission
-import kr.bodywell.android.view.home.MainFragment
+import kr.bodywell.android.util.PermissionUtil.checkBluetoothPermission
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
+import kr.bodywell.android.view.MainFragment
 import kr.bodywell.android.view.init.LoginActivity
 import java.io.File
 import java.util.Calendar
@@ -60,10 +64,9 @@ class SettingFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
-   private lateinit var dataManager: DataManager
+//   private lateinit var dataManager: DataManager
    private var getUser = User()
    private var getToken = Token()
-   private var getFile = FileItem()
 
       override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -87,9 +90,6 @@ class SettingFragment : Fragment() {
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
 
-      dataManager = DataManager(activity)
-      dataManager.open()
-
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
 
@@ -107,7 +107,7 @@ class SettingFragment : Fragment() {
          if(!requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(requireActivity(), "블루투스를 지원하지 않는 기기입니다.", Toast.LENGTH_SHORT).show()
          }else {
-            if(!checkBtPermission(requireActivity())) {
+            if(!checkBluetoothPermission(requireActivity())) {
                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                   pLauncher.launch(BT_PERMISSION_2)
                }else {
@@ -237,13 +237,15 @@ class SettingFragment : Fragment() {
       lifecycleScope.launch {
          val getProfile = powerSync.getProfile()
 
-         getFile = powerSync.getFile(getProfile.id)
-         if(getFile.name != "") {
-            val imgPath = requireActivity().filesDir.toString() + "/" + getFile.name
-            val file = File(imgPath)
-            if(file.exists()){
-               val bm = BitmapFactory.decodeFile(imgPath)
-               binding.ivUser.setImageBitmap(bm)
+         if(checkMediaPermission(requireActivity())) {
+            val getFile = powerSync.getFile(getProfile.id)
+            if(getFile.name != "") {
+               val imgPath = requireActivity().filesDir.toString() + "/" + getFile.name
+               val file = File(imgPath)
+               if(file.exists()){
+                  val bm = BitmapFactory.decodeFile(imgPath)
+                  binding.ivUser.setImageBitmap(bm)
+               }
             }
          }
 
@@ -295,14 +297,15 @@ class SettingFragment : Fragment() {
    private fun deleteData() {
       // 알람 삭제
       val alarmReceiver = AlarmReceiver()
-      val getAllMedicine = dataManager.getAllMedicine()
-      for(i in getAllMedicine.indices) alarmReceiver.cancelAlarm(requireActivity(), getAllMedicine[i].id)
+      val getMedicines = dataManager.getMedicines()
+      for(i in getMedicines.indices) alarmReceiver.cancelAlarm(requireActivity(), getMedicines[i].id)
 
       // 테이블 삭제
       dataManager.deleteTable(USER, "id")
       dataManager.deleteTable(TOKEN, USER_ID)
-      dataManager.deleteTable("medicine", USER_ID)
-      dataManager.deleteTable(UPDATED_AT, USER_ID)
+      dataManager.deleteTable(MEDICINE, USER_ID)
+      dataManager.deleteTable(MEDICINE_TIME, USER_ID)
+      dataManager.deleteTable(UPDATE_TIME, USER_ID)
 
       // preference 정보 삭제
       MyApp.prefs.removePrefs()

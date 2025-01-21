@@ -18,8 +18,8 @@ import kr.bodywell.android.model.Constant.ACTIVITIES
 import kr.bodywell.android.model.Constant.ADMIN
 import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Item
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class SearchAdapter(

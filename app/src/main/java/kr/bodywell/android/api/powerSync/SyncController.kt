@@ -26,7 +26,6 @@ import kr.bodywell.android.api.dto.WaterDTO
 import kr.bodywell.android.api.dto.WaterUpdateDTO
 import kr.bodywell.android.api.dto.WorkoutDTO
 import kr.bodywell.android.api.dto.WorkoutUpdateDTO
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant.ACTIVITIES
 import kr.bodywell.android.model.Constant.BODY_MEASUREMENTS
 import kr.bodywell.android.model.Constant.DIETS
@@ -41,7 +40,6 @@ import kr.bodywell.android.model.Constant.PROFILES
 import kr.bodywell.android.model.Constant.SLEEP
 import kr.bodywell.android.model.Constant.WATER
 import kr.bodywell.android.model.Constant.WORKOUTS
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getToken
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -243,7 +241,7 @@ object SyncController {
 				val getNote = RetrofitAPI.api.getNote("Bearer ${getToken.access}", entry.id)
 				if(getNote.isSuccessful) {
 					val title = if(op["title"] == null) getNote.body()!!.title else op["title"]!!
-					val content = if(op["name"] == null) getNote.body()!!.content else op["content"]!!
+					val content = if(op["content"] == null) getNote.body()!!.content else op["content"]!!
 					val emotion = if(op["emotion"] == null) getNote.body()!!.emotion else op["emotion"]!!
 
 					val response = RetrofitAPI.api.updateNote("Bearer ${getToken.access}", entry.id, NoteUpdateDTO(title, content, emotion))
@@ -268,10 +266,7 @@ object SyncController {
 		}
 	}
 
-	suspend fun delete(context: Context, table: String, id: String) {
-		val dataManager = DataManager(context)
-		dataManager.open()
-
+	suspend fun delete(table: String, id: String) {
 		when(table) {
 			FOODS -> {
 				val response = RetrofitAPI.api.deleteFood("Bearer ${getToken.access}", id)

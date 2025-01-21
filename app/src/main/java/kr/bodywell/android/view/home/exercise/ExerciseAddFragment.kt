@@ -19,12 +19,12 @@ import kr.bodywell.android.model.Constant.LOW
 import kr.bodywell.android.model.Constant.MODERATE
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import java.util.Calendar
 
 class ExerciseAddFragment : Fragment() {
@@ -71,7 +71,7 @@ class ExerciseAddFragment : Fragment() {
         }
 
         binding.tvIntensity1.setOnClickListener {
-            binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_yellow)
+            binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_exercise)
             binding.tvIntensity1.setTextColor(Color.WHITE)
             binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
             binding.tvIntensity2.setTextColor(Color.BLACK)
@@ -83,7 +83,7 @@ class ExerciseAddFragment : Fragment() {
         binding.tvIntensity2.setOnClickListener {
             binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
             binding.tvIntensity1.setTextColor(Color.BLACK)
-            binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_yellow)
+            binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_exercise)
             binding.tvIntensity2.setTextColor(Color.WHITE)
             binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
             binding.tvIntensity3.setTextColor(Color.BLACK)
@@ -95,7 +95,7 @@ class ExerciseAddFragment : Fragment() {
             binding.tvIntensity1.setTextColor(Color.BLACK)
             binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
             binding.tvIntensity2.setTextColor(Color.BLACK)
-            binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
+            binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_exercise)
             binding.tvIntensity3.setTextColor(Color.WHITE)
             intensity = LOW
         }
@@ -109,7 +109,7 @@ class ExerciseAddFragment : Fragment() {
                 lifecycleScope.launch {
                     powerSync.insertWorkout(Workout(id = getUUID(), name = getActivity.name, calorie = binding.etKcal.text.toString().toInt(),
                         intensity = intensity, time = binding.etTime.text.toString().toInt(), date = selectedDate.toString(),
-                        createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance()), activityId = id))
+                        createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance()), activityId = id))
                 }
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()

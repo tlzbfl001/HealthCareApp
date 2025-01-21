@@ -3,7 +3,6 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +32,6 @@ import kr.bodywell.android.model.Constant.KAKAO
 import kr.bodywell.android.model.Constant.NAVER
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.MyApp
 
@@ -132,7 +130,7 @@ class LoginActivity : AppCompatActivity() {
                   Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
                }
             }catch (e: Exception) {
-               Log.e(TAG, "GoogleSignIn: $e")
+//               Log.e(TAG, "GoogleSignIn: $e")
             }
          }
       }
@@ -198,7 +196,7 @@ class LoginActivity : AppCompatActivity() {
    private fun kakaoLogin() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
          if(error != null) {
-            Log.e(TAG, "kakaoLogin: $error")
+//            Log.e(TAG, "kakaoLogin: $error")
          }else if (token != null) createKakaoUser(token)
       }
 

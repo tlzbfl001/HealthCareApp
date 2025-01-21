@@ -183,9 +183,9 @@
     </string>
 
    <!--development-->
-   <string name="googleWebClientId">172543876752-0vo8bsrgkb0db90im2otad6d5foh3eat.apps.googleusercontent.com</string>
-   <!--c-->
-<!--   <string name="googleWebClientId">172543876752-i5hi7dcnp3ult5lktgap00fsuvdne4jc.apps.googleusercontent.com</string>-->
+<!--   <string name="googleWebClientId">172543876752-0vo8bsrgkb0db90im2otad6d5foh3eat.apps.googleusercontent.com</string>-->
+   <!--production-->
+   <string name="googleWebClientId">172543876752-i5hi7dcnp3ult5lktgap00fsuvdne4jc.apps.googleusercontent.com</string>
    <string name="naverClientId">DMLm2HMi8dA2uFV9JkSg</string>
    <string name="naverClientSecret">XBYKKxvdXw</string>
    <string name="kakaoNativeAppKey">d9c3b1c89cfbb632aa6cbfeadd09861e</string>

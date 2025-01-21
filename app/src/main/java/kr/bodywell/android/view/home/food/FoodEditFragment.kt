@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,13 +15,11 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentFoodEditBinding
-import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 
 class FoodEditFragment : Fragment() {
 	private var _binding: FragmentFoodEditBinding? = null
@@ -227,7 +224,7 @@ class FoodEditFragment : Fragment() {
 
 		binding.cvEdit.setOnClickListener {
 			lifecycleScope.launch {
-				if(binding.etVolume.text.toString() == "" || binding.etVolume.text.toString().toDouble() < 1 || binding.etKcal.text.toString() == "" || binding.etKcal.text.toString().toDouble() < 1) {
+				if(binding.etVolume.text.toString() == "" || binding.etVolume.text.toString().toInt() < 1 || binding.etKcal.text.toString() == "" || binding.etKcal.text.toString().toInt() < 1) {
 					Toast.makeText(context, "섭취량, 칼로리는 1이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 				}else if(binding.etCar.text.toString() == "" || binding.etCar.text.toString().toDouble() < 0.1 || binding.etProtein.text.toString() == "" ||
 					binding.etProtein.text.toString().toDouble() < 0.1 || binding.etFat.text.toString() == ""  || binding.etFat.text.toString().toDouble() < 0.1) {
@@ -248,7 +245,7 @@ class FoodEditFragment : Fragment() {
 
 	private fun unit1() {
 		unit = "mg"
-		binding.tvMg.setBackgroundResource(R.drawable.rec_25_pink)
+		binding.tvMg.setBackgroundResource(R.drawable.rec_25_food)
 		binding.tvMg.setTextColor(Color.WHITE)
 		binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvG.setTextColor(Color.BLACK)
@@ -265,7 +262,7 @@ class FoodEditFragment : Fragment() {
 		unit = "g"
 		binding.tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMg.setTextColor(Color.BLACK)
-		binding.tvG.setBackgroundResource(R.drawable.rec_25_pink)
+		binding.tvG.setBackgroundResource(R.drawable.rec_25_food)
 		binding.tvG.setTextColor(Color.WHITE)
 		binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvKg.setTextColor(Color.BLACK)
@@ -282,7 +279,7 @@ class FoodEditFragment : Fragment() {
 		binding.tvMg.setTextColor(Color.BLACK)
 		binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvG.setTextColor(Color.BLACK)
-		binding.tvKg.setBackgroundResource(R.drawable.rec_25_pink)
+		binding.tvKg.setBackgroundResource(R.drawable.rec_25_food)
 		binding.tvKg.setTextColor(Color.WHITE)
 		binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMl.setTextColor(Color.BLACK)
@@ -299,7 +296,7 @@ class FoodEditFragment : Fragment() {
 		binding.tvG.setTextColor(Color.BLACK)
 		binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvKg.setTextColor(Color.BLACK)
-		binding.tvMl.setBackgroundResource(R.drawable.rec_25_pink)
+		binding.tvMl.setBackgroundResource(R.drawable.rec_25_food)
 		binding.tvMl.setTextColor(Color.WHITE)
 		binding.tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvL.setTextColor(Color.BLACK)
@@ -316,7 +313,7 @@ class FoodEditFragment : Fragment() {
 		binding.tvKg.setTextColor(Color.BLACK)
 		binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMl.setTextColor(Color.BLACK)
-		binding.tvL.setBackgroundResource(R.drawable.rec_25_pink)
+		binding.tvL.setBackgroundResource(R.drawable.rec_25_food)
 		binding.tvL.setTextColor(Color.WHITE)
 		binding.tvUnit.text = unit
 	}

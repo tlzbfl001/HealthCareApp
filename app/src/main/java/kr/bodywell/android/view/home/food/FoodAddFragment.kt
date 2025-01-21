@@ -14,13 +14,12 @@ import kr.bodywell.android.databinding.FragmentFoodAddBinding
 import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
-import kr.bodywell.android.util.CustomUtil.dateToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import java.util.Calendar
 
 class FoodAddFragment : Fragment() {
@@ -83,8 +82,8 @@ class FoodAddFragment : Fragment() {
 				if(getDiet.id == "") {
 					val getData = powerSync.getData(FOODS, "id", "name", getFood.name)
 					powerSync.insertDiet(Food(id = getUUID(), mealTime = type, name = getFood.name, calorie = getFood.calorie, carbohydrate = getFood.carbohydrate,
-						protein = getFood.protein, fat = getFood.fat, volume = getFood.volume, volumeUnit = getFood.volumeUnit, date = dateToIso(selectedDate),
-						createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance()), foodId = getData))
+						protein = getFood.protein, fat = getFood.fat, volume = getFood.volume, volumeUnit = getFood.volumeUnit, date = selectedDate.toString(),
+						createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance()), foodId = getData))
 				}else {
 					powerSync.updateDiet(Food(id = getDiet.id, quantity = getFood.quantity + 1))
 				}

@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +14,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kr.bodywell.android.R
 import kr.bodywell.android.databinding.FragmentTab1Binding
-import kr.bodywell.android.service.BluetoothLeService
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.util.PermissionUtil.checkBtPermission
+import kr.bodywell.android.util.PermissionUtil.checkBluetoothPermission
 import java.util.UUID
-
 
 @SuppressLint("MissingPermission")
 class Tab1Fragment : Fragment() {
@@ -29,7 +25,7 @@ class Tab1Fragment : Fragment() {
 
 	private var bluetoothAdapter: BluetoothAdapter? = null
 	private var gatt: BluetoothGatt? = null
-	private var bluetoothService: BluetoothLeService? = null
+//	private var bluetoothService: BluetoothLeService? = null
 	private var command = ""
 	private var isOn = false
 
@@ -49,7 +45,7 @@ class Tab1Fragment : Fragment() {
 	): View {
 		_binding = FragmentTab1Binding.inflate(layoutInflater)
 
-		bluetoothService = BluetoothLeService()
+//		bluetoothService = BluetoothLeService()
 		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
 		binding.btnConnect.setOnClickListener {
@@ -116,20 +112,19 @@ class Tab1Fragment : Fragment() {
 		override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
 			super.onConnectionStateChange(gatt, status, newState)
 			if (newState == BluetoothGatt.STATE_CONNECTED) {
-				Log.i(TAG, "Connected to GATT server.")
+//				Log.i(TAG, "Connected to GATT server.")
 				gatt.discoverServices()
 			} else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
-				Log.i(TAG, "Disconnected from GATT server.")
+//				Log.i(TAG, "Disconnected from GATT server.")
 			}
 		}
 
 		override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
 			super.onServicesDiscovered(gatt, status)
-			Log.w(TAG, "onServicesDiscovered")
 			if(status == BluetoothGatt.GATT_SUCCESS) {
 				setCharacteristicNotification()
 			}else {
-				Log.w(TAG, "onServicesDiscovered: $status")
+//				Log.w(TAG, "onServicesDiscovered: $status")
 			}
 		}
 
@@ -143,13 +138,13 @@ class Tab1Fragment : Fragment() {
 		override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
 			super.onCharacteristicChanged(gatt, characteristic)
 			val data: ByteArray? = characteristic?.value
+			broadcastUpdate(characteristic!!)
 		}
 
 		override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
 			super.onCharacteristicRead(gatt, characteristic, value, status)
-			Log.i(TAG, "onCharacteristicRead")
 			if (characteristic.uuid == UUID.fromString(resources.getString(R.string.rxCharacteristicUUID))) {
-				Log.i(TAG, "read : ${characteristic.value}")
+//				Log.i(TAG, "read : ${characteristic.value}")
 			}
 		}
 	}
@@ -182,20 +177,7 @@ class Tab1Fragment : Fragment() {
 		if(characteristic != null) {
 			characteristic.value = msg.toByteArray()
 			val success = gatt?.writeCharacteristic(characteristic)
-			Log.i(TAG, "writeCharacteristic: $success")
-		}
-	}
-
-	private fun readCharacteristic() {
-		val service = gatt?.getService(UUID.fromString(resources.getString(R.string.serviceUUID)))
-		/*for(i in 0 until service!!.characteristics.size) {
-			Log.i(TAG, "readCharacteristic uuid: ${service.characteristics[i].uuid}")
-		}*/
-
-		val characteristic = service?.getCharacteristic(UUID.fromString(resources.getString(R.string.txCharacteristicUUID)))
-		if(characteristic != null) {
-			val success = gatt?.readCharacteristic(characteristic)
-			Log.i(TAG, "Read status: $success")
+//			Log.i(TAG, "writeCharacteristic: $success")
 		}
 	}
 
@@ -206,7 +188,7 @@ class Tab1Fragment : Fragment() {
 			val hexString: String = data.joinToString(separator = " ") {
 				String.format("%02X", it)
 			}
-			Log.i(TAG, "hexString: $hexString")
+//			Log.i(TAG, "hexString: $hexString")
 
 			var result = 0
 			var shift = 0
@@ -225,6 +207,6 @@ class Tab1Fragment : Fragment() {
 
 	override fun onDestroy() {
 		super.onDestroy()
-		if(!checkBtPermission(requireActivity())) gatt?.disconnect()
+		if(!checkBluetoothPermission(requireActivity())) gatt?.disconnect()
 	}
 }

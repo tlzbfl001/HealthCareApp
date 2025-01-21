@@ -21,11 +21,11 @@ import kr.bodywell.android.model.Constant.SLEEP
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.isoToDateTime
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.Duration
 import java.time.LocalDate
@@ -64,7 +64,7 @@ class SleepFragment : Fragment() {
          lifecycleScope.launch {
             if(getGoal.id == "") {
                powerSync.insertGoal(Goal(id = getUUID(), sleep = total, date = selectedDate.toString(),
-                  createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                  createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                getGoal = powerSync.getGoal(selectedDate.toString())
             }else {
                powerSync.updateData(GOALS, SLEEP, total.toString(), getGoal.id)

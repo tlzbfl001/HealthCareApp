@@ -19,6 +19,7 @@ import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.view.MainFragment
 import kr.bodywell.android.view.MainViewModel
 import kr.bodywell.android.view.home.body.BodyFragment
 import kr.bodywell.android.view.home.medicine.MedicineFragment

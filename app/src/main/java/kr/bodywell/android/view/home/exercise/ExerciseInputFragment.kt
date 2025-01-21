@@ -13,13 +13,13 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.databinding.FragmentExerciseInputBinding
 import kr.bodywell.android.model.ActivityData
 import kr.bodywell.android.model.Constant.ACTIVITIES
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import java.util.Calendar
 
 class ExerciseInputFragment : Fragment() {
@@ -67,7 +67,7 @@ class ExerciseInputFragment : Fragment() {
                Toast.makeText(context, "운동이름이 중복됩니다.", Toast.LENGTH_SHORT).show()
             }else {
                powerSync.insertActivity(ActivityData(id = getUUID(), name = binding.etName.text.toString().trim(),
-                  createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                  createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
             }

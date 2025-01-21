@@ -12,7 +12,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kr.bodywell.android.R
 import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.MyApp
-import kr.bodywell.android.view.home.MainActivity
+import kr.bodywell.android.view.MainActivity
 
 class StartActivity : AppCompatActivity() {
    private lateinit var splashScreen: SplashScreen

@@ -12,11 +12,12 @@
    <color name="dark_grey_white">#90212121</color>
    <color name="logo">#595858</color>
    <color name="main_top">#C5B6FF</color>
-   <color name="main_button">#45D7D7D7</color>
-   <color name="main_button_dark">#60DFDFDF</color>
-   <color name="main_button_sub">#7CE3E3E3</color>
-   <color name="photo_view">#BEBEBE</color>
+   <color name="main_button">#7939EF</color>
+   <color name="sub_button">#45D7D7D7</color>
+   <color name="sub_button_dark">#60DFDFDF</color>
+   <color name="sub_button_round">#7CE3E3E3</color>
    <color name="button_text">#90212121</color>
+   <color name="photo_view">#BEBEBE</color>
 
    <color name="food">#E180E5F0</color>
    <color name="water">#50A9F1</color>

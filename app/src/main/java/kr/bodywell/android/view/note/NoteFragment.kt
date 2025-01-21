@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.view.GestureDetector
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -18,10 +19,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.f4b6a3.uuid.UuidCreator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter2
-import kr.bodywell.android.adapter.PhotoSlideAdapter
+import kr.bodywell.android.adapter.NoteImageSlideAdapter
 import kr.bodywell.android.databinding.FragmentNoteBinding
 import kr.bodywell.android.model.Constant.ANGRY
 import kr.bodywell.android.model.Constant.EXCITED
@@ -29,21 +34,25 @@ import kr.bodywell.android.model.Constant.HAPPY
 import kr.bodywell.android.model.Constant.NOTES
 import kr.bodywell.android.model.Constant.PEACEFUL
 import kr.bodywell.android.model.Constant.SAD
+import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
-import kr.bodywell.android.view.home.MainFragment
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_2
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
+import kr.bodywell.android.view.MainFragment
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import kotlin.math.abs
 
 class NoteFragment : Fragment() {
@@ -54,6 +63,8 @@ class NoteFragment : Fragment() {
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var days = ArrayList<LocalDate?>()
    private var getNote = Note()
+   private var images = ArrayList<FileItem>()
+   private var noteId = ""
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
@@ -77,11 +88,19 @@ class NoteFragment : Fragment() {
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
 
-      // 날짜 초기화
-      if(arguments?.getString("data").toString() != NOTES) selectedDate = LocalDate.now()
+      val layoutManager = GridLayoutManager(activity, 7)
+      binding.recyclerView.layoutManager = layoutManager
+      binding.viewPager.setPadding(140, 0, 140, 0)
+
+      val gestureListener = SwipeGesture(binding.recyclerView)
+      val gestureDetector = GestureDetector(requireActivity(), gestureListener)
+
+      if(arguments?.getString("data").toString() != NOTES) selectedDate = LocalDate.now() // 날짜 초기화
+
+      setDailyView() // 일일 데이터 초기화
 
       binding.clExpand.setOnClickListener {
-         val dialog = NoteCalendarDialog(requireActivity())
+         val dialog = CalendarDialog(requireActivity())
          dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
          dialog.window?.setGravity(Gravity.TOP)
 
@@ -95,17 +114,6 @@ class NoteFragment : Fragment() {
          window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
       }
 
-      binding.ivWrite.setOnClickListener {
-         replaceFragment1(requireActivity().supportFragmentManager, NoteWriteFragment())
-      }
-
-      binding.clWrite.setOnClickListener {
-         replaceFragment1(requireActivity().supportFragmentManager, NoteWriteFragment())
-      }
-
-      val gestureListener = SwipeGesture(binding.recyclerView)
-      val gestureDetector = GestureDetector(requireActivity(), gestureListener)
-
       binding.recyclerView.setOnTouchListener { _, event ->
          return@setOnTouchListener gestureDetector.onTouchEvent(event)
       }
@@ -118,40 +126,50 @@ class NoteFragment : Fragment() {
       }))
 
       binding.clGallery.setOnClickListener {
-         if(checkCameraPermission(requireActivity())) {
+         if(checkMediaPermission(requireActivity())) {
             val bundle = Bundle()
-            bundle.putString("noteId", getNote.id)
+            if(noteId == "") {
+               lifecycleScope.launch {
+                  noteId = UuidCreator.getTimeOrderedEpoch().toString()
+                  powerSync.insertNote(Note(id = noteId, title = "", content = "", emotion = HAPPY, date = selectedDate.toString(),
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
+               }
+            }
+
+            bundle.putString("noteId", noteId)
             replaceFragment2(requireActivity().supportFragmentManager, GalleryFragment(), bundle)
          }else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-               pLauncher.launch(CAMERA_PERMISSION_2)
+               pLauncher.launch(MEDIA_PERMISSION_2)
             }else {
-               pLauncher.launch(CAMERA_PERMISSION_1)
+               pLauncher.launch(MEDIA_PERMISSION_1)
             }
          }
       }
 
-      val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(activity, 7)
-      binding.recyclerView.layoutManager = layoutManager
+      binding.clWrite.setOnClickListener {
+         replaceFragment1(requireActivity().supportFragmentManager, NoteWriteFragment())
+      }
 
-      setDailyView()
+      binding.cvWrite.setOnClickListener {
+         replaceFragment1(requireActivity().supportFragmentManager, NoteWriteFragment())
+      }
 
       return binding.root
    }
 
    private fun setDailyView() {
-      // 달력 초기화
+      images.clear()
       binding.tvYear.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       binding.tvYearText.text = selectedDate.month.toString()
-
       days = weekArray(selectedDate)
-      val adapter = CalendarAdapter2(requireActivity(), days)
+      val adapter = CalendarAdapter2(days)
       binding.recyclerView.adapter = adapter
 
       lifecycleScope.launch {
          getNote = powerSync.getNote(selectedDate.toString())
+         noteId = getNote.id
 
-         // 섭취, 소비 칼로리 초기화
          var total = 0
          val foodKcal = getFoodCalories(selectedDate.toString())
          binding.tvKcal1.text = "${foodKcal.int5}kcal"
@@ -159,17 +177,43 @@ class NoteFragment : Fragment() {
          for(i in getAllWorkout.indices) total += getAllWorkout[i].calorie
          binding.tvKcal2.text = "${total}kcal"
 
-         // 이미지 뷰 초기화
-         if(checkCameraPermission(requireActivity())) {
-            val getFiles = powerSync.getFiles("note_id", getNote.id)
-            val photoAdapter = PhotoSlideAdapter(requireActivity(), getFiles)
-            binding.viewPager.adapter = photoAdapter
-            binding.viewPager.setPadding(140, 0, 140, 0)
+         if(checkMediaPermission(requireActivity())) {
+            images = powerSync.getFiles("note_id", noteId) as ArrayList<FileItem>
+
+            for(i in images.indices) {
+               val imgPath = requireActivity().filesDir.toString() + "/" + images[i].name
+               val file = File(imgPath)
+
+               if(!file.exists()){
+                  val base64Image = images[i].data.split(",")
+                  val imageBytes = Base64.decode(base64Image[1], Base64.DEFAULT)
+
+                  val deferred = async {
+                     withContext(Dispatchers.IO) {
+                        val fos = FileOutputStream(File(imgPath))
+                        fos.use {
+                           it.write(imageBytes)
+                        }
+                     }
+                  }
+                  deferred.await()
+               }
+            }
+
+            if(images.size > 0) {
+               binding.view2.visibility = View.VISIBLE
+               val photoAdapter = NoteImageSlideAdapter(requireActivity(), noteId, images)
+               binding.viewPager.adapter = photoAdapter
+            }else {
+               binding.view2.visibility = View.GONE
+               binding.viewPager.adapter = null
+            }
          }
 
-         // 일기 데이터 초기화
-         if(getNote.title != "" && getNote.content != "") {
+         if(getNote.title != "") {
+            binding.cvWrite.visibility = View.VISIBLE
             binding.tvTitle.text = getNote.title
+            binding.tvContent.text = getNote.content
             when(getNote.emotion) {
                HAPPY -> binding.ivFace.setImageResource(R.drawable.face1)
                PEACEFUL -> binding.ivFace.setImageResource(R.drawable.face2)
@@ -178,7 +222,7 @@ class NoteFragment : Fragment() {
                ANGRY -> binding.ivFace.setImageResource(R.drawable.face5)
             }
          }else {
-            binding.tvTitle.text = "제목"
+            binding.cvWrite.visibility = View.GONE
             binding.ivFace.setImageResource(R.drawable.face1)
          }
       }

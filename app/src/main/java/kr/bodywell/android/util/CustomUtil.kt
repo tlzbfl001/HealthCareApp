@@ -5,20 +5,17 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.media.ExifInterface
+import androidx.exifinterface.media.ExifInterface
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.github.f4b6a3.uuid.UuidCreator
-import com.powersync.DatabaseDriverFactory
-import kr.bodywell.android.R
-import kr.bodywell.android.api.powerSync.SyncService
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant.BREAKFAST
 import kr.bodywell.android.model.Constant.DINNER
 import kr.bodywell.android.model.Constant.LUNCH
@@ -30,6 +27,9 @@ import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.R
+import kr.bodywell.android.util.MyApp.Companion.dataManager
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -37,7 +37,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -47,8 +46,7 @@ import kotlin.math.floor
 import kotlin.math.sqrt
 
 object CustomUtil {
-   const val TAG = "logTAG"
-   lateinit var powerSync: SyncService
+   const val TAG = "appTAG1"
    var getUser = User()
    var getToken = Token()
    var drugTimeList = ArrayList<MedicineTime>()
@@ -86,19 +84,14 @@ object CustomUtil {
       }
    }
 
-   fun dateToIso(date: LocalDate): String {
-      return date.atStartOfDay().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
+   fun getUUID(): String {
+      return UuidCreator.getTimeOrderedEpoch().toString()
    }
 
-   fun dateTimeToIso1(date: Calendar): String {
+   fun dateTimeToIso(date: Calendar): String {
       val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
       sdf.timeZone = TimeZone.getTimeZone(ZoneId.systemDefault())
       return sdf.format(date.time)
-   }
-
-   fun dateTimeToIso2(): String {
-      val format = LocalDateTime.now().atZone(ZoneId.of(ZoneId.systemDefault().toString())).toInstant().toString()
-      return format.replace("T", " ")
    }
 
    fun isoToDateTime(data: String): LocalDateTime {
@@ -106,8 +99,9 @@ object CustomUtil {
       return LocalDateTime.from(parse)
    }
 
-   fun getUUID(): String {
-      return UuidCreator.getTimeOrderedEpoch().toString()
+   fun formattedISO(): String {
+      val instant = LocalDateTime.now().atZone(ZoneId.of(ZoneId.systemDefault().toString())).toInstant().toString()
+      return instant.replace("T", " ")
    }
 
    fun setStatusBar(context: Activity, mainLayout: ConstraintLayout) {
@@ -208,29 +202,14 @@ object CustomUtil {
       return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, m, true)
    }
 
-   suspend fun resetAlarm(context: Context) {
+   fun resetAlarm(context: Context) {
       val alarmReceiver = AlarmReceiver()
-      val dataManager = DataManager(context)
-      dataManager.open()
-
-      val driverFactory = DatabaseDriverFactory(context)
-      powerSync = SyncService(context, driverFactory)
-
-      val getMedicineId = powerSync.getMedicineIds(LocalDate.now().toString())
-
-      for(i in getMedicineId.indices) {
-         val getMedicine = powerSync.getMedicine(getMedicineId[i])
-         val split = getMedicine.category.split("/", limit=3)
-
-         if(split[2] == "1") {
-            val timeList = ArrayList<MedicineTime>()
-            val getMedicineTime = powerSync.getAllMedicineTime(getMedicineId[i])
-            for(element in getMedicineTime) timeList.add(MedicineTime(time = element.time))
-
-            val getId = dataManager.getMedicine(getMedicineId[i]) // 알람ID 가져오기
-            if(timeList.isNotEmpty() && getId != 0) {
-               val message = split[0] + " " + getMedicine.amount + getMedicine.unit
-               alarmReceiver.setAlarm(context, getId, getMedicine.starts, getMedicine.ends, timeList, message)
+      val data = dataManager.getMedicines(LocalDate.now().toString())
+      for(i in data.indices) {
+         if(data[i].isSet == 1) {
+            val getTime = dataManager.getMedicineTime(data[i].id)
+            if(getTime.isNotEmpty()) {
+               alarmReceiver.setAlarm(context, data[i].id, data[i].starts, data[i].ends, getTime, data[i].name + " " + data[i].amount + data[i].unit)
             }
          }
       }
@@ -305,7 +284,9 @@ object CustomUtil {
 
       for(i in getDiets.indices) {
          val getFiles = powerSync.getFiles("diet_id", getDiets[i])
-         for(j in getFiles.indices) files.add(FileItem(name = getFiles[j].name))
+         for(j in getFiles.indices) {
+            files.add(FileItem(name = getFiles[j].name, data = getFiles[j].data))
+         }
       }
 
       return files

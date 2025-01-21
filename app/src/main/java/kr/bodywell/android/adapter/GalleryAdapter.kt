@@ -43,7 +43,7 @@ class GalleryAdapter (
 
 		// 이미지 다중선택 로직
 		val lifeCycleOwner = context as LifecycleOwner
-		viewModel.pictureSelectedVM.observe(lifeCycleOwner) {
+		viewModel.imgSelectedVM.observe(lifeCycleOwner) {
 			if(!it) {
 				holder.checkbox.visibility = View.GONE
 			}else {

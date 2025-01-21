@@ -61,11 +61,6 @@
       android:usesCleartextTraffic="true"
       tools:replace="android:allowBackup"
       tools:targetApi="34">
-      <service
-         android:name=".service.BluetoothLeService"
-         android:enabled="true"
-         android:exported="true"></service>
-
       <activity
          android:name=".view.init.SignupActivity"
          android:exported="false" />
@@ -76,7 +71,6 @@
          android:theme="@style/AppTheme.SplashScreen">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
-
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
       </activity>
@@ -87,7 +81,7 @@
          android:name=".view.init.InitActivity"
          android:exported="false" />
       <activity
-         android:name=".view.home.MainActivity"
+         android:name=".view.MainActivity"
          android:exported="false"
          android:windowSoftInputMode="adjustPan" />
       <activity
@@ -96,7 +90,6 @@
          <intent-filter>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
          </intent-filter>
-
          <meta-data
             android:name="health_permissions"
             android:resource="@array/health_permissions" />
@@ -106,16 +99,17 @@
          android:exported="true">
          <intent-filter>
             <action android:name="android.intent.action.VIEW" />
-
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-
             <data
                android:host="oauth"
                android:scheme="@string/kakaoOauthHost" />
          </intent-filter>
       </activity>
-
+      <!--<service
+         android:name=".service.BluetoothLeService"
+         android:enabled="true"
+         android:exported="true"></service>-->
       <receiver
          android:name=".service.AlarmReceiver"
          android:exported="false" />
@@ -127,7 +121,6 @@
             <action android:name="android.intent.action.BOOT_COMPLETED" />
          </intent-filter>
       </receiver>
-
       <provider
          android:name="androidx.core.content.FileProvider"
          android:authorities="kr.bodywell.android.file_provider"
@@ -138,5 +131,4 @@
             android:resource="@xml/file_paths" />
       </provider>
    </application>
-
 </manifest>

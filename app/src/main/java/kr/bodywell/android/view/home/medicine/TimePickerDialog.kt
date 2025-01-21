@@ -17,7 +17,7 @@ class TimePickerDialog(context: Context, timePickerClickListener: TimePickerClic
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.dialog_drug_time)
+        setContentView(R.layout.dialog_medicine_time)
 
         timePicker = findViewById(R.id.timePicker)
         tvCancel = findViewById(R.id.tvCancel)

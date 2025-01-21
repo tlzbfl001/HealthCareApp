@@ -29,23 +29,23 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.GalleryAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentGalleryBinding
 import kr.bodywell.android.model.Constant.DIETS
 import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getDietFiles
 import kr.bodywell.android.util.CustomUtil.getRotatedBitmap
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.saveFile
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
+import kr.bodywell.android.util.MyApp.Companion.dataManager
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_2
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 import kr.bodywell.android.view.MainViewModel
 import java.io.File
 import java.text.SimpleDateFormat
@@ -61,14 +61,13 @@ class GalleryFragment : Fragment() {
 	val viewModel: MainViewModel by activityViewModels()
 	private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 	private lateinit var cLauncher: ActivityResultLauncher<Intent>
-	private lateinit var dataManager: DataManager
+//	private lateinit var dataManager: DataManager
 	private var adapter: GalleryAdapter? = null
 	private var bundle = Bundle()
 	private var dialog: Dialog? = null
 	private var fileAbsolutePath: String? = null
 	private var pictureFlag = 0
 	private var getDiets = Food()
-	private var getFiles = ArrayList<FileItem>()
 	private var images = ArrayList<FileItem>()
 	private var selectionList = ArrayList<String>()
 	private var prevFileCnt = 0
@@ -91,9 +90,6 @@ class GalleryFragment : Fragment() {
 
 		setStatusBar(requireActivity(), binding.mainLayout)
 
-		dataManager = DataManager(activity)
-		dataManager.open()
-
 		pLauncher = registerForActivityResult(
 			ActivityResultContracts.RequestMultiplePermissions()
 		){}
@@ -104,8 +100,13 @@ class GalleryFragment : Fragment() {
 
 		lifecycleScope.launch {
 			prevFileCnt = getDietFiles(selectedDate.toString()).size
-			getFiles = powerSync.getFiles("diet_id", getDiets.id) as ArrayList<FileItem>
-			for(i in 0 until getFiles.size) images.add(getFiles[i])
+			val getFiles = powerSync.getFiles("diet_id", getDiets.id) as ArrayList<FileItem>
+
+			for(i in 0 until getFiles.size) {
+				val imgPath = requireActivity().filesDir.toString() + "/" + getFiles[i].name
+				val file = File(imgPath)
+				if(file.exists()) images.add(getFiles[i])
+			}
 		}
 
 		binding.btnBack.setOnClickListener {
@@ -113,9 +114,9 @@ class GalleryFragment : Fragment() {
 		}
 
 		binding.ivUpload.setOnClickListener {
-			if(checkCameraPermission(requireActivity())) {
-				if(prevFileCnt + images.size > 20) {
-					Toast.makeText(context, "사진은 하루에 20장까지 등록할 수 있습니다.", Toast.LENGTH_SHORT).show()
+			if(checkMediaPermission(requireActivity())) {
+				if(prevFileCnt + images.size >= 20) {
+					Toast.makeText(context, "등록 가능한 이미지 개수를 초과하였습니다.", Toast.LENGTH_SHORT).show()
 				}else {
 					dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
 					val bottomSheetView = layoutInflater.inflate(R.layout.dialog_photo, null)
@@ -155,9 +156,9 @@ class GalleryFragment : Fragment() {
 				}
 			}else {
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-					pLauncher.launch(CAMERA_PERMISSION_2)
+					pLauncher.launch(MEDIA_PERMISSION_2)
 				}else {
-					pLauncher.launch(CAMERA_PERMISSION_1)
+					pLauncher.launch(MEDIA_PERMISSION_1)
 				}
 			}
 		}
@@ -176,7 +177,7 @@ class GalleryFragment : Fragment() {
 							if(file2.length() in 1..1048575) { // 파일 크기 확인 후 저장
 								val uuid = UuidCreator.getTimeOrderedEpoch()
 								powerSync.insertDietFile(FileItem(id = uuid.toString(), name = result, dietId = getDiets.id))
-								dataManager.updateFileTime(dateTimeToIso1(Calendar.getInstance()))
+								dataManager.updateTime2(dateTimeToIso(Calendar.getInstance()))
 								images.add(FileItem(id = uuid.toString(), name = result, bitmap = bitmap))
 								viewPhotos()
 							}else {
@@ -196,7 +197,7 @@ class GalleryFragment : Fragment() {
 								if(file.length() in 1..1048575) { // 파일 크기 확인 후 저장
 									val uuid = UuidCreator.getTimeOrderedEpoch()
 									powerSync.insertDietFile(FileItem(id = uuid.toString(), name = result, dietId = getDiets.id))
-									dataManager.updateFileTime(dateTimeToIso1(Calendar.getInstance()))
+									dataManager.updateTime2(dateTimeToIso(Calendar.getInstance()))
 									images.add(FileItem(id = uuid.toString(), name = result, bitmap = bitmap))
 									viewPhotos()
 								}else {
@@ -212,37 +213,9 @@ class GalleryFragment : Fragment() {
 			}
 		}
 
-		viewPhotos()
-
-		return binding.root
-	}
-
-	private fun viewPhotos() {
-		val layoutManager = GridLayoutManager(activity, 3)
-		binding.recyclerView.layoutManager = layoutManager
-		adapter = GalleryAdapter(viewModel, images)
-
-		showButtonUI1()
-
 		binding.tvSelect.setOnClickListener {
 			if(images.size > 0) showButtonUI2() else Toast.makeText(context, "사진이 없습니다.", Toast.LENGTH_SHORT).show()
 		}
-
-		adapter!!.setOnLongClickListener(object : GalleryAdapter.OnLongClickListener {
-			override fun onLongClick(pos: Int) {
-				showButtonUI2()
-			}
-		})
-
-		adapter!!.setOnClickListener(object : GalleryAdapter.OnClickListener {
-			override fun onClick(pos: Int, checked: Boolean) {
-				if(viewModel.pictureSelectedVM.value == true) {
-					if(checked) selectionList.add(images[pos].id) else selectionList.remove(images[pos].id)
-				}
-			}
-		})
-
-		binding.recyclerView.adapter = adapter
 
 		binding.tvDelete.setOnClickListener {
 			if(selectionList.size > 0) {
@@ -274,6 +247,35 @@ class GalleryFragment : Fragment() {
 		binding.tvCancel.setOnClickListener {
 			showButtonUI1()
 		}
+
+		val layoutManager = GridLayoutManager(activity, 3)
+		binding.recyclerView.layoutManager = layoutManager
+
+		viewPhotos()
+
+		return binding.root
+	}
+
+	private fun viewPhotos() {
+		adapter = GalleryAdapter(viewModel, images)
+
+		showButtonUI1()
+
+		adapter!!.setOnLongClickListener(object : GalleryAdapter.OnLongClickListener {
+			override fun onLongClick(pos: Int) {
+				showButtonUI2()
+			}
+		})
+
+		adapter!!.setOnClickListener(object : GalleryAdapter.OnClickListener {
+			override fun onClick(pos: Int, checked: Boolean) {
+				if(viewModel.imgSelectedVM.value == true) {
+					if(checked) selectionList.add(images[pos].id) else selectionList.remove(images[pos].id)
+				}
+			}
+		})
+
+		binding.recyclerView.adapter = adapter
 	}
 
 	private fun showButtonUI1() {
@@ -286,7 +288,7 @@ class GalleryFragment : Fragment() {
 		}
 
 		binding.view2.visibility = View.GONE
-		viewModel.setPictureSelected(false)
+		viewModel.setImgSelected(false)
 		selectionList.clear()
 		adapter!!.notifyDataSetChanged()
 	}
@@ -295,7 +297,7 @@ class GalleryFragment : Fragment() {
 		binding.ivUpload.visibility = View.GONE
 		binding.tvSelect.visibility = View.GONE
 		binding.view2.visibility = View.VISIBLE
-		viewModel.setPictureSelected(true)
+		viewModel.setImgSelected(true)
 	}
 
 	override fun onDetach() {

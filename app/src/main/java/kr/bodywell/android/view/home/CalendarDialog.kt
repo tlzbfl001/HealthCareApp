@@ -3,6 +3,7 @@ package kr.bodywell.android.view.home
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Base64
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -11,14 +12,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter1
-import kr.bodywell.android.adapter.PhotoSlideAdapter
+import kr.bodywell.android.adapter.CalendarImageSlideAdapter
 import kr.bodywell.android.database.DataManager
+import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.util.CalendarUtil.monthArray
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.getDietFiles
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
@@ -34,10 +41,11 @@ class CalendarDialog(context: Context) : Dialog(context) {
    private var tvStatus : TextView? = null
    private var rv: RecyclerView? = null
    private var viewPager: ViewPager? = null
+   private var images = ArrayList<FileItem>()
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
-      setContentView(R.layout.dialog_calendar1)
+      setContentView(R.layout.dialog_calendar)
 
       dataManager = DataManager(context)
       dataManager!!.open()
@@ -79,6 +87,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
    }
 
    private fun setMonthView() {
+      images.clear()
       tvYear?.text = selectedDate.format(DateTimeFormatter.ofPattern("yyyy"))
       tvMonth?.text = selectedDate.format(DateTimeFormatter.ofPattern("M"))
 
@@ -90,15 +99,34 @@ class CalendarDialog(context: Context) : Dialog(context) {
       rv?.adapter = adapter
 
       runBlocking {
-         val imageList = getDietFiles(selectedDate.toString())
+         images = getDietFiles(selectedDate.toString())
+         for(i in 0 until images.size) {
+            val imgPath = context.filesDir.toString() + "/" + images[i].name
+            val file = File(imgPath)
 
-         if (imageList.size > 0) {
+            if(!file.exists()){
+               val base64Image = images[i].data.split(",")
+               val imageBytes = Base64.decode(base64Image[1], Base64.DEFAULT)
+
+               val deferred = async {
+                  withContext(Dispatchers.IO) {
+                     val fos = FileOutputStream(File(imgPath))
+                     fos.use {
+                        it.write(imageBytes)
+                     }
+                  }
+               }
+               deferred.await()
+            }
+         }
+
+         if(images.size > 0) {
             viewPager?.visibility = View.VISIBLE
             tvStatus?.visibility = View.GONE
 
-            val slideAdapter = PhotoSlideAdapter(context, imageList)
+            val slideAdapter = CalendarImageSlideAdapter(context, images)
             viewPager?.adapter = slideAdapter
-            viewPager?.setPadding(0, 0, 210, 0)
+            viewPager?.setPadding(0, 0, 200, 0)
          }else {
             viewPager?.visibility = View.GONE
             tvStatus?.visibility = View.VISIBLE

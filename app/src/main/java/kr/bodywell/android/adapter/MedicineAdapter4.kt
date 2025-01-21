@@ -28,9 +28,7 @@ class MedicineAdapter4 (
             drugTimeList.removeAt(position)
             itemList.clear()
 
-            for(i in 0 until drugTimeList.size) {
-                itemList.add(Item(string1 = drugTimeList[i].time, int1 = i + 1))
-            }
+            for(i in 0 until drugTimeList.size) itemList.add(Item(string1 = drugTimeList[i].time, int1 = i + 1))
 
             viewModel.setMedicineCheck(drugTimeList.size)
 

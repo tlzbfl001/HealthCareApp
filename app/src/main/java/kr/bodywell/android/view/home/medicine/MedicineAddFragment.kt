@@ -3,6 +3,7 @@ package kr.bodywell.android.view.home.medicine
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,20 +24,24 @@ import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.Constant.MEDICINE_TIMES
 import kr.bodywell.android.model.Item
 import kr.bodywell.android.model.Medicine
+import kr.bodywell.android.model.MedicineItem
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso2
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.drugTimeList
+import kr.bodywell.android.util.CustomUtil.formattedISO
 import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setDrugTimeList
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.dataManager
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.MainViewModel
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 import java.util.Calendar
 
 class MedicineAddFragment : Fragment() {
@@ -45,14 +50,12 @@ class MedicineAddFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private val viewModel: MainViewModel by activityViewModels()
-   private lateinit var dataManager: DataManager
    private var alarmReceiver: AlarmReceiver? = null
    private var adapter: MedicineAdapter4? = null
    private var getMedicineTime = ArrayList<MedicineTime>()
    private val itemList = ArrayList<Item>()
    private val addList = ArrayList<String>()
    private val delList = ArrayList<String>()
-   private var split = listOf<String>()
    private var unit = "정"
    private var count = 1
    private var check = false
@@ -75,9 +78,6 @@ class MedicineAddFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      dataManager = DataManager(requireActivity())
-      dataManager.open()
-
       alarmReceiver = AlarmReceiver()
 
       drugTimeList.clear()
@@ -85,11 +85,11 @@ class MedicineAddFragment : Fragment() {
       val getMedicine = arguments?.getParcelable<Medicine>(MEDICINES)
 
       if(getMedicine != null) {
-         split = getMedicine.category.split("/", limit=3)
-         binding.etType.setText(split[0])
+         val period = Period.between(LocalDate.parse(getMedicine.starts), LocalDate.parse(getMedicine.ends))
+         binding.etCategory.setText(getMedicine.category)
          binding.etName.setText(getMedicine.name)
          binding.etAmount.setText(getMedicine.amount.toString())
-         count = split[1].toInt()
+         count = period.days + 1
 
          when(getMedicine.unit) {
             "정" -> unit1()
@@ -161,18 +161,19 @@ class MedicineAddFragment : Fragment() {
       }
 
       binding.cvSave.setOnClickListener {
-         val category = if(binding.etType.text.toString() == "") "제목없음" else binding.etType.text.toString().trim()
+         val category = if(binding.etCategory.text.toString() == "") "제목없음" else binding.etCategory.text.toString().trim()
          val name = if(binding.etName.text.toString() == "") "제목없음" else binding.etName.text.toString().trim()
          val amount = if(binding.etAmount.text.toString() == "") 1 else binding.etAmount.text.toString().trim().toInt()
 
          if(itemList.size == 0) {
             Toast.makeText(activity, "시간을 입력해주세요.", Toast.LENGTH_SHORT).show()
          }else {
-            val ends = selectedDate.plusDays((count-1).toLong()).toString()
+            val ends = selectedDate.plusDays((count - 1).toLong()).toString()
+
             lifecycleScope.launch {
                if(getMedicine != null) { // 약복용 정보 수정
-                  powerSync.updateMedicine(Medicine(id = getMedicine.id, category = "$category/$count/${split[2]}", name = name,
-                     amount = amount, unit = unit, starts = getMedicine.starts, ends = ends))
+                  val getData = dataManager.getMedicine(getMedicine.id)
+                  dataManager.deleteMedicineTime(getData.id)
 
                   for(i in 0 until getMedicineTime.size) {
                      var check = false
@@ -194,51 +195,55 @@ class MedicineAddFragment : Fragment() {
                         }
                      }
                      if(!check) addList.add(drugTimeList[i].time)
+                     dataManager.insertMedicineTime(MedicineTime(userId = getData.id, time = drugTimeList[i].time))
                   }
 
-                  // 필요없는 데이터 삭제
                   for(i in 0 until delList.size) {
                      powerSync.deleteItem(MEDICINE_TIMES, "id", delList[i])
                      powerSync.deleteItem(MEDICINE_INTAKES, "medicine_time_id", delList[i])
                   }
 
-                  // 새로 생성된 데이터 저장
+                  dataManager.updateMedicine(MedicineItem(id = getData.id, name = name, amount = amount, unit = unit,
+                     starts = getMedicine.starts, ends = ends, isSet = getData.isSet))
+
+                  powerSync.updateMedicine(Medicine(id = getMedicine.id, category = category, name = name, amount = amount,
+                     unit = unit, starts = getMedicine.starts, ends = ends))
+
                   for(i in 0 until addList.size) {
-                     powerSync.insertMedicineTime(MedicineTime(id = getUUID(), time = addList[i], createdAt = dateTimeToIso1(Calendar.getInstance()),
-                        updatedAt = dateTimeToIso1(Calendar.getInstance()), medicineId = getMedicine.id))
+                     val uuid = UuidCreator.getTimeOrderedEpoch().toString()
+                     powerSync.insertMedicineTime(MedicineTime(id = uuid, time = addList[i], createdAt = dateTimeToIso(Calendar.getInstance()),
+                        updatedAt = dateTimeToIso(Calendar.getInstance()), medicineId = getMedicine.id))
                   }
 
-                  // 알람 수정
-                  val getId = dataManager.getMedicine(getMedicine.id)
-                  if(getId != 0) {
-                     alarmReceiver!!.setAlarm(requireActivity(), getId, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
+                  if(getData.id != 0 && getData.isSet == 1) {
+                     alarmReceiver!!.setAlarm(requireActivity(), getData.id, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
                   }
-
-                  // 약복용 시간 수정
-                  dataManager.updateMedicineTime(dateTimeToIso2())
 
                   Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
                }else { // 약복용 정보 저장
                   val uuid = UuidCreator.getTimeOrderedEpoch()
 
-                  powerSync.insertMedicine(Medicine(id = uuid.toString(), category = "$category/$count/1", name = name, amount = amount, unit = unit,
-                     starts = selectedDate.toString(), ends = ends, createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                  dataManager.insertMedicine(MedicineItem(medicineId = uuid.toString(), name = name, amount = amount, unit = unit, starts = selectedDate.toString(), ends = ends))
+                  val getData = dataManager.getMedicine(uuid.toString())
+
+                  powerSync.insertMedicine(Medicine(id = uuid.toString(), category = category, name = name, amount = amount, unit = unit,
+                     starts = selectedDate.toString(), ends = ends, createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
 
                   for(i in 0 until drugTimeList.size) {
-                     powerSync.insertMedicineTime(MedicineTime(id = getUUID(), time = drugTimeList[i].time, createdAt = dateTimeToIso1(Calendar.getInstance()),
-                        updatedAt = dateTimeToIso1(Calendar.getInstance()), medicineId = uuid.toString()))
+                     dataManager.insertMedicineTime(MedicineTime(userId = getData.id, time = drugTimeList[i].time))
+                     powerSync.insertMedicineTime(MedicineTime(id = getUUID(), time = drugTimeList[i].time, createdAt = dateTimeToIso(Calendar.getInstance()),
+                        updatedAt = dateTimeToIso(Calendar.getInstance()), medicineId = uuid.toString()))
                   }
 
-                  dataManager.insertMedicine(uuid.toString())
-                  val getId = dataManager.getMedicine(uuid.toString())
-                  if(getId != 0) {
-                     alarmReceiver!!.setAlarm(requireActivity(), getId, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
+                  if(getData.id != 0) {
+                     alarmReceiver!!.setAlarm(requireActivity(), getData.id, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
                   }
-
-                  dataManager.updateMedicineTime(dateTimeToIso2())
 
                   Toast.makeText(activity, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                }
+
+               // 약복용 시간 수정
+               dataManager.updateTime1(formattedISO())
             }
 
             replaceFragment3(parentFragmentManager, MedicineRecordFragment())

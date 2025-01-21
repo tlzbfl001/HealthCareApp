@@ -19,9 +19,9 @@ import kr.bodywell.android.model.Constant.MODERATE
 import kr.bodywell.android.model.Constant.WORKOUTS
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 
 class ExerciseDailyEditFragment : Fragment() {
 	private var _binding: FragmentExerciseDailyEditBinding? = null
@@ -99,7 +99,7 @@ class ExerciseDailyEditFragment : Fragment() {
 	}
 
 	private fun unit1() {
-		binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_yellow)
+		binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_exercise)
 		binding.tvIntensity1.setTextColor(Color.WHITE)
 		binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity2.setTextColor(Color.BLACK)
@@ -111,7 +111,7 @@ class ExerciseDailyEditFragment : Fragment() {
 	private fun unit2() {
 		binding.tvIntensity1.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity1.setTextColor(Color.BLACK)
-		binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_yellow)
+		binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_exercise)
 		binding.tvIntensity2.setTextColor(Color.WHITE)
 		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity3.setTextColor(Color.BLACK)
@@ -123,7 +123,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		binding.tvIntensity1.setTextColor(Color.BLACK)
 		binding.tvIntensity2.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvIntensity2.setTextColor(Color.BLACK)
-		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_yellow)
+		binding.tvIntensity3.setBackgroundResource(R.drawable.rec_25_exercise)
 		binding.tvIntensity3.setTextColor(Color.WHITE)
 		intensity = LOW
 	}

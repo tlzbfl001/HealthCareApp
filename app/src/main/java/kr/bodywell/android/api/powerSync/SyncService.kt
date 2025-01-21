@@ -42,7 +42,7 @@ import kr.bodywell.android.model.Profile
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.model.Workout
-import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getToken
 import kr.bodywell.android.util.CustomUtil.getUser
 
@@ -59,8 +59,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	inner class MyConnector : PowerSyncBackendConnector() {
-		private val powerSyncEndpoint = "https://6711c44725a60ad3b2df2ae6.powersync.journeyapps.com" // development
-//		private val powerSyncEndpoint = "https://677f6f80e88075f9091b99d3.powersync.journeyapps.com" // production
+//		private val powerSyncEndpoint = "https://6711c44725a60ad3b2df2ae6.powersync.journeyapps.com" // development
+		private val powerSyncEndpoint = "https://677f6f80e88075f9091b99d3.powersync.journeyapps.com" // production
 
 		override suspend fun fetchCredentials(): PowerSyncCredentials {
 			return PowerSyncCredentials(
@@ -80,18 +80,15 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 
 					when (entry.op) {
 						UpdateType.PUT -> {
-							Log.d(CustomUtil.TAG, "${entry.op}\ntable: ${entry.table}\nid: ${entry.id}\nopData: ${entry.opData}")
 							upsert(_context, entry)
 						}
 
 						UpdateType.PATCH -> {
-							Log.d(CustomUtil.TAG, "${entry.op}\ntable: ${entry.table}\nid: ${entry.id}\nopData: ${entry.opData}")
 							update(entry)
 						}
 
 						UpdateType.DELETE -> {
-							Log.d(CustomUtil.TAG, "${entry.op}\ntable: ${entry.table}\nid: ${entry.id}")
-							delete(_context, entry.table, entry.id)
+							delete(entry.table, entry.id)
 						}
 					}
 				}
@@ -106,7 +103,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 
 	fun watchMedicine1(): Flow<List<String>> {
 		return database.watch("SELECT id FROM $MEDICINES WHERE user_id = '${getUser.uid}'", mapper = { cursor ->
-			cursor.getString(0)!!
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		})
 	}
 
@@ -114,24 +111,14 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.watch("SELECT id, category, name, amount, unit, strftime('%Y-%m-%d', starts), strftime('%Y-%m-%d', ends), updated_at " +
 			"FROM $MEDICINES WHERE user_id = '${getUser.uid}' AND updated_at > '$data'", mapper = { cursor ->
 			Medicine(
-				id = cursor.getString(0)!!,
-				category = cursor.getString(1)!!,
-				name = cursor.getString(2)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				category = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				name = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
 				amount = if(cursor.getDouble(3) == null) 0 else cursor.getDouble(3)!!.toInt(),
-				unit = cursor.getString(4)!!,
-				starts = cursor.getString(5)!!,
-				ends = cursor.getString(6)!!,
-				updatedAt = cursor.getString(7)!!
-			)
-		})
-	}
-
-	fun watchFile(data: String): Flow<List<FileItem>> {
-		return database.watch("SELECT id, name, data FROM $FILES WHERE user_id = '${getUser.uid}' AND created_at > '$data'", mapper = { cursor ->
-			FileItem(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
-				data = cursor.getString(2)!!
+				unit = if(cursor.getString(4) == null) "" else cursor.getString(4)!!,
+				starts = if(cursor.getString(5) == null) "" else cursor.getString(5)!!,
+				ends = if(cursor.getString(6) == null) "" else cursor.getString(6)!!,
+				updatedAt = if(cursor.getString(7) == null) "" else cursor.getString(7)!!
 			)
 		})
 	}
@@ -139,7 +126,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun getProfile(): Profile {
 		return database.getOptional(sql = "SELECT id, name, birth, height, weight, gender FROM $PROFILES WHERE user_id = '${getUser.uid}'", mapper = { cursor ->
 			Profile(
-				id = cursor.getString(0)!!,
+				id = if(cursor.getString(1) == null) "" else cursor.getString(0)!!,
 				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
 				birth = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
 				height = if(cursor.getString(3) == null) 0.0 else cursor.getString(3)!!.toDouble(),
@@ -153,14 +140,14 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT name, calorie, carbohydrate, protein, fat, quantity, volume, volume_unit " +
 			"FROM $FOODS WHERE user_id = '${getUser.uid}' AND id = '$data'", mapper = { cursor ->
 			Food(
-				name = cursor.getString(0)!!,
+				name = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
 				calorie = if(cursor.getString(1) == null) 0 else cursor.getDouble(1)!!.toInt(),
 				carbohydrate = if(cursor.getDouble(2) == null) 0.0 else cursor.getDouble(2)!!,
 				protein = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
 				fat = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
 				quantity = if(cursor.getString(5) == null) 0 else cursor.getDouble(5)!!.toInt(),
 				volume = if(cursor.getString(6) == null) 0 else cursor.getDouble(6)!!.toInt(),
-				volumeUnit = cursor.getString(7)!!
+				volumeUnit = if(cursor.getString(7) == null) "" else cursor.getString(7)!!
 			)}
 		) ?: Food()
 	}
@@ -169,16 +156,16 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM(SELECT id, name, calorie, carbohydrate, protein, fat, quantity_unit, volume, volume_unit, created_at " +
 			"FROM $FOODS WHERE user_id = '${getUser.uid}') GROUP BY name ORDER BY created_at DESC", mapper = { cursor ->
 			Food(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
 				calorie = if(cursor.getString(2) == null) 0 else cursor.getDouble(2)!!.toInt(),
 				carbohydrate = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
 				protein = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
 				fat = if(cursor.getDouble(5) == null) 0.0 else cursor.getDouble(5)!!,
-				quantityUnit = cursor.getString(6)!!,
+				quantityUnit = if(cursor.getString(6) == null) "" else cursor.getString(6)!!,
 				volume = if(cursor.getString(7) == null) 0 else cursor.getDouble(7)!!.toInt(),
-				volumeUnit = cursor.getString(8)!!,
-				createdAt = cursor.getString(9)!!
+				volumeUnit = if(cursor.getString(8) == null) "" else cursor.getString(8)!!,
+				createdAt = if(cursor.getString(9) == null) "" else cursor.getString(9)!!
 			)}
 		)
 	}
@@ -187,15 +174,15 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM (SELECT a.id, name, calorie, carbohydrate, protein, fat, quantity_unit, volume, volume_unit, " +
 			"usage_count FROM $FOODS a, $FOOD_USAGES b WHERE a.user_id = '${getUser.uid}' AND a.id = b.food_id) ORDER BY usage_count DESC", mapper = { cursor ->
 			Food(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name =if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
 				calorie = if(cursor.getString(2) == null) 0 else cursor.getDouble(2)!!.toInt(),
 				carbohydrate = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
 				protein = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
 				fat = if(cursor.getDouble(5) == null) 0.0 else cursor.getDouble(5)!!,
-				quantityUnit = cursor.getString(6)!!,
+				quantityUnit = if(cursor.getString(6) == null) "" else cursor.getString(6)!!,
 				volume = if(cursor.getString(7) == null) 0 else cursor.getDouble(7)!!.toInt(),
-				volumeUnit = cursor.getString(8)!!
+				volumeUnit = if(cursor.getString(8) == null) "" else cursor.getString(8)!!
 			)
 		})
 	}
@@ -204,15 +191,15 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM (SELECT a.id, name, calorie, carbohydrate, protein, fat, quantity_unit, volume, volume_unit, b.updated_at " +
 			"FROM $FOODS a, $FOOD_USAGES b WHERE a.user_id = '${getUser.uid}' AND a.id = b.food_id) ORDER BY updated_at DESC", mapper = { cursor ->
 			Food(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
 				calorie = if(cursor.getString(2) == null) 0 else cursor.getDouble(2)!!.toInt(),
 				carbohydrate = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
 				protein = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
 				fat = if(cursor.getDouble(5) == null) 0.0 else cursor.getDouble(5)!!,
-				quantityUnit = cursor.getString(6)!!,
+				quantityUnit = if(cursor.getString(6) == null) "" else cursor.getString(6)!!,
 				volume = if(cursor.getString(7) == null) 0 else cursor.getDouble(7)!!.toInt(),
-				volumeUnit = cursor.getString(8)!!
+				volumeUnit = if(cursor.getString(8) == null) "" else cursor.getString(8)!!
 			)}
 		)
 	}
@@ -221,8 +208,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT id, name FROM $DIETS WHERE user_id = '${getUser.uid}' AND meal_time = '$mealTime' " +
 			"AND name = '$name' AND strftime('%Y-%m-%d', date) = '$date'", mapper = { cursor ->
 			Food(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		) ?: Food()
 	}
@@ -231,17 +218,17 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM(SELECT * FROM $DIETS WHERE user_id = '${getUser.uid}' AND meal_time = '$mealTime' " +
 			"AND strftime('%Y-%m-%d', date) = '$date' ORDER BY created_at DESC) GROUP BY name",mapper = { cursor ->
 			Food(
-				id = cursor.getString(0)!!,
-				mealTime = cursor.getString(1)!!,
-				name = cursor.getString(2)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				mealTime = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				name = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
 				calorie = if(cursor.getString(3) == null) 0 else cursor.getDouble(3)!!.toInt(),
 				carbohydrate = if(cursor.getDouble(4) == null) 0.0 else cursor.getDouble(4)!!,
 				protein = if(cursor.getDouble(5) == null) 0.0 else cursor.getDouble(5)!!,
 				fat = if(cursor.getDouble(6) == null) 0.0 else cursor.getDouble(6)!!,
 				quantity = if(cursor.getString(7) == null) 0 else cursor.getDouble(7)!!.toInt(),
 				volume = if(cursor.getString(9) == null) 0 else cursor.getDouble(9)!!.toInt(),
-				volumeUnit = cursor.getString(10)!!,
-				createdAt = cursor.getString(13)!!
+				volumeUnit = if(cursor.getString(10) == null) "" else cursor.getString(10)!!,
+				createdAt = if(cursor.getString(13) == null) "" else cursor.getString(13)!!
 			)}
 		)
 	}
@@ -249,18 +236,18 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun getDietIds(date: String): List<String> {
 		return database.getAll(sql = "SELECT id FROM(SELECT id, name FROM $DIETS WHERE user_id = '${getUser.uid}' " +
 			"AND strftime('%Y-%m-%d', date) = '$date' ORDER BY created_at DESC) GROUP BY name",mapper = { cursor ->
-			cursor.getString(0)!!
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		})
 	}
 
 	suspend fun getWater(data: String): Water {
 		return database.getOptional(sql = "SELECT * FROM $WATER WHERE user_id = '${getUser.uid}' AND date = '$data' ORDER BY created_at DESC LIMIT 1", mapper = { cursor ->
 			Water(
-				id = cursor.getString(0)!!,
-				mL = cursor.getDouble(1)!!.toInt(),
-				count = cursor.getDouble(2)!!.toInt(),
-				date = cursor.getString(3)!!,
-				createdAt = cursor.getString(4)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				mL = if(cursor.getString(1) == null) 0 else cursor.getString(1)!!.toInt(),
+				count = if(cursor.getString(2) == null) 0 else cursor.getString(2)!!.toInt(),
+				date = if(cursor.getString(3) == null) "" else cursor.getString(3)!!,
+				createdAt = if(cursor.getString(4) == null) "" else cursor.getString(4)!!
 			)}
 		) ?: Water()
 	}
@@ -268,11 +255,11 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun getAllWater(start: String, end: String): List<Water> {
 		return database.getAll(sql = "SELECT * FROM $WATER WHERE user_id = '${getUser.uid}' AND date BETWEEN '$start' AND '$end' ORDER BY date", mapper = { cursor ->
 			Water(
-				id = cursor.getString(0)!!,
-				mL = cursor.getDouble(1)!!.toInt(),
-				count = cursor.getDouble(2)!!.toInt(),
-				date = cursor.getString(3)!!,
-				createdAt = cursor.getString(4)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				mL = if(cursor.getString(1) == null) 0 else cursor.getString(1)!!.toInt(),
+				count = if(cursor.getString(2) == null) 0 else cursor.getString(2)!!.toInt(),
+				date = if(cursor.getString(3) == null) "" else cursor.getString(3)!!,
+				createdAt = if(cursor.getString(4) == null) "" else cursor.getString(4)!!
 			)}
 		)
 	}
@@ -281,9 +268,9 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM (SELECT a.id, a.name, register_type, usage_count FROM $ACTIVITIES a, $ACTIVITY_USAGES b " +
 			"WHERE a.user_id = '${getUser.uid}' AND a.id = b.activity_id) ORDER BY usage_count DESC", mapper = { cursor ->
 			ActivityData(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
-				registerType = cursor.getString(2)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				registerType = if(cursor.getString(2) == null) "" else cursor.getString(2)!!
 			)}
 		)
 	}
@@ -292,9 +279,9 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM (SELECT a.id, a.name, register_type, b.updated_at FROM $ACTIVITIES a, $ACTIVITY_USAGES b " +
 			"WHERE a.user_id = '${getUser.uid}' AND a.id = b.activity_id) ORDER BY updated_at DESC", mapper = { cursor ->
 			ActivityData(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
-				registerType = cursor.getString(2)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				registerType = if(cursor.getString(2) == null) "" else cursor.getString(2)!!
 			)}
 		)
 	}
@@ -303,8 +290,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT * FROM(SELECT id, name, register_type, created_at FROM $ACTIVITIES " +
 			"WHERE user_id = '${getUser.uid}') GROUP BY name ORDER BY created_at DESC", mapper = { cursor ->
 			ActivityData(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
 				registerType = if(cursor.getString(2) == null) "" else cursor.getString(2)!!
 			)}
 		)
@@ -313,9 +300,9 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun getActivity(data: String): ActivityData {
 		return database.getOptional(sql = "SELECT id, name, created_at FROM $ACTIVITIES WHERE user_id = '${getUser.uid}' AND id = '$data'", mapper = { cursor ->
 			ActivityData(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
-				createdAt = cursor.getString(2)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				createdAt = if(cursor.getString(2) == null) "" else cursor.getString(2)!!
 			)}
 		) ?: ActivityData()
 	}
@@ -323,15 +310,15 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun getWorkouts(data: String): List<Workout> {
 		return database.getAll(sql = "SELECT * FROM $WORKOUTS WHERE user_id = '${getUser.uid}' AND strftime('%Y-%m-%d', date) = '$data'", mapper = { cursor ->
 			Workout(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!,
-				calorie = cursor.getString(2)!!.toInt(),
-				intensity = cursor.getString(3)!!,
-				time = cursor.getString(4)!!.toInt(),
-				date = cursor.getString(5)!!,
-				createdAt = cursor.getString(6)!!,
-				updatedAt = cursor.getString(7)!!,
-				activityId = cursor.getString(9)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				calorie = if(cursor.getString(2) == null) 0 else cursor.getString(2)!!.toInt(),
+				intensity = if(cursor.getString(3) == null) "" else cursor.getString(3)!!,
+				time = if(cursor.getString(4) == null) 0 else cursor.getString(4)!!.toInt(),
+				date = if(cursor.getString(5) == null) "" else cursor.getString(5)!!,
+				createdAt = if(cursor.getString(6) == null) "" else cursor.getString(6)!!,
+				updatedAt = if(cursor.getString(7) == null) "" else cursor.getString(7)!!,
+				activityId = if(cursor.getString(9) == null) "" else cursor.getString(9)!!
 			)}
 		)
 	}
@@ -340,7 +327,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT * FROM $BODY_MEASUREMENTS WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', time) = '$data' ORDER BY updated_at DESC LIMIT 1", mapper = { cursor ->
 			Body(
-				id = cursor.getString(0)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
 				height = if(cursor.getDouble(1) == null) 0.0 else cursor.getDouble(1)!!,
 				weight = if(cursor.getDouble(2) == null) 0.0 else cursor.getDouble(2)!!,
 				bodyMassIndex = if(cursor.getDouble(3) == null) 0.0 else cursor.getDouble(3)!!,
@@ -348,9 +335,9 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				skeletalMuscleMass = if(cursor.getDouble(5) == null) 0.0 else cursor.getDouble(5)!!,
 				basalMetabolicRate = if(cursor.getDouble(6) == null) 0.0 else cursor.getDouble(6)!!,
 				workoutIntensity = if(cursor.getString(7) == null) 0 else cursor.getString(7)!!.toInt(),
-				time = cursor.getString(8)!!,
-				createdAt = cursor.getString(9)!!,
-				updatedAt = cursor.getString(10)!!
+				time = if(cursor.getString(8) == null) "" else cursor.getString(8)!!,
+				createdAt = if(cursor.getString(9) == null) "" else cursor.getString(9)!!,
+				updatedAt = if(cursor.getString(10) == null) "" else cursor.getString(10)!!
 			)}
 		) ?: Body()
 	}
@@ -362,7 +349,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				weight = if(cursor.getDouble(0) == null) 0.0 else cursor.getDouble(0)!!,
 				bodyMassIndex = if(cursor.getDouble(1) == null) 0.0 else cursor.getDouble(1)!!,
 				bodyFatPercentage = if(cursor.getDouble(2) == null) 0.0 else cursor.getDouble(2)!!,
-				time = cursor.getString(3)!!
+				time = if(cursor.getString(3) == null) "" else cursor.getString(3)!!
 			)}
 		)
 	}
@@ -371,11 +358,11 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT * FROM $SLEEP WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', created_at) = '$data' ORDER BY created_at DESC LIMIT 1", mapper = { cursor ->
 			Sleep(
-				id = cursor.getString(0)!!,
-				starts = cursor.getString(1)!!,
-				ends = cursor.getString(2)!!,
-				createdAt = cursor.getString(3)!!,
-				updatedAt = cursor.getString(4)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				starts = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				ends = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
+				createdAt = if(cursor.getString(3) == null) "" else cursor.getString(3)!!,
+				updatedAt = if(cursor.getString(4) == null) "" else cursor.getString(4)!!
 			)}
 		) ?: Sleep()
 	}
@@ -384,13 +371,13 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT id, category, name, amount, unit, strftime('%Y-%m-%d', starts), strftime('%Y-%m-%d', ends) FROM $MEDICINES " +
 			"WHERE user_id = '${getUser.uid}' AND '$data' BETWEEN strftime('%Y-%m-%d', starts) AND strftime('%Y-%m-%d', ends)", mapper = { cursor ->
 			Medicine(
-				id = cursor.getString(0)!!,
-				category = cursor.getString(1)!!,
-				name = cursor.getString(2)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				category = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				name = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
 				amount = if(cursor.getDouble(3) == null) 0 else cursor.getDouble(3)!!.toInt(),
-				unit = cursor.getString(4)!!,
-				starts = cursor.getString(5)!!,
-				ends = cursor.getString(6)!!
+				unit = if(cursor.getString(4) == null) "" else cursor.getString(4)!!,
+				starts = if(cursor.getString(5) == null) "" else cursor.getString(5)!!,
+				ends = if(cursor.getString(6) == null) "" else cursor.getString(6)!!
 			)}
 		)
 	}
@@ -399,29 +386,22 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT id, category, name, amount, unit, strftime('%Y-%m-%d', starts), strftime('%Y-%m-%d', ends) " +
 			"FROM $MEDICINES WHERE user_id = '${getUser.uid}' AND id = '$data'", mapper = { cursor ->
 			Medicine(
-				id = cursor.getString(0)!!,
-				category = cursor.getString(1)!!,
-				name = cursor.getString(2)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				category = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				name = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
 				amount = if(cursor.getDouble(3) == null) 0 else cursor.getDouble(3)!!.toInt(),
-				unit = cursor.getString(4)!!,
-				starts = cursor.getString(5)!!,
-				ends = cursor.getString(6)!!
+				unit = if(cursor.getString(4) == null) "" else cursor.getString(4)!!,
+				starts = if(cursor.getString(5) == null) "" else cursor.getString(5)!!,
+				ends = if(cursor.getString(6) == null) "" else cursor.getString(6)!!
 			)
 		}) ?: Medicine()
 	}
 
-	suspend fun getMedicineIds(data: String): List<String> {
-		return database.getAll(sql = "SELECT id FROM $MEDICINES WHERE user_id = '${getUser.uid}' AND starts >= '$data'", mapper = { cursor ->
-			cursor.getString(0)!!
-		})
-	}
-
 	suspend fun getAllMedicineTime(data: String): List<MedicineTime> {
-		return database.getAll(sql = "SELECT id, time, created_at FROM $MEDICINE_TIMES WHERE user_id = '${getUser.uid}' AND medicine_id = '$data' ORDER BY time", mapper = { cursor ->
+		return database.getAll(sql = "SELECT id, time FROM $MEDICINE_TIMES WHERE user_id = '${getUser.uid}' AND medicine_id = '$data' ORDER BY time", mapper = { cursor ->
 			MedicineTime(
-				id = cursor.getString(0)!!,
-				time = cursor.getString(1)!!,
-				createdAt = cursor.getString(2)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				time = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		)
 	}
@@ -430,7 +410,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT id, category, name, amount, unit FROM $MEDICINE_INTAKES " +
 			"WHERE user_id = '${getUser.uid}' AND strftime('%Y-%m-%d', intaked_at) = '$data1' AND medicine_time_id = '$data2'", mapper = { cursor ->
 			MedicineIntake(
-				id = cursor.getString(0)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
 				category = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
 				name = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
 				amount = if(cursor.getString(3) == null) 0 else cursor.getString(3)!!.toInt(),
@@ -439,26 +419,32 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		}) ?: MedicineIntake()
 	}
 
-	suspend fun getIntakes(data: String): List<String> {
+	suspend fun getIntakesByDate(data: String): List<String> {
 		return database.getAll(sql = "SELECT id FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' AND strftime('%Y-%m-%d', intaked_at) = '$data'", mapper = { cursor ->
-			cursor.getString(0)!!
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
+		})
+	}
+
+	suspend fun getIntakesById(data: String): List<String> {
+		return database.getAll(sql = "SELECT id FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' AND medicine_id = '$data'", mapper = { cursor ->
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		})
 	}
 
 	suspend fun getRecentlyIntakes(data: String): List<String> {
 		return database.getAll(sql = "SELECT id FROM(SELECT id, medicine_time_id, created_at FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' " +
 			"AND strftime('%Y-%m-%d', intaked_at) = '$data') GROUP BY medicine_time_id ORDER BY created_at DESC", mapper = { cursor ->
-			cursor.getString(0)!!
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		})
 	}
 
 	suspend fun getNote(data: String): Note {
 		return database.getOptional(sql = "SELECT id, title, content, emotion FROM $NOTES WHERE user_id = '${getUser.uid}' AND date = '$data' limit 1", mapper = { cursor ->
 			Note(
-				id = cursor.getString(0)!!,
-				title = cursor.getString(1)!!,
-				content = cursor.getString(2)!!,
-				emotion = cursor.getString(3)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				title = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				content = if(cursor.getString(2) == null) "" else cursor.getString(2)!!,
+				emotion = if(cursor.getString(3) == null) "" else cursor.getString(3)!!
 			)
 		}) ?: Note()
 	}
@@ -467,7 +453,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getOptional(sql = "SELECT * FROM $GOALS WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', date) = '$date' ORDER BY created_at DESC LIMIT 1", mapper = { cursor ->
 			Goal(
-				id = cursor.getString(0)!!,
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
 				weight = if(cursor.getDouble(1) == null) 0.0 else cursor.getDouble(1)!!,
 				kcalOfDiet = if(cursor.getDouble(2) == null) 0 else cursor.getDouble(2)!!.toInt(),
 				kcalOfWorkout = if(cursor.getDouble(3) == null) 0 else cursor.getDouble(3)!!.toInt(),
@@ -475,7 +461,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				waterIntake = if(cursor.getDouble(5) == null) 0 else cursor.getDouble(5)!!.toInt(),
 				sleep = if(cursor.getDouble(6) == null) 0 else cursor.getDouble(6)!!.toInt(),
 				medicineIntake = if(cursor.getDouble(7) == null) 0 else cursor.getDouble(7)!!.toInt(),
-				date = cursor.getString(8)!!
+				date = if(cursor.getString(8) == null) "" else cursor.getString(8)!!
 			)}
 		) ?: Goal()
 	}
@@ -483,17 +469,18 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	suspend fun getFile(data: String): FileItem {
 		return database.getOptional(sql = "SELECT id, name FROM $FILES WHERE user_id = '${getUser.uid}' AND profile_id = '$data' ORDER BY created_at DESC limit 1", mapper = { cursor ->
 			FileItem(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		) ?: FileItem()
 	}
 
 	suspend fun getFiles(data1: String, data2: String): List<FileItem> {
-		return database.getAll(sql = "SELECT id, name FROM $FILES WHERE user_id = '${getUser.uid}' AND $data1 = '$data2'", mapper = { cursor ->
+		return database.getAll(sql = "SELECT id, name, data FROM $FILES WHERE user_id = '${getUser.uid}' AND $data1 = '$data2'", mapper = { cursor ->
 			FileItem(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!,
+				data = if(cursor.getString(2) == null) "" else cursor.getString(2)!!
 			)}
 		)
 	}
@@ -502,8 +489,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT count(name) AS ranking, name FROM $WORKOUTS WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', date) = '$data' GROUP BY name ORDER BY ranking DESC LIMIT 4", mapper = { cursor ->
 			Workout(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		)
 	}
@@ -512,8 +499,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT count(name) AS ranking, name FROM $WORKOUTS WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', date) BETWEEN '$start' and '$end' GROUP BY name ORDER BY ranking DESC LIMIT 4", mapper = { cursor ->
 			Workout(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		)
 	}
@@ -522,8 +509,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT count(name) AS ranking, name FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', intaked_at) = '$data' GROUP BY name ORDER BY ranking DESC LIMIT 4", mapper = { cursor ->
 			Medicine(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		)
 	}
@@ -532,22 +519,22 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 		return database.getAll(sql = "SELECT count(name) AS ranking, name FROM $MEDICINE_INTAKES WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', intaked_at) BETWEEN '$start' AND '$end' GROUP BY name ORDER BY ranking DESC LIMIT 4", mapper = { cursor ->
 			Medicine(
-				id = cursor.getString(0)!!,
-				name = cursor.getString(1)!!
+				id = if(cursor.getString(0) == null) "" else cursor.getString(0)!!,
+				name = if(cursor.getString(1) == null) "" else cursor.getString(1)!!
 			)}
 		)
 	}
 
 	suspend fun getData(table: String, column1: String, column2: String, data: String): String {
 		return database.getOptional(sql = "SELECT $column1 FROM $table WHERE user_id = '${getUser.uid}' AND $column2 = '$data' limit 1", mapper = { cursor ->
-			cursor.getString(0)!!
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		}) ?: ""
 	}
 
 	suspend fun getDates(table: String, column: String, start: String, end: String): List<String> {
 		return database.getAll(sql = "SELECT distinct strftime('%Y-%m-%d', $column) FROM $table WHERE user_id = '${getUser.uid}' AND " +
 			"strftime('%Y-%m-%d', $column) BETWEEN '$start' AND '$end' ORDER BY $column", mapper = { cursor ->
-			cursor.getString(0)!!
+			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		})
 	}
 

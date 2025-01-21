@@ -23,11 +23,11 @@ import kr.bodywell.android.model.Constant.GOALS
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getExerciseCalories
 import kr.bodywell.android.util.CustomUtil.getUUID
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.util.Calendar
@@ -63,7 +63,7 @@ class ExerciseFragment : Fragment() {
             lifecycleScope.launch {
                if(getGoal.id == "") {
                   powerSync.insertGoal(Goal(id = getUUID(), kcalOfWorkout = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, "kcal_of_workout", et.text.toString(), getGoal.id)

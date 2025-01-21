@@ -49,6 +49,17 @@ data class MedicineList(
    var date: String = "",
    var medicineId: String = "",
    var medicineTimeId: String = "",
-   var initCheck: Int = 0,
-   var isChecked: String = ""
+   var initSet: Int = 0,
+   var isSet: String = ""
+)
+
+data class MedicineItem(
+   var id: Int = 0,
+   var medicineId: String = "",
+   var name: String = "",
+   var amount: Int = 1,
+   var unit: String = "",
+   var starts: String = "",
+   var ends: String = "",
+   var isSet: Int = 1
 )

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
-import kr.bodywell.android.adapter.PhotoSlideAdapter2
+import kr.bodywell.android.adapter.PhotoSlideAdapter
 import kr.bodywell.android.databinding.FragmentFoodLunchBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Constant.DIETS
@@ -20,7 +20,7 @@ import kr.bodywell.android.model.Constant.LUNCH
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.util.PermissionUtil
 import java.io.File
 import java.util.stream.Collectors
@@ -29,10 +29,10 @@ class FoodLunchFragment : Fragment() {
     private var _binding: FragmentFoodLunchBinding? = null
     val binding get() = _binding!!
 
-    private var photoAdapter: PhotoSlideAdapter2? = null
+    private var photoAdapter: PhotoSlideAdapter? = null
     private var intakeAdapter: FoodIntakeAdapter? = null
     private var getDiets = ArrayList<Food>()
-    private var imageList = ArrayList<FileItem>()
+    private var images = ArrayList<FileItem>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +44,7 @@ class FoodLunchFragment : Fragment() {
         listView()
 
         // 식단 이미지 뷰
-        if(PermissionUtil.checkCameraPermission(requireActivity())) {
+        if(PermissionUtil.checkMediaPermission(requireActivity())) {
             imageView()
         }
 
@@ -67,9 +67,9 @@ class FoodLunchFragment : Fragment() {
                         .setTitle("음식 삭제")
                         .setMessage("정말 삭제하시겠습니까?")
                         .setPositiveButton("확인") { _, _ ->
-                            if(imageList.size > 0) {
-                                imageList.stream().filter { x -> x.name == getDiets[pos].name }.collect(Collectors.toList()).forEach { x ->
-                                    imageList.remove(x)
+                            if(images.size > 0) {
+                                images.stream().filter { x -> x.name == getDiets[pos].name }.collect(Collectors.toList()).forEach { x ->
+                                    images.remove(x)
                                     File(requireActivity().filesDir, x.name).delete()
                                 }
                             }
@@ -81,8 +81,8 @@ class FoodLunchFragment : Fragment() {
                             }
 
                             getDiets.removeAt(pos)
-                            binding.viewPager.adapter = photoAdapter
-                            intakeAdapter!!.notifyDataSetChanged()
+                            imageView()
+                            binding.rv.adapter = intakeAdapter
 
                             Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         }
@@ -97,16 +97,21 @@ class FoodLunchFragment : Fragment() {
     }
 
     private fun imageView() {
-        lifecycleScope.launch {
-            binding.viewPager.adapter = null
+        binding.viewPager.adapter = null
+        images.clear()
 
+        lifecycleScope.launch {
             for(i in getDiets.indices) {
                 val getFiles = powerSync.getFiles("diet_id", getDiets[i].id)
-                for(j in getFiles.indices) imageList.add(FileItem(name = getFiles[j].name))
+                for(j in getFiles.indices) {
+                    val imgPath = requireActivity().filesDir.toString() + "/" + getFiles[j].name
+                    val file = File(imgPath)
+                    if(file.exists()) images.add(getFiles[j])
+                }
             }
 
-            if(imageList.size > 0) {
-                photoAdapter = PhotoSlideAdapter2(requireActivity(), imageList)
+            if(images.size > 0) {
+                photoAdapter = PhotoSlideAdapter(requireActivity(), images)
                 binding.viewPager.adapter = photoAdapter
                 binding.viewPager.setPadding(0, 0, 0, 0)
 

@@ -2,7 +2,6 @@ package kr.bodywell.android.adapter
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,78 +16,70 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.Constant.MEDICINES
+import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.MyApp.Companion.dataManager
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.medicine.MedicineAddFragment
+import java.time.LocalDate
+import java.time.Period
 
 class MedicineAdapter2 (
    private val fragmentManager: FragmentManager,
    private val itemList: ArrayList<Medicine> = ArrayList()
 ) : RecyclerView.Adapter<MedicineAdapter2.ViewHolder>() {
    private lateinit var context: Context
-   private lateinit var dataManager: DataManager
+//   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var alarmReceiver: AlarmReceiver = AlarmReceiver()
-   private var getMedicineTime = ArrayList<MedicineTime>()
+   private var getData = ArrayList<MedicineTime>()
    private val timeList = ArrayList<MedicineTime>()
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_medicine_record, parent, false)
       context = parent.context
-      dataManager = DataManager(context)
-      dataManager.open()
-
       return ViewHolder(view)
    }
 
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
-      val alarmId = dataManager.getMedicine(itemList[pos].id)
+      val getMedicine = dataManager.getMedicine(itemList[pos].id)
 
-      val split = itemList[pos].category.split("/", limit=3)
-      holder.tvType.text = split[0]
+      holder.tvCategory.text = itemList[pos].category
       holder.tvName.text = itemList[pos].name
       holder.tvCount.text = itemList[pos].amount.toString() + itemList[pos].unit
 
       // 약복용 시간목록 보여주기
       runBlocking {
-         getMedicineTime = powerSync.getAllMedicineTime(itemList[pos].id) as ArrayList<MedicineTime>
+         getData = powerSync.getAllMedicineTime(itemList[pos].id) as ArrayList<MedicineTime>
 
-         holder.tvPeriod.text = "${split[1]}일동안 ${getMedicineTime.size}회 복용"
+         val period = Period.between(LocalDate.parse(itemList[pos].starts), LocalDate.parse(itemList[pos].ends))
+         holder.tvPeriod.text = "${period.days + 1}일동안 ${getData.size}회 복용"
 
-         if(getMedicineTime.isNotEmpty()) {
+         if(getData.isNotEmpty()) {
             val timeList = ArrayList<MedicineTime>()
-            for(i in 0 until getMedicineTime.size) {
-               timeList.add(MedicineTime(time = getMedicineTime[i].time, userId = i+1))
-            }
+            for(i in 0 until getData.size) timeList.add(MedicineTime(time = getData[i].time, userId = i + 1))
 
             val adapter = MedicineAdapter3(timeList)
             holder.recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             holder.recyclerView.adapter = adapter
          }
 
-         if(split[2].toInt() == 1) {
-            holder.switchOnOff.isChecked = true
-         }
+         if(getMedicine.isSet == 1) holder.switchOnOff.isChecked = true
       }
 
-      // 알람 유무 체크
+      // 알람 체크 설정
       holder.switchOnOff.setOnCheckedChangeListener { _, isChecked ->
          if(isChecked) {
             val message = itemList[pos].name + " " + itemList[pos].amount + itemList[pos].unit
-            alarmReceiver.setAlarm(context, alarmId, itemList[pos].starts, itemList[pos].ends, timeList, message)
-            runBlocking {
-               powerSync.updateData(MEDICINES, "category", "${split[0]}/${split[1]}/1", itemList[pos].id)
-            }
+            alarmReceiver.setAlarm(context, getMedicine.id, itemList[pos].starts, itemList[pos].ends, timeList, message)
+            dataManager.updateAlarmSet(1)
          }else {
-            alarmReceiver.cancelAlarm(context, alarmId)
-            runBlocking {
-               powerSync.updateData(MEDICINES, "category", "${split[0]}/${split[1]}/0", itemList[pos].id)
-            }
+            alarmReceiver.cancelAlarm(context, getMedicine.id)
+            dataManager.updateAlarmSet(0)
          }
       }
 
@@ -106,9 +97,13 @@ class MedicineAdapter2 (
             .setPositiveButton("확인") { _, _ ->
                runBlocking {
                   powerSync.deleteItem(MEDICINES, "id", itemList[pos].id)
+                  val data = powerSync.getIntakesById(itemList[pos].id)
+                  for(i in data.indices) powerSync.deleteItem(MEDICINE_INTAKES, "id", data[i])
                }
 
-               alarmReceiver.cancelAlarm(context, alarmId)
+               dataManager.deleteMedicine(getMedicine.id)
+               dataManager.deleteMedicineTime(getMedicine.id)
+               alarmReceiver.cancelAlarm(context, getMedicine.id)
                itemList.removeAt(pos)
                notifyDataSetChanged()
 
@@ -125,7 +120,7 @@ class MedicineAdapter2 (
    }
 
    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-      val tvType: TextView = itemView.findViewById(R.id.tvType)
+      val tvCategory: TextView = itemView.findViewById(R.id.tvCategory)
       val switchOnOff: SwitchCompat = itemView.findViewById(R.id.switchOnOff)
       val tvName: TextView = itemView.findViewById(R.id.tvName)
       val tvPeriod: TextView = itemView.findViewById(R.id.tvPeriod)

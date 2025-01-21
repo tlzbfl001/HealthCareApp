@@ -23,8 +23,9 @@ import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.dateFormat
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.CustomUtil.replaceFragment4
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import java.time.LocalDateTime
 
 class NoteWriteFragment : Fragment() {
@@ -40,7 +41,7 @@ class NoteWriteFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment2(requireActivity().supportFragmentManager, NoteFragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, NoteFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -65,17 +66,13 @@ class NoteWriteFragment : Fragment() {
          true
       }
 
-      lifecycleScope.launch {
-         getNote = powerSync.getNote(selectedDate.toString())
-      }
-
       binding.linear.setOnTouchListener { _, _ ->
          hideKeyboard(requireActivity())
          true
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment2(requireActivity().supportFragmentManager, NoteFragment(), bundle)
+         replaceFragment4(requireActivity().supportFragmentManager, NoteFragment(), bundle)
       }
 
       binding.clPrev.setOnClickListener {
@@ -150,7 +147,7 @@ class NoteWriteFragment : Fragment() {
       lifecycleScope.launch {
          getNote = powerSync.getNote(selectedDate.toString())
 
-         if(getNote.title != "" && getNote.content != "") {
+         if(getNote.title != "") {
             binding.etTitle.setText(getNote.title)
             binding.etContent.setText(getNote.content)
             when(getNote.emotion) {

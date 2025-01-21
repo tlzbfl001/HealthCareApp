@@ -24,13 +24,12 @@ import kr.bodywell.android.model.Constant.BODY_MEASUREMENTS
 import kr.bodywell.android.model.Constant.MALE
 import kr.bodywell.android.model.Profile
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
-import kr.bodywell.android.util.CustomUtil.dateToIso
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.DetailFragment
 import kr.bodywell.android.view.setting.ProfileFragment
 import java.time.LocalDate
@@ -345,10 +344,9 @@ class BodyRecordFragment : Fragment() {
 
                if(getBody.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
-                  val date = dateToIso(selectedDate)
                   powerSync.insertBody(Body(id = uuid.toString(), height = height, weight = weight, bodyMassIndex = bmi, bodyFatPercentage = fat,
-                     skeletalMuscleMass = muscle, basalMetabolicRate = bmr, workoutIntensity = intensity, time = date,
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     skeletalMuscleMass = muscle, basalMetabolicRate = bmr, workoutIntensity = intensity, time = selectedDate.toString(),
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                   Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
                }else {
                   powerSync.updateBody(Body(id = getBody.id, height = height, weight = weight, bodyMassIndex = bmi, bodyFatPercentage = fat,

@@ -36,11 +36,11 @@ import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CalendarUtil.weekFormat
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.getNutrition
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.view.home.MainFragment
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.view.MainFragment
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -261,8 +261,8 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in getData.indices){
-         lifecycleScope.launch {
+      lifecycleScope.launch {
+         for(i in getData.indices){
             val foodKcal = getFoodCalories(getData[i])
 
             if(foodKcal.int5 > 0) {
@@ -272,45 +272,45 @@ class ReportFoodFragment : Fragment() {
                count++
             }
          }
-      }
 
-      if(barEntries.size > 0) {
-         binding.chart1.visibility = View.VISIBLE
-         binding.tvEmpty1.visibility = View.GONE
+         if(barEntries.size > 0) {
+            binding.chart1.visibility = View.VISIBLE
+            binding.tvEmpty1.visibility = View.GONE
 
-         for(index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
+            for(index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
-         val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#FF828C")
-         lineDataSet.lineWidth = 1f
-         lineDataSet.setDrawCircles(false)
-         lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 9f
-         lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
-         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-         lineDataSet.valueFormatter = DefaultValueFormatter(0)
+            val lineDataSet = LineDataSet(entries, "Line DataSet")
+            lineDataSet.color = Color.parseColor("#FF828C")
+            lineDataSet.lineWidth = 1f
+            lineDataSet.setDrawCircles(false)
+            lineDataSet.setDrawValues(true)
+            lineDataSet.valueTextSize = 9f
+            lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
+            lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+            lineDataSet.valueFormatter = DefaultValueFormatter(0)
 
-         lineData.addDataSet(lineDataSet)
-         data.setData(lineData)
+            lineData.addDataSet(lineDataSet)
+            data.setData(lineData)
 
-         val barColor = ArrayList<Int>()
-         barColor.add(Color.parseColor("#FFE1EB"))
-         barColor.add(Color.parseColor("#D8FFAA"))
-         barColor.add(Color.parseColor("#FFEDBE"))
-         barColor.add(Color.parseColor("#F0727A"))
+            val barColor = ArrayList<Int>()
+            barColor.add(Color.parseColor("#FFE1EB"))
+            barColor.add(Color.parseColor("#D8FFAA"))
+            barColor.add(Color.parseColor("#FFEDBE"))
+            barColor.add(Color.parseColor("#F0727A"))
 
-         val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.colors = barColor
-         barDataSet.valueTextSize = 0f
+            val barDataSet = BarDataSet(barEntries, "")
+            barDataSet.colors = barColor
+            barDataSet.valueTextSize = 0f
 
-         val barData = BarData(barDataSet)
-         barData.barWidth = 0.27f
+            val barData = BarData(barDataSet)
+            barData.barWidth = 0.27f
 
-         data.setData(barData)
+            data.setData(barData)
 
-         chart.data = data
+            chart.data = data
 
-         chartCommon(chart, xVal)
+            chartCommon(chart, xVal)
+         }
       }
    }
 
@@ -328,8 +328,8 @@ class ReportFoodFragment : Fragment() {
       val barEntries = ArrayList<BarEntry>()
       var count = 0
 
-      for(i in getData.indices){
-         lifecycleScope.launch {
+      lifecycleScope.launch {
+         for(i in getData.indices){
             val nutrition = getNutrition(getData[i])
             if(nutrition.volumeUnit.toDouble() > 0) {
                xVal += format2.format(format1.parse(getData[i])!!)
@@ -340,46 +340,46 @@ class ReportFoodFragment : Fragment() {
                count++
             }
          }
-      }
 
-      if(barEntries.size > 0) {
-         binding.chart2.visibility = View.VISIBLE
-         binding.tvEmpty2.visibility = View.GONE
+         if(barEntries.size > 0) {
+            binding.chart2.visibility = View.VISIBLE
+            binding.tvEmpty2.visibility = View.GONE
 
-         for (index in lineList.indices) {
-            entries.add(Entry(index.toFloat(), lineList[index]))
+            for (index in lineList.indices) {
+               entries.add(Entry(index.toFloat(), lineList[index]))
+            }
+
+            val lineDataSet = LineDataSet(entries, "Line DataSet")
+            lineDataSet.color = Color.parseColor("#EFB522")
+            lineDataSet.lineWidth = 1f
+            lineDataSet.setDrawCircles(false)
+            lineDataSet.setDrawValues(true)
+            lineDataSet.valueTextSize = 9f
+            lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
+            lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+            lineDataSet.valueFormatter = MyValueFormatter()
+
+            lineData.addDataSet(lineDataSet)
+            data.setData(lineData)
+
+            val barColor = ArrayList<Int>()
+            barColor.add(Color.parseColor("#F3E1A3"))
+            barColor.add(Color.parseColor("#F4D279"))
+            barColor.add(Color.parseColor("#EFC75D"))
+
+            val barDataSet = BarDataSet(barEntries, "")
+            barDataSet.colors = barColor
+            barDataSet.valueTextSize = 0f
+
+            val barData = BarData(barDataSet)
+            barData.barWidth = 0.27f
+
+            data.setData(barData)
+
+            chart.data = data
+
+            chartCommon(chart, xVal)
          }
-
-         val lineDataSet = LineDataSet(entries, "Line DataSet")
-         lineDataSet.color = Color.parseColor("#EFB522")
-         lineDataSet.lineWidth = 1f
-         lineDataSet.setDrawCircles(false)
-         lineDataSet.setDrawValues(true)
-         lineDataSet.valueTextSize = 9f
-         lineDataSet.valueTextColor = resources.getColor(R.color.black_white)
-         lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-         lineDataSet.valueFormatter = MyValueFormatter()
-
-         lineData.addDataSet(lineDataSet)
-         data.setData(lineData)
-
-         val barColor = ArrayList<Int>()
-         barColor.add(Color.parseColor("#F3E1A3"))
-         barColor.add(Color.parseColor("#F4D279"))
-         barColor.add(Color.parseColor("#EFC75D"))
-
-         val barDataSet = BarDataSet(barEntries, "")
-         barDataSet.colors = barColor
-         barDataSet.valueTextSize = 0f
-
-         val barData = BarData(barDataSet)
-         barData.barWidth = 0.27f
-
-         data.setData(barData)
-
-         chart.data = data
-
-         chartCommon(chart, xVal)
       }
    }
 

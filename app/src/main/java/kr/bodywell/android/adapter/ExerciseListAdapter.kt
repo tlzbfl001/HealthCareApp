@@ -1,7 +1,7 @@
 package kr.bodywell.android.adapter
 
-import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,25 +9,25 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.model.Constant.WORKOUTS
 import kr.bodywell.android.model.Workout
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.exercise.ExerciseDailyEditFragment
 
 class ExerciseListAdapter (
-   private val context: Activity,
-   private val fragmentManager: FragmentManager,
    private val itemList: ArrayList<Workout>
 ) : RecyclerView.Adapter<ExerciseListAdapter.ViewHolder>() {
+   private var context: Context? = null
    private var bundle = Bundle()
 
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val view = LayoutInflater.from(parent.context).inflate(R.layout.item_exercise_record2, parent, false)
+      context = parent.context
       return ViewHolder(view)
    }
 
@@ -38,6 +38,7 @@ class ExerciseListAdapter (
 
       holder.cl.setOnClickListener {
          bundle.putParcelable(WORKOUTS, itemList[pos])
+         val fragmentManager = (context as FragmentActivity).supportFragmentManager
          replaceFragment2(fragmentManager, ExerciseDailyEditFragment(), bundle)
       }
 

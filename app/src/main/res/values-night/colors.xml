@@ -13,9 +13,9 @@
    <color name="dark_grey_white">#ffffff</color>
    <color name="logo">#ffffff</color>
    <color name="main_top">#599068FF</color>
-   <color name="main_button">#3A3A3A</color>
-   <color name="main_button_dark">#3A3A3A</color>
-   <color name="main_button_sub">#8B7F7F7F</color>
+   <color name="sub_button">#3A3A3A</color>
+   <color name="sub_button_dark">#3A3A3A</color>
+   <color name="sub_button_round">#8B7F7F7F</color>
    <color name="button_text">#ffffff</color>
 
    <color name="food_grey">#26CCCCCC</color>

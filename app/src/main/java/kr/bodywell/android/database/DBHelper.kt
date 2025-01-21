@@ -7,11 +7,12 @@ import android.database.sqlite.SQLiteOpenHelper
 class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
    companion object {
       const val DATABASE_NAME = "app.db"
-      const val DATABASE_VERSION = 5
+      const val DATABASE_VERSION = 6
       const val USER = "user"
       const val TOKEN = "token"
       const val MEDICINE = "medicine"
-      const val UPDATED_AT = "updatedAt"
+      const val MEDICINE_TIME = "medicineTime"
+      const val UPDATE_TIME = "updateTime"
       const val USER_ID = "userId"
    }
 
@@ -22,18 +23,23 @@ class DBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, nul
       val token = "create table $TOKEN(id integer primary key autoincrement, $USER_ID integer, access text, refresh text, accessCreated text, refreshCreated text);"
       db.execSQL(token)
 
-      val medicine = "create table $MEDICINE(id integer primary key autoincrement, $USER_ID integer, medicineId text);"
+      val medicine = "create table $MEDICINE(id integer primary key autoincrement, $USER_ID integer, medicineId text, name text, " +
+         "amount integer, unit text, starts text, ends text, isSet integer);"
       db.execSQL(medicine)
 
-      val updatedAt = "create table $UPDATED_AT(id integer primary key autoincrement, $USER_ID integer, medicine text, file text);"
-      db.execSQL(updatedAt)
+      val medicineTime = "create table $MEDICINE_TIME(id integer primary key autoincrement, $USER_ID integer, medicineId integer, time text);"
+      db.execSQL(medicineTime)
+
+      val updateTime = "create table $UPDATE_TIME(id integer primary key autoincrement, $USER_ID integer, medicine text, file text);"
+      db.execSQL(updateTime)
    }
 
    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
       db.execSQL("drop table if exists $USER")
       db.execSQL("drop table if exists $TOKEN")
       db.execSQL("drop table if exists $MEDICINE")
-      db.execSQL("drop table if exists $UPDATED_AT")
+      db.execSQL("drop table if exists $MEDICINE_TIME")
+      db.execSQL("drop table if exists $UPDATE_TIME")
       onCreate(db)
    }
 }

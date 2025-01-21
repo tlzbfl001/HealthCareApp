@@ -24,9 +24,9 @@ import kr.bodywell.android.model.Constant.WATER
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.model.Water
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getUUID
-import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.util.Calendar
@@ -65,7 +65,7 @@ class WaterFragment : Fragment() {
 
                if(getGoal.id == "") {
                   powerSync.insertGoal(Goal(id = getUUID(), waterAmountOfCup = volume, waterIntake = goal, date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateWaterGoal(Goal(id = getGoal.id, waterAmountOfCup = volume, waterIntake = goal))
@@ -73,7 +73,7 @@ class WaterFragment : Fragment() {
 
                if(getWater.id == "") {
                   powerSync.insertWater(Water(id = getUUID(), mL = volume, count = count, date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
@@ -101,7 +101,7 @@ class WaterFragment : Fragment() {
 
                if(getWater.id == "") {
                   powerSync.insertWater(Water(id = getUUID(), mL = volume, count = count, date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }
@@ -133,7 +133,7 @@ class WaterFragment : Fragment() {
 
                if(getWater.id == "") {
                   powerSync.insertWater(Water(id = getUUID(), mL = volume, count = count, date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                }else {
                   powerSync.updateWater(Water(id = getWater.id, mL = volume, count = count))
                }

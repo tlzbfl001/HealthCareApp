@@ -9,39 +9,53 @@ import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import kr.bodywell.android.R
 import kr.bodywell.android.model.FileItem
-import java.io.File
 
-class PhotoSlideAdapter(
-   private val context: Context,
-   private val itemList: List<FileItem>
+class PhotoSlideAdapter (
+    private val context: Context,
+    private val itemList: ArrayList<FileItem>
 ) : PagerAdapter() {
+    private var onLongClickListener: OnLongClickListener? = null
 
-   override fun isViewFromObject(view: View, `object`: Any): Boolean {
-      return view == `object`
-   }
+    override fun isViewFromObject(view: View, `object`: Any): Boolean {
+        return view == `object`
+    }
 
-   override fun instantiateItem(container: ViewGroup, position: Int): Any {
-      val inflater = LayoutInflater.from(context)
-      val view: View = inflater.inflate(R.layout.item_photo_slide, container, false)
-      val imageView: ImageView = view.findViewById(R.id.imageView)
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.item_photo_slide2, container, false)
+        val imageView: ImageView = view.findViewById(R.id.imageView)
 
-      val imgPath = context.filesDir.toString() + "/" + itemList[position].name
-      val file = File(imgPath)
-      if(file.exists()){
-         val bm = BitmapFactory.decodeFile(imgPath)
-         imageView.setImageBitmap(bm)
-      }
+        if(itemList[position].bitmap == null) {
+            val imgPath = context.filesDir.toString() + "/" + itemList[position].name
+            val bm = BitmapFactory.decodeFile(imgPath)
+            imageView.setImageBitmap(bm)
+        }else {
+            imageView.setImageBitmap(itemList[position].bitmap)
+        }
 
-      container.addView(view, 0)
+        container.addView(view, 0)
 
-      return view
-   }
+        imageView.setOnLongClickListener {
+            onLongClickListener!!.onLongClick(position)
+            true
+        }
 
-   override fun getCount(): Int {
-      return itemList.count()
-   }
+        return view
+    }
 
-   override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-      container.removeView(`object` as View)
-   }
+    override fun getCount(): Int {
+        return itemList.count()
+    }
+
+    interface OnLongClickListener {
+        fun onLongClick(pos: Int)
+    }
+
+    fun setOnLongClickListener(listener: OnLongClickListener?) {
+        onLongClickListener = listener
+    }
+
+    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+        container.removeView(`object` as View)
+    }
 }

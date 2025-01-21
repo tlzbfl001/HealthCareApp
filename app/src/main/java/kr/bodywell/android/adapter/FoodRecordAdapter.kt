@@ -3,7 +3,6 @@ package kr.bodywell.android.adapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +17,8 @@ import kr.bodywell.android.R
 import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Constant.USER
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil.TAG
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.food.FoodEditFragment
 
 class FoodRecordAdapter(
@@ -39,9 +37,12 @@ class FoodRecordAdapter(
 
    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
       holder.textView.text = itemList[pos].name
-      holder.textView.setOnClickListener { onItemClickListener!!.onItemClick(pos) }
 
       if(itemList[pos].registerType == USER) holder.cl.visibility = View.VISIBLE else holder.cl.visibility = View.GONE
+
+      holder.textView.setOnClickListener {
+         onItemClickListener!!.onItemClick(pos)
+      }
 
       holder.cl.setOnClickListener {
          val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)

@@ -14,10 +14,10 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.databinding.FragmentSleepRecordBinding
 import kr.bodywell.android.model.Sleep
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
-import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.DetailFragment
 import nl.joery.timerangepicker.TimeRangePicker
 import java.util.Calendar
@@ -102,9 +102,9 @@ class SleepRecordFragment : Fragment() {
             calendar1.set(selectedDate.year, selectedDate.monthValue - 1, selectedDate.dayOfMonth, bedHour, bedMinute)
             calendar2.set(date.year, date.monthValue - 1, date.dayOfMonth, wakeTime / 60, wakeTime % 60)
             calendar3.set(selectedDate.year, selectedDate.monthValue - 1, selectedDate.dayOfMonth, 10, 0, 0)
-            val parse1 = dateTimeToIso1(calendar1)
-            val parse2 = dateTimeToIso1(calendar2)
-            val parse3 = dateTimeToIso1(calendar3)
+            val parse1 = dateTimeToIso(calendar1)
+            val parse2 = dateTimeToIso(calendar2)
+            val parse3 = dateTimeToIso(calendar3)
 
             lifecycleScope.launch {
                val getSleep = powerSync.getSleep(selectedDate.toString())

@@ -25,9 +25,9 @@ import kr.bodywell.android.model.Constant.BODY_MEASUREMENTS
 import kr.bodywell.android.model.Constant.GOALS
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
-import kr.bodywell.android.util.CustomUtil.powerSync
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.MainViewModel
 import java.time.LocalDate
 import java.util.Calendar
@@ -68,7 +68,7 @@ class BodyFragment : Fragment() {
                if(getGoal.id == "") {
                   val uuid = UuidCreator.getTimeOrderedEpoch()
                   powerSync.insertGoal(Goal(id = uuid.toString(), weight = et.text.toString().toDouble(), date = selectedDate.toString(),
-                     createdAt = CustomUtil.dateTimeToIso1(Calendar.getInstance()), updatedAt = CustomUtil.dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
                   powerSync.updateData(GOALS, "weight", et.text.toString(), getGoal.id)

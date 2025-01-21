@@ -14,7 +14,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class CalendarAdapter2 (
-   private val context: Context,
    private val days: ArrayList<LocalDate?>
 ) : RecyclerView.Adapter<CalendarAdapter2.ViewHolder>() {
    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

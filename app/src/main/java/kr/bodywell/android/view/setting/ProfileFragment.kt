@@ -39,13 +39,13 @@ import kr.bodywell.android.model.Profile
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.getRotatedBitmap
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.saveFile
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_2
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -125,7 +125,7 @@ class ProfileFragment : Fragment() {
 		}
 
 		binding.ivUser.setOnClickListener {
-			if(checkCameraPermission(requireActivity())) {
+			if(checkMediaPermission(requireActivity())) {
 				dialog = BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
 				val bottomSheetView = layoutInflater.inflate(R.layout.dialog_photo, null)
 
@@ -163,9 +163,9 @@ class ProfileFragment : Fragment() {
 				dialog!!.show()
 			}else {
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-					pLauncher.launch(CAMERA_PERMISSION_2)
+					pLauncher.launch(MEDIA_PERMISSION_2)
 				}else {
-					pLauncher.launch(CAMERA_PERMISSION_1)
+					pLauncher.launch(MEDIA_PERMISSION_1)
 				}
 			}
 		}

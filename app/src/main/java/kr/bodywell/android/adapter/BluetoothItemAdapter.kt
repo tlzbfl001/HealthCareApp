@@ -1,5 +1,6 @@
 package kr.bodywell.android.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kr.bodywell.android.R
 import kr.bodywell.android.model.Bluetooth
+import kr.bodywell.android.util.CustomUtil.TAG
 
 class BluetoothItemAdapter (
    private val listener: Listener,
@@ -23,18 +25,18 @@ class BluetoothItemAdapter (
          if(adapterType) {
             try {
                list[pos].device.createBond()
-            }catch (e: SecurityException) {
-               e.printStackTrace()
+            }catch(e: SecurityException) {
+               Log.e(TAG, "Bluetooth: e")
             }
          }else {
             list[pos].let { it1 -> listener.onClick(it1) }
          }
       }
 
-      try {
+      try{
          holder.tvName.text = list[pos].device.name
-      }catch (e: SecurityException) {
-         e.printStackTrace()
+      }catch(e: SecurityException) {
+         Log.e(TAG, "Bluetooth: e")
       }
    }
 

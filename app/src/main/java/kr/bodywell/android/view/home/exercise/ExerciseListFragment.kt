@@ -14,10 +14,10 @@ import kr.bodywell.android.adapter.ExerciseListAdapter
 import kr.bodywell.android.databinding.FragmentExerciseListBinding
 import kr.bodywell.android.model.Workout
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.view.home.DetailFragment
 
 class ExerciseListFragment : Fragment() {
@@ -54,7 +54,7 @@ class ExerciseListFragment : Fragment() {
 
       lifecycleScope.launch {
          val getAllWorkout = powerSync.getWorkouts(selectedDate.toString()) as ArrayList<Workout>
-         val adapter = ExerciseListAdapter(requireActivity(), parentFragmentManager, getAllWorkout)
+         val adapter = ExerciseListAdapter(getAllWorkout)
          binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
          binding.recyclerView.adapter = adapter
       }

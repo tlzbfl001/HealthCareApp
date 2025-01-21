@@ -13,17 +13,16 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentFoodDailyEditBinding
 import kr.bodywell.android.model.Constant.BREAKFAST
 import kr.bodywell.android.model.Constant.DIETS
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_1
-import kr.bodywell.android.util.PermissionUtil.CAMERA_PERMISSION_2
-import kr.bodywell.android.util.PermissionUtil.checkCameraPermission
+import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_1
+import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_2
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 
 class FoodDailyEditFragment : Fragment() {
    private var _binding: FragmentFoodDailyEditBinding? = null
@@ -31,7 +30,6 @@ class FoodDailyEditFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
-   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var getDiets = Food()
    private var type = BREAKFAST
@@ -55,16 +53,12 @@ class FoodDailyEditFragment : Fragment() {
 
       setStatusBar(requireActivity(), binding.mainLayout)
 
-      dataManager = DataManager(activity)
-      dataManager.open()
-
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
 
       getDiets = arguments?.getParcelable(DIETS)!!
       type = arguments?.getString("type").toString()
-      bundle.putParcelable(DIETS, getDiets)
       bundle.putString("type", type)
 
       count = getDiets.quantity
@@ -75,13 +69,14 @@ class FoodDailyEditFragment : Fragment() {
       }
 
       binding.tvUpload.setOnClickListener {
-         if(checkCameraPermission(requireActivity())) {
+         if(checkMediaPermission(requireActivity())) {
+            bundle.putParcelable(DIETS, getDiets)
             replaceFragment4(parentFragmentManager, GalleryFragment(), bundle)
          }else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-               pLauncher.launch(CAMERA_PERMISSION_2)
+               pLauncher.launch(MEDIA_PERMISSION_2)
             }else {
-               pLauncher.launch(CAMERA_PERMISSION_1)
+               pLauncher.launch(MEDIA_PERMISSION_1)
             }
          }
       }

@@ -27,7 +27,7 @@
          android:layout_marginTop="90dp"
          android:text="건강한 삶"
          android:textSize="27dp"
-         android:textColor="#9F98FF"
+         android:textColor="#B6A2FF"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintTop_toBottomOf="@id/ivLogo"
          app:layout_constraintEnd_toStartOf="@id/tv2"

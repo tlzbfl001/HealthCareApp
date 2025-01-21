@@ -8,12 +8,13 @@
    android:paddingBottom="11dp">
    <ImageView
       android:id="@+id/ivDevice"
-      android:layout_width="15.5dp"
-      android:layout_height="wrap_content"
+      android:layout_width="16dp"
+      android:layout_height="16dp"
       android:layout_gravity="center"
-      android:src="@drawable/baseline_devices"
+      android:src="@drawable/bluetooth"
       android:layout_marginLeft="20dp"
       app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent"/>
    <TextView
       android:id="@+id/tvName"

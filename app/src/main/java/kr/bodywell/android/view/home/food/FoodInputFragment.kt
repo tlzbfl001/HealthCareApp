@@ -18,13 +18,13 @@ import kr.bodywell.android.databinding.FragmentFoodInputBinding
 import kr.bodywell.android.model.Constant.BREAKFAST
 import kr.bodywell.android.model.Constant.FOODS
 import kr.bodywell.android.model.Food
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.filterText
 import kr.bodywell.android.util.CustomUtil.getUUID
 import kr.bodywell.android.util.CustomUtil.hideKeyboard
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment4
 import kr.bodywell.android.util.CustomUtil.setStatusBar
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import java.util.Calendar
 
 class FoodInputFragment : Fragment() {
@@ -247,9 +247,8 @@ class FoodInputFragment : Fragment() {
             }else if(carbohydrate < 0.1 || protein < 0.1 || fat < 0.1) {
                Toast.makeText(context, "영양성분은 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
             }else {
-//               val dateTimeFormat = dateTimeToIso(Calendar.getInstance())
                powerSync.insertFood(Food(id = getUUID(), name = name, calorie = calorie, carbohydrate = carbohydrate, protein = protein, fat = fat,
-                  volume = amount, volumeUnit = unit, createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                  volume = amount, volumeUnit = unit, createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
 
                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
@@ -262,7 +261,7 @@ class FoodInputFragment : Fragment() {
 
    private fun unit1() {
       unit = "mg"
-      binding.tvMg.setBackgroundResource(R.drawable.rec_25_pink)
+      binding.tvMg.setBackgroundResource(R.drawable.rec_25_food)
       binding.tvMg.setTextColor(Color.WHITE)
       binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvG.setTextColor(Color.BLACK)
@@ -279,7 +278,7 @@ class FoodInputFragment : Fragment() {
       unit = "g"
       binding.tvMg.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMg.setTextColor(Color.BLACK)
-      binding.tvG.setBackgroundResource(R.drawable.rec_25_pink)
+      binding.tvG.setBackgroundResource(R.drawable.rec_25_food)
       binding.tvG.setTextColor(Color.WHITE)
       binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvKg.setTextColor(Color.BLACK)
@@ -296,7 +295,7 @@ class FoodInputFragment : Fragment() {
       binding.tvMg.setTextColor(Color.BLACK)
       binding.tvG.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvG.setTextColor(Color.BLACK)
-      binding.tvKg.setBackgroundResource(R.drawable.rec_25_pink)
+      binding.tvKg.setBackgroundResource(R.drawable.rec_25_food)
       binding.tvKg.setTextColor(Color.WHITE)
       binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMl.setTextColor(Color.BLACK)
@@ -313,7 +312,7 @@ class FoodInputFragment : Fragment() {
       binding.tvG.setTextColor(Color.BLACK)
       binding.tvKg.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvKg.setTextColor(Color.BLACK)
-      binding.tvMl.setBackgroundResource(R.drawable.rec_25_pink)
+      binding.tvMl.setBackgroundResource(R.drawable.rec_25_food)
       binding.tvMl.setTextColor(Color.WHITE)
       binding.tvL.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvL.setTextColor(Color.BLACK)
@@ -330,7 +329,7 @@ class FoodInputFragment : Fragment() {
       binding.tvKg.setTextColor(Color.BLACK)
       binding.tvMl.setBackgroundResource(R.drawable.rec_25_border_gray)
       binding.tvMl.setTextColor(Color.BLACK)
-      binding.tvL.setBackgroundResource(R.drawable.rec_25_pink)
+      binding.tvL.setBackgroundResource(R.drawable.rec_25_food)
       binding.tvL.setTextColor(Color.WHITE)
       binding.tvUnit.text = unit
    }

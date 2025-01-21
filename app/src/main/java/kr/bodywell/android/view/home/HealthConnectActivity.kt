@@ -1,7 +1,6 @@
 package kr.bodywell.android.view.home
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.health.connect.client.HealthConnectClient
@@ -13,7 +12,6 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.util.CustomUtil.TAG
 import java.time.*
 
 class HealthConnectActivity : AppCompatActivity() {
@@ -33,9 +31,9 @@ class HealthConnectActivity : AppCompatActivity() {
       // 권한 요청
       val requestPermissions = registerForActivityResult(HealthDataRequestPermissions()) { granted ->
          if (granted.containsAll(permissions)) {
-            Log.e(TAG, "헬스커넥트 권한이 모두 허용되었습니다.")
+//            Log.e(TAG, "헬스커넥트 권한이 모두 허용되었습니다.")
          }else {
-            Log.e(TAG, "헬스커넥트 권한이 거부되었습니다.")
+//            Log.e(TAG, "헬스커넥트 권한이 거부되었습니다.")
          }
       }
 

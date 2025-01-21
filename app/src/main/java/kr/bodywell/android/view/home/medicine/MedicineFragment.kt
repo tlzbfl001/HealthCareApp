@@ -26,10 +26,10 @@ import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.MedicineList
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.dateTimeToIso1
+import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getUUID
-import kr.bodywell.android.util.CustomUtil.powerSync
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
+import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import kr.bodywell.android.view.MainViewModel
@@ -75,10 +75,10 @@ class MedicineFragment : Fragment() {
             lifecycleScope.launch {
                if(getGoal.id == "") {
                   powerSync.insertGoal(Goal(id = getUUID(), medicineIntake = et.text.toString().toInt(), date = selectedDate.toString(),
-                     createdAt = dateTimeToIso1(Calendar.getInstance()), updatedAt = dateTimeToIso1(Calendar.getInstance())))
+                     createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
                   getGoal = powerSync.getGoal(selectedDate.toString())
                }else {
-                  powerSync.updateData(GOALS, MEDICINE_INTAKES, et.text.toString(), getGoal.id)
+                  powerSync.updateData(GOALS, "medicine_intake", et.text.toString(), getGoal.id)
                }
 
                dialog.dismiss()
@@ -134,7 +134,7 @@ class MedicineFragment : Fragment() {
 
       lifecycleScope.launch {
          getGoal = powerSync.getGoal(selectedDate.toString())
-         val getIntakes = powerSync.getIntakes(selectedDate.toString())
+         val getIntakes = powerSync.getIntakesByDate(selectedDate.toString())
          val getRecently = powerSync.getRecentlyIntakes(selectedDate.toString())
 
          for(i in getIntakes.indices) {
@@ -172,12 +172,12 @@ class MedicineFragment : Fragment() {
                binding.cv.visibility = View.VISIBLE
 
                for(i in getMedicine.indices) {
-                  val getMedicineTime = powerSync.getAllMedicineTime(getMedicine[i].id)
+                  val getData = powerSync.getAllMedicineTime(getMedicine[i].id)
 
-                  for(j in getMedicineTime.indices) {
-                     val getIntake = powerSync.getIntake(selectedDate.toString(), getMedicineTime[j].id)
-                     itemList.add(MedicineList(name = getMedicine[i].name, amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getMedicineTime[j].time,
-                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getMedicineTime[j].id, initCheck = getRecently.size, isChecked = getIntake.id))
+                  for(j in getData.indices) {
+                     val getIntake = powerSync.getIntake(selectedDate.toString(), getData[j].id)
+                     itemList.add(MedicineList(name = getMedicine[i].name, amount = getMedicine[i].amount, unit = getMedicine[i].unit, time = getData[j].time,
+                        date = getMedicine[i].starts, medicineId = getMedicine[i].id, medicineTimeId = getData[j].id, initSet = getRecently.size, isSet = getIntake.id))
                   }
                }
 
