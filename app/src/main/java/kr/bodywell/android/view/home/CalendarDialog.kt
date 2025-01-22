@@ -19,7 +19,6 @@ import kotlinx.coroutines.withContext
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.CalendarAdapter1
 import kr.bodywell.android.adapter.CalendarImageSlideAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.util.CalendarUtil.monthArray
 import kr.bodywell.android.util.CalendarUtil.selectedDate
@@ -31,9 +30,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 class CalendarDialog(context: Context) : Dialog(context) {
-   private var dataManager: DataManager? = null
    private var days: ArrayList<LocalDate?> = ArrayList()
-
    private var tvYear : TextView? = null
    private var tvMonth : TextView? = null
    private var ivPrev : ImageView? = null
@@ -46,9 +43,6 @@ class CalendarDialog(context: Context) : Dialog(context) {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContentView(R.layout.dialog_calendar)
-
-      dataManager = DataManager(context)
-      dataManager!!.open()
 
       tvYear = findViewById(R.id.tvYear)
       tvMonth = findViewById(R.id.tvMonth)

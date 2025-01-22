@@ -3,6 +3,7 @@ package kr.bodywell.android.view.init
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,13 +26,13 @@ import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.KakaoLoginDTO
 import kr.bodywell.android.api.dto.LoginDTO
 import kr.bodywell.android.api.dto.NaverLoginDTO
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivityLoginBinding
 import kr.bodywell.android.model.Constant.GOOGLE
 import kr.bodywell.android.model.Constant.KAKAO
 import kr.bodywell.android.model.Constant.NAVER
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.MyApp
 
@@ -39,7 +40,6 @@ class LoginActivity : AppCompatActivity() {
    private var _binding: ActivityLoginBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var dataManager: DataManager
    private var gsc: GoogleSignInClient? = null
    private var gso: GoogleSignInOptions? = null
 
@@ -49,9 +49,6 @@ class LoginActivity : AppCompatActivity() {
       setContentView(binding.root)
 
       setStatusBar()
-
-      dataManager = DataManager(this)
-      dataManager.open()
 
       MyApp.prefs.removePrefs()
 
@@ -120,17 +117,17 @@ class LoginActivity : AppCompatActivity() {
                            intent.putExtra("token", Token(access = access, refresh = refresh))
                            startActivity(intent)
                         }else {
-                           Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                           Log.e(TAG, "getUser: $getUser")
                         }
                      }else {
-                        Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "loginWithGoogle: $loginWithGoogle")
                      }
                   }
                }else {
-                  Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                  Log.e(TAG, "GoogleSignIn: result.idToken = null")
                }
             }catch (e: Exception) {
-//               Log.e(TAG, "GoogleSignIn: $e")
+               Log.e(TAG, "GoogleSignIn: $e")
             }
          }
       }
@@ -158,33 +155,33 @@ class LoginActivity : AppCompatActivity() {
                               intent.putExtra("token", Token(access = access, refresh = refresh))
                               startActivity(intent)
                            }else {
-                              Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                              Log.e(TAG, "getUser: $getUser")
                            }
                         }else {
-                           Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                           Log.e(TAG, "response: $response")
                         }
                      }
                   }else {
-                     Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                     Log.e(TAG, "NidOAuthLogin: NaverIdLoginSDK.getAccessToken() = null")
                   }
                }
 
                override fun onError(errorCode: Int, message: String) {
-                  Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                  Log.e(TAG, "NidOAuthLogin onError1: $message")
                }
 
                override fun onFailure(httpStatus: Int, message: String) {
-                  Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                  Log.e(TAG, "NidOAuthLogin onFailure1: $message")
                }
             })
          }
 
          override fun onError(errorCode: Int, message: String) {
-            Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "NidOAuthLogin onError2: $message")
          }
 
          override fun onFailure(httpStatus: Int, message: String) {
-            Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "NidOAuthLogin onFailure2: $message")
          }
       }
 
@@ -196,7 +193,7 @@ class LoginActivity : AppCompatActivity() {
    private fun kakaoLogin() {
       val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
          if(error != null) {
-//            Log.e(TAG, "kakaoLogin: $error")
+            Log.e(TAG, "kakaoLogin1: $error")
          }else if (token != null) createKakaoUser(token)
       }
 
@@ -204,7 +201,7 @@ class LoginActivity : AppCompatActivity() {
       if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
          UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
             if(error != null) {
-               Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+               Log.e(TAG, "kakaoLogin2: $error")
                if(error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                   return@loginWithKakaoTalk
                }else UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
@@ -231,17 +228,17 @@ class LoginActivity : AppCompatActivity() {
                         intent.putExtra("token", Token(access = access, refresh = refresh))
                         startActivity(intent)
                      }else {
-                        Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "getUser: $getUser")
                      }
                   }else {
-                     Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                     Log.e(TAG, "response: $response")
                   }
                }
             }else {
-               Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+               Log.e(TAG, "UserApiClient: token.idToken = null")
             }
          }else {
-            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "UserApiClient: $error")
          }
       }
    }

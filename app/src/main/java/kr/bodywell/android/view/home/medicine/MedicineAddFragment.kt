@@ -17,7 +17,6 @@ import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.MedicineAdapter4
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMedicineAddBinding
 import kr.bodywell.android.model.Constant.MEDICINES
 import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
@@ -28,6 +27,7 @@ import kr.bodywell.android.model.MedicineItem
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.drugTimeList
 import kr.bodywell.android.util.CustomUtil.formattedISO
@@ -215,9 +215,7 @@ class MedicineAddFragment : Fragment() {
                         updatedAt = dateTimeToIso(Calendar.getInstance()), medicineId = getMedicine.id))
                   }
 
-                  if(getData.id != 0 && getData.isSet == 1) {
-                     alarmReceiver!!.setAlarm(requireActivity(), getData.id, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
-                  }
+                  if(getData.isSet == 1) alarmReceiver!!.setAlarm(requireActivity(), getData.id, selectedDate.toString(), ends, drugTimeList, "$name $amount$unit")
 
                   Toast.makeText(activity, "수정되었습니다.", Toast.LENGTH_SHORT).show()
                }else { // 약복용 정보 저장

@@ -40,6 +40,7 @@ import kr.bodywell.android.model.Constant.PROFILES
 import kr.bodywell.android.model.Constant.SLEEP
 import kr.bodywell.android.model.Constant.WATER
 import kr.bodywell.android.model.Constant.WORKOUTS
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.getToken
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -171,8 +172,7 @@ object SyncController {
 					val volume = if(op["volume"] == null) getFood.body()!!.volume else op["volume"]!!.toInt()
 					val volumeUnit = if(op["volume_unit"] == null) getFood.body()!!.volumeUnit else op["volume_unit"]
 
-					val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", entry.id,
-						FoodUpdateDTO(calorie, carbohydrate, protein, fat, quantityUnit, volume, volumeUnit!!))
+					val response = RetrofitAPI.api.updateFood("Bearer ${getToken.access}", entry.id, FoodUpdateDTO(calorie, carbohydrate, protein, fat, quantityUnit, volume, volumeUnit!!))
 					if(response.isSuccessful) Log.i(TAG, "updateFood: ${response.body()}") else Log.e(TAG, "updateFood: $response")
 				}
 			}

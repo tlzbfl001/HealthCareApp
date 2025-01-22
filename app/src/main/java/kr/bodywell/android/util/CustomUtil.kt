@@ -284,9 +284,7 @@ object CustomUtil {
 
       for(i in getDiets.indices) {
          val getFiles = powerSync.getFiles("diet_id", getDiets[i])
-         for(j in getFiles.indices) {
-            files.add(FileItem(name = getFiles[j].name, data = getFiles[j].data))
-         }
+         for(j in getFiles.indices) files.add(FileItem(name = getFiles[j].name, data = getFiles[j].data))
       }
 
       return files

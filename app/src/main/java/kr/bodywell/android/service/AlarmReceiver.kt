@@ -8,33 +8,52 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import kr.bodywell.android.R
 import kr.bodywell.android.model.MedicineTime
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import java.time.LocalDate
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
-    private var pendingIntent: PendingIntent? = null
     private val channelId = "channel1"
     private val channelName: CharSequence = "AlarmChannel"
+    var alarmManager: AlarmManager? = null
+    var pendingIntent: PendingIntent? = null
 
     override fun onReceive(context: Context, intent: Intent) {
-        val today = LocalDate.now()
-        val notificationId = intent.getStringExtra("notificationId")
+        val alarmCode = intent.getStringExtra("alarmCode")
         val startDate = intent.getStringExtra("startDate")
         val endDate = intent.getStringExtra("endDate")
         val timeList = intent.getParcelableArrayListExtra<MedicineTime>("timeList")
         val message = intent.getStringExtra("message")
 
-        if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) {
-            showAlarmNotification(context, notificationId!!.toInt(), message)
-        }
 
-        setAlarm(context, notificationId!!.toInt(), startDate!!, endDate!!, timeList!!, message!!)
+        val alarmUp = PendingIntent.getBroadcast(
+            context, alarmCode!!.toInt(),
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_MUTABLE
+        )
+        Log.d(TAG, "alarmUp: ${alarmUp}")
+
+        Log.d(TAG, "alarmCode: $alarmCode")
+        Log.d(TAG, "startDate: $startDate")
+        Log.d(TAG, "endDate: $endDate")
+        Log.d(TAG, "timeList: $timeList")
+        Log.d(TAG, "message: $message")
+
+        if(alarmCode != null) {
+            if(LocalDate.now() >= LocalDate.parse(startDate) && LocalDate.now() <= LocalDate.parse(endDate)) {
+                showAlarmNotification(context, alarmCode.toInt(), message)
+            }
+
+            setAlarm(context, alarmCode.toInt(), startDate!!, endDate!!, timeList!!, message!!)
+        }
     }
 
     private fun showAlarmNotification(context: Context, notificationId: Int, message: String?) {
@@ -54,22 +73,25 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.notify(notificationId, notification)
     }
 
-    fun setAlarm(context: Context, notificationId: Int, startDate: String, endDate: String, timeList: ArrayList<MedicineTime>, message: String) {
+    fun setAlarm(context: Context, alarmCode: Int, startDate: String, endDate: String, timeList: ArrayList<MedicineTime>, message: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
 
-        intent.putExtra("notificationId", notificationId.toString())
+        intent.putExtra("alarmCode", alarmCode.toString())
         intent.putExtra("startDate", startDate)
         intent.putExtra("endDate", endDate)
         intent.putExtra("timeList", timeList)
         intent.putExtra("message", message)
 
-        pendingIntent = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_MUTABLE)
+        }else{
+            PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
 
-        val today = LocalDate.now()
         val cal = Calendar.getInstance()
 
-        if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { // 설정된 알람주기동안 실행
+        if(LocalDate.now() >= LocalDate.parse(startDate) && LocalDate.now() <= LocalDate.parse(endDate)) { // 설정된 알람주기동안 실행
             val currentTime = System.currentTimeMillis() // 현재시간(밀리세컨드)
 
             for(i in 0 until timeList.size) {
@@ -83,7 +105,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 if(selectTime > currentTime) { // 선택된 시간이 현재시간보다 크면 알람실행
                     try{
                         if(checkAlarmPermission2(context)) {
-                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                            alarmManager!!.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                         }
                     }catch (e: SecurityException) {
                         e.printStackTrace()
@@ -100,7 +122,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
                     try{
                         if(checkAlarmPermission2(context)) {
-                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                            alarmManager!!.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                         }
                     }catch (e: SecurityException) {
                         e.printStackTrace()
@@ -109,7 +131,7 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         }
 
-        if(today < LocalDate.parse(startDate)) {
+        if(LocalDate.now() < LocalDate.parse(startDate)) {
             val split = timeList[0].time.split(":")
             cal.add(Calendar.DATE, 1)
             cal.set(Calendar.HOUR_OF_DAY, split[0].toInt())
@@ -120,7 +142,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
             try{
                 if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
-                    alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                    alarmManager!!.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                 }
             }catch (e: SecurityException) {
                 e.printStackTrace()
@@ -128,10 +150,17 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    fun cancelAlarm(context: Context, id: Int) {
+    fun cancelAlarm(context: Context, alarmCode: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
-        pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        alarmManager.cancel(pendingIntent!!)
+
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            PendingIntent.getBroadcast(context,alarmCode,intent,PendingIntent.FLAG_MUTABLE)
+        }else{
+            PendingIntent.getBroadcast(context,alarmCode,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
+        alarmManager!!.cancel(pendingIntent!!)
+        pendingIntent!!.cancel()
     }
 }

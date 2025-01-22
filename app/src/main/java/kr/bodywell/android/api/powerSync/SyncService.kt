@@ -78,7 +78,7 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 				for (entry in transaction.crud) {
 					lastEntry = entry
 
-					when (entry.op) {
+					when(entry.op) {
 						UpdateType.PUT -> {
 							upsert(_context, entry)
 						}
@@ -91,11 +91,13 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 							delete(entry.table, entry.id)
 						}
 					}
+
+					Log.d(TAG, "${entry.op}\n${entry.id}\n${entry.opData}")
 				}
 
 				transaction.complete(null)
 			}catch(e: Exception) {
-				println("Data upload error - retrying last entry: ${lastEntry!!}, $e")
+				Log.e(TAG, "powerSync err - retrying last entry: ${lastEntry!!}, $e")
 				throw e
 			}
 		}
@@ -234,8 +236,8 @@ class SyncService(context: Context, driverFactory: DatabaseDriverFactory) {
 	}
 
 	suspend fun getDietIds(date: String): List<String> {
-		return database.getAll(sql = "SELECT id FROM(SELECT id, name FROM $DIETS WHERE user_id = '${getUser.uid}' " +
-			"AND strftime('%Y-%m-%d', date) = '$date' ORDER BY created_at DESC) GROUP BY name",mapper = { cursor ->
+		return database.getAll(sql = "SELECT id, name, date, created_at FROM(SELECT id, name, date, created_at FROM $DIETS WHERE user_id = '${getUser.uid}' " +
+			"AND strftime('%Y-%m-%d', date) = '$date') ORDER BY created_at DESC",mapper = { cursor ->
 			if(cursor.getString(0) == null) "" else cursor.getString(0)!!
 		})
 	}

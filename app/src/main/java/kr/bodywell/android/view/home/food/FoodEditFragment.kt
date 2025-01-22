@@ -230,7 +230,7 @@ class FoodEditFragment : Fragment() {
 					binding.etProtein.text.toString().toDouble() < 0.1 || binding.etFat.text.toString() == ""  || binding.etFat.text.toString().toDouble() < 0.1) {
 					Toast.makeText(context, "영양성분은 0이상 입력해야합니다.", Toast.LENGTH_SHORT).show()
 				}else {
-					powerSync.updateFood(Food(id = getFood.id, calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
+					powerSync.updateFood(Food(id = foodId, calorie = binding.etKcal.text.toString().trim().toInt(), carbohydrate = binding.etCar.text.toString().trim().toDouble(),
 						protein = binding.etProtein.text.toString().trim().toDouble(), fat = binding.etFat.text.toString().trim().toDouble(),
 						volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
 

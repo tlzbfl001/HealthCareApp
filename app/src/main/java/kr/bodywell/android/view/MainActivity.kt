@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.MedicineItem
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.formattedISO
 import kr.bodywell.android.util.CustomUtil.getToken
 import kr.bodywell.android.util.CustomUtil.getUser
@@ -77,6 +79,8 @@ class MainActivity : AppCompatActivity() {
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
 
+      Log.d(TAG, "${getUser.uid}\n${getToken.access}")
+
       viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application))[MainViewModel::class.java]
 
       alarmReceiver = AlarmReceiver()
@@ -87,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
          watchMedicine.collect {
             if(it.isNotEmpty()) {
-               delay(5000)
+               delay(10000)
 
                for(i in it.indices) {
                   var getMedicine = dataManager.getMedicine(it[i].id)

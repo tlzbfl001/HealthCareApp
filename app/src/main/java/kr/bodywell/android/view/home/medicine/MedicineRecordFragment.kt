@@ -2,6 +2,7 @@ package kr.bodywell.android.view.home.medicine
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import kr.bodywell.android.adapter.MedicineAdapter2
 import kr.bodywell.android.databinding.FragmentMedicineRecordBinding
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.util.CalendarUtil.selectedDate
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment3
 import kr.bodywell.android.util.CustomUtil.setStatusBar

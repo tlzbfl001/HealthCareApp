@@ -29,7 +29,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.GalleryAdapter
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentGalleryBinding
 import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.Constant.NOTES
@@ -59,7 +58,6 @@ class GalleryFragment : Fragment() {
 	val viewModel: MainViewModel by activityViewModels()
 	private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 	private lateinit var cLauncher: ActivityResultLauncher<Intent>
-//	private lateinit var dataManager: DataManager
 	private var bundle = Bundle()
 	private var adapter: GalleryAdapter? = null
 	private var dialog: Dialog? = null

@@ -10,8 +10,8 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.view.MainActivity
 
 class StartActivity : AppCompatActivity() {
@@ -28,6 +28,7 @@ class StartActivity : AppCompatActivity() {
             start()
          }
       }
+
       super.onCreate(savedInstanceState)
       setContentView(R.layout.activity_start)
 
@@ -37,12 +38,9 @@ class StartActivity : AppCompatActivity() {
          navigationBarColor = Color.WHITE
       }
 
-      val dataManager = DataManager(this)
-      dataManager.open()
-
       val getUser = dataManager.getUser()
 
-      if(MyApp.prefs.getUserId() < 1 || getUser.email == "") {
+      if(MyApp.prefs.getUserId() < 1 || (MyApp.prefs.getUserId() > 0 && getUser.email == "")) {
          startActivity(Intent(this, InitActivity::class.java))
       }else {
          startActivity(Intent(this, MainActivity::class.java))

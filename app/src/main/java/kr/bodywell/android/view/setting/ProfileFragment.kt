@@ -30,7 +30,6 @@ import com.github.f4b6a3.uuid.UuidCreator
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentProfileBinding
 import kr.bodywell.android.model.Constant.FEMALE
 import kr.bodywell.android.model.Constant.MALE
@@ -56,7 +55,6 @@ class ProfileFragment : Fragment() {
 	private val binding get() = _binding!!
 
 	private lateinit var callback: OnBackPressedCallback
-	private lateinit var dataManager: DataManager
 	private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 	private lateinit var cLauncher: ActivityResultLauncher<Intent>
 	private var getProfile = Profile()
@@ -84,9 +82,6 @@ class ProfileFragment : Fragment() {
 		_binding = FragmentProfileBinding.inflate(layoutInflater)
 
 		setStatusBar(requireActivity(), binding.mainLayout)
-
-		dataManager = DataManager(context)
-		dataManager.open()
 
 		pLauncher = registerForActivityResult(
 			ActivityResultContracts.RequestMultiplePermissions()

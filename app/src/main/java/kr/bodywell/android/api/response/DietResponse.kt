@@ -52,5 +52,5 @@ data class DietResponse(
 	var userId: String = "",
 
 	@SerializedName("photos")
-	var photos: List<PhotoResponse> = listOf()
+	var photos: List<FileResponse> = listOf()
 )

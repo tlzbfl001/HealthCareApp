@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,14 +27,12 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
-import kr.bodywell.android.database.DBHelper
 import kr.bodywell.android.database.DBHelper.Companion.MEDICINE
 import kr.bodywell.android.database.DBHelper.Companion.MEDICINE_TIME
 import kr.bodywell.android.database.DBHelper.Companion.TOKEN
 import kr.bodywell.android.database.DBHelper.Companion.UPDATE_TIME
 import kr.bodywell.android.database.DBHelper.Companion.USER
 import kr.bodywell.android.database.DBHelper.Companion.USER_ID
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentSettingBinding
 import kr.bodywell.android.model.Constant.GOOGLE
 import kr.bodywell.android.model.Constant.KAKAO
@@ -42,12 +41,15 @@ import kr.bodywell.android.model.Constant.MALE
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.BT_PERMISSION_2
 import kr.bodywell.android.util.PermissionUtil.checkBluetoothPermission
@@ -64,7 +66,6 @@ class SettingFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
-//   private lateinit var dataManager: DataManager
    private var getUser = User()
    private var getToken = Token()
 
@@ -89,6 +90,14 @@ class SettingFragment : Fragment() {
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
+
+      if(!checkMediaPermission(requireActivity())) {
+         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_2)
+         }else {
+            pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_1)
+         }
+      }
 
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
@@ -181,7 +190,7 @@ class SettingFragment : Fragment() {
                            Toast.makeText(context, "로그아웃 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
                         }else {
                            gsc.revokeAccess().addOnCompleteListener {
-                              if(it.isSuccessful) deleteData() else Toast.makeText(context, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                              if(it.isSuccessful) deleteData() else Log.e(TAG, "gsc.revokeAccess(): $it")
                            }
                         }
                      }
@@ -215,7 +224,7 @@ class SettingFragment : Fragment() {
                            }else if (token != null) {
                               UserApiClient.instance.unlink { err ->
                                  lifecycleScope.launch{
-                                    if(err == null) deleteData() else Toast.makeText(requireActivity(), "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                                    if(err == null) deleteData() else Log.e(TAG, "UserApiClient.instance.unlink: $err")
                                  }
                               }
                            }

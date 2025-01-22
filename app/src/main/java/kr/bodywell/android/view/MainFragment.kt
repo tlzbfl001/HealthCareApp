@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -16,6 +15,8 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -24,8 +25,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import kr.bodywell.android.adapter.CalendarAdapter1
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.FragmentMainBinding
+import kr.bodywell.android.model.Constant
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
 import kr.bodywell.android.util.CustomUtil
@@ -36,8 +37,10 @@ import kr.bodywell.android.util.CustomUtil.layoutType
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.view.home.CalendarDialog
 import kr.bodywell.android.view.home.DetailFragment
+import kr.bodywell.android.view.home.food.GalleryFragment
 import java.io.File
 import java.time.Duration
 import java.time.LocalDate
@@ -53,7 +56,7 @@ class MainFragment : Fragment() {
 
    private lateinit var callback: OnBackPressedCallback
    private val viewModel: MainViewModel by activityViewModels()
-//   private lateinit var dataManager: DataManager
+   private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
    private var adapter: CalendarAdapter1? = null
    private var days = ArrayList<LocalDate?>()
    private var pressedTime: Long = 0
@@ -95,6 +98,10 @@ class MainFragment : Fragment() {
       selectedDate = LocalDate.now()
       viewModel.setDate()
 
+      pLauncher = registerForActivityResult(
+         ActivityResultContracts.RequestMultiplePermissions()
+      ){}
+
       // 프로필 설정
       lifecycleScope.launch {
          val getProfile = powerSync.getProfile()
@@ -113,8 +120,16 @@ class MainFragment : Fragment() {
       }
 
       binding.clFood.setOnClickListener {
-         layoutType = 1
-         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
+         if(PermissionUtil.checkMediaPermission(requireActivity())) {
+            layoutType = 1
+            replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
+         }else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+               pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_2)
+            }else {
+               pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_1)
+            }
+         }
       }
 
       binding.clWater.setOnClickListener {

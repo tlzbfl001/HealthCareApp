@@ -15,13 +15,13 @@ import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.DeviceDTO
-import kr.bodywell.android.database.DataManager
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
 import kr.bodywell.android.util.CustomUtil.networkStatus
 import kr.bodywell.android.util.MyApp
+import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.view.MainActivity
 import java.time.LocalDateTime
 
@@ -29,7 +29,6 @@ class SignupActivity : AppCompatActivity() {
    private var _binding: ActivitySignupBinding? = null
    private val binding get() = _binding!!
 
-   private lateinit var dataManager: DataManager
    private var isAll = true
    private var isClickable = true
 
@@ -39,9 +38,6 @@ class SignupActivity : AppCompatActivity() {
       setContentView(binding.root)
 
       setStatusBar()
-
-      dataManager = DataManager(this)
-      dataManager.open()
 
       val user = intent.getParcelableExtra<User>("user")!!
       val token = intent.getParcelableExtra<Token>("token")!!

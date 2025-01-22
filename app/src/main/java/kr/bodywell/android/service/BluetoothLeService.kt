@@ -1,4 +1,3 @@
-/*
 package kr.bodywell.android.service
 
 import android.annotation.SuppressLint
@@ -189,4 +188,4 @@ class BluetoothLeService : Service() {
       private const val ACTION_DATA_AVAILABLE = "ACTION_DATA_AVAILABLE"
       private var connectionState = 0;
    }
-}*/
+}

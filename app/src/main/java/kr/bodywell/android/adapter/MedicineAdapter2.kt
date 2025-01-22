@@ -3,6 +3,7 @@ package kr.bodywell.android.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import kr.bodywell.android.model.Constant.MEDICINE_INTAKES
 import kr.bodywell.android.model.Medicine
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.util.MyApp.Companion.powerSync
@@ -33,7 +35,6 @@ class MedicineAdapter2 (
    private val itemList: ArrayList<Medicine> = ArrayList()
 ) : RecyclerView.Adapter<MedicineAdapter2.ViewHolder>() {
    private lateinit var context: Context
-//   private lateinit var dataManager: DataManager
    private var bundle = Bundle()
    private var alarmReceiver: AlarmReceiver = AlarmReceiver()
    private var getData = ArrayList<MedicineTime>()

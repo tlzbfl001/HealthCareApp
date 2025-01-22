@@ -354,6 +354,7 @@
                         android:src="@drawable/minus"
                         android:layout_margin="5dp"
                         android:padding="6dp"
+                        android:tint="@color/medicine"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"

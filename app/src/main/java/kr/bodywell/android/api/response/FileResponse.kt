@@ -9,40 +9,17 @@ data class FileResponse(
    @SerializedName("name")
    var name: String = "",
 
+   @SerializedName("mimetype")
+   var mimetype: String = "",
+
+   @SerializedName("filetype")
+   var filetype: String = "",
+
+   @SerializedName("size")
+   var size: Int = 0,
+
    @SerializedName("data")
-   var data: String = "",
-
-   @SerializedName("filetype")
-   var filetype: String = "",
-
-   @SerializedName("mimetype")
-   var mimetype: String = "",
-
-   @SerializedName("size")
-   var size: Int = 0,
-
-   @SerializedName("createdAt")
-   var createdAt: String = "",
-
-   @SerializedName("updatedAt")
-   var updatedAt: String = ""
-)
-
-data class PhotoResponse(
-   @SerializedName("id")
-   var id: String = "",
-
-   @SerializedName("name")
-   var name: String = "",
-
-   @SerializedName("mimetype")
-   var mimetype: String = "",
-
-   @SerializedName("filetype")
-   var filetype: String = "",
-
-   @SerializedName("size")
-   var size: Int = 0,
+   var data: Int = 0,
 
    @SerializedName("createdAt")
    var createdAt: String = "",

@@ -3,6 +3,7 @@ package kr.bodywell.android.view.setting
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -67,7 +68,6 @@ class AlarmFragment : Fragment() {
 		}
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			binding.btn2.visibility = View.VISIBLE
 			if(checkAlarmPermission2(requireActivity())) {
 				binding.tvPerm2.text = "켜짐"
 				binding.tvPerm2.setTextColor(Color.parseColor("#A38FF1"))
@@ -80,6 +80,8 @@ class AlarmFragment : Fragment() {
 				val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
 				startActivity(intent)
 			}
+		}else {
+			binding.btn2.visibility = View.GONE
 		}
 	}
 

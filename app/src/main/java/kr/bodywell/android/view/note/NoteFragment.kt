@@ -38,16 +38,19 @@ import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Note
 import kr.bodywell.android.util.CalendarUtil.selectedDate
 import kr.bodywell.android.util.CalendarUtil.weekArray
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.replaceFragment2
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp.Companion.powerSync
+import kr.bodywell.android.util.PermissionUtil
 import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_1
 import kr.bodywell.android.util.PermissionUtil.MEDIA_PERMISSION_2
 import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 import kr.bodywell.android.view.MainFragment
+import kr.bodywell.android.view.home.DetailFragment
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDate
@@ -87,6 +90,14 @@ class NoteFragment : Fragment() {
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
+
+      if(!checkMediaPermission(requireActivity())) {
+         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pLauncher.launch(MEDIA_PERMISSION_2)
+         }else {
+            pLauncher.launch(MEDIA_PERMISSION_1)
+         }
+      }
 
       val layoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
