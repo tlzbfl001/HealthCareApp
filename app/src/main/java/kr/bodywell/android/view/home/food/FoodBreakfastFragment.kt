@@ -2,7 +2,6 @@ package kr.bodywell.android.view.home.food
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
-import kr.bodywell.android.adapter.PhotoSlideAdapter
+import kr.bodywell.android.adapter.ImageSlideAdapter
 import kr.bodywell.android.databinding.FragmentFoodBreakfastBinding
 import kr.bodywell.android.model.Constant.BREAKFAST
 import kr.bodywell.android.model.Constant.DIETS
@@ -21,7 +20,6 @@ import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 import java.io.File
@@ -31,7 +29,7 @@ class FoodBreakfastFragment : Fragment() {
    private var _binding: FragmentFoodBreakfastBinding? = null
    val binding get() = _binding!!
 
-   private var photoAdapter: PhotoSlideAdapter? = null
+   private var photoAdapter: ImageSlideAdapter? = null
    private var intakeAdapter: FoodIntakeAdapter? = null
    private var getDiets = ArrayList<Food>()
    private var images = ArrayList<FileItem>()
@@ -113,7 +111,7 @@ class FoodBreakfastFragment : Fragment() {
          }
 
          if(images.size > 0) {
-            photoAdapter = PhotoSlideAdapter(requireActivity(), images)
+            photoAdapter = ImageSlideAdapter(requireActivity(), images)
             binding.viewPager.adapter = photoAdapter
             binding.viewPager.setPadding(0, 0, 0, 0)
 

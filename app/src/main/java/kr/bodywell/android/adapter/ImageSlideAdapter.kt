@@ -10,7 +10,7 @@ import androidx.viewpager.widget.PagerAdapter
 import kr.bodywell.android.R
 import kr.bodywell.android.model.FileItem
 
-class PhotoSlideAdapter (
+class ImageSlideAdapter (
     private val context: Context,
     private val itemList: ArrayList<FileItem>
 ) : PagerAdapter() {
@@ -49,10 +49,6 @@ class PhotoSlideAdapter (
 
     interface OnLongClickListener {
         fun onLongClick(pos: Int)
-    }
-
-    fun setOnLongClickListener(listener: OnLongClickListener?) {
-        onLongClickListener = listener
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {

@@ -23,6 +23,7 @@ import kr.bodywell.android.model.Constant.FILES
 import kr.bodywell.android.model.MedicineItem
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.service.AlarmReceiver
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.formattedISO
 import kr.bodywell.android.util.CustomUtil.getToken
@@ -98,21 +99,17 @@ class MainActivity : AppCompatActivity() {
                   val message = "${it[i].name} ${it[i].amount}${it[i].unit}"
 
                   if(getMedicine.id == 0) { // 알람 저장
+                     dataManager.insertMedicine(MedicineItem(medicineId = it[i].id, name = it[i].name, amount = it[i].amount, unit = it[i].unit, starts = it[i].starts, ends = it[i].ends))
+                     getMedicine = dataManager.getMedicine(it[i].id)
                      val getTime = powerSync.getAllMedicineTime(it[i].id) as ArrayList
-                     if(getTime.isNotEmpty()) {
-                        dataManager.insertMedicine(MedicineItem(medicineId = it[i].id, name = it[i].name, amount = it[i].amount,
-                           unit = it[i].unit, starts = it[i].starts, ends = it[i].ends))
-                        getMedicine = dataManager.getMedicine(it[i].id)
-                        for(j in getTime.indices) dataManager.insertMedicineTime(MedicineTime(userId = getMedicine.id, time = getTime[j].time))
-                        alarmReceiver.setAlarm(this@MainActivity, getMedicine.id, it[i].starts, it[i].ends, getTime, message)
-                     }
+                     for(j in getTime.indices) dataManager.insertMedicineTime(MedicineTime(userId = getMedicine.id, time = getTime[j].time))
+                     alarmReceiver.setAlarm(this@MainActivity, getMedicine.id, it[i].starts, it[i].ends, getTime, message)
                   }else { // 알람 수정
+                     dataManager.updateMedicine(MedicineItem(id = getMedicine.id, name = it[i].name, amount = it[i].amount, unit = it[i].unit, starts = it[i].starts, ends = it[i].ends, isSet = getMedicine.isSet))
+                     dataManager.deleteMedicineTime(getMedicine.id)
                      val getTime = powerSync.getAllMedicineTime(it[i].id) as ArrayList
-                     if(getTime.isNotEmpty()) {
-                        dataManager.updateMedicine(MedicineItem(id = getMedicine.id, name = it[i].name, amount = it[i].amount, unit = it[i].unit,
-                           starts = it[i].starts, ends = it[i].ends, isSet = getMedicine.isSet))
-                        dataManager.deleteMedicineTime(getMedicine.id)
-                        for(j in getTime.indices) dataManager.insertMedicineTime(MedicineTime(userId = getMedicine.id, time = getTime[j].time))
+                     for(j in getTime.indices) dataManager.insertMedicineTime(MedicineTime(userId = getMedicine.id, time = getTime[j].time))
+                     if(getMedicine.isSet == 1 && getTime.size > 0) {
                         alarmReceiver.setAlarm(this@MainActivity, getMedicine.id, it[i].starts, it[i].ends, getTime, "${it[i].name} ${it[i].amount}${it[i].unit}")
                      }
                   }

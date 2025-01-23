@@ -1,6 +1,7 @@
 package kr.bodywell.android.util
 
 import android.app.Application
+import android.util.Log
 import com.kakao.sdk.common.KakaoSdk
 import com.powersync.DatabaseDriverFactory
 import kr.bodywell.android.R

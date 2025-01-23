@@ -98,6 +98,19 @@ class DataManager(private var context: Context?) {
       return value
    }
 
+   fun getMedicineCheck(data: Int?) : Int {
+      val db = dbHelper!!.readableDatabase
+      var value = 0
+      val sql = "SELECT isSet FROM $MEDICINE WHERE $USER_ID = ${MyApp.prefs.getUserId()} AND id = $data"
+      val cursor = db!!.rawQuery(sql, null)
+      while(cursor.moveToNext()) {
+         value = cursor.getInt(0)
+      }
+      cursor.close()
+      db.close()
+      return value
+   }
+
    fun getMedicines() : ArrayList<MedicineList> {
       val db = dbHelper!!.readableDatabase
       val list = ArrayList<MedicineList>()
@@ -149,10 +162,10 @@ class DataManager(private var context: Context?) {
       return list
    }
 
-   fun getUpdateTime(data: String) : String {
+   fun getUpdateTime() : String {
       val db = dbHelper!!.readableDatabase
       var value = ""
-      val sql = "select $data from $UPDATE_TIME where $USER_ID = ${MyApp.prefs.getUserId()}"
+      val sql = "select medicine from $UPDATE_TIME where $USER_ID = ${MyApp.prefs.getUserId()}"
       val cursor = db!!.rawQuery(sql, null)
       while(cursor.moveToNext()) {
          value = cursor.getString(0)
@@ -254,9 +267,9 @@ class DataManager(private var context: Context?) {
       db.close()
    }
 
-   fun updateAlarmSet(data: Int){
+   fun updateAlarmSet(id: Int, isSet: Int ){
       val db = dbHelper!!.writableDatabase
-      val sql = "update $MEDICINE set isSet=$data where $USER_ID=${MyApp.prefs.getUserId()}"
+      val sql = "update $MEDICINE set isSet=$isSet where $USER_ID=${MyApp.prefs.getUserId()} AND id = $id"
       db.execSQL(sql)
       db.close()
    }

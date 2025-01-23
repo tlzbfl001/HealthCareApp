@@ -4,12 +4,14 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kr.bodywell.android.R
+import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.view.MainActivity

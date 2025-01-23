@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodIntakeAdapter
-import kr.bodywell.android.adapter.PhotoSlideAdapter
+import kr.bodywell.android.adapter.ImageSlideAdapter
 import kr.bodywell.android.databinding.FragmentFoodSnackBinding
 import kr.bodywell.android.model.Constant
 import kr.bodywell.android.model.Constant.DIETS
@@ -30,7 +30,7 @@ class FoodSnackFragment : Fragment() {
     private var _binding: FragmentFoodSnackBinding? = null
     val binding get() = _binding!!
 
-    private var photoAdapter: PhotoSlideAdapter? = null
+    private var photoAdapter: ImageSlideAdapter? = null
     private var getDiets = ArrayList<Food>()
     private var images = ArrayList<FileItem>()
 
@@ -111,7 +111,7 @@ class FoodSnackFragment : Fragment() {
             }
 
             if(images.size > 0) {
-                photoAdapter = PhotoSlideAdapter(requireActivity(), images)
+                photoAdapter = ImageSlideAdapter(requireActivity(), images)
                 binding.viewPager.adapter = photoAdapter
                 binding.viewPager.setPadding(0, 0, 0, 0)
 

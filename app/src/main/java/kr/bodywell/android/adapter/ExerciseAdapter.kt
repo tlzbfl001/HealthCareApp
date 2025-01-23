@@ -23,6 +23,10 @@ class ExerciseAdapter (
       holder.tvKcal.text = "${itemList[position].calorie} kcal"
    }
 
+   override fun getItemViewType(position: Int): Int {
+      return position
+   }
+
    override fun getItemCount(): Int {
       return itemList.count()
    }

@@ -38,6 +38,7 @@ import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp.Companion.powerSync
 import kr.bodywell.android.util.PermissionUtil
+import kr.bodywell.android.util.PermissionUtil.checkMediaPermission
 import kr.bodywell.android.view.home.CalendarDialog
 import kr.bodywell.android.view.home.DetailFragment
 import kr.bodywell.android.view.home.food.GalleryFragment
@@ -102,6 +103,14 @@ class MainFragment : Fragment() {
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
 
+      if(!checkMediaPermission(requireActivity())) {
+         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_2)
+         }else {
+            pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_1)
+         }
+      }
+
       // 프로필 설정
       lifecycleScope.launch {
          val getProfile = powerSync.getProfile()
@@ -120,16 +129,8 @@ class MainFragment : Fragment() {
       }
 
       binding.clFood.setOnClickListener {
-         if(PermissionUtil.checkMediaPermission(requireActivity())) {
-            layoutType = 1
-            replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
-         }else {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-               pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_2)
-            }else {
-               pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_1)
-            }
-         }
+         layoutType = 1
+         replaceFragment1(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.clWater.setOnClickListener {

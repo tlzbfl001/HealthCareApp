@@ -26,7 +26,7 @@ class BluetoothItemAdapter (
             try {
                list[pos].device.createBond()
             }catch(e: SecurityException) {
-               Log.e(TAG, "Bluetooth: e")
+               Log.e(TAG, "createBond: $e")
             }
          }else {
             list[pos].let { it1 -> listener.onClick(it1) }
@@ -36,8 +36,12 @@ class BluetoothItemAdapter (
       try{
          holder.tvName.text = list[pos].device.name
       }catch(e: SecurityException) {
-         Log.e(TAG, "Bluetooth: e")
+         Log.e(TAG, "Bluetooth: $e")
       }
+   }
+
+   override fun getItemViewType(position: Int): Int {
+      return position
    }
 
    override fun getItemCount(): Int {

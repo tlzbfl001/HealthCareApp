@@ -118,7 +118,7 @@ class ConnectFragment : Fragment(), BluetoothItemAdapter.Listener {
             if(it.resultCode == Activity.RESULT_OK) {
                getPairedDevices()
             }else {
-//               Log.d(TAG, "기기 가져오기 실패")
+               Log.e(TAG, "기기 가져오기 실패")
             }
          }
 
@@ -139,11 +139,13 @@ class ConnectFragment : Fragment(), BluetoothItemAdapter.Listener {
    private fun getPairedDevices() {
       try{
          if(bluetoothAdapter?.bondedDevices != null) {
-            val deviceList=bluetoothAdapter?.bondedDevices as Set<BluetoothDevice>
+            val deviceList = bluetoothAdapter?.bondedDevices as Set<BluetoothDevice>
 
             deviceList.forEach {
-               pairedList.add(Bluetooth(it))
-               discoveryList.remove(Bluetooth(it))
+               if(Bluetooth(it).device.name == DEVICE_NAME) {
+                  pairedList.add(Bluetooth(it))
+                  discoveryList.remove(Bluetooth(it))
+               }
             }
 
             binding.recyclerView1.visibility = if(pairedList.isEmpty()) View.GONE else View.VISIBLE
@@ -160,11 +162,6 @@ class ConnectFragment : Fragment(), BluetoothItemAdapter.Listener {
    private val scanCallback: ScanCallback = object : ScanCallback() {
       override fun onScanResult(callbackType: Int, result: ScanResult) {
          if(result.device.name != null) {
-            var uuid = "null"
-
-            if(result.scanRecord?.serviceUuids != null) {
-               uuid = result.scanRecord!!.serviceUuids.toString()
-            }
             addScanResult(result)
          }
       }

@@ -91,14 +91,6 @@ class NoteFragment : Fragment() {
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
 
-      if(!checkMediaPermission(requireActivity())) {
-         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            pLauncher.launch(MEDIA_PERMISSION_2)
-         }else {
-            pLauncher.launch(MEDIA_PERMISSION_1)
-         }
-      }
-
       val layoutManager = GridLayoutManager(activity, 7)
       binding.recyclerView.layoutManager = layoutManager
       binding.viewPager.setPadding(140, 0, 140, 0)

@@ -21,6 +21,10 @@ class FoodTextAdapter (
         holder.tvKcal.text = "${item[pos].calorie!! * item[pos].quantity!!} kcal"
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     override fun getItemCount(): Int {
         return item.count()
     }

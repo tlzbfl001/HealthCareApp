@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kr.bodywell.android.R
 import kr.bodywell.android.adapter.FoodTextAdapter
-import kr.bodywell.android.adapter.PhotoSlideAdapter
+import kr.bodywell.android.adapter.ImageSlideAdapter
 import kr.bodywell.android.databinding.FragmentFoodBinding
 import kr.bodywell.android.model.Constant.BREAKFAST
 import kr.bodywell.android.model.Constant.DINNER
@@ -34,7 +33,6 @@ import kr.bodywell.android.model.FileItem
 import kr.bodywell.android.model.Food
 import kr.bodywell.android.model.Goal
 import kr.bodywell.android.util.CalendarUtil.selectedDate
-import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.dateTimeToIso
 import kr.bodywell.android.util.CustomUtil.getDietFiles
 import kr.bodywell.android.util.CustomUtil.getFoodCalories
@@ -235,7 +233,7 @@ class FoodFragment : Fragment() {
             }
 
             if(images.size > 0) {
-               val adapter = PhotoSlideAdapter(requireActivity(), images)
+               val adapter = ImageSlideAdapter(requireActivity(), images)
                binding.viewPager.adapter = adapter
                binding.viewPager.setPadding(0, 0, 0, 0)
 

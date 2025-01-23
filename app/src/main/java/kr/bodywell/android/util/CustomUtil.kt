@@ -207,12 +207,16 @@ object CustomUtil {
       val data = dataManager.getMedicines(LocalDate.now().toString())
       for(i in data.indices) {
          if(data[i].isSet == 1) {
-            val getTime = dataManager.getMedicineTime(data[i].id)
-            if(getTime.isNotEmpty()) {
-               alarmReceiver.setAlarm(context, data[i].id, data[i].starts, data[i].ends, getTime, data[i].name + " " + data[i].amount + data[i].unit)
-            }
+            val timeList = dataManager.getMedicineTime(data[i].id)
+            alarmReceiver.setAlarm(context, data[i].id, data[i].starts, data[i].ends, timeList, data[i].name + " " + data[i].amount + data[i].unit)
          }
       }
+   }
+
+   fun removeAlarm(context: Context) {
+      val alarmReceiver = AlarmReceiver()
+      val getMedicines = dataManager.getMedicines()
+      for(i in getMedicines.indices) alarmReceiver.cancelAlarm(context, getMedicines[i].id)
    }
 
    suspend fun getFoodCalories(date:String) : Item {

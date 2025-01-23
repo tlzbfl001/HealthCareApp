@@ -15,16 +15,15 @@ import androidx.core.content.ContextCompat
 import kr.bodywell.android.R
 import kr.bodywell.android.model.MedicineTime
 import kr.bodywell.android.util.CustomUtil.TAG
+import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission1
 import kr.bodywell.android.util.PermissionUtil.checkAlarmPermission2
 import java.time.LocalDate
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
-    private val channelId = "channel1"
+    private val channelId = "ch1"
     private val channelName: CharSequence = "AlarmChannel"
-    var alarmManager: AlarmManager? = null
-    var pendingIntent: PendingIntent? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         val alarmCode = intent.getStringExtra("alarmCode")
@@ -32,26 +31,14 @@ class AlarmReceiver : BroadcastReceiver() {
         val endDate = intent.getStringExtra("endDate")
         val timeList = intent.getParcelableArrayListExtra<MedicineTime>("timeList")
         val message = intent.getStringExtra("message")
-
-
-        val alarmUp = PendingIntent.getBroadcast(
-            context, alarmCode!!.toInt(),
-            intent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_MUTABLE
-        )
-        Log.d(TAG, "alarmUp: ${alarmUp}")
-
+        val isSet = dataManager.getMedicineCheck(alarmCode?.toInt())
         Log.d(TAG, "alarmCode: $alarmCode")
-        Log.d(TAG, "startDate: $startDate")
-        Log.d(TAG, "endDate: $endDate")
-        Log.d(TAG, "timeList: $timeList")
-        Log.d(TAG, "message: $message")
+        Log.d(TAG, "isSet: $isSet")
 
-        if(alarmCode != null) {
+        if(alarmCode != null && isSet == 1) {
             if(LocalDate.now() >= LocalDate.parse(startDate) && LocalDate.now() <= LocalDate.parse(endDate)) {
                 showAlarmNotification(context, alarmCode.toInt(), message)
             }
-
             setAlarm(context, alarmCode.toInt(), startDate!!, endDate!!, timeList!!, message!!)
         }
     }
@@ -83,15 +70,16 @@ class AlarmReceiver : BroadcastReceiver() {
         intent.putExtra("timeList", timeList)
         intent.putExtra("message", message)
 
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_MUTABLE)
-        }else{
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_IMMUTABLE)
+        }else {
             PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
+        val today = LocalDate.now()
         val cal = Calendar.getInstance()
 
-        if(LocalDate.now() >= LocalDate.parse(startDate) && LocalDate.now() <= LocalDate.parse(endDate)) { // 설정된 알람주기동안 실행
+        if(today >= LocalDate.parse(startDate) && today <= LocalDate.parse(endDate)) { // 설정된 알람주기동안 실행
             val currentTime = System.currentTimeMillis() // 현재시간(밀리세컨드)
 
             for(i in 0 until timeList.size) {
@@ -105,7 +93,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 if(selectTime > currentTime) { // 선택된 시간이 현재시간보다 크면 알람실행
                     try{
                         if(checkAlarmPermission2(context)) {
-                            alarmManager!!.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                         }
                     }catch (e: SecurityException) {
                         e.printStackTrace()
@@ -122,7 +110,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
                     try{
                         if(checkAlarmPermission2(context)) {
-                            alarmManager!!.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                            alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                         }
                     }catch (e: SecurityException) {
                         e.printStackTrace()
@@ -131,7 +119,7 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         }
 
-        if(LocalDate.now() < LocalDate.parse(startDate)) {
+        if(today < LocalDate.parse(startDate)) {
             val split = timeList[0].time.split(":")
             cal.add(Calendar.DATE, 1)
             cal.set(Calendar.HOUR_OF_DAY, split[0].toInt())
@@ -142,7 +130,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
             try{
                 if(checkAlarmPermission1(context) && checkAlarmPermission2(context)) {
-                    alarmManager!!.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
+                    alarmManager.setAlarmClock(AlarmClockInfo(selectTime, pendingIntent), pendingIntent!!)
                 }
             }catch (e: SecurityException) {
                 e.printStackTrace()
@@ -153,14 +141,12 @@ class AlarmReceiver : BroadcastReceiver() {
     fun cancelAlarm(context: Context, alarmCode: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
-
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            PendingIntent.getBroadcast(context,alarmCode,intent,PendingIntent.FLAG_MUTABLE)
-        }else{
-            PendingIntent.getBroadcast(context,alarmCode,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_IMMUTABLE)
+        }else {
+            PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-
-        alarmManager!!.cancel(pendingIntent!!)
-        pendingIntent!!.cancel()
+        alarmManager.cancel(pendingIntent!!)
+        pendingIntent.cancel()
     }
 }

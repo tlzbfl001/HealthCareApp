@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -17,9 +18,13 @@ import kr.bodywell.android.api.RetrofitAPI
 import kr.bodywell.android.api.dto.DeviceDTO
 import kr.bodywell.android.databinding.ActivitySignupBinding
 import kr.bodywell.android.model.Constant
+import kr.bodywell.android.model.Constant.PREFERENCE
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
+import kr.bodywell.android.util.CustomUtil
+import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
+import kr.bodywell.android.util.CustomUtil.resetAlarm
 import kr.bodywell.android.util.MyApp
 import kr.bodywell.android.util.MyApp.Companion.dataManager
 import kr.bodywell.android.view.MainActivity
@@ -131,7 +136,7 @@ class SignupActivity : AppCompatActivity() {
                      }
 
                      getDevice = RetrofitAPI.api.getDevice("Bearer ${token.access}")
-//                     Log.d(TAG, "getDevice: ${getDevice.isSuccessful} / ${getDevice.body()}")
+                     Log.d(TAG, "getDevice: ${getDevice.isSuccessful}")
 
                      if(getDevice.isSuccessful && getDevice.body()!![0].id != "") {
                         var getUser = dataManager.getUser(user.type, user.email)
@@ -145,7 +150,7 @@ class SignupActivity : AppCompatActivity() {
 
                         // 사용자ID 저장
                         getUser = dataManager.getUser(user.type, user.email)
-                        MyApp.prefs.setUserId(Constant.PREFERENCE, getUser.id)
+                        MyApp.prefs.setUserId(PREFERENCE, getUser.id)
 
                         // 토큰 정보 저장
                         val getToken = dataManager.getToken()
@@ -156,7 +161,11 @@ class SignupActivity : AppCompatActivity() {
                         }
 
                         // 파일 정보 저장
-                        dataManager.insertUpdateTime("1900-01-01")
+                        val getUpdateTime = dataManager.getUpdateTime()
+                        if(getUpdateTime == "") dataManager.insertUpdateTime("1900-01-01")
+
+                        // 로그아웃인 경우 알람 재설정
+                        resetAlarm(this@SignupActivity)
 
                         val intent = Intent(this@SignupActivity, MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

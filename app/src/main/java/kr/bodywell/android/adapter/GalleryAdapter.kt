@@ -63,6 +63,10 @@ class GalleryAdapter (
 		}
 	}
 
+	override fun getItemViewType(position: Int): Int {
+		return position
+	}
+
 	override fun getItemCount(): Int {
 		return itemList.count()
 	}

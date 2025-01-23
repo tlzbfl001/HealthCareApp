@@ -40,10 +40,9 @@ import kr.bodywell.android.model.Constant.NAVER
 import kr.bodywell.android.model.Constant.MALE
 import kr.bodywell.android.model.Token
 import kr.bodywell.android.model.User
-import kr.bodywell.android.service.AlarmReceiver
-import kr.bodywell.android.util.CustomUtil
 import kr.bodywell.android.util.CustomUtil.TAG
 import kr.bodywell.android.util.CustomUtil.networkStatus
+import kr.bodywell.android.util.CustomUtil.removeAlarm
 import kr.bodywell.android.util.CustomUtil.replaceFragment1
 import kr.bodywell.android.util.CustomUtil.setStatusBar
 import kr.bodywell.android.util.MyApp
@@ -90,14 +89,6 @@ class SettingFragment : Fragment() {
       pLauncher = registerForActivityResult(
          ActivityResultContracts.RequestMultiplePermissions()
       ){}
-
-      if(!checkMediaPermission(requireActivity())) {
-         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_2)
-         }else {
-            pLauncher.launch(PermissionUtil.MEDIA_PERMISSION_1)
-         }
-      }
 
       getUser = dataManager.getUser()
       getToken = dataManager.getToken()
@@ -292,6 +283,10 @@ class SettingFragment : Fragment() {
    }
 
    private fun logoutProcess() {
+      // 알람 제거
+      removeAlarm(requireActivity())
+
+      // preference 정보 삭제
       MyApp.prefs.removePrefs()
 
       requireActivity().runOnUiThread {
@@ -304,10 +299,8 @@ class SettingFragment : Fragment() {
    }
 
    private fun deleteData() {
-      // 알람 삭제
-      val alarmReceiver = AlarmReceiver()
-      val getMedicines = dataManager.getMedicines()
-      for(i in getMedicines.indices) alarmReceiver.cancelAlarm(requireActivity(), getMedicines[i].id)
+      // 알람 제거
+      removeAlarm(requireActivity())
 
       // 테이블 삭제
       dataManager.deleteTable(USER, "id")
