@@ -147,7 +147,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="-35dp"
                android:text="0 : 0"
-               android:textSize="29dp"
+               android:textSize="25dp"
                android:textColor="@color/black_white"
                android:fontFamily="@font/noto"
                app:layout_constraintTop_toTopOf="@id/tvTitle1"
@@ -189,7 +189,7 @@
                android:layout_height="wrap_content"
                android:layout_marginLeft="-35dp"
                android:text="0 : 0"
-               android:textSize="29dp"
+               android:textSize="25dp"
                android:textColor="@color/black_white"
                android:fontFamily="@font/noto"
                app:layout_constraintTop_toTopOf="@id/tvTitle2"
@@ -202,7 +202,7 @@
    <androidx.cardview.widget.CardView
       android:id="@+id/cvSave"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="48dp"
       android:layout_marginBottom="25dp"
       android:layout_marginLeft="24dp"
       android:layout_marginRight="24dp"
@@ -213,9 +213,7 @@
       app:layout_constraintBottom_toBottomOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:paddingTop="11dp"
-         android:paddingBottom="11dp">
+         android:layout_height="match_parent">
          <TextView
             android:id="@+id/textView2"
             android:layout_width="0dp"

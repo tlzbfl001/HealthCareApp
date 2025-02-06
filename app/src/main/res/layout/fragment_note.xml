@@ -134,41 +134,37 @@
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/constraint1"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
       app:layout_constraintTop_toBottomOf="@id/view1"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/constraint2">
+      app:layout_constraintEnd_toEndOf="parent">
       <TextView
          android:id="@+id/tvTitle1"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_marginLeft="20dp"
-         android:layout_marginTop="16dp"
          android:text="나의 하루 사진"
          android:textSize="15dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
+         app:layout_constraintTop_toTopOf="@id/clGallery"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="@id/clGallery"/>
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clGallery"
          android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginTop="1.5dp"
+         android:layout_height="35dp"
          app:layout_constraintStart_toEndOf="@id/tvTitle1"
-         app:layout_constraintTop_toTopOf="@id/tvTitle1"
-         app:layout_constraintBottom_toBottomOf="@id/tvTitle1">
+         app:layout_constraintTop_toTopOf="parent">
          <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:background="@drawable/oval_cal_selected"
+            android:background="@drawable/oval_cal_selected1"
             android:backgroundTint="#9FD7D7D7"
             android:src="@drawable/baseline_add"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginBottom="13dp"
             android:layout_marginRight="20dp"
             android:padding="3dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -179,19 +175,18 @@
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/view2"
          android:layout_width="match_parent"
-         android:layout_height="0dp"
+         android:layout_height="180dp"
          android:visibility="gone"
-         android:layout_marginTop="8dp"
          android:layout_marginLeft="20dp"
          android:layout_marginRight="20dp"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintTop_toBottomOf="@id/tvTitle1"
+         app:layout_constraintTop_toBottomOf="@id/clGallery"
          app:layout_constraintBottom_toBottomOf="parent">
          <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:overScrollMode="never"
             app:layout_constraintTop_toTopOf="parent"
@@ -203,41 +198,37 @@
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/constraint2"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
       app:layout_constraintTop_toBottomOf="@id/constraint1"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent">
+      app:layout_constraintEnd_toEndOf="parent">
       <TextView
          android:id="@+id/tvTitle2"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="16dp"
          android:layout_marginLeft="20dp"
          android:text="나의 하루 일기"
          android:textSize="15dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
+         app:layout_constraintTop_toTopOf="@id/clWrite"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="@id/clWrite"/>
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/clWrite"
          android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginTop="1.5dp"
-         app:layout_constraintStart_toEndOf="@id/tvTitle2"
-         app:layout_constraintTop_toTopOf="@id/tvTitle2"
-         app:layout_constraintBottom_toBottomOf="@id/tvTitle2">
+         android:layout_height="35dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toEndOf="@id/tvTitle2">
          <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:background="@drawable/oval_cal_selected"
+            android:background="@drawable/oval_cal_selected1"
             android:backgroundTint="#9FD7D7D7"
             android:src="@drawable/baseline_add"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginBottom="13dp"
             android:layout_marginRight="20dp"
             android:padding="3dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -259,7 +250,8 @@
          app:cardElevation="4dp"
          app:layout_constraintTop_toBottomOf="@id/tvTitle2"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintEnd_toEndOf="parent">
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

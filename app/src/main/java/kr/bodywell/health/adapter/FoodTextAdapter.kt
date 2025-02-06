@@ -1,0 +1,36 @@
+package kr.bodywell.health.adapter
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import kr.bodywell.health.R
+import kr.bodywell.health.model.Food
+
+class FoodTextAdapter (
+    private val item: ArrayList<Food> = ArrayList()
+) : RecyclerView.Adapter<FoodTextAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_food_text, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: FoodTextAdapter.ViewHolder, pos: Int) {
+        holder.tvName.text = "${item[pos].name}(${item[pos].volume!! * item[pos].quantity!!}${item[pos].volumeUnit})"
+        holder.tvKcal.text = "${item[pos].calorie!! * item[pos].quantity!!} kcal"
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
+    override fun getItemCount(): Int {
+        return item.count()
+    }
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvName: TextView = itemView.findViewById(R.id.tvName)
+        val tvKcal: TextView = itemView.findViewById(R.id.tvKcal)
+    }
+}

@@ -109,7 +109,7 @@
       </receiver>
       <provider
          android:name="androidx.core.content.FileProvider"
-         android:authorities="kr.bodywell.android.file_provider"
+         android:authorities="kr.bodywell.health.file_provider"
          android:exported="false"
          android:grantUriPermissions="true">
          <meta-data

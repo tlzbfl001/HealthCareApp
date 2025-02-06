@@ -48,12 +48,12 @@
                app:layout_constraintBottom_toBottomOf="parent"/>
             <View
                android:id="@+id/view"
-               android:layout_width="2dp"
+               android:layout_width="3dp"
                android:layout_height="60dp"
                android:layout_marginLeft="12dp"
                android:layout_marginTop="15dp"
                android:layout_marginBottom="15dp"
-               android:background="#FD5D5D"
+               android:background="@color/purple"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toEndOf="@id/tvName"
                app:layout_constraintBottom_toBottomOf="parent"/>

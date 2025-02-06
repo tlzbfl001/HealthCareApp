@@ -3,7 +3,7 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/food_black"
+   android:background="@color/purple_black"
    android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/clX"
@@ -294,7 +294,7 @@
          <androidx.cardview.widget.CardView
             android:id="@+id/cvSave"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="60dp"
             android:layout_marginBottom="25dp"
             android:layout_marginLeft="24dp"
@@ -303,9 +303,7 @@
             app:cardCornerRadius="50dp">
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:paddingTop="11dp"
-               android:paddingBottom="11dp">
+               android:layout_height="match_parent">
                <TextView
                   android:id="@+id/textView2"
                   android:layout_width="wrap_content"

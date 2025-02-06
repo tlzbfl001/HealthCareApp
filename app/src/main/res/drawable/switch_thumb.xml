@@ -8,7 +8,7 @@
          <solid android:color="@color/white" />
          <stroke
             android:width="2dp"
-            android:color="@color/medicine" />
+            android:color="@color/light_purple" />
       </shape>
    </item>
    <item android:state_checked="false">

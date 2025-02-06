@@ -129,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
             android:layout_marginBottom="2dp"
-            app:cardBackgroundColor="#50A9F1"
+            app:cardBackgroundColor="@color/purple"
             app:cardCornerRadius="50dp"
             app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/etGoal"

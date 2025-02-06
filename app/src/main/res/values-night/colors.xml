@@ -17,21 +17,7 @@
    <color name="sub_button_dark">#3A3A3A</color>
    <color name="sub_button_round">#8B7F7F7F</color>
    <color name="button_text">#ffffff</color>
-
-   <color name="food_grey">#26CCCCCC</color>
-   <color name="food_black">#222222</color>
-   <color name="water_grey">#26CCCCCC</color>
-   <color name="exercise_grey">#26CCCCCC</color>
-   <color name="exercise_black">#222222</color>
-   <color name="exercise_button_grey">#515151</color>
-   <color name="body_grey">#26CCCCCC</color>
-   <color name="body_black">#222222</color>
-   <color name="sleep_grey">#26CCCCCC</color>
-   <color name="medicine_grey">#26CCCCCC</color>
-   <color name="medicine_black">#222222</color>
-   <color name="medicine_list">#66516AC3</color>
-
-   <color name="report_black">#0DFFFFFF</color>
-   <color name="report_green">#54846C</color>
-   <color name="note">#3A3A3A</color>
+   <color name="purple_grey">#26CCCCCC</color>
+   <color name="purple_black">#222222</color>
+   <color name="green_black">#3A3A3A</color>
 </resources>

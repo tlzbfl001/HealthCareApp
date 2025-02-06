@@ -3,7 +3,7 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/food_grey"
+   android:background="@color/purple_grey"
    android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/clBack"
@@ -28,7 +28,7 @@
    <TextView
       android:id="@+id/tvUpload"
       android:layout_width="110dp"
-      android:layout_height="35dp"
+      android:layout_height="38dp"
       android:gravity="center"
       android:background="@drawable/rec_25_gray"
       android:backgroundTint="#B4C3C3C3"
@@ -110,9 +110,9 @@
             app:layout_constraintBottom_toBottomOf="@id/tv12">
             <ImageView
                android:id="@+id/ivMinus"
-               android:layout_width="29dp"
-               android:layout_height="29dp"
-               android:background="@drawable/oval_cal_selected"
+               android:layout_width="32dp"
+               android:layout_height="32dp"
+               android:background="@drawable/oval_cal_selected1"
                android:backgroundTint="@color/white"
                android:elevation="3dp"
                android:src="@drawable/minus"
@@ -121,7 +121,8 @@
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintEnd_toStartOf="@id/tvCount"/>
+               app:layout_constraintEnd_toStartOf="@id/tvCount"
+               app:tint="@color/purple" />
             <TextView
                android:id="@+id/tvCount"
                android:layout_width="0dp"
@@ -138,10 +139,10 @@
                app:layout_constraintBottom_toBottomOf="parent"/>
             <ImageView
                android:id="@+id/ivPlus"
-               android:layout_width="29dp"
-               android:layout_height="29dp"
-               android:background="@drawable/oval_cal_selected"
-               android:backgroundTint="#A0A0A0"
+               android:layout_width="32dp"
+               android:layout_height="32dp"
+               android:background="@drawable/oval_cal_selected1"
+               android:backgroundTint="@color/purple"
                android:elevation="3dp"
                android:src="@drawable/plus"
                android:layout_margin="5dp"
@@ -393,7 +394,7 @@
    <androidx.cardview.widget.CardView
       android:id="@+id/cvEdit"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="48dp"
       android:layout_marginBottom="25dp"
       android:layout_marginLeft="24dp"
       android:layout_marginRight="24dp"
@@ -404,9 +405,7 @@
       app:layout_constraintBottom_toBottomOf="parent">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:paddingTop="11dp"
-         android:paddingBottom="11dp">
+         android:layout_height="match_parent">
          <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"

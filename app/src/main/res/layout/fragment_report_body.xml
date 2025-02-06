@@ -37,7 +37,7 @@
          android:id="@+id/tvDate"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="15dp"
+         android:layout_marginTop="12dp"
          android:text="2023년 7월 23일"
          android:gravity="center_vertical"
          android:textColor="@color/black_white"
@@ -72,7 +72,7 @@
          android:id="@+id/clMenuBar"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
-         android:layout_marginTop="15dp"
+         android:layout_marginTop="12dp"
          app:layout_constraintTop_toBottomOf="@id/tvDate"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent">
@@ -81,7 +81,7 @@
             android:layout_width="51dp"
             android:layout_height="48dp"
             android:layout_marginRight="13dp"
-            android:background="@drawable/oval_cal_selected"
+            android:background="@drawable/oval_cal_selected1"
             android:backgroundTint="#A16A6A6A"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -188,7 +188,7 @@
             android:layout_width="62dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:background="@drawable/rec_5_purple"
+            android:background="@drawable/rec_5_green"
             android:layout_marginRight="16dp"
             android:paddingTop="6dp"
             android:paddingBottom="7dp"
@@ -235,28 +235,33 @@
             app:layout_constraintBottom_toBottomOf="@id/tvWeekly"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
    </androidx.constraintlayout.widget.ConstraintLayout>
+
    <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:background="@color/report_black"
-      app:layout_constraintTop_toBottomOf="@id/cl1"
-      app:layout_constraintStart_toStartOf="parent"
+      android:background="@color/green_black"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent">
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="1.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/cl1"
+      app:layout_constraintVertical_bias="0.0">
+
       <TextView
          android:id="@+id/tvWeight"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="12dp"
          android:layout_marginLeft="20dp"
-         android:text="체중(kg)"
-         android:textSize="14.5dp"
-         android:textColor="@color/black_white"
+         android:layout_marginTop="12dp"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="parent"
+         android:text="체중(kg)"
+         android:textColor="@color/black_white"
+         android:textSize="14.5dp"
+         app:layout_constraintBottom_toTopOf="@id/box1"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintBottom_toTopOf="@id/box1"/>
+         app:layout_constraintTop_toTopOf="parent" />
+
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/box1"
          android:layout_width="match_parent"
@@ -264,129 +269,139 @@
          android:layout_marginTop="4dp"
          android:background="@color/white_grey"
          android:elevation="3dp"
-         app:layout_constraintTop_toBottomOf="@id/tvWeight"
          app:layout_constraintBottom_toTopOf="@id/tvBmi"
+         app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintEnd_toEndOf="parent">
+         app:layout_constraintTop_toBottomOf="@id/tvWeight">
+
          <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/lineChart1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
          <TextView
             android:id="@+id/tvEmpty1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="데이터가 없습니다."
-            android:textSize="14dp"
-            android:textColor="@color/light_grey_grey"
             android:fontFamily="@font/noto"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="데이터가 없습니다."
+            android:textColor="@color/light_grey_grey"
+            android:textSize="14.5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
       </androidx.constraintlayout.widget.ConstraintLayout>
+
       <TextView
          android:id="@+id/tvBmi"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="12dp"
          android:layout_marginLeft="20dp"
-         android:text="BMI(체질량지수)"
-         android:textSize="14.5dp"
-         android:textColor="@color/black_white"
+         android:layout_marginTop="12dp"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toBottomOf="@id/box1"
+         android:text="BMI(체질량지수)"
+         android:textColor="@color/black_white"
+         android:textSize="14.5dp"
+         app:layout_constraintBottom_toTopOf="@id/box2"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintBottom_toTopOf="@id/box2"/>
+         app:layout_constraintTop_toBottomOf="@id/box1" />
+
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/box2"
          android:layout_width="match_parent"
          android:layout_height="0dp"
          android:layout_marginTop="4dp"
-         android:elevation="3dp"
          android:background="@color/white_grey"
-         app:layout_constraintTop_toBottomOf="@id/tvBmi"
-         app:layout_constraintStart_toStartOf="parent"
+         android:elevation="3dp"
          app:layout_constraintBottom_toTopOf="@id/tvFat"
-         app:layout_constraintEnd_toEndOf="parent">
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/tvBmi">
+
          <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/lineChart2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
          <TextView
             android:id="@+id/tvEmpty2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="데이터가 없습니다."
-            android:textSize="14dp"
-            android:textColor="@color/light_grey_grey"
             android:fontFamily="@font/noto"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="데이터가 없습니다."
+            android:textColor="@color/light_grey_grey"
+            android:textSize="14.5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
       </androidx.constraintlayout.widget.ConstraintLayout>
+
       <TextView
          android:id="@+id/tvFat"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginTop="12dp"
          android:layout_marginLeft="20dp"
-         android:text="체지방률(%)"
-         android:textSize="14.5dp"
-         android:textColor="@color/black_white"
+         android:layout_marginTop="12dp"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toBottomOf="@id/box2"
+         android:text="체지방률(%)"
+         android:textColor="@color/black_white"
+         android:textSize="14.5dp"
+         app:layout_constraintBottom_toTopOf="@id/box3"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintBottom_toTopOf="@id/box3"/>
+         app:layout_constraintTop_toBottomOf="@id/box2" />
+
       <androidx.constraintlayout.widget.ConstraintLayout
          android:id="@+id/box3"
          android:layout_width="match_parent"
          android:layout_height="0dp"
          android:layout_marginTop="4dp"
-         android:elevation="3dp"
          android:layout_marginBottom="20dp"
          android:background="@color/white_grey"
-         app:layout_constraintTop_toBottomOf="@id/tvFat"
-         app:layout_constraintStart_toStartOf="parent"
+         android:elevation="3dp"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toBottomOf="parent">
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/tvFat">
+
          <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/lineChart3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
          <TextView
             android:id="@+id/tvEmpty3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="데이터가 없습니다."
-            android:textSize="14dp"
-            android:textColor="@color/light_grey_grey"
             android:fontFamily="@font/noto"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="데이터가 없습니다."
+            android:textColor="@color/light_grey_grey"
+            android:textSize="14.5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
       </androidx.constraintlayout.widget.ConstraintLayout>
    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,8 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/white_black">
+   android:background="@color/white_black"
+   android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/constarint"
       android:layout_width="match_parent"
@@ -20,7 +21,7 @@
       <TextView
          android:id="@+id/tvProfile"
          android:layout_width="110dp"
-         android:layout_height="35dp"
+         android:layout_height="38dp"
          android:gravity="center"
          android:background="@drawable/rec_25_gray"
          android:backgroundTint="#8DC3C3C3"
@@ -133,7 +134,7 @@
          android:src="@drawable/setting"
          android:layout_marginTop="16dp"
          android:layout_marginLeft="20dp"
-         app:tint="@color/sleep"
+         app:tint="@color/purple"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -234,7 +235,7 @@
          android:layout_marginTop="18dp"
          android:layout_marginLeft="20dp"
          android:src="@drawable/device"
-         app:tint="@color/sleep"
+         app:tint="@color/purple"
          app:layout_constraintTop_toBottomOf="@id/cv1"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView
@@ -303,7 +304,7 @@
          android:src="@drawable/note"
          android:layout_marginTop="18dp"
          android:layout_marginLeft="20dp"
-         app:tint="@color/sleep"
+         app:tint="@color/purple"
          app:layout_constraintTop_toBottomOf="@id/cv2"
          app:layout_constraintStart_toStartOf="parent"/>
       <TextView

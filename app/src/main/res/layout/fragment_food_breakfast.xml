@@ -78,7 +78,7 @@
          android:orientation="vertical"
          android:layout_marginTop="20dp"
          android:background="@drawable/rec_top_radius_35"
-         android:backgroundTint="@color/food_grey">
+         android:backgroundTint="@color/purple_grey">
          <TextView
             android:id="@+id/tvTitle1"
             android:layout_width="wrap_content"

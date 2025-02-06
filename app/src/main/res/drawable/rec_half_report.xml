@@ -13,7 +13,7 @@
          <size
             android:width="17dp"
             android:height="17dp" />
-         <solid android:color="@color/report_black" />
+         <solid android:color="@color/green_black" />
       </shape>
    </item>
 </layer-list>

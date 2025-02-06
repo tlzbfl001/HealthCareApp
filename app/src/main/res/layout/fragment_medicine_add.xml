@@ -3,7 +3,7 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/medicine_black"
+   android:background="@color/purple_black"
    android:id="@+id/mainLayout">
    <androidx.core.widget.NestedScrollView
       android:id="@+id/scrollView"
@@ -186,7 +186,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="5dp"
-                        android:background="@drawable/rec_medicine"
+                        android:background="@drawable/rec_40_purple"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
                         android:gravity="center"
@@ -348,17 +348,17 @@
                         android:id="@+id/ivMinus"
                         android:layout_width="29dp"
                         android:layout_height="29dp"
-                        android:background="@drawable/oval_cal_selected"
+                        android:background="@drawable/oval_cal_selected1"
                         android:backgroundTint="@color/white"
                         android:elevation="3dp"
                         android:src="@drawable/minus"
                         android:layout_margin="5dp"
                         android:padding="6dp"
-                        android:tint="@color/medicine"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/tvCount"/>
+                        app:layout_constraintEnd_toStartOf="@id/tvCount"
+                        app:tint="@color/light_purple" />
                      <TextView
                         android:id="@+id/tvCount"
                         android:layout_width="0dp"
@@ -377,8 +377,8 @@
                         android:id="@+id/ivPlus"
                         android:layout_width="29dp"
                         android:layout_height="29dp"
-                        android:background="@drawable/oval_cal_selected"
-                        android:backgroundTint="@color/medicine"
+                        android:background="@drawable/oval_cal_selected1"
+                        android:backgroundTint="@color/light_purple"
                         android:elevation="3dp"
                         android:src="@drawable/plus"
                         android:layout_margin="5dp"
@@ -405,7 +405,7 @@
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:layout_marginTop="22dp"
-                     app:cardBackgroundColor="@color/medicine"
+                     app:cardBackgroundColor="@color/light_purple"
                      app:cardCornerRadius="50dp"
                      app:cardElevation="0dp"
                      app:layout_constraintStart_toStartOf="@id/clCount"
@@ -437,7 +437,7 @@
          <androidx.cardview.widget.CardView
             android:id="@+id/cvSave"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_gravity="bottom"
             android:layout_marginBottom="30dp"
             android:layout_marginLeft="24dp"
@@ -446,9 +446,7 @@
             app:cardCornerRadius="50dp">
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:paddingTop="11dp"
-               android:paddingBottom="11dp">
+               android:layout_height="match_parent">
                <TextView
                   android:id="@+id/tvStart"
                   android:layout_width="0dp"

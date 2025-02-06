@@ -3,7 +3,7 @@
    xmlns:app="http://schemas.android.com/apk/res-auto"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
-   android:background="@color/food_black"
+   android:background="@color/purple_black"
    android:focusableInTouchMode="true"
    android:id="@+id/mainLayout">
    <androidx.constraintlayout.widget.ConstraintLayout
@@ -133,7 +133,7 @@
                      android:id="@+id/tvMg"
                      android:layout_width="0dp"
                      android:layout_height="wrap_content"
-                     android:background="@drawable/rec_25_food"
+                     android:background="@drawable/rec_25_purple"
                      android:paddingTop="5dp"
                      android:paddingBottom="5dp"
                      android:text="mg"
@@ -468,7 +468,7 @@
          <androidx.cardview.widget.CardView
             android:id="@+id/cvSave"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginBottom="30dp"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
@@ -479,9 +479,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
             <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:paddingTop="11dp"
-               android:paddingBottom="11dp">
+               android:layout_height="match_parent">
                <TextView
                   android:id="@+id/tvStart"
                   android:layout_width="0dp"

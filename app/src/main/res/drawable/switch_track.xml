@@ -6,7 +6,7 @@
          <size
             android:width="38dp"
             android:height="17dp" />
-         <solid android:color="@color/medicine" />
+         <solid android:color="@color/light_purple" />
       </shape>
    </item>
    <item android:state_checked="false">

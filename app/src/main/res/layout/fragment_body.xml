@@ -15,12 +15,12 @@
       android:orientation="vertical">
       <androidx.constraintlayout.widget.ConstraintLayout
          android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:layout_marginTop="10dp">
+         android:layout_height="wrap_content">
          <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clGoal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
             <ImageView
@@ -40,76 +40,70 @@
                android:paddingLeft="3dp"
                android:text="목표설정"
                android:textColor="@color/black_white"
-               android:textSize="14.5dp"
+               android:textSize="15dp"
                android:fontFamily="@font/noto"
                android:includeFontPadding="false"
                app:layout_constraintTop_toTopOf="parent"
                app:layout_constraintEnd_toEndOf="parent"/>
          </androidx.constraintlayout.widget.ConstraintLayout>
-         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl2"
-            android:layout_width="178dp"
-            android:layout_height="178dp"
-            android:layout_marginTop="5dp"
+         <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="185dp"
+            android:layout_height="185dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            app:indicatorInset="0dp"
+            android:layout_marginTop="15dp"
+            android:indeterminate="false"
+            android:progressDrawable="@drawable/custom_progress_bg"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-            <com.dinuscxj.progressbar.CircleProgressBar
-               android:id="@+id/pbBody"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               app:progress_text_size="0dp"
-               app:progress_background_color="#26CCCCCC"
-               app:progress_end_color="@color/body"
-               app:progress_start_color="@color/body"
-               app:progress_start_degree="-90"
-               app:progress_stroke_width="14dp"
-               app:progress_style="solid_line" />
-            <androidx.constraintlayout.widget.ConstraintLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:layout_margin="17dp"
-               android:background="@drawable/oval">
-               <TextView
-                  android:id="@+id/tvWeight1"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="현재 체중"
-                  android:textColor="@color/black_white"
-                  android:textSize="14.5dp"
-                  android:fontFamily="@font/noto"
-                  android:includeFontPadding="false"
-                  app:layout_constraintBottom_toTopOf="@id/tvWeight"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:layout_constraintVertical_chainStyle="packed" />
-               <TextView
-                  android:id="@+id/tvWeight"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="0 kg"
-                  android:textColor="@color/black_white"
-                  android:textSize="17dp"
-                  android:fontFamily="@font/noto_bold"
-                  android:includeFontPadding="false"
-                  app:layout_constraintBottom_toBottomOf="parent"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintTop_toBottomOf="@id/tvWeight1" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintStart_toStartOf="parent"/>
+         <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/progressbar"
+            app:layout_constraintStart_toStartOf="@id/progressbar"
+            app:layout_constraintEnd_toEndOf="@id/progressbar"
+            app:layout_constraintBottom_toBottomOf="@id/progressbar">
+            <TextView
+               android:id="@+id/tvWeight1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="현재 체중"
+               android:textColor="@color/black_white"
+               android:textSize="14dp"
+               android:fontFamily="@font/noto"
+               android:includeFontPadding="false"
+               app:layout_constraintBottom_toTopOf="@id/tvWeight"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintVertical_chainStyle="packed" />
+            <TextView
+               android:id="@+id/tvWeight"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="0 kg"
+               android:textColor="@color/black_white"
+               android:textSize="17dp"
+               android:fontFamily="@font/noto_bold"
+               android:includeFontPadding="false"
+               app:layout_constraintBottom_toBottomOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toBottomOf="@id/tvWeight1" />
          </androidx.constraintlayout.widget.ConstraintLayout>
          <TextView
             android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
+            android:layout_marginTop="12dp"
             android:text="목표 체중"
-            android:textSize="14.5dp"
+            android:textSize="14dp"
             android:textColor="@color/black_white"
             android:fontFamily="@font/noto"
             android:includeFontPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/cl2"
+            app:layout_constraintTop_toBottomOf="@id/progressbar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/view1"
             app:layout_constraintHorizontal_chainStyle="packed"/>
@@ -134,6 +128,7 @@
             android:fontFamily="@font/noto_bold"
             android:includeFontPadding="false"
             app:layout_constraintTop_toBottomOf="@id/tv1"
+            app:layout_constraintStart_toStartOf="@id/tv1"
             app:layout_constraintEnd_toEndOf="@id/tv1"/>
          <TextView
             android:id="@+id/tv3"
@@ -141,7 +136,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="남은 체중"
-            android:textSize="14.5dp"
+            android:textSize="14dp"
             android:fontFamily="@font/noto"
             android:includeFontPadding="false"
             android:textColor="@color/black_white"
@@ -159,6 +154,7 @@
             android:includeFontPadding="false"
             android:fontFamily="@font/noto_bold"
             app:layout_constraintTop_toBottomOf="@id/tv3"
+            app:layout_constraintEnd_toEndOf="@id/tv3"
             app:layout_constraintStart_toStartOf="@id/tv3"/>
       </androidx.constraintlayout.widget.ConstraintLayout>
       <LinearLayout
@@ -167,8 +163,8 @@
          android:layout_height="match_parent"
          android:background="@drawable/rec_top_radius_35"
          android:orientation="vertical"
-         android:backgroundTint="@color/body_grey"
-         android:layout_marginTop="17dp"
+         android:backgroundTint="@color/purple_grey"
+         android:layout_marginTop="20dp"
          app:layout_constraintTop_toBottomOf="@id/tvGoal"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintBottom_toBottomOf="parent"
@@ -217,7 +213,7 @@
                   android:layout_height="wrap_content"
                   android:text="운동기록"
                   android:textColor="@color/black_white"
-                  android:textSize="14.5dp"
+                  android:textSize="15dp"
                   android:fontFamily="@font/noto"
                   android:includeFontPadding="false"
                   app:layout_constraintTop_toTopOf="parent"
@@ -250,7 +246,7 @@
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:background="@drawable/rec_15"
-                     android:backgroundTint="@color/body"
+                     android:backgroundTint="@color/purple"
                      android:layout_marginTop="15dp"
                      android:layout_marginLeft="17dp"
                      android:paddingTop="3dp"
@@ -736,7 +732,7 @@
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:background="@drawable/rec_15"
-                     android:backgroundTint="@color/body"
+                     android:backgroundTint="@color/purple"
                      android:layout_marginTop="15dp"
                      android:layout_marginLeft="17dp"
                      android:paddingTop="3dp"
@@ -1173,7 +1169,7 @@
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      android:background="@drawable/rec_15"
-                     android:backgroundTint="@color/body"
+                     android:backgroundTint="@color/purple"
                      android:layout_marginTop="15dp"
                      android:layout_marginLeft="17dp"
                      android:paddingTop="3dp"
@@ -1508,7 +1504,7 @@
                      android:layout_marginTop="15dp"
                      android:layout_marginLeft="17dp"
                      android:background="@drawable/rec_15"
-                     android:backgroundTint="@color/body"
+                     android:backgroundTint="@color/purple"
                      android:paddingTop="3dp"
                      android:paddingBottom="3dp"
                      android:paddingLeft="10dp"

@@ -18,8 +18,8 @@
          android:layout_height="match_parent"
          android:background="@drawable/slide3"/>
       <ImageView
-         android:layout_width="227dp"
-         android:layout_height="25dp"
+         android:layout_width="240dp"
+         android:layout_height="38dp"
          android:layout_gravity="center"
          android:src="@drawable/logo4"
          android:alpha="0.5"/>
@@ -50,7 +50,7 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:text="개인맞춤형"
-         android:textSize="39dp"
+         android:textSize="38dp"
          android:textColor="#B6A2FF"
          app:layout_constraintTop_toBottomOf="@id/tv1"
          app:layout_constraintStart_toStartOf="parent"

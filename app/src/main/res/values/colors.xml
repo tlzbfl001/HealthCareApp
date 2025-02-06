@@ -12,34 +12,16 @@
    <color name="dark_grey_white">#90212121</color>
    <color name="logo">#595858</color>
    <color name="main_top">#C5B6FF</color>
-   <color name="main_button">#7939EF</color>
+   <color name="main_button">#7446E3</color>
    <color name="sub_button">#45D7D7D7</color>
    <color name="sub_button_dark">#60DFDFDF</color>
    <color name="sub_button_round">#7CE3E3E3</color>
    <color name="button_text">#90212121</color>
-   <color name="photo_view">#BEBEBE</color>
-
-   <color name="food">#E180E5F0</color>
-   <color name="water">#50A9F1</color>
-   <color name="exercise">#FF5B5B</color>
-   <color name="body">#D7FFCA29</color>
-   <color name="sleep">#512DA8</color>
-   <color name="medicine">#E2FF955D</color>
-
-   <color name="food_grey">#1254E8F6</color>
-   <color name="food_black">#1254E8F6</color>
-   <color name="water_grey">#1E42A5F5</color>
-   <color name="exercise_grey">#12FD5D5D</color>
-   <color name="exercise_black">#12FD5D5D</color>
-   <color name="exercise_button_grey">#FFC2C7</color>
-   <color name="body_grey">#1CE8B408</color>
-   <color name="body_black">#1CE8B408</color>
-   <color name="sleep_grey">#20B39DDB</color>
-   <color name="medicine_grey">#1AFFA35B</color>
-   <color name="medicine_black">#1AFFA35B</color>
-   <color name="medicine_list">#ffffff</color>
-
-   <color name="report_black">#27C6AFF1</color>
-   <color name="report_green">#7EB298</color>
-   <color name="note">#2CC3ACED</color>
+   <color name="photo_view">#CECECE</color>
+   <color name="purple">#7446E3</color>
+   <color name="light_purple">#8F61FF</color>
+   <color name="purple_grey">#20C2ABEC</color>
+   <color name="purple_black">#20C2ABEC</color>
+   <color name="green">#55AC9B</color>
+   <color name="green_black">#1755AC9B</color>
 </resources>
