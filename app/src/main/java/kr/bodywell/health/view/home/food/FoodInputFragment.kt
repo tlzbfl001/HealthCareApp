@@ -40,7 +40,7 @@ class FoodInputFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -68,7 +68,7 @@ class FoodInputFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+         replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
       }
 
       binding.tvMg.setOnClickListener {
@@ -251,7 +251,7 @@ class FoodInputFragment : Fragment() {
                   volume = amount, volumeUnit = unit, createdAt = dateTimeToIso(Calendar.getInstance()), updatedAt = dateTimeToIso(Calendar.getInstance())))
 
                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-               replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+               replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
             }
          }
       }

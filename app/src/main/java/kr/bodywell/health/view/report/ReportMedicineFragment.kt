@@ -264,12 +264,12 @@ class ReportMedicineFragment : Fragment() {
             for (index in lineList.indices) entries.add(Entry(index.toFloat(), lineList[index]))
 
             val lineDataSet = LineDataSet(entries, "Line DataSet")
-            lineDataSet.color = Color.parseColor("#B499F1")
+            lineDataSet.color = Color.parseColor("#9B7CE4")
             lineDataSet.lineWidth = 1f
             lineDataSet.setDrawCircles(false)
             lineDataSet.setDrawValues(true)
             lineDataSet.valueTextSize = 9f
-            lineDataSet.valueTextColor = Color.parseColor("#BBBBBB")
+            lineDataSet.valueTextColor = Color.parseColor("#9B7CE4")
             lineDataSet.axisDependency = YAxis.AxisDependency.RIGHT
             lineDataSet.valueFormatter = MyValueFormatter()
 
@@ -278,7 +278,7 @@ class ReportMedicineFragment : Fragment() {
             data.setData(lineData)
 
             val barDataSet = BarDataSet(barEntries, "")
-            barDataSet.color = Color.parseColor("#B499F1")
+            barDataSet.color = Color.parseColor("#9B7CE4")
             barDataSet.valueTextSize = 0f
 
             val barData = BarData(barDataSet)

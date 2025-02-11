@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
+import com.google.android.material.tabs.TabLayoutMediator
 import kr.bodywell.health.R
 import kr.bodywell.health.adapter.PagerAdapter
 import kr.bodywell.health.databinding.FragmentDetailBinding
@@ -37,12 +38,9 @@ class DetailFragment : Fragment() {
 
    override fun onAttach(context: Context) {
       super.onAttach(context)
-      for (f in childFragmentManager.fragments) {
-         childFragmentManager.beginTransaction().remove(f).commit()
-      }
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, MainFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, MainFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -59,7 +57,7 @@ class DetailFragment : Fragment() {
       binding.tvDate.text = dateFormat(selectedDate)
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(parentFragmentManager, MainFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, MainFragment())
       }
 
       binding.clPrev.setOnClickListener {
@@ -80,16 +78,27 @@ class DetailFragment : Fragment() {
    }
 
    private fun setTabView() {
-      val pagerAdapter = PagerAdapter(requireActivity().supportFragmentManager)
-      pagerAdapter.add(FoodFragment(), "식단")
-      pagerAdapter.add(WaterFragment(), "물")
-      pagerAdapter.add(ExerciseFragment(), "운동")
-      pagerAdapter.add(BodyFragment(), "신체")
-      pagerAdapter.add(SleepFragment(), "수면")
-      pagerAdapter.add(MedicineFragment(), "약복용")
+      val fragmentList = ArrayList<Fragment>()
+      fragmentList.add(FoodFragment())
+      fragmentList.add(WaterFragment())
+      fragmentList.add(ExerciseFragment())
+      fragmentList.add(BodyFragment())
+      fragmentList.add(SleepFragment())
+      fragmentList.add(MedicineFragment())
+
+      val pagerAdapter = PagerAdapter(fragmentList, requireActivity())
       binding.viewPager.adapter = pagerAdapter
 
-      binding.tabLayout.setupWithViewPager(binding.viewPager)
+      TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+         when(position) {
+            0 -> tab.text = "식단"
+            1 -> tab.text = "물"
+            2 -> tab.text = "운동"
+            3 -> tab.text = "신체"
+            4 -> tab.text = "수면"
+            5 -> tab.text = "약복용"
+         }
+      }.attach()
 
       for(i in 0 until 6) {
          val textView = LayoutInflater.from(requireActivity()).inflate(R.layout.item_tab, null) as TextView

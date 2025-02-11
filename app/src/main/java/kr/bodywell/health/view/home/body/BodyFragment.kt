@@ -84,7 +84,7 @@ class BodyFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(parentFragmentManager, BodyRecordFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, BodyRecordFragment())
       }
 
       binding.clBmi.setOnClickListener {
@@ -169,10 +169,12 @@ class BodyFragment : Fragment() {
             }
 
             val remain = (getGoal.weight - getBody.weight!!)
-            val split2 = remain.toString().split(".")
-            when(split2[1]) {
-               "0" -> binding.tvRemain.text = "${split2[0]}kg"
-               else -> binding.tvRemain.text = "${String.format("%.1f", remain)}kg"
+            if(remain > 0) {
+               val split2 = remain.toString().split(".")
+               when(split2[1]) {
+                  "0" -> binding.tvRemain.text = "${split2[0]}kg"
+                  else -> binding.tvRemain.text = "${String.format("%.1f", remain)}kg"
+               }
             }
          }else binding.progressbar.progress = 0
       }
@@ -184,157 +186,109 @@ class BodyFragment : Fragment() {
       if(getBody.skeletalMuscleMass != null) binding.tvMuscle.text = "${getBody.skeletalMuscleMass} kg" else binding.tvMuscle.text = "0 kg"
       if(getBody.basalMetabolicRate != null) binding.tvBmr.text = "${getBody.basalMetabolicRate} kcal" else binding.tvBmr.text = "0 kcal"
 
+      binding.bmiIndicator1.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.bmiIndicator2.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.bmiIndicator3.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.bmiIndicator4.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.bmiIndicator5.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.bmiIndicator6.thumb.setTint(resources.getColor(R.color.transparent))
+
+      binding.fatIndicator1.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.fatIndicator2.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.fatIndicator3.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.fatIndicator4.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.fatIndicator5.thumb.setTint(resources.getColor(R.color.transparent))
+
+      binding.muscleIndicator1.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.muscleIndicator2.thumb.setTint(resources.getColor(R.color.transparent))
+      binding.muscleIndicator3.thumb.setTint(resources.getColor(R.color.transparent))
+
       // 체질량지수 범위
-      var bmi = 0
+      var bmi = 1
       if(getBody.bodyMassIndex != null) {
          val format = String.format("%.1f", getBody.bodyMassIndex)
          bmi = format.replace(".", "").toInt()
       }
-      when {
-         bmi < 186 -> {
-            binding.bmiIndicator1.progress = bmi
-            binding.bmiIndicator1.thumb.setTint(Color.BLACK)
-            binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
-            binding.tvBmiStatus.text = "저체중"
-         }
-         bmi < 231 -> {
-            binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator2.progress = bmi
-            binding.bmiIndicator2.thumb.setTint(Color.BLACK)
-            binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
-            binding.tvBmiStatus.text = "정상체중"
-         }
-         bmi < 251 -> {
-            binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator3.progress = bmi
-            binding.bmiIndicator3.thumb.setTint(Color.BLACK)
-            binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
-            binding.tvBmiStatus.text = "과체중"
-         }
-         bmi < 301 -> {
-            binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator4.progress = bmi
-            binding.bmiIndicator4.thumb.setTint(Color.BLACK)
-            binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
-            binding.tvBmiStatus.text = "비만1"
-         }
-         bmi < 401 -> {
-            binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator5.progress = bmi
-            binding.bmiIndicator5.thumb.setTint(Color.BLACK)
-            binding.bmiIndicator6.thumb.setTint(Color.TRANSPARENT)
-            binding.tvBmiStatus.text = "비만2"
-         }
-         bmi < 501 -> {
-            binding.bmiIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.bmiIndicator6.progress = bmi
-            binding.bmiIndicator6.thumb.setTint(Color.BLACK)
-            binding.tvBmiStatus.text = "심각한비만3"
-         }
+
+      if(bmi in 1..186) {
+         binding.bmiIndicator1.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.bmiIndicator1.progress = bmi
+         binding.tvBmiStatus.text = "저체중"
+      }else if(bmi in 186..231) {
+         binding.bmiIndicator2.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.bmiIndicator2.progress = bmi
+         binding.tvBmiStatus.text = "정상체중"
+      }else if(bmi in 231..251) {
+         binding.bmiIndicator3.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.bmiIndicator3.progress = bmi
+         binding.tvBmiStatus.text = "과체중"
+      }else if(bmi in 251..301) {
+         binding.bmiIndicator4.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.bmiIndicator4.progress = bmi
+         binding.tvBmiStatus.text = "비만1"
+      }else if(bmi in 301..401) {
+         binding.bmiIndicator5.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.bmiIndicator5.progress = bmi
+         binding.tvBmiStatus.text = "비만2"
+      }else {
+         binding.bmiIndicator6.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.bmiIndicator6.progress = bmi
+         binding.tvBmiStatus.text = "심각한비만3"
       }
 
       // 체지방율 범위
-      var fat = 0
+      var fat = 1
       if(getBody.bodyMassIndex != null) {
          val format = String.format("%.1f", getBody.bodyFatPercentage)
          fat = format.replace(".", "").toInt()
       }
-      when {
-         fat < 141 -> {
-            binding.fatIndicator1.progress = fat
-            binding.fatIndicator1.thumb.setTint(Color.BLACK)
-            binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.tvFatStatus.text = "너무낮은수준"
-         }
-         fat < 211 -> {
-            binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator2.progress = fat
-            binding.fatIndicator2.thumb.setTint(Color.BLACK)
-            binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.tvFatStatus.text = "운동선수수준"
-         }
-         fat < 251 -> {
-            binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator3.progress = fat
-            binding.fatIndicator3.thumb.setTint(Color.BLACK)
-            binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.tvFatStatus.text = "건강한수준"
-         }
-         fat < 321 -> {
-            binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator4.progress = fat
-            binding.fatIndicator4.thumb.setTint(Color.BLACK)
-            binding.fatIndicator5.thumb.setTint(Color.TRANSPARENT)
-            binding.tvFatStatus.text = "괜찮은수준"
-         }
-         fat < 401 -> {
-            binding.fatIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator4.thumb.setTint(Color.TRANSPARENT)
-            binding.fatIndicator5.progress = fat
-            binding.fatIndicator5.thumb.setTint(Color.BLACK)
-            binding.tvFatStatus.text = "높은수준"
-         }
+
+      if(fat in 1..141) {
+         binding.fatIndicator1.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.fatIndicator1.progress = fat
+         binding.tvFatStatus.text = "너무낮은수준"
+      }else if(fat in 141..211) {
+         binding.fatIndicator2.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.fatIndicator2.progress = fat
+         binding.tvFatStatus.text = "운동선수수준"
+      }else if(fat in 211..251) {
+         binding.fatIndicator3.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.fatIndicator3.progress = fat
+         binding.tvFatStatus.text = "건강한수준"
+      }else if(fat in 251..321) {
+         binding.fatIndicator4.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.fatIndicator4.progress = fat
+         binding.tvFatStatus.text = "괜찮은수준"
+      }else {
+         binding.fatIndicator5.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.fatIndicator5.progress = fat
+         binding.tvFatStatus.text = "높은수준"
       }
 
       // 골격근량 범위
-      var muscle = 0
+      var muscle = 1
       if(getBody.bodyMassIndex != null) {
          val format = String.format("%.1f", getBody.skeletalMuscleMass)
          muscle = format.replace(".", "").toInt()
       }
-      when {
-         muscle < 267 -> {
-            binding.muscleIndicator1.progress = muscle
-            binding.muscleIndicator1.thumb.setTint(Color.BLACK)
-            binding.muscleIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.muscleIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.tvMuscleStatus.text = "낮음"
-         }
-         muscle < 311 -> {
-            binding.muscleIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.muscleIndicator2.progress = muscle
-            binding.muscleIndicator2.thumb.setTint(Color.BLACK)
-            binding.muscleIndicator3.thumb.setTint(Color.TRANSPARENT)
-            binding.tvMuscleStatus.text = "표준"
-         }
-         muscle < 401 -> {
-            binding.muscleIndicator1.thumb.setTint(Color.TRANSPARENT)
-            binding.muscleIndicator2.thumb.setTint(Color.TRANSPARENT)
-            binding.muscleIndicator3.progress = muscle
-            binding.muscleIndicator3.thumb.setTint(Color.BLACK)
-            binding.tvMuscleStatus.text = "높음"
-         }
+
+      if(muscle in 1..267) {
+         binding.muscleIndicator1.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.muscleIndicator1.progress = muscle
+         binding.tvMuscleStatus.text = "낮음"
+      }else if(muscle in 267..311) {
+         binding.muscleIndicator2.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.muscleIndicator2.progress = muscle
+         binding.tvMuscleStatus.text = "표준"
+      }else {
+         binding.muscleIndicator3.thumb.setTint(resources.getColor(R.color.black_white))
+         binding.muscleIndicator3.progress = muscle
+         binding.tvMuscleStatus.text = "높음"
       }
+   }
+
+   override fun onResume() {
+      super.onResume()
+      dailyList()
    }
 }

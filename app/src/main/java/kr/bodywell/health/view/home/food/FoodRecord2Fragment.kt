@@ -38,7 +38,7 @@ class FoodRecord2Fragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, FoodDetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -76,15 +76,15 @@ class FoodRecord2Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
+         replaceFragment4(requireActivity().supportFragmentManager, FoodDetailFragment(), bundle)
       }
 
       binding.tvBtn1.setOnClickListener {
-         replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+         replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
       }
 
       binding.tvBtn3.setOnClickListener {
-         replaceFragment2(parentFragmentManager, FoodInputFragment(), bundle)
+         replaceFragment2(requireActivity().supportFragmentManager, FoodInputFragment(), bundle)
       }
 
       listView()
@@ -114,13 +114,13 @@ class FoodRecord2Fragment : Fragment() {
             binding.tvEmpty.visibility = View.GONE
             binding.rv1.visibility = View.VISIBLE
 
-            val recordAdapter = FoodRecordAdapter(requireActivity(), parentFragmentManager, itemList, type)
+            val recordAdapter = FoodRecordAdapter(requireActivity(), requireActivity().supportFragmentManager, itemList, type)
             binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
             recordAdapter.setOnItemClickListener(object : FoodRecordAdapter.OnItemClickListener {
                override fun onItemClick(pos: Int) {
                   bundle.putString("foodId", itemList[pos].id)
-                  replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
+                  replaceFragment2(requireActivity().supportFragmentManager, FoodAddFragment(), bundle)
                }
             })
 
@@ -131,7 +131,7 @@ class FoodRecord2Fragment : Fragment() {
    }
 
    private fun searchView() {
-      val searchAdapter = SearchAdapter(requireActivity(), parentFragmentManager, type)
+      val searchAdapter = SearchAdapter(requireActivity(), requireActivity().supportFragmentManager, type)
       binding.rv2.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
       binding.etSearch.addTextChangedListener(object: TextWatcher {
@@ -160,7 +160,7 @@ class FoodRecord2Fragment : Fragment() {
       searchAdapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
             bundle.putString("foodId", searchList[pos].string1)
-            replaceFragment2(parentFragmentManager, FoodAddFragment(), bundle)
+            replaceFragment2(requireActivity().supportFragmentManager, FoodAddFragment(), bundle)
          }
       })
 

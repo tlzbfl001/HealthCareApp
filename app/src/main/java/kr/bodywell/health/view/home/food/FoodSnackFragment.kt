@@ -58,7 +58,7 @@ class FoodSnackFragment : Fragment() {
         }
 
         if(getDiets.isNotEmpty()) {
-            val intakeAdapter = FoodIntakeAdapter(parentFragmentManager, getDiets, SNACK)
+            val intakeAdapter = FoodIntakeAdapter(requireActivity().supportFragmentManager, getDiets, SNACK)
             binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
             intakeAdapter.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {

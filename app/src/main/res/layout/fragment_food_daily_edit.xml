@@ -36,7 +36,7 @@
       android:layout_marginRight="20dp"
       android:textAlignment="center"
       android:text="사진 업로드"
-      android:textColor="@color/dark_grey_white"
+      android:textColor="@color/white"
       android:textSize="13dp"
       android:fontFamily="@font/noto_bold"
       android:includeFontPadding="false"

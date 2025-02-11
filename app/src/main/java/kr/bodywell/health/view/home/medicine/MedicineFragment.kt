@@ -94,7 +94,7 @@ class MedicineFragment : Fragment() {
          if(!checkAlarmPermission1(requireActivity()) || !checkAlarmPermission2(requireActivity())) {
             Toast.makeText(requireActivity(), "권한이 없습니다.", Toast.LENGTH_SHORT).show()
          }else {
-            replaceFragment1(parentFragmentManager, MedicineRecordFragment())
+            replaceFragment1(requireActivity().supportFragmentManager, MedicineRecordFragment())
          }
       }
 
@@ -149,7 +149,7 @@ class MedicineFragment : Fragment() {
             binding.cl1.visibility = View.GONE
             binding.cv.visibility = View.GONE
             binding.btnPerm.setOnClickListener {
-               replaceFragment1(parentFragmentManager, AlarmFragment())
+               replaceFragment1(requireActivity().supportFragmentManager, AlarmFragment())
             }
          }else {
             binding.clPerm.visibility = View.GONE

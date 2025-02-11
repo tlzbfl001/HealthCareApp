@@ -59,7 +59,7 @@ class FoodBreakfastFragment : Fragment() {
 
       if(getDiets.isNotEmpty()) {
          binding.rv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-         intakeAdapter = FoodIntakeAdapter(parentFragmentManager, getDiets, BREAKFAST)
+         intakeAdapter = FoodIntakeAdapter(requireActivity().supportFragmentManager, getDiets, BREAKFAST)
 
          intakeAdapter!!.setOnItemClickListener(object : FoodIntakeAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {

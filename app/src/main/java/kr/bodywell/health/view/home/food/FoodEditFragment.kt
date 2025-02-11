@@ -34,7 +34,7 @@ class FoodEditFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
+				replaceFragment2(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -82,7 +82,7 @@ class FoodEditFragment : Fragment() {
 		}
 
 		binding.clBack.setOnClickListener {
-			replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
+			replaceFragment2(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
 		}
 
 		binding.tvMg.setOnClickListener {
@@ -235,7 +235,7 @@ class FoodEditFragment : Fragment() {
 						volume = binding.etVolume.text.toString().trim().toInt(), volumeUnit = unit))
 
 					Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-					replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
+					replaceFragment2(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
 				}
 			}
 		}

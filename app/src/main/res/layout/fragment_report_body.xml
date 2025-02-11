@@ -82,7 +82,7 @@
             android:layout_height="48dp"
             android:layout_marginRight="13dp"
             android:background="@drawable/oval_cal_selected1"
-            android:backgroundTint="#A16A6A6A"
+            android:backgroundTint="#C15A5A5A"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -37,7 +37,7 @@ class ExerciseRecord1Fragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, ExerciseListFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, ExerciseListFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -72,15 +72,15 @@ class ExerciseRecord1Fragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(parentFragmentManager, ExerciseListFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ExerciseListFragment())
       }
 
       binding.tvBtn2.setOnClickListener {
-         replaceFragment3(parentFragmentManager, ExerciseRecord2Fragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ExerciseRecord2Fragment())
       }
 
       binding.tvBtn3.setOnClickListener {
-         replaceFragment3(parentFragmentManager, ExerciseInputFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, ExerciseInputFragment())
       }
 
       listView()
@@ -116,7 +116,7 @@ class ExerciseRecord1Fragment : Fragment() {
             adapter.setOnItemClickListener(object : ExerciseRecordAdapter.OnItemClickListener {
                override fun onItemClick(pos: Int) {
                   bundle.putString("id", itemList[pos].id)
-                  replaceFragment2(parentFragmentManager, ExerciseAddFragment(), bundle)
+                  replaceFragment2(requireActivity().supportFragmentManager, ExerciseAddFragment(), bundle)
                }
             })
 
@@ -156,7 +156,7 @@ class ExerciseRecord1Fragment : Fragment() {
       adapter.setItemClickListener(object: SearchAdapter.OnItemClickListener{
          override fun onClick(v: View, pos: Int) {
             bundle.putString("id", searchList[pos].string1)
-            replaceFragment2(parentFragmentManager, ExerciseAddFragment(), bundle)
+            replaceFragment2(requireActivity().supportFragmentManager, ExerciseAddFragment(), bundle)
          }
       })
    }

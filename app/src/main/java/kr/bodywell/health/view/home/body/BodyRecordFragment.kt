@@ -48,7 +48,7 @@ class BodyRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, DetailFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -109,7 +109,7 @@ class BodyRecordFragment : Fragment() {
       }
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(parentFragmentManager, DetailFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.etBmi.addTextChangedListener(object : TextWatcher {
@@ -289,7 +289,7 @@ class BodyRecordFragment : Fragment() {
                val cvConfirm = dialog.findViewById<CardView>(R.id.cvConfirm)
 
                cvConfirm.setOnClickListener {
-                  replaceFragment3(parentFragmentManager, ProfileFragment())
+                  replaceFragment3(requireActivity().supportFragmentManager, ProfileFragment())
                   dialog.dismiss()
                }
 
@@ -354,7 +354,7 @@ class BodyRecordFragment : Fragment() {
                }
             }
 
-            replaceFragment4(parentFragmentManager, DetailFragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, DetailFragment(), bundle)
          }
       }
 

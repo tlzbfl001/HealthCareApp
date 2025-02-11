@@ -107,7 +107,7 @@
             android:layout_width="51dp"
             android:layout_height="48dp"
             android:background="@drawable/oval_cal_selected1"
-            android:backgroundTint="#A16A6A6A"
+            android:backgroundTint="#C15A5A5A"
             android:layout_marginRight="13dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/clMenu1"
@@ -331,28 +331,28 @@
                   app:layout_constraintEnd_toEndOf="@id/view4" />
                <View
                   android:id="@+id/view1"
-                  android:layout_width="22dp"
+                  android:layout_width="21dp"
                   android:layout_height="4dp"
                   android:background="#F0727A"
                   app:layout_constraintTop_toBottomOf="@id/tvText1"
                   app:layout_constraintStart_toStartOf="parent" />
                <View
                   android:id="@+id/view2"
-                  android:layout_width="22dp"
+                  android:layout_width="21dp"
                   android:layout_height="4dp"
                   android:background="#FFEDBE"
                   app:layout_constraintStart_toEndOf="@id/view1"
                   app:layout_constraintTop_toTopOf="@id/view1"/>
                <View
                   android:id="@+id/view3"
-                  android:layout_width="22dp"
+                  android:layout_width="21dp"
                   android:layout_height="4dp"
                   android:background="#D8FFAA"
                   app:layout_constraintStart_toEndOf="@id/view2"
                   app:layout_constraintTop_toTopOf="@id/view2"/>
                <View
                   android:id="@+id/view4"
-                  android:layout_width="22dp"
+                  android:layout_width="21dp"
                   android:layout_height="4dp"
                   android:background="#FFE1EB"
                   app:layout_constraintStart_toEndOf="@id/view3"
@@ -463,46 +463,27 @@
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="@id/view7"
                   app:layout_constraintEnd_toEndOf="@id/view7" />
-               <TextView
-                  android:id="@+id/tvText8"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="당"
-                  android:textSize="9dp"
-                  android:textColor="@color/grey_white"
-                  android:fontFamily="@font/noto"
-                  android:includeFontPadding="false"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:layout_constraintStart_toStartOf="@id/view8"
-                  app:layout_constraintEnd_toEndOf="@id/view8" />
                <View
                   android:id="@+id/view5"
-                  android:layout_width="20dp"
+                  android:layout_width="28dp"
                   android:layout_height="4dp"
-                  android:background="#F3E1A3"
+                  android:background="#9B7CE4"
                   app:layout_constraintTop_toBottomOf="@id/tvText5"
                   app:layout_constraintStart_toStartOf="parent" />
                <View
                   android:id="@+id/view6"
-                  android:layout_width="20dp"
+                  android:layout_width="28dp"
                   android:layout_height="4dp"
-                  android:background="#F4D279"
+                  android:background="#BBAAE4"
                   app:layout_constraintStart_toEndOf="@id/view5"
                   app:layout_constraintTop_toTopOf="@id/view5"/>
                <View
                   android:id="@+id/view7"
-                  android:layout_width="20dp"
+                  android:layout_width="28dp"
                   android:layout_height="4dp"
-                  android:background="#EFC75D"
+                  android:background="#DED8EB"
                   app:layout_constraintStart_toEndOf="@id/view6"
                   app:layout_constraintTop_toTopOf="@id/view6"/>
-               <View
-                  android:id="@+id/view8"
-                  android:layout_width="20dp"
-                  android:layout_height="4dp"
-                  android:background="#EFB522"
-                  app:layout_constraintStart_toEndOf="@id/view7"
-                  app:layout_constraintTop_toTopOf="@id/view7"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
          </androidx.cardview.widget.CardView>
       </androidx.constraintlayout.widget.ConstraintLayout>

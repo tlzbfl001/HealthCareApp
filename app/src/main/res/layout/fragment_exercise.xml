@@ -48,8 +48,8 @@
          </androidx.constraintlayout.widget.ConstraintLayout>
          <ProgressBar
             android:id="@+id/progressbar"
-            android:layout_width="185dp"
-            android:layout_height="185dp"
+            android:layout_width="195dp"
+            android:layout_height="195dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             app:indicatorInset="0dp"
             android:layout_marginTop="15dp"
@@ -97,7 +97,7 @@
             android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:text="목표칼로리"
             android:textColor="@color/black_white"
             android:textSize="14.5dp"
@@ -162,7 +162,7 @@
          android:background="@drawable/rec_top_radius_35"
          android:backgroundTint="@color/purple_grey"
          android:orientation="vertical"
-         android:layout_marginTop="20dp"
+         android:layout_marginTop="15dp"
          app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintStart_toStartOf="parent"

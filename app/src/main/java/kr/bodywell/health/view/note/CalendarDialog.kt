@@ -122,7 +122,7 @@ class CalendarDialog(context: Context) : Dialog(context) {
 
             val adapter2 = CalendarImageSlideAdapter(context, images)
             viewPager?.adapter = adapter2
-            viewPager?.setPadding(0, 0, 165, 0)
+            viewPager?.setPadding(0, 0, 200, 0)
          }else {
             viewPager?.visibility = View.GONE
             tvStatus?.visibility = View.VISIBLE

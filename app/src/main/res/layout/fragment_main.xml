@@ -14,8 +14,8 @@
       app:layout_constraintEnd_toEndOf="parent">
       <de.hdodenhof.circleimageview.CircleImageView
          android:id="@+id/ivUser"
-         android:layout_width="47dp"
-         android:layout_height="47dp"
+         android:layout_width="49dp"
+         android:layout_height="49dp"
          android:background="@drawable/oval"
          android:src="@drawable/user_grey"
          android:layout_marginStart="25dp"
@@ -44,8 +44,8 @@
          android:layout_height="wrap_content"
          android:layout_marginTop="15dp"
          android:layout_marginEnd="20dp"
-         android:backgroundTint="#5E35C3"
-         app:cardCornerRadius="15dp"
+         android:backgroundTint="@color/purple"
+         app:cardCornerRadius="12dp"
          android:elevation="0dp"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintEnd_toEndOf="parent">
@@ -53,7 +53,6 @@
             android:id="@+id/btnCalendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/purple"
             android:paddingTop="4dp"
             android:paddingBottom="6dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -256,40 +255,42 @@
       app:layout_constraintTop_toBottomOf="@id/clCalendar"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
+      <ImageView
+         android:id="@+id/ivFood"
+         android:layout_width="14dp"
+         android:layout_height="14dp"
+         android:src="@drawable/icon_food"
+         android:layout_marginLeft="3dp"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="@id/tvFoodTitle"
+         app:layout_constraintBottom_toBottomOf="@id/tvFoodTitle"/>
       <TextView
          android:id="@+id/tvFoodTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="3dp"
          android:text="식단"
          android:textSize="16dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
-      <ImageView
-         android:id="@+id/ivFood"
-         android:layout_width="11dp"
-         android:layout_height="11dp"
-         android:src="@drawable/icon_food"
-         android:layout_marginTop="3dp"
-         app:layout_constraintStart_toStartOf="@id/tvFoodTitle"
-         app:layout_constraintTop_toBottomOf="@id/tvFoodTitle"/>
+         app:layout_constraintStart_toEndOf="@id/ivFood"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvFoodGoal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="7dp"
          android:text="0/0 kcal"
-         android:textSize="11dp"
+         android:textSize="12dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto"
          android:includeFontPadding="false"
          android:maxLines="1"
          android:ellipsize="end"
          app:layout_constraintTop_toTopOf="@id/ivFood"
-         app:layout_constraintStart_toEndOf="@id/ivFood"
+         app:layout_constraintStart_toEndOf="@id/tvFoodTitle"
          app:layout_constraintBottom_toBottomOf="@id/ivFood"/>
       <TextView
          android:id="@+id/btnFood"
@@ -304,8 +305,8 @@
          android:textAlignment="center"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="@id/tvFoodTitle"
-         app:layout_constraintBottom_toBottomOf="@id/tvFoodGoal"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.constraintlayout.widget.ConstraintLayout
@@ -321,40 +322,42 @@
       app:layout_constraintTop_toBottomOf="@id/clFood"
       app:layout_constraintStart_toEndOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
+      <ImageView
+         android:id="@+id/ivWater"
+         android:layout_width="13dp"
+         android:layout_height="13dp"
+         android:src="@drawable/icon_water"
+         android:layout_marginLeft="3dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvWaterTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="3dp"
          android:text="수분"
          android:textSize="16dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
-      <ImageView
-         android:id="@+id/ivWater"
-         android:layout_width="11dp"
-         android:layout_height="11dp"
-         android:src="@drawable/icon_water"
-         android:layout_marginTop="3dp"
-         app:layout_constraintTop_toBottomOf="@id/tvWaterTitle"
-         app:layout_constraintStart_toStartOf="@id/tvWaterTitle"/>
+         app:layout_constraintStart_toEndOf="@id/ivWater"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvWaterGoal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="7dp"
          android:text="0/0 잔"
-         android:textSize="11dp"
+         android:textSize="12dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto"
          android:includeFontPadding="false"
          android:maxLines="1"
          android:ellipsize="end"
          app:layout_constraintTop_toTopOf="@id/ivWater"
-         app:layout_constraintStart_toEndOf="@id/ivWater"
+         app:layout_constraintStart_toEndOf="@id/tvWaterTitle"
          app:layout_constraintBottom_toBottomOf="@id/ivWater"/>
       <TextView
          android:id="@+id/btnWater"
@@ -369,8 +372,8 @@
          android:textAlignment="center"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="@id/tvWaterTitle"
-         app:layout_constraintBottom_toBottomOf="@id/tvWaterGoal"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.constraintlayout.widget.ConstraintLayout
@@ -386,40 +389,42 @@
       app:layout_constraintTop_toBottomOf="@id/clWater"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
+      <ImageView
+         android:id="@+id/ivExercise"
+         android:layout_width="15dp"
+         android:layout_height="15dp"
+         android:src="@drawable/icon_exercise"
+         android:layout_marginStart="3dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvExerciseTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="3dp"
          android:text="운동"
          android:textSize="16dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
-      <ImageView
-         android:id="@+id/ivExercise"
-         android:layout_width="13dp"
-         android:layout_height="13dp"
-         android:src="@drawable/icon_exercise"
-         android:layout_marginTop="3dp"
-         app:layout_constraintStart_toStartOf="@id/tvExerciseTitle"
-         app:layout_constraintTop_toBottomOf="@id/tvExerciseTitle"/>
+         app:layout_constraintStart_toEndOf="@id/ivExercise"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvExerciseGoal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginStart="3dp"
+         android:layout_marginLeft="7dp"
          android:text="0/0kcal"
-         android:textSize="11dp"
+         android:textSize="12dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto"
          android:includeFontPadding="false"
          android:maxLines="1"
          android:ellipsize="end"
          app:layout_constraintTop_toTopOf="@id/ivExercise"
-         app:layout_constraintStart_toEndOf="@id/ivExercise"
+         app:layout_constraintStart_toEndOf="@id/tvExerciseTitle"
          app:layout_constraintBottom_toBottomOf="@id/ivExercise"/>
       <TextView
          android:id="@+id/btnExercise"
@@ -434,8 +439,8 @@
          android:textAlignment="center"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="@id/tvExerciseTitle"
-         app:layout_constraintBottom_toBottomOf="@id/tvExerciseGoal"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.constraintlayout.widget.ConstraintLayout
@@ -451,40 +456,43 @@
       app:layout_constraintTop_toBottomOf="@id/clExercise"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
+      <ImageView
+         android:id="@+id/ivBody"
+         android:layout_width="13dp"
+         android:layout_height="13dp"
+         android:src="@drawable/icon_body"
+         android:layout_marginTop="1dp"
+         android:layout_marginStart="3dp"
+         app:layout_constraintTop_toTopOf="@id/tvBodyTitle"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="@id/tvBodyTitle"/>
       <TextView
          android:id="@+id/tvBodyTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="3dp"
          android:text="신체"
          android:textSize="16dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
-      <ImageView
-         android:id="@+id/ivBody"
-         android:layout_width="11dp"
-         android:layout_height="11dp"
-         android:src="@drawable/icon_body"
-         android:layout_marginTop="3dp"
-         app:layout_constraintStart_toStartOf="@id/tvBodyTitle"
-         app:layout_constraintTop_toBottomOf="@id/tvBodyTitle"/>
+         app:layout_constraintStart_toEndOf="@id/ivBody"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvBodyGoal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="7dp"
          android:text="0/0kg"
-         android:textSize="11dp"
+         android:textSize="12dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto"
          android:includeFontPadding="false"
          android:maxLines="1"
          android:ellipsize="end"
          app:layout_constraintTop_toTopOf="@id/ivBody"
-         app:layout_constraintStart_toEndOf="@id/ivBody"
+         app:layout_constraintStart_toEndOf="@id/tvBodyTitle"
          app:layout_constraintBottom_toBottomOf="@id/ivBody"/>
       <TextView
          android:id="@+id/btnBody"
@@ -498,8 +506,8 @@
          android:textColor="@color/dark_grey_white"
          android:textSize="13dp"
          android:fontFamily="@font/noto_bold"
-         app:layout_constraintTop_toTopOf="@id/tvBodyTitle"
-         app:layout_constraintBottom_toBottomOf="@id/tvBodyGoal"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.constraintlayout.widget.ConstraintLayout
@@ -515,40 +523,42 @@
       app:layout_constraintTop_toBottomOf="@id/clBody"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
+      <ImageView
+         android:id="@+id/ivSleep"
+         android:layout_width="14dp"
+         android:layout_height="14dp"
+         android:src="@drawable/icon_sleep"
+         android:layout_marginStart="3dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvSleepTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="3dp"
          android:text="수면"
          android:textSize="16dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
-      <ImageView
-         android:id="@+id/ivSleep"
-         android:layout_width="12dp"
-         android:layout_height="12dp"
-         android:src="@drawable/icon_sleep"
-         android:layout_marginTop="3dp"
-         app:layout_constraintStart_toStartOf="@id/tvSleepTitle"
-         app:layout_constraintTop_toBottomOf="@id/tvSleepTitle"/>
+         app:layout_constraintStart_toEndOf="@id/ivSleep"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvSleepGoal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginStart="3dp"
+         android:layout_marginLeft="7dp"
          android:text="0h0m/0h"
-         android:textSize="11dp"
+         android:textSize="12dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto"
          android:includeFontPadding="false"
          android:maxLines="1"
          android:ellipsize="end"
          app:layout_constraintTop_toTopOf="@id/ivSleep"
-         app:layout_constraintStart_toEndOf="@id/ivSleep"
+         app:layout_constraintStart_toEndOf="@id/tvSleepTitle"
          app:layout_constraintBottom_toBottomOf="@id/ivSleep"/>
       <TextView
          android:id="@+id/btnSleep"
@@ -563,8 +573,8 @@
          android:textAlignment="center"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="@id/tvSleepTitle"
-         app:layout_constraintBottom_toBottomOf="@id/tvSleepGoal"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
    <androidx.constraintlayout.widget.ConstraintLayout
@@ -580,40 +590,42 @@
       app:layout_constraintTop_toBottomOf="@id/clSleep"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent">
+      <ImageView
+         android:id="@+id/ivMedicine"
+         android:layout_width="13dp"
+         android:layout_height="13dp"
+         android:src="@drawable/icon_medicine"
+         android:layout_marginLeft="3dp"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvMedicineTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="3dp"
          android:text="약복용"
          android:textSize="16dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
          app:layout_constraintTop_toTopOf="parent"
-         app:layout_constraintStart_toStartOf="parent"/>
-      <ImageView
-         android:id="@+id/ivMedicine"
-         android:layout_width="11dp"
-         android:layout_height="11dp"
-         android:src="@drawable/icon_medicine"
-         android:layout_marginTop="3dp"
-         app:layout_constraintStart_toStartOf="@id/tvMedicineTitle"
-         app:layout_constraintTop_toBottomOf="@id/tvMedicineTitle"/>
+         app:layout_constraintStart_toEndOf="@id/ivMedicine"
+         app:layout_constraintBottom_toBottomOf="parent"/>
       <TextView
          android:id="@+id/tvMedicineGoal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_marginLeft="5dp"
+         android:layout_marginLeft="7dp"
          android:text="0/0회"
-         android:textSize="11dp"
+         android:textSize="12dp"
          android:textColor="@color/black_white"
          android:fontFamily="@font/noto"
          android:includeFontPadding="false"
          android:maxLines="1"
          android:ellipsize="end"
          app:layout_constraintTop_toTopOf="@id/ivMedicine"
-         app:layout_constraintStart_toEndOf="@id/ivMedicine"
+         app:layout_constraintStart_toEndOf="@id/tvMedicineTitle"
          app:layout_constraintBottom_toBottomOf="@id/ivMedicine"/>
       <TextView
          android:id="@+id/btnMedicine"
@@ -628,8 +640,8 @@
          android:textAlignment="center"
          android:fontFamily="@font/noto_bold"
          android:includeFontPadding="false"
-         app:layout_constraintTop_toTopOf="@id/tvMedicineTitle"
-         app:layout_constraintBottom_toBottomOf="@id/tvMedicineGoal"
+         app:layout_constraintTop_toTopOf="parent"
+         app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintEnd_toEndOf="parent"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

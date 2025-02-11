@@ -51,7 +51,7 @@
       android:layout_marginRight="20dp"
       android:text="입력"
       android:textSize="15dp"
-      android:textColor="@color/dark_grey_white"
+      android:textColor="@color/white"
       android:fontFamily="@font/noto_bold"
       android:includeFontPadding="false"
       app:layout_constraintTop_toTopOf="@id/tvTitle"

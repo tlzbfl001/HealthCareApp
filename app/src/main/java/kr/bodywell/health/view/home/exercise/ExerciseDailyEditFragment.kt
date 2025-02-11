@@ -34,7 +34,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment1(parentFragmentManager, ExerciseListFragment())
+				replaceFragment1(requireActivity().supportFragmentManager, ExerciseListFragment())
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -66,7 +66,7 @@ class ExerciseDailyEditFragment : Fragment() {
 		}
 
 		binding.clX.setOnClickListener {
-			replaceFragment1(parentFragmentManager, ExerciseListFragment())
+			replaceFragment1(requireActivity().supportFragmentManager, ExerciseListFragment())
 		}
 
 		binding.tvIntensity1.setOnClickListener {
@@ -91,7 +91,7 @@ class ExerciseDailyEditFragment : Fragment() {
 				}
 
 				Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-				replaceFragment1(parentFragmentManager, ExerciseListFragment())
+				replaceFragment1(requireActivity().supportFragmentManager, ExerciseListFragment())
 			}
 		}
 

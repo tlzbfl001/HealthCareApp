@@ -81,7 +81,7 @@ class SleepFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(parentFragmentManager, SleepRecordFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, SleepRecordFragment())
       }
 
       viewModel.dateState.observe(viewLifecycleOwner, Observer<LocalDate> {

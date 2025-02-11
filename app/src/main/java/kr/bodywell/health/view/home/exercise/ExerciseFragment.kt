@@ -84,7 +84,7 @@ class ExerciseFragment : Fragment() {
       }
 
       binding.clRecord.setOnClickListener {
-         replaceFragment1(parentFragmentManager, ExerciseListFragment())
+         replaceFragment1(requireActivity().supportFragmentManager, ExerciseListFragment())
       }
 
       viewModel.dateState.observe(viewLifecycleOwner, Observer<LocalDate> {

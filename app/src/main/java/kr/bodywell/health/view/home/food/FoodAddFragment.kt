@@ -35,7 +35,7 @@ class FoodAddFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+				replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -72,7 +72,7 @@ class FoodAddFragment : Fragment() {
 		}
 
 		binding.clX.setOnClickListener {
-			replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+			replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
 		}
 
 		binding.cvSave.setOnClickListener {
@@ -90,7 +90,7 @@ class FoodAddFragment : Fragment() {
 			}
 
 			Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-			replaceFragment4(parentFragmentManager, FoodRecord1Fragment(), bundle)
+			replaceFragment4(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
 		}
 
 		return binding.root

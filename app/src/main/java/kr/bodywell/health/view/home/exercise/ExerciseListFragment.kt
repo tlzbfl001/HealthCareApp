@@ -30,7 +30,7 @@ class ExerciseListFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, DetailFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -45,11 +45,11 @@ class ExerciseListFragment : Fragment() {
       setStatusBar(requireActivity(), binding.mainLayout)
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(parentFragmentManager, DetailFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.tvInput.setOnClickListener {
-         replaceFragment1(parentFragmentManager, ExerciseRecord1Fragment())
+         replaceFragment1(requireActivity().supportFragmentManager, ExerciseRecord1Fragment())
       }
 
       lifecycleScope.launch {

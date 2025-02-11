@@ -58,7 +58,6 @@ class GalleryFragment : Fragment() {
 	val viewModel: MainViewModel by activityViewModels()
 	private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
 	private lateinit var cLauncher: ActivityResultLauncher<Intent>
-//	private lateinit var dataManager: DataManager
 	private var adapter: GalleryAdapter? = null
 	private var bundle = Bundle()
 	private var dialog: Dialog? = null
@@ -73,7 +72,7 @@ class GalleryFragment : Fragment() {
 		super.onAttach(context)
 		callback = object : OnBackPressedCallback(true) {
 			override fun handleOnBackPressed() {
-				replaceFragment4(parentFragmentManager, FoodDailyEditFragment(), bundle)
+				replaceFragment4(requireActivity().supportFragmentManager, FoodDailyEditFragment(), bundle)
 			}
 		}
 		requireActivity().onBackPressedDispatcher.addCallback(this, callback)

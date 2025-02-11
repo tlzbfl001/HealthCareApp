@@ -61,7 +61,7 @@ class MedicineAddFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, MedicineRecordFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, MedicineRecordFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -238,7 +238,7 @@ class MedicineAddFragment : Fragment() {
                }
             }
 
-            replaceFragment3(parentFragmentManager, MedicineRecordFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, MedicineRecordFragment())
          }
       }
 

@@ -39,7 +39,7 @@ class ExerciseAddFragment : Fragment() {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
+                replaceFragment3(requireActivity().supportFragmentManager, ExerciseRecord1Fragment())
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -67,7 +67,7 @@ class ExerciseAddFragment : Fragment() {
         }
 
         binding.clX.setOnClickListener {
-            replaceFragment3(parentFragmentManager, ExerciseRecord1Fragment())
+            replaceFragment3(requireActivity().supportFragmentManager, ExerciseRecord1Fragment())
         }
 
         binding.tvIntensity1.setOnClickListener {
@@ -113,7 +113,7 @@ class ExerciseAddFragment : Fragment() {
                 }
 
                 Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                replaceFragment3(parentFragmentManager, ExerciseListFragment())
+                replaceFragment3(requireActivity().supportFragmentManager, ExerciseListFragment())
             }
         }
 

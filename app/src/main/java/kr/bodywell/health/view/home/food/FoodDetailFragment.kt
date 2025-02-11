@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import kr.bodywell.health.R
 import kr.bodywell.health.adapter.PagerAdapter
 import kr.bodywell.health.databinding.FragmentFoodDetailBinding
@@ -33,7 +34,7 @@ class FoodDetailFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, DetailFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -50,12 +51,12 @@ class FoodDetailFragment : Fragment() {
       if(arguments?.getString("type") != null) type = arguments?.getString("type").toString()
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(parentFragmentManager, DetailFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.tvInput.setOnClickListener {
          bundle.putString("type", type)
-         replaceFragment2(parentFragmentManager, FoodRecord1Fragment(), bundle)
+         replaceFragment2(requireActivity().supportFragmentManager, FoodRecord1Fragment(), bundle)
       }
 
       setTabView()
@@ -64,14 +65,23 @@ class FoodDetailFragment : Fragment() {
    }
 
    private fun setTabView() {
-      val pagerAdapter = PagerAdapter(requireActivity().supportFragmentManager)
-      pagerAdapter.add(FoodBreakfastFragment(), "아침")
-      pagerAdapter.add(FoodLunchFragment(), "점심")
-      pagerAdapter.add(FoodDinnerFragment(), "저녁")
-      pagerAdapter.add(FoodSnackFragment(), "간식")
+      val fragmentList = ArrayList<Fragment>()
+      fragmentList.add(FoodBreakfastFragment())
+      fragmentList.add(FoodLunchFragment())
+      fragmentList.add(FoodDinnerFragment())
+      fragmentList.add(FoodSnackFragment())
+
+      val pagerAdapter = PagerAdapter(fragmentList, requireActivity())
       binding.viewPager.adapter = pagerAdapter
 
-      binding.tabLayout.setupWithViewPager(binding.viewPager)
+      TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+         when(position) {
+            0 -> tab.text = "아침"
+            1 -> tab.text = "점심"
+            2 -> tab.text = "저녁"
+            3 -> tab.text = "간식"
+         }
+      }.attach()
 
       for(i in 0 until 6) {
          val textView = LayoutInflater.from(requireActivity()).inflate(R.layout.item_tab, null) as TextView

@@ -39,7 +39,7 @@ class FoodDailyEditFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, FoodDetailFragment(), bundle)
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -65,13 +65,13 @@ class FoodDailyEditFragment : Fragment() {
       binding.tvName.text = getDiets.name
 
       binding.clBack.setOnClickListener {
-         replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
+         replaceFragment4(requireActivity().supportFragmentManager, FoodDetailFragment(), bundle)
       }
 
       binding.tvUpload.setOnClickListener {
          if(checkMediaPermission(requireActivity())) {
             bundle.putParcelable(DIETS, getDiets)
-            replaceFragment4(parentFragmentManager, GalleryFragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, GalleryFragment(), bundle)
          }else {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                pLauncher.launch(MEDIA_PERMISSION_2)
@@ -95,7 +95,7 @@ class FoodDailyEditFragment : Fragment() {
          lifecycleScope.launch {
             if(getDiets.quantity != count) powerSync.updateDiet(Food(id = getDiets.id, quantity = count)) // 식단 정보 업데이트
             Toast.makeText(context, "수정되었습니다.", Toast.LENGTH_SHORT).show()
-            replaceFragment4(parentFragmentManager, FoodDetailFragment(), bundle)
+            replaceFragment4(requireActivity().supportFragmentManager, FoodDetailFragment(), bundle)
          }
       }
 

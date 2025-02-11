@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import kr.bodywell.health.adapter.PagerAdapter
 import kr.bodywell.health.databinding.ActivityInitBinding
 import kr.bodywell.health.util.MyApp
 import kotlin.system.exitProcess
@@ -23,7 +25,6 @@ class InitActivity : AppCompatActivity() {
    private var pressedTime: Long = 0
    private var adapter: PagerAdapter = PagerAdapter(supportFragmentManager)
    private var appUpdateManager: AppUpdateManager? = null
-   private val UPDATE_REQUEST_CODE = 500
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -132,6 +133,19 @@ class InitActivity : AppCompatActivity() {
       }
    }
 
+   class PagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
+      private val fragmentList = ArrayList<Fragment>()
+      private val fragmentTitle = ArrayList<String>()
+
+      override fun getCount(): Int = fragmentList.size
+      override fun getItem(position: Int): Fragment = fragmentList[position]
+      override fun getPageTitle(position: Int): CharSequence = fragmentTitle[position]
+      fun add(fragment: Fragment, title: String) {
+         fragmentList.add(fragment)
+         fragmentTitle.add(title)
+      }
+   }
+
    override fun onResume() {
       super.onResume()
       appUpdateManager!!.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
@@ -148,5 +162,9 @@ class InitActivity : AppCompatActivity() {
             }
          }
       }
+   }
+
+   companion object {
+      private const val UPDATE_REQUEST_CODE = 500
    }
 }

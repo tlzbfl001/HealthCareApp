@@ -251,7 +251,7 @@ class ProfileFragment : Fragment() {
 
 	private fun unit1() {
 		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_gray)
-		binding.tvWoman.setTextColor(resources.getColor(R.color.button_text))
+		binding.tvWoman.setTextColor(Color.WHITE)
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvMan.setTextColor(Color.parseColor("#90212121"))
 		gender = FEMALE
@@ -261,7 +261,7 @@ class ProfileFragment : Fragment() {
 		binding.tvWoman.setBackgroundResource(R.drawable.rec_25_border_gray)
 		binding.tvWoman.setTextColor(Color.parseColor("#90212121"))
 		binding.tvMan.setBackgroundResource(R.drawable.rec_25_gray)
-		binding.tvMan.setTextColor(resources.getColor(R.color.button_text))
+		binding.tvMan.setTextColor(Color.WHITE)
 		gender = MALE
 	}
 

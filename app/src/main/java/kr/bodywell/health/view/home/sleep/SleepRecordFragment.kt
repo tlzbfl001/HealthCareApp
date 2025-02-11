@@ -36,7 +36,7 @@ class SleepRecordFragment : Fragment() {
       super.onAttach(context)
       callback = object : OnBackPressedCallback(true) {
          override fun handleOnBackPressed() {
-            replaceFragment3(parentFragmentManager, DetailFragment())
+            replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
          }
       }
       requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -51,7 +51,7 @@ class SleepRecordFragment : Fragment() {
       setStatusBar(requireActivity(), binding.constraint)
 
       binding.clBack.setOnClickListener {
-         replaceFragment3(parentFragmentManager, DetailFragment())
+         replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
       }
 
       binding.time.setOnTimeChangeListener(object : TimeRangePicker.OnTimeChangeListener {
@@ -114,12 +114,12 @@ class SleepRecordFragment : Fragment() {
                   powerSync.insertSleep(Sleep(id = uuid.toString(), starts = parse1, ends = parse2, createdAt = parse3, updatedAt = parse3))
 
                   Toast.makeText(requireActivity(), "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                  replaceFragment3(parentFragmentManager, DetailFragment())
+                  replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
                }else {
                   powerSync.updateSleep(Sleep(id = getSleep.id, starts = parse1, ends = parse2))
 
                   Toast.makeText(requireActivity(), "수정되었습니다.", Toast.LENGTH_SHORT).show()
-                  replaceFragment3(parentFragmentManager, DetailFragment())
+                  replaceFragment3(requireActivity().supportFragmentManager, DetailFragment())
                }
             }
          }

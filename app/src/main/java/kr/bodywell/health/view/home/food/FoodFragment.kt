@@ -110,63 +110,51 @@ class FoodFragment : Fragment() {
       }
 
       binding.clExpand1.setOnClickListener {
-         if(itemList1.size > 0) {
-            if(isExpand1) {
-               binding.clView1.visibility = View.GONE
-               binding.ivExpand1.setImageResource(R.drawable.arrow_down)
-            }else {
-               binding.clView1.visibility = View.VISIBLE
-               binding.ivExpand1.setImageResource(R.drawable.arrow_up)
-            }
-            isExpand1 = !isExpand1
+         if(isExpand1) {
+            binding.clView1.visibility = View.GONE
+            binding.ivExpand1.setImageResource(R.drawable.arrow_down)
          }else {
-            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
+            binding.clView1.visibility = View.VISIBLE
+            binding.ivExpand1.setImageResource(R.drawable.arrow_up)
          }
+
+         isExpand1 = !isExpand1
       }
 
       binding.clExpand2.setOnClickListener {
-         if(itemList2.size > 0) {
-            if(isExpand2) {
-               binding.clView2.visibility = View.GONE
-               binding.ivExpand2.setImageResource(R.drawable.arrow_down)
-            }else {
-               binding.clView2.visibility = View.VISIBLE
-               binding.ivExpand2.setImageResource(R.drawable.arrow_up)
-            }
-            isExpand2 = !isExpand2
+         if(isExpand2) {
+            binding.clView2.visibility = View.GONE
+            binding.ivExpand2.setImageResource(R.drawable.arrow_down)
          }else {
-            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
+            binding.clView2.visibility = View.VISIBLE
+            binding.ivExpand2.setImageResource(R.drawable.arrow_up)
          }
+
+         isExpand2 = !isExpand2
       }
 
       binding.clExpand3.setOnClickListener {
-         if(itemList3.size > 0) {
-            if(isExpand3) {
-               binding.clView3.visibility = View.GONE
-               binding.ivExpand3.setImageResource(R.drawable.arrow_down)
-            }else {
-               binding.clView3.visibility = View.VISIBLE
-               binding.ivExpand3.setImageResource(R.drawable.arrow_up)
-            }
-            isExpand3 = !isExpand3
+         if(isExpand3) {
+            binding.clView3.visibility = View.GONE
+            binding.ivExpand3.setImageResource(R.drawable.arrow_down)
          }else {
-            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
+            binding.clView3.visibility = View.VISIBLE
+            binding.ivExpand3.setImageResource(R.drawable.arrow_up)
          }
+
+         isExpand3 = !isExpand3
       }
 
       binding.clExpand4.setOnClickListener {
-         if(itemList4.size > 0) {
-            if(isExpand4) {
-               binding.clView4.visibility = View.GONE
-               binding.ivExpand4.setImageResource(R.drawable.arrow_down)
-            }else {
-               binding.clView4.visibility = View.VISIBLE
-               binding.ivExpand4.setImageResource(R.drawable.arrow_up)
-            }
-            isExpand4 = !isExpand4
+         if(isExpand4) {
+            binding.clView4.visibility = View.GONE
+            binding.ivExpand4.setImageResource(R.drawable.arrow_down)
          }else {
-            Toast.makeText(requireActivity(), "데이터가 없습니다.", Toast.LENGTH_SHORT).show()
+            binding.clView4.visibility = View.VISIBLE
+            binding.ivExpand4.setImageResource(R.drawable.arrow_up)
          }
+
+         isExpand4 = !isExpand4
       }
 
       viewModel.dateState.observe(viewLifecycleOwner, Observer<LocalDate> {
@@ -331,6 +319,38 @@ class FoodFragment : Fragment() {
          binding.tvTotal2.text = "$kcal2 kcal"
          binding.tvTotal3.text = "$kcal3 kcal"
          binding.tvTotal4.text = "$kcal4 kcal"
+
+         if(itemList1.size > 0) {
+            binding.tvExist1.visibility = View.GONE
+            binding.rv1.visibility = View.VISIBLE
+         }else {
+            binding.tvExist1.visibility = View.VISIBLE
+            binding.rv1.visibility = View.GONE
+         }
+
+         if(itemList2.size > 0) {
+            binding.tvExist2.visibility = View.GONE
+            binding.rv2.visibility = View.VISIBLE
+         }else {
+            binding.tvExist2.visibility = View.VISIBLE
+            binding.rv2.visibility = View.GONE
+         }
+
+         if(itemList3.size > 0) {
+            binding.tvExist3.visibility = View.GONE
+            binding.rv3.visibility = View.VISIBLE
+         }else {
+            binding.tvExist3.visibility = View.VISIBLE
+            binding.rv3.visibility = View.GONE
+         }
+
+         if(itemList4.size > 0) {
+            binding.tvExist4.visibility = View.GONE
+            binding.rv4.visibility = View.VISIBLE
+         }else {
+            binding.tvExist4.visibility = View.VISIBLE
+            binding.rv4.visibility = View.GONE
+         }
 
          binding.rv1.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
          binding.rv1.adapter = FoodTextAdapter(itemList1)
