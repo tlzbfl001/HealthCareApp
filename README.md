@@ -16,7 +16,6 @@
 ##  기술 스택
 - 빌드/관리: **Gradle**
 - 데이터베이스: sqlLite (in-memory), MySQL/PostgreSQL
-- 테스트: JUnit, MockK 등
 - API 문서화: Swagger/OpenAPI
 
 ---
